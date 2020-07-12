@@ -19,7 +19,7 @@ trait EffectControl extends MotionListener {
 
   override def onMotionStart(motion: MotionSetting): Unit = {
     for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects
+      strategy.getEffect
         .filter(_.isInstanceOf[LipSyncFromMotionSound])
         .map(_.asInstanceOf[LipSyncFromMotionSound])
         .foreach(_.startWith(motion.sound))
@@ -30,7 +30,7 @@ trait EffectControl extends MotionListener {
   def updateMotionLipSyncVolume(volume: Int): Unit = {
     for {
       strategy <- this.mUpdateStrategyHolder
-      lipSync <- strategy.effects.filter(_.isInstanceOf[LipSyncFromMotionSound])
+      lipSync <- strategy.getEffect.filter(_.isInstanceOf[LipSyncFromMotionSound])
     } {
       lipSync.asInstanceOf[LipSyncFromMotionSound].volume = volume
     }
@@ -40,22 +40,23 @@ trait EffectControl extends MotionListener {
   def updateMotionLipSyncWeight(weight: Int): Unit = {
     for {
       strategy <- this.mUpdateStrategyHolder
-      lipSync <- strategy.effects.filter(_.isInstanceOf[LipSyncFromMotionSound])
+      lipSync <- strategy.getEffect.filter(_.isInstanceOf[LipSyncFromMotionSound])
     } {
       lipSync.asInstanceOf[LipSyncFromMotionSound].weight = weight / 10.0f
     }
   }
 
   def disableBreath(): Unit = {
+
     for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[Breath])
+      strategy.stopAndRemoveEffects(_.isInstanceOf[Breath])
     }
   }
 
   def updateMicLipSyncWeight(weight: Int): Unit = {
     for {
       strategy <- this.mUpdateStrategyHolder
-      lipSync <- strategy.effects.filter(_.isInstanceOf[LipSyncFromMic])
+      lipSync <- strategy.getEffect.filter(_.isInstanceOf[LipSyncFromMic])
     } {
       lipSync.asInstanceOf[LipSyncFromMic].weight = weight / 10.0f
     }
@@ -70,30 +71,20 @@ trait EffectControl extends MotionListener {
     } {
       val lipSyncFromMic = LipSyncFromMic(avatar.avatarSettings, mixer, weight / 10.0f, forceEvenNoSetting)
       lipSyncFromMic.failed.foreach(_.printStackTrace())
-      lipSyncFromMic.foreach(l => strategy.effects ::= l )
+      lipSyncFromMic.foreach(effect => strategy.appendAndStartEffects(effect :: Nil))
     }
 
   }
 
   def disableMicLipSync(): Unit = {
     for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects
-        .filter(_.isInstanceOf[LipSyncFromMic])
-        .map(_.asInstanceOf[LipSyncFromMic])
-        .foreach(_.stop())
-
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[LipSyncFromMic])
+      strategy.stopAndRemoveEffects(_.isInstanceOf[LipSyncFromMic])
     }
   }
 
   def disableLipSyncFromMotionSound(): Unit = {
     for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects
-        .filter(_.isInstanceOf[LipSyncFromMotionSound])
-        .map(_.asInstanceOf[LipSyncFromMotionSound])
-        .foreach(_.stop())
-
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[LipSyncFromMotionSound])
+      strategy.stopAndRemoveEffects(_.isInstanceOf[LipSyncFromMotionSound])
     }
   }
 
@@ -102,7 +93,7 @@ trait EffectControl extends MotionListener {
       avatar <- this.avatarHolder
       strategy <- this.mUpdateStrategyHolder
     } {
-      strategy.effects ::= new LipSyncFromMotionSound(avatar.avatarSettings, 100)
+      strategy.appendAndStartEffects(new LipSyncFromMotionSound(avatar.avatarSettings, 100) :: Nil)
     }
   }
 
@@ -111,13 +102,13 @@ trait EffectControl extends MotionListener {
       _ <- this.avatarHolder
       strategy <- this.mUpdateStrategyHolder
     } {
-      strategy.effects ::= new Breath
+      strategy.appendAndStartEffects(new Breath :: Nil)
     }
   }
 
   def disableFaceDirection(): Unit = {
     for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[FaceDirection])
+      strategy.stopAndRemoveEffects(_.isInstanceOf[FaceDirection])
     }
   }
 
@@ -126,7 +117,7 @@ trait EffectControl extends MotionListener {
       _ <- this.avatarHolder
       strategy <- this.mUpdateStrategyHolder
     } {
-      strategy.effects ::= faceDirection
+      strategy.appendAndStartEffects(faceDirection :: Nil)
     }
   }
 
@@ -136,7 +127,7 @@ trait EffectControl extends MotionListener {
 
   def disableEyeBlink(): Unit = {
     for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[EyeBlink])
+      strategy.stopAndRemoveEffects(_.isInstanceOf[EyeBlink])
     }
   }
 
@@ -145,7 +136,7 @@ trait EffectControl extends MotionListener {
       avatar <- this.avatarHolder
       strategy <- this.mUpdateStrategyHolder
     } {
-      strategy.effects ::= new EyeBlink(avatar.avatarSettings)
+      strategy.appendAndStartEffects(new EyeBlink(avatar.avatarSettings) :: Nil)
     }
   }
 

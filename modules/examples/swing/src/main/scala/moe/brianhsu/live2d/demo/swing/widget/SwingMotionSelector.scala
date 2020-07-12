@@ -94,7 +94,7 @@ class SwingMotionSelector(live2DWidget: Live2DUI) extends JPanel {
   }
 
   def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
-    val effects = basicUpdateStrategy.effects
+    val effects = basicUpdateStrategy.getEffect
     val lipSyncHolder = effects.find(_.isInstanceOf[LipSyncFromMotionSound]).map(_.asInstanceOf[LipSyncFromMotionSound])
     lipSync.setSelected(lipSyncHolder.isDefined)
     lipSyncHolder.foreach { effect =>

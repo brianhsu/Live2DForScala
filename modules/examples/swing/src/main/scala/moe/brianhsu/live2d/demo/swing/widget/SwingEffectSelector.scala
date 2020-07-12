@@ -92,7 +92,7 @@ class SwingEffectSelector(live2DWidget: Live2DUI) extends JPanel {
   }
 
   def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
-    val effects = basicUpdateStrategy.effects
+    val effects = basicUpdateStrategy.getEffect
     val hasEyeBlink = effects.exists(_.isInstanceOf[EyeBlink])
     val hasBreath = effects.exists(_.isInstanceOf[Breath])
     val hasFaceDirection = effects.exists(_.isInstanceOf[FaceDirection])

@@ -157,8 +157,7 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
     } {
       val poseHolder = new AvatarPoseReader(avatar.avatarSettings).loadPose
       val physicsHolder = new AvatarPhysicsReader(avatar.avatarSettings).loadPhysics
-
-      updateStrategy.effects = List(
+      val effects = List(
         Some(new Breath()),
         Some(new EyeBlink(avatar.avatarSettings)),
         Some(faceDirection),
@@ -166,6 +165,8 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
         poseHolder,
         Some(new LipSyncFromMotionSound(avatar.avatarSettings, 100))
       ).flatten
+
+      updateStrategy.appendAndStartEffects(effects)
     }
   }
 

@@ -74,7 +74,7 @@ class SWTMotionSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
   }
 
   def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
-    val effects = basicUpdateStrategy.effects
+    val effects = basicUpdateStrategy.getEffect
     val lipSyncHolder = effects.find(_.isInstanceOf[LipSyncFromMotionSound]).map(_.asInstanceOf[LipSyncFromMotionSound])
     lipSync.setSelection(lipSyncHolder.isDefined)
     lipSyncHolder.foreach { effect =>

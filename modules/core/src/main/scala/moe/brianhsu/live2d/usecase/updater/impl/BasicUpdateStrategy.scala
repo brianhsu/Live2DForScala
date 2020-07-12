@@ -25,7 +25,7 @@ class BasicUpdateStrategy(val avatarSettings: Settings,
 
 
   private val expressions = expressionReader.loadExpressions
-  var effects: List[Effect] = Nil
+  private var effects: List[Effect] = Nil
 
   def this(avatarSettings: Settings, model: Live2DModel, motionListener: Option[MotionListener]) = {
     this(
@@ -36,6 +36,20 @@ class BasicUpdateStrategy(val avatarSettings: Settings,
       motionListener,
       updater = new ModelUpdater(model),
     )
+  }
+
+  def getEffect = effects
+
+  def appendAndStartEffects(effect: List[Effect]): Unit = {
+    this.effects ++= effect
+    effect.foreach(_.start())
+  }
+
+  def stopAndRemoveEffects(predicate: Effect => Boolean): List[Effect] = {
+    val (removed, remains) = effects.partition(predicate)
+    removed.foreach(_.stop())
+    effects = remains
+    removed
   }
 
   def startMotion(motionSetting: MotionSetting, isLoop: Boolean): MotionWithTransition = {
