@@ -124,19 +124,14 @@ class SwingMotionSelector(live2DWidget: Live2DUI) extends JPanel {
     } {
       lipSyncWeight.setEnabled(lipSync.isSelected)
       lipSyncVolume.setEnabled(lipSync.isSelected)
-
-      if (lipSync.isSelected) {
-        demoApp.enableLipSyncFromMotionSound()
-      } else {
-        demoApp.disableLipSyncFromMotionSound()
-      }
+      demoApp.enableLipSyncFromMotionSound(lipSync.isSelected)
     }
   }
 
   private def handleMotionSelection(e: MouseEvent): Unit = {
     if (e.getClickCount == 2) {
       val selectedPath = motionTree.getPathForLocation(e.getX, e.getY)
-      if (selectedPath.getPathCount == 3) {
+      if (selectedPath != null && selectedPath.getPathCount == 3) {
         live2DWidget.demoAppHolder.foreach { view =>
           val motionGroup = selectedPath.getParentPath.getLastPathComponent.toString
           val currentMotion = selectedPath.getLastPathComponent.asInstanceOf[DefaultMutableTreeNode]

@@ -2,9 +2,7 @@ package moe.brianhsu.live2d.demo.swt.widget
 
 import moe.brianhsu.live2d.demo.app.DemoApp
 import moe.brianhsu.live2d.demo.app.DemoApp.{ClickAndDrag, FollowMouse}
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
-import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy
-import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
+import moe.brianhsu.live2d.usecase.updater.impl.EasyUpdateStrategy
 import org.eclipse.swt.SWT
 import org.eclipse.swt.layout.{FillLayout, GridData, GridLayout}
 import org.eclipse.swt.widgets.{Button, Combo, Composite, Event, Group}
@@ -51,15 +49,11 @@ class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
   }
 
 
-  def syncWithStrategy(strategy: GenericUpdateStrategy): Unit = {
-    val effects = strategy.effects(BeforeExpression) ++ strategy.effects(AfterExpression)
-    val hasEyeBlink = effects.exists(_.isInstanceOf[EyeBlink])
-    val hasBreath = effects.exists(_.isInstanceOf[Breath])
-    val hasFaceDirection = effects.exists(_.isInstanceOf[FaceDirection])
-    this.blink.setSelection(hasEyeBlink)
-    this.breath.setSelection(hasBreath)
-    this.faceDirection.setSelection(hasFaceDirection)
-    this.faceDirectionMode.setEnabled(hasFaceDirection)
+  def syncWithStrategy(strategy: EasyUpdateStrategy): Unit = {
+    this.blink.setSelection(strategy.isEyeBlinkEnabled)
+    this.breath.setSelection(strategy.isBreathEnabled)
+    this.faceDirection.setSelection(strategy.isFaceDirectionEnabled)
+    this.faceDirectionMode.setEnabled(strategy.isFaceDirectionEnabled)
     this.lipSyncFromMic.setSelection(false)
     this.lipSyncDevice.setEnabled(false)
 
@@ -94,7 +88,7 @@ class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
   private def updateFaceDirectionMode(@unused event: Event): Unit = {
     this.faceDirectionMode.setEnabled(this.faceDirection.getSelection)
     demoAppHolder.foreach { live2D =>
-      live2D.disableFaceDirection()
+      live2D.enableFaceDirection(false)
       live2D.resetFaceDirection()
       live2D.faceDirectionMode = this.faceDirectionMode.getSelectionIndex match {
         case 0 => ClickAndDrag
@@ -102,11 +96,7 @@ class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
         case _ => ClickAndDrag
       }
 
-      if (this.faceDirection.getSelection) {
-        live2D.enableFaceDirection()
-      } else {
-        live2D.disableFaceDirection()
-      }
+      live2D.enableFaceDirection(this.faceDirection.getSelection)
     }
   }
 
@@ -147,22 +137,10 @@ class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
   }
 
   private def onBreathChanged(@unused event: Event): Unit = {
-    demoAppHolder.foreach { demoApp =>
-      if (breath.getSelection) {
-        demoApp.enableBreath()
-      } else {
-        demoApp.disableBreath()
-      }
-    }
+    demoAppHolder.foreach(_.enableBreath(this.breath.getSelection))
   }
 
   private def onBlinkChanged(@unused event: Event): Unit = {
-    demoAppHolder.foreach { demoApp =>
-      if (blink.getSelection) {
-        demoApp.enableEyeBlink()
-      } else {
-        demoApp.disableEyeBlink()
-      }
-    }
+    demoAppHolder.foreach(_.enableEyeBlink(this.blink.getSelection))
   }
 }

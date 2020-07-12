@@ -4,7 +4,7 @@ import moe.brianhsu.live2d.enitiy.audio.{AudioDispatcher, AudioRMSCalculator}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.ParameterValueAdd
-import moe.brianhsu.utils.mock.AudioMock
+import moe.brianhsu.utils.mock.{AudioMock, MixerMock}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -12,7 +12,8 @@ import org.scalatest.{GivenWhenThen, TryValues}
 
 import javax.sound.sampled._
 
-class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory with TryValues with AudioMock {
+class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory with TryValues
+                            with AudioMock with MixerMock {
 
   private val lipSyncIds: List[String] = List("LipSyncId1", "LipSyncId2")
 
@@ -22,14 +23,7 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       val avatarSettings = Settings(null, Nil, None, None, Nil, lipSyncIds, Map.empty, Map.empty, Nil)
 
       And("a stubbed mixer")
-      val audioFormat = new AudioFormat(44100, 16, 1, true,false)
-      val mixer = stub[Mixer]
-      val targetDataLine = stub[TargetDataLine]
-      val targetLineInfo = new DataLine.Info(classOf[TargetDataLine], audioFormat)
-      (() => mixer.getTargetLineInfo).when().returns(Array(targetLineInfo))
-      (mixer.getLine _).when(*).returns(targetDataLine)
-      (() => targetDataLine.getFormat).when().returns(audioFormat)
-      (targetDataLine.read _).when(*, *, *).returns(-1)
+      val (mixer, targetDataLine) = createStubbedMixer()
 
       When("create a LipSyncFromMic from them")
       val lipSyncHolder = LipSyncFromMic(avatarSettings, mixer, 3.5f, forceEvenNoSetting = false)
@@ -55,14 +49,7 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       val avatarSettings = Settings(null, Nil, None, None, Nil, Nil, Map.empty, Map.empty, Nil)
 
       And("a stubbed mixer")
-      val audioFormat = new AudioFormat(44100, 16, 1, true,false)
-      val mixer = stub[Mixer]
-      val targetDataLine = stub[TargetDataLine]
-      val targetLineInfo = new DataLine.Info(classOf[TargetDataLine], audioFormat)
-      (() => mixer.getTargetLineInfo).when().returns(Array(targetLineInfo))
-      (mixer.getLine _).when(*).returns(targetDataLine)
-      (() => targetDataLine.getFormat).when().returns(audioFormat)
-      (targetDataLine.read _).when(*, *, *).returns(-1)
+      val (mixer, targetDataLine) = createStubbedMixer()
 
       When("create a LipSyncFromMic from them")
       val lipSyncHolder = LipSyncFromMic(avatarSettings, mixer, 3.5f, forceEvenNoSetting = true)
@@ -88,14 +75,7 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       val avatarSettings = Settings(null, Nil, None, None, Nil, Nil, Map.empty, Map.empty, Nil)
 
       And("a stubbed mixer")
-      val audioFormat = new AudioFormat(44100, 16, 1, true,false)
-      val mixer = stub[Mixer]
-      val targetDataLine = stub[TargetDataLine]
-      val targetLineInfo = new DataLine.Info(classOf[TargetDataLine], audioFormat)
-      (() => mixer.getTargetLineInfo).when().returns(Array(targetLineInfo))
-      (mixer.getLine _).when(*).returns(targetDataLine)
-      (() => targetDataLine.getFormat).when().returns(audioFormat)
-      (targetDataLine.read _).when(*, *, *).returns(-1)
+      val (mixer, targetDataLine) = createStubbedMixer()
 
       When("create a LipSyncFromMic from them")
       val lipSyncHolder = LipSyncFromMic(avatarSettings, mixer, 3.5f, forceEvenNoSetting = false)

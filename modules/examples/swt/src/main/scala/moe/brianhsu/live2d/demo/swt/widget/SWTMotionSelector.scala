@@ -93,12 +93,7 @@ class SWTMotionSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
     } {
       lipSyncWeight.setEnabled(lipSync.getSelection)
       lipSyncVolume.setEnabled(lipSync.getSelection)
-
-      if (lipSync.getSelection) {
-        demoApp.enableLipSyncFromMotionSound()
-      } else {
-        demoApp.disableLipSyncFromMotionSound()
-      }
+      demoApp.enableLipSyncFromMotionSound(lipSync.getSelection)
     }
   }
 
