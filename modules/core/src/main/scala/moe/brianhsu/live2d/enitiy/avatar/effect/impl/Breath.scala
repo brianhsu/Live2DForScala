@@ -29,4 +29,8 @@ class Breath (parameters: List[Breath.Parameter] = Breath.defaultEffect) extends
     }
   }
 
+  override def start(): Unit = {}
+
+  override def stop(): Unit = {}
+
 }

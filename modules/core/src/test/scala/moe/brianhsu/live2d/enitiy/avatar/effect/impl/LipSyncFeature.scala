@@ -114,5 +114,7 @@ class LipSyncFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
     override protected var weight: Float = mWeight
     override protected def lipSyncIds: List[String] = lipSyncParameters
     override protected def currentRms: Float = mRMS
+    override def start(): Unit = {}
+    override def stop(): Unit = {}
   }
 }

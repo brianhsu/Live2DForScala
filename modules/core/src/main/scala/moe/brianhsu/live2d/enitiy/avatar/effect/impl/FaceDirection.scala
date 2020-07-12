@@ -8,7 +8,7 @@ import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.ParameterValueAdd
 
 class FaceDirection(directionCalculator: FaceDirectionCalculator) extends Effect {
 
-  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[UpdateOperation] = {
+  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[UpdateOperation] = {
     directionCalculator.updateFrameTimeInfo(totalElapsedTimeInSeconds, deltaTimeInSeconds)
 
     val (dragX, dragY) = directionCalculator.currentFaceCoordinate
@@ -22,4 +22,9 @@ class FaceDirection(directionCalculator: FaceDirectionCalculator) extends Effect
       ParameterValueAdd("ParamEyeBallY", dragY),
     )
   }
+
+  override def start(): Unit = {}
+
+  override def stop(): Unit = {}
+
 }

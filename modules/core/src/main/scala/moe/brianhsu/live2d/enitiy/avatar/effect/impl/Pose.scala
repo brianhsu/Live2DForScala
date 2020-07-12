@@ -56,7 +56,7 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
    * @param totalElapsedTimeInSeconds   The total elapsed time since first frame in seconds
    * @param deltaTimeInSeconds          The elapsed time since last frame in seconds.
    */
-  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[UpdateOperation] = {
+  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[UpdateOperation] = {
 
     val actualDeltaTimeSeconds = if (deltaTimeInSeconds < 0.0f) 0 else deltaTimeInSeconds
     val resetModelOperation: List[UpdateOperation] = if (!isAlreadyInit) { resetParts() } else Nil
@@ -68,6 +68,10 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
 
     resetAndFade ++ copyPartOpacityOperations
   }
+
+  override def start(): Unit = {}
+
+  override def stop(): Unit = {}
 
   /**
    * Create operations to actually fade parts.

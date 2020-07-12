@@ -37,6 +37,9 @@ case class Physics(physicsData: PhysicsData, var gravityDirection: EuclideanVect
 
     operations
   }
+  override def start(): Unit = {}
+
+  override def stop(): Unit = {}
 
   private def createUpdateOperation(output: PhysicsOutput, particles: List[PhysicsParticle], model: Live2DModel): UpdateOperation = {
     val particleIndex = output.vertexIndex
