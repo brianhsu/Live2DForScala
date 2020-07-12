@@ -211,6 +211,35 @@ class LipSyncFromMotionSoundFeature extends AnyFeatureSpec with GivenWhenThen wi
     }
 
   }
+
+  Feature("Start / stop the effects") {
+    Scenario("Start the effect") {
+      Given("a LipSyncFromMotionSound")
+      val factory = stub[ProcessorsFactory]
+      val lipSyncFromMotionSound = new LipSyncFromMotionSound(factory, Nil, 65)
+
+      When("start the LipSyncFromMotionSound effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        lipSyncFromMotionSound.start()
+      }
+    }
+
+    Scenario("Stop the effect") {
+      Given("a LipSyncFromMotionSound")
+      val factory = stub[ProcessorsFactory]
+      val lipSyncFromMotionSound = new LipSyncFromMotionSound(factory, Nil, 65)
+
+      When("stop the LipSyncFromMotionSound effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        lipSyncFromMotionSound.stop()
+      }
+    }
+
+  }
+
+
   private def createStubbedProcessorsWithRealDispatcher(): Processors = {
     val audioFormat = new AudioFormat(44100, 8, 1, false, false)
     val audioInputStream = stub[MockableAudioInputStream]

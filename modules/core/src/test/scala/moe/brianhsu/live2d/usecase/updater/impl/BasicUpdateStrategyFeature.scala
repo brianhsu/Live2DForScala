@@ -8,9 +8,10 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Repeat
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{Expression, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.updater.{FrameTimeInfo, Updater}
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.MotionListener
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -392,6 +393,180 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
 
   }
 
+  Feature("Access the effect list") {
+    Scenario("Ask for all before / after expression effects") {
+      Given("a motion / expression manager that does nothing")
+      val expressionManager = stub[MotionManager]
+      val motionManager = stub[MotionManager]
+
+      And("A stubbed Live2D model and updater")
+      val model = stub[Live2DModel]
+      val updater = stub[Updater]
+
+      And("a BasicUpdateStrategy based on that model")
+      val updateStrategy = new BasicUpdateStrategy(
+        stub[Settings], model,
+        stub[AvatarExpressionReader],
+        expressionManager, motionManager,
+        motionListener = None,
+        updater
+      )
+
+      And("add some effects to before / after expression effects")
+      val stubbedEffect1 = stub[Effect]
+      val stubbedEffect2 = stub[Effect]
+      val stubbedEffect3 = stub[Effect]
+      val stubbedEffect4 = stub[Effect]
+
+      updateStrategy.appendAndStartEffects(stubbedEffect1 :: stubbedEffect2 :: Nil, BeforeExpression)
+      updateStrategy.appendAndStartEffects(stubbedEffect3 :: stubbedEffect4 :: Nil, AfterExpression)
+
+      When("ask for before expression effects")
+      Then("it should contains correct effects")
+      updateStrategy.effects(BeforeExpression) should contain theSameElementsInOrderAs List(stubbedEffect1, stubbedEffect2)
+
+      When("ask for after expression effects")
+      Then("it should contains correct effects")
+      updateStrategy.effects(AfterExpression) should contain theSameElementsInOrderAs List(stubbedEffect3, stubbedEffect4)
+
+    }
+
+    Scenario("Find after / before expression effects") {
+      Given("a motion / expression manager that does nothing")
+      val expressionManager = stub[MotionManager]
+      val motionManager = stub[MotionManager]
+
+      And("A stubbed Live2D model and updater")
+      val model = stub[Live2DModel]
+      val updater = stub[Updater]
+
+      And("a BasicUpdateStrategy based on that model")
+      val updateStrategy = new BasicUpdateStrategy(
+        stub[Settings], model,
+        stub[AvatarExpressionReader],
+        expressionManager, motionManager,
+        motionListener = None,
+        updater
+      )
+
+      And("add some effects to before / after expression effects")
+      val stubbedEffect1 = stub[Effect]
+      val stubbedEffect2 = stub[Effect]
+      val stubbedEffect3 = stub[Effect]
+      val stubbedEffect4 = stub[Effect]
+
+      updateStrategy.appendAndStartEffects(stubbedEffect1 :: stubbedEffect2 :: Nil, BeforeExpression)
+      updateStrategy.appendAndStartEffects(stubbedEffect3 :: stubbedEffect4 :: Nil, AfterExpression)
+
+      When("filter out before expression effects")
+      val result1 = updateStrategy.findEffects(_ == stubbedEffect2, BeforeExpression)
+
+      Then("it should contains correct effects")
+      result1 should contain theSameElementsInOrderAs List(stubbedEffect2)
+
+      When("ask for after expression effects")
+      val result2 = updateStrategy.findEffects(_ == stubbedEffect3, AfterExpression)
+
+      Then("it should contains correct effects")
+      result2 should contain theSameElementsInOrderAs List(stubbedEffect3)
+    }
+
+  }
+
+  Feature("Stop and remove effect from the effect list") {
+    Scenario("Remove effect that execute before expression") {
+      Given("a motion / expression manager that does nothing")
+      val expressionManager = stub[MotionManager]
+      val motionManager = stub[MotionManager]
+
+      And("A stubbed Live2D model and updater")
+      val model = stub[Live2DModel]
+      val updater = stub[Updater]
+
+      And("a BasicUpdateStrategy based on that model")
+      val updateStrategy = new BasicUpdateStrategy(
+        stub[Settings], model,
+        stub[AvatarExpressionReader],
+        expressionManager, motionManager,
+        motionListener = None,
+        updater
+      )
+
+      And("add some effects to before / after expression effects")
+      val stubbedEffect1 = stub[Effect]
+      val stubbedEffect2 = stub[Effect]
+      val stubbedEffect3 = stub[Effect]
+      val stubbedEffect4 = stub[Effect]
+
+      updateStrategy.appendAndStartEffects(stubbedEffect1 :: stubbedEffect2 :: Nil, BeforeExpression)
+      updateStrategy.appendAndStartEffects(stubbedEffect3 :: stubbedEffect4 :: Nil, AfterExpression)
+
+      When("remove the stubbedEffect2 from before expression effects")
+      val removedEffects = updateStrategy.stopAndRemoveEffects(_ == stubbedEffect2, BeforeExpression)
+
+      Then("it should return the removed effects")
+      removedEffects shouldBe List(stubbedEffect2)
+
+      And("the remain effect list should not contain the removed effect")
+      updateStrategy.effects(BeforeExpression) shouldBe List(stubbedEffect1)
+
+      And("the removed effect should be stopped")
+      (() => stubbedEffect2.stop()).verify().once()
+
+      And("other effects should not be touched")
+      (() => stubbedEffect1.stop()).verify().never()
+      (() => stubbedEffect3.stop()).verify().never()
+      (() => stubbedEffect4.stop()).verify().never()
+
+    }
+
+    Scenario("Remove effect that execute after expression") {
+      Given("a motion / expression manager that does nothing")
+      val expressionManager = stub[MotionManager]
+      val motionManager = stub[MotionManager]
+
+      And("A stubbed Live2D model and updater")
+      val model = stub[Live2DModel]
+      val updater = stub[Updater]
+
+      And("a BasicUpdateStrategy based on that model")
+      val updateStrategy = new BasicUpdateStrategy(
+        stub[Settings], model,
+        stub[AvatarExpressionReader],
+        expressionManager, motionManager,
+        motionListener = None,
+        updater
+      )
+
+      And("add some effects to before / after expression effects")
+      val stubbedEffect1 = stub[Effect]
+      val stubbedEffect2 = stub[Effect]
+      val stubbedEffect3 = stub[Effect]
+      val stubbedEffect4 = stub[Effect]
+
+      updateStrategy.appendAndStartEffects(stubbedEffect1 :: stubbedEffect2 :: Nil, BeforeExpression)
+      updateStrategy.appendAndStartEffects(stubbedEffect3 :: stubbedEffect4 :: Nil, AfterExpression)
+
+      When("remove the stubbedEffect4 from before expression effects")
+      val removedEffects = updateStrategy.stopAndRemoveEffects(_ == stubbedEffect4, AfterExpression)
+
+      Then("it should return the removed effects")
+      removedEffects shouldBe List(stubbedEffect4)
+
+      And("the remain effect list should not contain the removed effect")
+      updateStrategy.effects(AfterExpression) shouldBe List(stubbedEffect3)
+
+      And("the removed effect should be stopped")
+      (() => stubbedEffect4.stop()).verify().once()
+
+      And("other effects should not be touched")
+      (() => stubbedEffect1.stop()).verify().never()
+      (() => stubbedEffect2.stop()).verify().never()
+      (() => stubbedEffect3.stop()).verify().never()
+    }
+
+  }
+
   Feature("Update avatar model status") {
     Scenario("No effects and any motion") {
       Given("a motion / expression manager that does nothing")
@@ -408,8 +583,10 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         (() => model.restoreParameters()).expects().once()
         (updater.executeOperations _).expects(Nil).once()   // Motions
         (() => model.snapshotParameters()).expects().once()
+        (updater.executeOperations _).expects(Nil).once()   // Effects before expression
         (updater.executeOperations _).expects(Nil).once()   // Expressions
-        (updater.executeOperations _).expects(Nil).once()   // Effects
+        (updater.executeOperations _).expects(Nil).once()   // Effects after expression
+
         (() => model.update()).expects().once()
       }
 
@@ -455,8 +632,10 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         (() => model.restoreParameters()).expects().once()
         (updater.executeOperations _).expects(Nil).once()   // Motion
         (() => model.snapshotParameters()).expects().once()
-        (updater.executeOperations _).expects(effectOperationList1 ++ effectOperationList2) // Effect
+        (updater.executeOperations _).expects(effectOperationList1 ++ effectOperationList2) // Effect before expression
         (updater.executeOperations _).expects(Nil).once()   // Expression
+        (updater.executeOperations _).expects(Nil).once()   // Effects after expression
+
         (() => model.update()).expects().once()
       }
 
@@ -470,7 +649,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       )
 
       And("assign the effects")
-      updateStrategy.effects = List(stubbedEffect1, stubbedEffect2)
+      updateStrategy.appendAndStartEffects(stubbedEffect1 :: stubbedEffect2 :: Nil)
 
       When("update the avatar")
       val frameTimeInfo = stub[FrameTimeInfo]
@@ -478,9 +657,9 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       (() => frameTimeInfo.totalElapsedTimeInSeconds).when().returns(0.33f)
       updateStrategy.update(frameTimeInfo)
 
-      Then("no exception should be thrown")
-
-
+      And("the effects should be started")
+      (() => stubbedEffect1.start()).verify().once()
+      (() => stubbedEffect2.start()).verify().once()
     }
 
     Scenario("There are motion / expression and effects") {
@@ -497,10 +676,18 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       And("some stubbed effects")
       val stubbedEffect1 = stub[Effect]
       val stubbedEffect2 = stub[Effect]
+      val stubbedEffect3 = stub[Effect]
+      val stubbedEffect4 = stub[Effect]
+
       val effectOperationList1 = ParameterValueUpdate("id5", 0.1f) :: ParameterValueAdd("id6", 0.2f) :: Nil
       val effectOperationList2 = ParameterValueMultiply("id7", 0.3f) :: ParameterValueUpdate("id8", 0.4f) :: Nil
+      val effectOperationList3 = ParameterValueUpdate("id9", 0.1f) :: ParameterValueAdd("id10", 0.2f) :: Nil
+      val effectOperationList4 = ParameterValueMultiply("id11", 0.3f) :: ParameterValueUpdate("id12", 0.4f) :: Nil
+
       (stubbedEffect1.calculateOperations _).when(*, *, *).returns(effectOperationList1)
       (stubbedEffect2.calculateOperations _).when(*, *, *).returns(effectOperationList2)
+      (stubbedEffect3.calculateOperations _).when(*, *, *).returns(effectOperationList3)
+      (stubbedEffect4.calculateOperations _).when(*, *, *).returns(effectOperationList4)
 
       And("a mocked Live2D model and updater with expectation")
       val model = mock[Live2DModel]
@@ -509,8 +696,9 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         (() => model.restoreParameters()).expects().once()
         (updater.executeOperations _).expects(motionOperations).once()   // Motion
         (() => model.snapshotParameters()).expects().once()
-        (updater.executeOperations _).expects(effectOperationList1 ++ effectOperationList2) // Effect
+        (updater.executeOperations _).expects(effectOperationList1 ++ effectOperationList2) // Effect before expression
         (updater.executeOperations _).expects(expressionOperations).once()   // Expression
+        (updater.executeOperations _).expects(effectOperationList3 ++ effectOperationList4).once() // Effects after expression
         (() => model.update()).expects().once()
       }
 
@@ -524,7 +712,8 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       )
 
       And("assign the effects")
-      updateStrategy.effects = List(stubbedEffect1, stubbedEffect2)
+      updateStrategy.appendAndStartEffects(stubbedEffect1 :: stubbedEffect2 :: Nil, BeforeExpression)
+      updateStrategy.appendAndStartEffects(stubbedEffect3 :: stubbedEffect4 :: Nil, AfterExpression)
 
       When("update the avatar")
       val frameTimeInfo = stub[FrameTimeInfo]
@@ -532,7 +721,12 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       (() => frameTimeInfo.totalElapsedTimeInSeconds).when().returns(0.33f)
       updateStrategy.update(frameTimeInfo)
 
-      Then("no exception should be thrown")
+      And("the effects should be started")
+      (() => stubbedEffect1.start()).verify().once()
+      (() => stubbedEffect2.start()).verify().once()
+      (() => stubbedEffect3.start()).verify().once()
+      (() => stubbedEffect4.start()).verify().once()
+
     }
   }
 }

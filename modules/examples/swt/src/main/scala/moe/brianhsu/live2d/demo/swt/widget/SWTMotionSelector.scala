@@ -4,6 +4,7 @@ import moe.brianhsu.live2d.demo.app.DemoApp
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.LipSyncFromMotionSound
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
 import org.eclipse.swt.SWT
 import org.eclipse.swt.events.{SelectionEvent, SelectionListener}
 import org.eclipse.swt.layout.{FillLayout, GridData, GridLayout}
@@ -74,7 +75,7 @@ class SWTMotionSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
   }
 
   def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
-    val effects = basicUpdateStrategy.getEffect
+    val effects = basicUpdateStrategy.effects(BeforeExpression) ++ basicUpdateStrategy.effects(AfterExpression)
     val lipSyncHolder = effects.find(_.isInstanceOf[LipSyncFromMotionSound]).map(_.asInstanceOf[LipSyncFromMotionSound])
     lipSync.setSelection(lipSyncHolder.isDefined)
     lipSyncHolder.foreach { effect =>

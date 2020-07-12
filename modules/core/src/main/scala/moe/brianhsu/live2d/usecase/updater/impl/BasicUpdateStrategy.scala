@@ -8,9 +8,18 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.updater.{FrameTimeInfo, ModelUpdater, UpdateStrategy, Updater}
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.MotionListener
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.{EffectTiming, MotionListener}
 
 object BasicUpdateStrategy {
+
+  sealed trait EffectTiming
+
+  object EffectTiming {
+    case object BeforeExpression extends EffectTiming
+    case object AfterExpression extends EffectTiming
+  }
+
   trait MotionListener {
     def onMotionStart(motion: MotionSetting): Unit
   }
@@ -25,7 +34,8 @@ class BasicUpdateStrategy(val avatarSettings: Settings,
 
 
   private val expressions = expressionReader.loadExpressions
-  private var effects: List[Effect] = Nil
+  private var beforeExpressionEffects: List[Effect] = Nil
+  private var afterExpressionEffects: List[Effect] = Nil
 
   def this(avatarSettings: Settings, model: Live2DModel, motionListener: Option[MotionListener]) = {
     this(
@@ -38,17 +48,41 @@ class BasicUpdateStrategy(val avatarSettings: Settings,
     )
   }
 
-  def getEffect = effects
+  def effects(timing: EffectTiming) = timing match {
+    case BeforeExpression => this.beforeExpressionEffects
+    case AfterExpression => this.afterExpressionEffects
+  }
 
-  def appendAndStartEffects(effect: List[Effect]): Unit = {
-    this.effects ++= effect
+  def findEffects(predicate: Effect => Boolean, timing: EffectTiming = BeforeExpression): List[Effect] = {
+    timing match {
+      case BeforeExpression => beforeExpressionEffects.filter(predicate)
+      case AfterExpression => afterExpressionEffects.filter(predicate)
+    }
+  }
+
+  def appendAndStartEffects(effect: List[Effect], timing: EffectTiming = BeforeExpression): Unit = {
+
+    timing match {
+      case BeforeExpression => this.beforeExpressionEffects ++= effect
+      case AfterExpression => this.afterExpressionEffects ++= effect
+    }
+
     effect.foreach(_.start())
   }
 
-  def stopAndRemoveEffects(predicate: Effect => Boolean): List[Effect] = {
-    val (removed, remains) = effects.partition(predicate)
+  def stopAndRemoveEffects(predicate: Effect => Boolean, timing: EffectTiming = BeforeExpression): List[Effect] = {
+    val removed = timing match {
+      case BeforeExpression =>
+        val (removed, remains) = this.beforeExpressionEffects.partition(predicate)
+        this.beforeExpressionEffects = remains
+        removed
+
+      case AfterExpression =>
+        val (removed, remains) = this.afterExpressionEffects.partition(predicate)
+        this.afterExpressionEffects = remains
+        removed
+    }
     removed.foreach(_.stop())
-    effects = remains
     removed
   }
 
@@ -94,7 +128,7 @@ class BasicUpdateStrategy(val avatarSettings: Settings,
     updater.executeOperations(operations)
   }
 
-  private def executeEffectsOperations(frameTimeInfo: FrameTimeInfo): Unit = {
+  private def executeEffectsOperations(effects: List[Effect], frameTimeInfo: FrameTimeInfo): Unit = {
     val operations = for {
       effect <- effects
       operation <- effect.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
@@ -111,8 +145,9 @@ class BasicUpdateStrategy(val avatarSettings: Settings,
     executeMotionOperations(frameTimeInfo)
     model.snapshotParameters()
 
-    executeEffectsOperations(frameTimeInfo)
+    executeEffectsOperations(beforeExpressionEffects, frameTimeInfo)
     executeExpressionOperations(frameTimeInfo)
+    executeEffectsOperations(afterExpressionEffects, frameTimeInfo)
 
     model.update()
   }

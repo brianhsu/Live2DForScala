@@ -145,7 +145,9 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       val dispatcher = stub[AudioDispatcher]
       val lipSyncFromMic = new LipSyncFromMic(lipSyncIds, dispatcher, audioRMSCalculator)
 
-      When("calculate the update operation")
+      When("start and calculate the update operation")
+      lipSyncFromMic.start()
+      Thread.sleep(100) // Make sure the dispatcher thread is started.
       val operation1 = lipSyncFromMic.calculateOperations(mock[Live2DModel], 1, 1)
 
       Then("the operation should add lip sync parameter correctly")

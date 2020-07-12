@@ -4,6 +4,7 @@ import moe.brianhsu.live2d.demo.swing.Live2DUI
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.LipSyncFromMotionSound
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
 
 import java.awt.event.{ActionEvent, MouseAdapter, MouseEvent}
 import java.awt.{Component, GridBagConstraints, GridBagLayout}
@@ -94,7 +95,7 @@ class SwingMotionSelector(live2DWidget: Live2DUI) extends JPanel {
   }
 
   def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
-    val effects = basicUpdateStrategy.getEffect
+    val effects = basicUpdateStrategy.effects(BeforeExpression) ++ basicUpdateStrategy.effects(AfterExpression)
     val lipSyncHolder = effects.find(_.isInstanceOf[LipSyncFromMotionSound]).map(_.asInstanceOf[LipSyncFromMotionSound])
     lipSync.setSelected(lipSyncHolder.isDefined)
     lipSyncHolder.foreach { effect =>

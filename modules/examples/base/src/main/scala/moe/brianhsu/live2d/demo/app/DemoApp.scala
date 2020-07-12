@@ -3,17 +3,17 @@ package moe.brianhsu.live2d.demo.app
 import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
-import moe.brianhsu.live2d.adapter.gateway.openSeeFace.UDPOpenSeeFaceDataReader
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.demo.app.DemoApp.OnOpenGLThread
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, LipSyncFromMotionSound, OpenSeeFaceTracking}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, LipSyncFromMotionSound}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.usecase.renderer.opengl.AvatarRenderer
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
 
 import scala.annotation.unused
 import scala.util.Try
@@ -157,16 +157,17 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
     } {
       val poseHolder = new AvatarPoseReader(avatar.avatarSettings).loadPose
       val physicsHolder = new AvatarPhysicsReader(avatar.avatarSettings).loadPhysics
-      val effects = List(
+      val beforeExpressions = List(new EyeBlink(avatar.avatarSettings))
+      val afterExpression = List(
         Some(new Breath()),
-        Some(new EyeBlink(avatar.avatarSettings)),
         Some(faceDirection),
         physicsHolder,
         poseHolder,
         Some(new LipSyncFromMotionSound(avatar.avatarSettings, 100))
       ).flatten
 
-      updateStrategy.appendAndStartEffects(effects)
+      updateStrategy.appendAndStartEffects(beforeExpressions, BeforeExpression)
+      updateStrategy.appendAndStartEffects(afterExpression, AfterExpression)
     }
   }
 
