@@ -11,15 +11,15 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.updater.{FrameTimeInfo, Updater}
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.MotionListener
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.MotionListener
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{GivenWhenThen, OptionValues, TryValues}
 
-class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory
+class GenericUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory
                                   with OptionValues with TryValues with TableDrivenPropertyChecks {
 
   Feature("Simplified constructor") {
@@ -33,7 +33,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         val settings = jsonSettingsReader.loadSettings().success.value
 
         When("create BasicUpdateStrategy using simplified constructor")
-        val updateStrategy = new BasicUpdateStrategy(settings, mock[Live2DModel], None)
+        val updateStrategy = new GenericUpdateStrategy(settings, mock[Live2DModel], None)
 
         Then("no exception should be thrown")
 
@@ -63,7 +63,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         .returns(mockedMotionWithTransition)
 
       And("a BasicUpdateStrategy based on that expression manager")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], stub[Live2DModel],
         stub[AvatarExpressionReader], expressionManager,
         motionManager = mock[MotionManager],
@@ -93,7 +93,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       )
 
       And("a BasicUpdateStrategy based on that expression manager and expression reader")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], stub[Live2DModel],
         expressionReader, expressionManager,
         motionManager = mock[MotionManager],
@@ -126,7 +126,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       )
 
       And("a BasicUpdateStrategy based on that expression manager and expression reader")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], stub[Live2DModel],
         expressionReader, expressionManager,
         motionManager = mock[MotionManager],
@@ -162,7 +162,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         .once()
 
       And("a BasicUpdateStrategy based on that motion manager")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], stub[Live2DModel],
         stub[AvatarExpressionReader],
         expressionManager = mock[MotionManager],
@@ -201,7 +201,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         .once()
 
       And("a BasicUpdateStrategy based on that motion manager")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], stub[Live2DModel],
         stub[AvatarExpressionReader],
         expressionManager = mock[MotionManager],
@@ -239,7 +239,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         .once()
 
       And("a BasicUpdateStrategy based on that motion manager")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], stub[Live2DModel],
         stub[AvatarExpressionReader],
         expressionManager = mock[MotionManager],
@@ -267,7 +267,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       val avatarSetting = Settings("mocFile", Nil, None, None, Nil, Nil, Map.empty, motionGroups, Nil)
 
       And("a BasicUpdateStrategy based on that motion manager")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         avatarSetting, stub[Live2DModel],
         stub[AvatarExpressionReader],
         expressionManager = mock[MotionManager],
@@ -300,7 +300,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         val avatarSetting = Settings("mocFile", Nil, None, None, Nil, Nil, Map.empty, motionGroups, Nil)
 
         And("a BasicUpdateStrategy based on that motion manager")
-        val updateStrategy = new BasicUpdateStrategy(
+        val updateStrategy = new GenericUpdateStrategy(
           avatarSetting, stub[Live2DModel],
           stub[AvatarExpressionReader],
           expressionManager = mock[MotionManager],
@@ -338,7 +338,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         .once()
 
       And("a BasicUpdateStrategy based on that motion manager")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         avatarSetting, stub[Live2DModel],
         stub[AvatarExpressionReader],
         expressionManager = mock[MotionManager],
@@ -375,7 +375,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         .once()
 
       And("a BasicUpdateStrategy based on that motion manager")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         avatarSetting, stub[Live2DModel],
         stub[AvatarExpressionReader],
         expressionManager = mock[MotionManager],
@@ -404,7 +404,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       val updater = stub[Updater]
 
       And("a BasicUpdateStrategy based on that model")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,
@@ -441,7 +441,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       val updater = stub[Updater]
 
       And("a BasicUpdateStrategy based on that model")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,
@@ -484,7 +484,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       val updater = stub[Updater]
 
       And("a BasicUpdateStrategy based on that model")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,
@@ -530,7 +530,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       val updater = stub[Updater]
 
       And("a BasicUpdateStrategy based on that model")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,
@@ -591,7 +591,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       }
 
       And("a BasicUpdateStrategy based on that model")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,
@@ -640,7 +640,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       }
 
       And("a BasicUpdateStrategy based on that model")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,
@@ -703,7 +703,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       }
 
       And("a BasicUpdateStrategy based on that model")
-      val updateStrategy = new BasicUpdateStrategy(
+      val updateStrategy = new GenericUpdateStrategy(
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,

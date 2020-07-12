@@ -4,8 +4,8 @@ import moe.brianhsu.live2d.adapter.gateway.avatar.effect.FaceDirectionByMouse
 import moe.brianhsu.live2d.demo.app.DemoApp.{ClickAndDrag, FaceDirectionMode, FollowMouse}
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, LipSyncFromMic, LipSyncFromMotionSound}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.MotionListener
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.MotionListener
 
 import javax.sound.sampled.Mixer
 import scala.annotation.unused

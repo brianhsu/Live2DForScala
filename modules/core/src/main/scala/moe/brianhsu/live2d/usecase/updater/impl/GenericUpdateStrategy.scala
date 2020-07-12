@@ -8,10 +8,10 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.updater.{FrameTimeInfo, ModelUpdater, UpdateStrategy, Updater}
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.{EffectTiming, MotionListener}
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.{EffectTiming, MotionListener}
 
-object BasicUpdateStrategy {
+object GenericUpdateStrategy {
 
   sealed trait EffectTiming
 
@@ -24,13 +24,14 @@ object BasicUpdateStrategy {
     def onMotionStart(motion: MotionSetting): Unit
   }
 }
-class BasicUpdateStrategy(val avatarSettings: Settings,
-                          val model: Live2DModel,
-                          val expressionReader: AvatarExpressionReader,
-                          val expressionManager: MotionManager,
-                          val motionManager: MotionManager,
-                          val motionListener: Option[MotionListener],
-                          updater: Updater) extends UpdateStrategy {
+
+class GenericUpdateStrategy(val avatarSettings: Settings,
+                            val model: Live2DModel,
+                            val expressionReader: AvatarExpressionReader,
+                            val expressionManager: MotionManager,
+                            val motionManager: MotionManager,
+                            val motionListener: Option[MotionListener],
+                            updater: Updater) extends UpdateStrategy {
 
 
   private val expressions = expressionReader.loadExpressions

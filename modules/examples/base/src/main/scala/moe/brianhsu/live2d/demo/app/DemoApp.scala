@@ -12,8 +12,8 @@ import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.usecase.renderer.opengl.AvatarRenderer
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
 
 import scala.annotation.unused
 import scala.util.Try
@@ -36,9 +36,9 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
   protected var mAvatarHolder: Option[Avatar] = None
   protected var modelHolder: Option[Live2DModel] = mAvatarHolder.map(_.model)
   protected var rendererHolder: Option[AvatarRenderer] = modelHolder.map(model => AvatarRenderer(model))
-  protected var mUpdateStrategyHolder: Option[BasicUpdateStrategy] = mAvatarHolder.map(a => {
-    a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model, motionListener = Some(this)))
-    a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
+  protected var mUpdateStrategyHolder: Option[GenericUpdateStrategy] = mAvatarHolder.map(a => {
+    a.updateStrategyHolder = Some(new GenericUpdateStrategy(a.avatarSettings, a.model, motionListener = Some(this)))
+    a.updateStrategyHolder.get.asInstanceOf[GenericUpdateStrategy]
   })
 
   private implicit val cubismCore: JnaNativeCubismAPILoader = new JnaNativeCubismAPILoader()
@@ -54,7 +54,7 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
   }
 
   def avatarHolder: Option[Avatar] = mAvatarHolder
-  def basicUpdateStrategyHolder: Option[BasicUpdateStrategy] = mUpdateStrategyHolder
+  def basicUpdateStrategyHolder: Option[GenericUpdateStrategy] = mUpdateStrategyHolder
 
   def resetModel(): Unit = {
     modelHolder.foreach(_.reset())
@@ -206,8 +206,8 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
     this.modelHolder = mAvatarHolder.map(_.model)
     this.mUpdateStrategyHolder = mAvatarHolder.map(a => {
       onStatusUpdated(s"$directoryPath loaded.")
-      a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model, motionListener = Some(this)))
-      a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
+      a.updateStrategyHolder = Some(new GenericUpdateStrategy(a.avatarSettings, a.model, motionListener = Some(this)))
+      a.updateStrategyHolder.get.asInstanceOf[GenericUpdateStrategy]
     })
     setupAvatarEffects()
     newAvatarHolder.foreach(_ => onAvatarLoaded(this))

@@ -3,8 +3,8 @@ package moe.brianhsu.live2d.demo.swt.widget
 import moe.brianhsu.live2d.demo.app.DemoApp
 import moe.brianhsu.live2d.demo.app.DemoApp.{ClickAndDrag, FollowMouse}
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
 import org.eclipse.swt.SWT
 import org.eclipse.swt.layout.{FillLayout, GridData, GridLayout}
 import org.eclipse.swt.widgets.{Button, Combo, Composite, Event, Group}
@@ -51,8 +51,8 @@ class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
   }
 
 
-  def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
-    val effects = basicUpdateStrategy.effects(BeforeExpression) ++ basicUpdateStrategy.effects(AfterExpression)
+  def syncWithStrategy(strategy: GenericUpdateStrategy): Unit = {
+    val effects = strategy.effects(BeforeExpression) ++ strategy.effects(AfterExpression)
     val hasEyeBlink = effects.exists(_.isInstanceOf[EyeBlink])
     val hasBreath = effects.exists(_.isInstanceOf[Breath])
     val hasFaceDirection = effects.exists(_.isInstanceOf[FaceDirection])

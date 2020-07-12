@@ -13,3 +13,5 @@ CHANGELOG
   - `ModelUpdater` now will convert new parameter id format to old format when using old model.
 - Breaking API Changes
   - Remove the adapter dependency in AvatarMotion factory method.
+  - Rename `BasicUpdateStrategy` to `GenericUpdateStrategyFeature`
+  - Major change on `GenericUpdateStrategyFeature` API.
