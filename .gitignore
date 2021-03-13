@@ -1,0 +1,7 @@
+.git
+target/
+.idea
+project/target
+*.log
+*.swp
+*.moc3
