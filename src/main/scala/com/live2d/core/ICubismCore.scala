@@ -4,7 +4,7 @@ import com.live2d.core.types._
 import com.sun.jna._
 import com.sun.jna.ptr._
 
-trait Live2DCubismCore extends Library {
+trait ICubismCore extends Library {
   def csmGetVersion(): Int
   def csmGetLatestMocVersion(): Int
   def csmGetMocVersion(moc: CPointerToMoc, size: Int): Int

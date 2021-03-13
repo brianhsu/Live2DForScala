@@ -1,5 +1,6 @@
 
-import com.live2d.core.coreLib
+
+import com.live2d.core.{CubismCore}
 import com.live2d.core.types.ModelAlignment
 import com.live2d.core.utils.DefaultMemoryAllocator
 import com.live2d.framework.util.MocFileReader
@@ -13,7 +14,8 @@ object HelloWorld {
   val fileReader = new MocFileReader(allocator)
 
   def main(args: Array[String]): Unit = {
-    coreLib.csmSetLogFunction(x => println(x))
+    val core = new CubismCore(x => println(x))
+    val coreLib = core.cLibrary
     val mocInfo = fileReader.readFile("Haru.moc3")
     val moc = coreLib.csmReviveMocInPlace(mocInfo.memory, mocInfo.originalSize)
     val modelSize = coreLib.csmGetSizeofModel(moc)
