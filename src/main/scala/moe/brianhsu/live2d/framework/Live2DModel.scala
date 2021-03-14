@@ -64,7 +64,7 @@ class Live2DModel(mocInfo: MocInfo)(core: CubismCore) {
   /**
    * Dispose and free the allocated C memory
    */
-  def freeUpMemory(): Unit = {
+  def dispose(): Unit = {
     println("Cleanup memory for Moc...")
     mocInfo.memory.dispose()
 

@@ -77,6 +77,15 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       }
     }
 
+    Scenario("Free up native memory") {
+      Given("A Live2D HaruGreeter Model")
+      val model = cubism.loadModel(modelFile)
+
+      When("dispose and free that model")
+      Then("no exception should be thrown")
+      noException should be thrownBy model.dispose()
+    }
+
   }
 
 }
