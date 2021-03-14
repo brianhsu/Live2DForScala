@@ -17,6 +17,8 @@ import moe.brianhsu.live2d.framework.exception.{MocNotRevivedException, Paramete
  */
 class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
 
+  private var mIsDisposed: Boolean = false
+
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cLibrary.csmGetSizeofModel(revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(modelSize, ModelAlignment)
@@ -59,20 +61,6 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
   def update(): Unit = {
     core.cLibrary.csmUpdateModel(cubismModel)
     core.cLibrary.csmResetDrawableDynamicFlags(cubismModel)
-  }
-
-  /**
-   * Dispose and free the allocated C memory
-   */
-  def dispose(): Unit = {
-    // Workaround:
-    //  We need first make sure the model has been revived, otherwise
-    //  it might tries to revive the disposed moc memory during modelMemoryInfo.dispose()
-    modelMemoryInfo
-
-    // Dispose memory
-    mocInfo.memory.dispose()
-    modelMemoryInfo.dispose()
   }
 
   private def reviveMoc(): CPointerToMoc = {

@@ -126,15 +126,6 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       }
     }
 
-    Scenario("Free up native memory") {
-      Given("A Live2D HaruGreeter Model")
-      val model = new Cubism().loadModel(modelFile)
-
-      When("dispose and free that model")
-      Then("no exception should be thrown")
-      noException should be thrownBy model.dispose()
-    }
-
     Scenario("Update the model") {
       Given("a mocked Cubism Core Library and pointer to model")
       val mockedCLibrary = stub[CubismCoreCLibrary]
