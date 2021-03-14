@@ -1,5 +1,6 @@
 package moe.brianhsu.live2d.framework
 
+import moe.brianhsu.live2d.utils.ExpectedParameter
 import org.scalatest.{GivenWhenThen, Inside, OptionValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -11,7 +12,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
   private val modelFile = "src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3"
   private val cubism = new Cubism
 
-  Feature("Reading canvas Info") {
+  Feature("Reading model information") {
     Scenario("Reading canvas info from model") {
       Given("A Live2D HaruGreeter Model")
       val model = cubism.loadModel(modelFile)
@@ -28,9 +29,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         pixelPerUnit shouldBe 2400
       }
     }
-  }
 
-  Feature("Get parts data") {
     Scenario("reading parts data from model") {
       Given("A Live2D HaruGreeter Model")
       val model = cubism.loadModel(modelFile)
@@ -44,6 +43,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
       And("all expected part id should have corresponding Part object")
       expectedParts.foreach { partId =>
+        info(s"Validate $partId")
+
         val part = parts.get(partId)
         part.value shouldBe a[Part]
         part.value.id shouldBe partId
@@ -51,6 +52,31 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         part.value.opacity shouldBe 1.0f
       }
     }
+
+    Scenario("reading parameters data from model") {
+      Given("A Live2D HaruGreeter Model")
+      val model = cubism.loadModel(modelFile)
+
+      When("Get the parts")
+      val parameters = model.parameters
+
+      Then("it should have correct number of parameters")
+      val expectedParameters = ExpectedParameter.getExpectedParameters
+      parameters.size shouldBe expectedParameters.size
+
+      And("all expected parameters should have corresponding Parameter object")
+      expectedParameters.foreach { expectedParameter =>
+        info(s"Validate ${expectedParameter.id}")
+        val parameter = parameters.get(expectedParameter.id)
+        parameter.value.id shouldBe expectedParameter.id
+        parameter.value.current shouldBe expectedParameter.current
+        parameter.value.default shouldBe expectedParameter.default
+        parameter.value.min shouldBe expectedParameter.min
+        parameter.value.max shouldBe expectedParameter.max
+
+      }
+    }
+
   }
 
 }
