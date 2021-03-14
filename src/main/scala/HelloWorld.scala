@@ -1,4 +1,4 @@
-import com.live2d.framework.Cubism
+import moe.brianhsu.live2d.framework.Cubism
 
 object HelloWorld {
 
