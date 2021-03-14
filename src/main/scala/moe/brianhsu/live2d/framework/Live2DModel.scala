@@ -1,10 +1,10 @@
 package moe.brianhsu.live2d.framework
 
 import com.sun.jna.ptr.FloatByReference
-import moe.brianhsu.live2d.core.{CsmVector, CubismCore}
+import moe.brianhsu.live2d.core.{CsmVector, CubismCore, ICubismCore}
 import moe.brianhsu.live2d.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.core.utils.MemoryInfo
-import moe.brianhsu.live2d.framework.exception.{MocNotRevivedException, ParameterInitializedException, PartInitializedException}
+import moe.brianhsu.live2d.framework.exception.{MocNotRevivedException, ParameterInitException, PartInitException}
 
 /**
  * The Live 2D model that represent an .moc file.
@@ -15,26 +15,26 @@ import moe.brianhsu.live2d.framework.exception.{MocNotRevivedException, Paramete
  * @param mocInfo   The moc file information
  * @param core      The core library of Cubism
  */
-class Live2DModel(mocInfo: MocInfo)(core: CubismCore) {
+class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
 
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cLibrary.csmGetSizeofModel(revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(modelSize, ModelAlignment)
-  private lazy val cubismModel: CPointerToModel = {
+  protected lazy val cubismModel: CPointerToModel = {
     core.cLibrary.csmInitializeModelInPlace(revivedMoc, modelMemoryInfo.alignedMemory, modelSize)
   }
 
   /**
    * Parameters of this model
    *
-   * @throws moe.brianhsu.live2d.framework.exception.ParameterInitializedException when could not get valid parameters from Live 2D Cubism Model
+   * @throws moe.brianhsu.live2d.framework.exception.ParameterInitException when could not get valid parameters from Live 2D Cubism Model
    */
   lazy val parameters: Map[String, Parameter] = createParameters()
 
   /**
    * Parts of this model
    *
-   * @throws moe.brianhsu.live2d.framework.exception.PartInitializedException when could not get valid parts from Live 2D Cubism Model
+   * @throws moe.brianhsu.live2d.framework.exception.PartInitException when could not get valid parts from Live 2D Cubism Model
    */
   lazy val parts: Map[String, Part] = createParts()
 
@@ -89,7 +89,7 @@ class Live2DModel(mocInfo: MocInfo)(core: CubismCore) {
     val partOpacities = core.cLibrary.csmGetPartOpacities(cubismModel)
 
     if (partCount == -1 || partIds == null || parentIndices == null || partOpacities == null) {
-      throw new PartInitializedException
+      throw new PartInitException
     }
 
     var partIdToPart: Map[String, Part] = Map.empty
@@ -121,7 +121,7 @@ class Live2DModel(mocInfo: MocInfo)(core: CubismCore) {
 
     if (parametersCount == -1 || parametersIds == null || currentValues == null ||
         defaultValues == null || minValues == null || maxValues == null) {
-      throw new ParameterInitializedException
+      throw new ParameterInitException
     }
 
     var parameters: Map[String, Parameter] = Map.empty

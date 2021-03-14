@@ -1,13 +1,22 @@
 package moe.brianhsu.live2d.framework
 
-import moe.brianhsu.live2d.utils.ExpectedParameter
+import com.sun.jna.{Native, Pointer}
+import moe.brianhsu.live2d.core.{CubismCore, CubismCoreCLibrary}
+import moe.brianhsu.live2d.core.types.{CArrayOfFloat, CArrayOfInt, CPointerToModel, CStringArray, MocAlignment}
+import moe.brianhsu.live2d.core.utils.DefaultMemoryAllocator
+import moe.brianhsu.live2d.framework.exception.{MocNotRevivedException, ParameterInitException, PartInitException}
+import moe.brianhsu.live2d.utils.{ExpectedParameter, MockedCubismCore}
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.{GivenWhenThen, Inside, OptionValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.prop.TableDrivenPropertyChecks
 
 import scala.io.Source
 
-class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues {
+class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
+                          with Matchers with Inside with OptionValues with MockFactory
+                          with TableDrivenPropertyChecks {
 
   private val modelFile = "src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3"
   private val cubism = new Cubism
@@ -28,6 +37,9 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         originY shouldBe 2250
         pixelPerUnit shouldBe 2400
       }
+
+      canvasInfo.width shouldBe 1
+      canvasInfo.height shouldBe 1.875
     }
 
     Scenario("reading parts data from model") {
@@ -86,6 +98,122 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       noException should be thrownBy model.dispose()
     }
 
+    Scenario("Update the model") {
+      Given("a mocked Cubism Core Library and pointer to model")
+      val mockedCLibrary = stub[CubismCoreCLibrary]
+      val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
+      val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
+
+      And("a Live2D model")
+      val model = new Live2DModel(null)(mockedCubismCore) {
+        override lazy val cubismModel: CPointerToModel = mockedModel
+      }
+
+      When("update the model")
+      model.update()
+
+      Then("it should call the c library to update the model")
+      (mockedCLibrary.csmUpdateModel _).verify(mockedModel)
+      (mockedCLibrary.csmResetDrawableDynamicFlags _).verify(mockedModel)
+
+    }
+
   }
 
+  Feature("Error handling when reading the model") {
+    Scenario("Cannot revive the moc file") {
+      Given("a not initialized memory of MocInfo")
+      val memoryInfo = DefaultMemoryAllocator.allocate(1024, MocAlignment)
+      val mocInfo = MocInfo(memoryInfo, 1024)
+
+      And("create a Live2D model from that memory")
+      val model = new Live2DModel(mocInfo)(new CubismCore())
+
+      When("reading the internal cubismModel parameters")
+      Then("it should throw MocNotRevivedException")
+      a [MocNotRevivedException] should be thrownBy {
+        model.parameters
+      }
+    }
+
+    Scenario("The C library return invalid data when reading parameters") {
+      val cStrings = new CStringArray
+      val cFloats = new CArrayOfFloat
+
+      val invalidCombos = Table(
+        ("count",    "ids", "current", "default",   "min",   "max"),
+        (-1,      cStrings,   cFloats,   cFloats, cFloats, cFloats),
+        ( 1,          null,   cFloats,   cFloats, cFloats, cFloats),
+        ( 1,      cStrings,      null,   cFloats, cFloats, cFloats),
+        ( 1,      cStrings,   cFloats,      null, cFloats, cFloats),
+        ( 1,      cStrings,   cFloats,   cFloats,    null, cFloats),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats,    null)
+      )
+
+      forAll(invalidCombos) { (count, ids, current, default, min, max) =>
+        Given("a mocked Cubism Core Library and pointer to model")
+        val mockedCLibrary = mock[CubismCoreCLibrary]
+        val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
+        val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
+
+        (mockedCLibrary.csmGetParameterCount _).expects(*).returning(count)
+        (mockedCLibrary.csmGetParameterIds _).expects(*).returning(ids)
+        (mockedCLibrary.csmGetParameterValues _).expects(*).returning(current)
+        (mockedCLibrary.csmGetParameterDefaultValues _).expects(*).returning(default)
+        (mockedCLibrary.csmGetParameterMinimumValues _).expects(*).returning(min)
+        (mockedCLibrary.csmGetParameterMaximumValues _).expects(*).returning(max)
+
+
+        And("a Live2D model")
+        val model = new Live2DModel(null)(mockedCubismCore) {
+          override lazy val cubismModel: CPointerToModel = mockedModel
+        }
+
+        When("get parameters of this model")
+        Then("it should throw ParameterInitializedException")
+        a [ParameterInitException] should be thrownBy {
+          model.parameters
+        }
+      }
+    }
+
+    Scenario("The C library return invalid data when reading parts") {
+      val cStrings = new CStringArray
+      val cFloats = new CArrayOfFloat
+      val cInts = new CArrayOfInt
+
+      val invalidCombos = Table(
+        ("count",    "ids", "opacities", "parents"),
+        (-1,      cStrings,     cFloats,     cInts),
+        ( 1,          null,     cFloats,     cInts),
+        ( 1,      cStrings,        null,     cInts),
+        ( 1,      cStrings,     cFloats,      null),
+      )
+
+      forAll(invalidCombos) { (count, ids, opacities, parents) =>
+        Given("a mocked Cubism Core Library and pointer to model")
+        val mockedCLibrary = mock[CubismCoreCLibrary]
+        val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
+        val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
+
+        (mockedCLibrary.csmGetPartCount _).expects(*).returning(count)
+        (mockedCLibrary.csmGetPartIds _).expects(*).returning(ids)
+        (mockedCLibrary.csmGetPartParentPartIndices _).expects(*).returning(parents)
+        (mockedCLibrary.csmGetPartOpacities _).expects(*).returning(opacities)
+
+
+        And("a Live2D model")
+        val model = new Live2DModel(null)(mockedCubismCore) {
+          override lazy val cubismModel: CPointerToModel = mockedModel
+        }
+
+        When("get parameters of this model")
+        Then("it should throw ParameterInitializedException")
+        a [PartInitException] should be thrownBy {
+          model.parts
+        }
+      }
+    }
+
+  }
 }
