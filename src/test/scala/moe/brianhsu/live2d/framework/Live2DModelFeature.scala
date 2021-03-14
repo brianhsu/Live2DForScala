@@ -42,7 +42,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       canvasInfo.height shouldBe 1.875
     }
 
-    Scenario("reading parts data from model") {
+    Scenario("reading parts that has no parent from model") {
       Given("A Live2D HaruGreeter Model")
       val model = cubism.loadModel(modelFile)
 
@@ -63,6 +63,43 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         part.value.parentIdHolder shouldBe None
         part.value.opacity shouldBe 1.0f
       }
+    }
+
+    Scenario("reading parts that has parent from model") {
+      Given("a mocked Cubism Core Library and pointer to model")
+      val mockedCLibrary = mock[CubismCoreCLibrary]
+      val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
+      val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
+      val opacities = mock[CArrayOfFloat]
+      val ids = mock[CStringArray]
+      val parents = mock[CArrayOfInt]
+
+      And("there is three mocked parts")
+      (opacities.getPointerToFloat _).expects(*).anyNumberOfTimes.returning(new Pointer(Native.malloc(4)))
+
+      (ids.apply _).expects(0).anyNumberOfTimes.returning("id0")
+      (ids.apply _).expects(1).anyNumberOfTimes.returning("id1")
+      (ids.apply _).expects(2).anyNumberOfTimes.returning("id2")
+
+      And("the second part's parent is first part, and third part contains invalid parent index")
+      (parents.apply _).expects(0).anyNumberOfTimes.returning(-1)
+      (parents.apply _).expects(1).anyNumberOfTimes.returning(0)
+      (parents.apply _).expects(2).anyNumberOfTimes.returning(Int.MaxValue)
+
+      (mockedCLibrary.csmGetPartCount _).expects(*).anyNumberOfTimes.returning(3)
+      (mockedCLibrary.csmGetPartIds _).expects(*).anyNumberOfTimes.returning(ids)
+      (mockedCLibrary.csmGetPartOpacities _).expects(*).anyNumberOfTimes.returning(opacities)
+      (mockedCLibrary.csmGetPartParentPartIndices _).expects(*).anyNumberOfTimes.returning(parents)
+
+      When("construct a Live2D model from that mocked data")
+      val model = new Live2DModel(null)(mockedCubismCore) {
+        override lazy val cubismModel: CPointerToModel = mockedModel
+      }
+
+      Then("only the second part has parentId")
+      model.parts.get("id0").value.parentIdHolder shouldBe None
+      model.parts.get("id1").value.parentIdHolder shouldBe Some("id0")
+      model.parts.get("id2").value.parentIdHolder shouldBe None
     }
 
     Scenario("reading parameters data from model") {
@@ -91,7 +128,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
     Scenario("Free up native memory") {
       Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile)
+      val model = new Cubism().loadModel(modelFile)
 
       When("dispose and free that model")
       Then("no exception should be thrown")

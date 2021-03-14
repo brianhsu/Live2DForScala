@@ -65,10 +65,13 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
    * Dispose and free the allocated C memory
    */
   def dispose(): Unit = {
-    println("Cleanup memory for Moc...")
-    mocInfo.memory.dispose()
+    // Workaround:
+    //  We need first make sure the model has been revived, otherwise
+    //  it might tries to revive the disposed moc memory during modelMemoryInfo.dispose()
+    modelMemoryInfo
 
-    println("Cleanup memory for Model...")
+    // Dispose memory
+    mocInfo.memory.dispose()
     modelMemoryInfo.dispose()
   }
 
