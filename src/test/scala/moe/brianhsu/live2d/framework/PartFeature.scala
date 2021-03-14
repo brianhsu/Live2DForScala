@@ -1,5 +1,6 @@
 package moe.brianhsu.live2d.framework
 
+import moe.brianhsu.live2d.framework.model.Part
 import moe.brianhsu.live2d.utils.NativeMemoryUtils
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -22,7 +23,7 @@ class PartFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     Scenario("Write opacity value to C memory") {
       Given("a Part associated with a C memory")
       val pointer = NativeMemoryUtils.createPointerToFloat(0)
-      val part = Part(pointer, "partId", None)
+      val part = model.Part(pointer, "partId", None)
 
       When("set opacity of a Part")
       part.setOpacity(567.123f)

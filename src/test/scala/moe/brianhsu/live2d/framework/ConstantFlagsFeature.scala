@@ -1,13 +1,14 @@
 package moe.brianhsu.live2d.framework
 
 import moe.brianhsu.live2d.core.CubismCoreCLibrary.ConstantDrawableFlagMask._
-import moe.brianhsu.live2d.framework.ConstantDrawableFlags.{AdditiveBlend, MultiplicativeBlend, Normal}
+import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags
+import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags.{AdditiveBlend, MultiplicativeBlend, Normal}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 
-class ConstantDrawableFlagsFeature extends AnyFeatureSpec
+class ConstantFlagsFeature extends AnyFeatureSpec
                                    with GivenWhenThen with Matchers with TableDrivenPropertyChecks {
 
   Feature("Calculate other flags") {
@@ -16,7 +17,7 @@ class ConstantDrawableFlagsFeature extends AnyFeatureSpec
       val flagsValue = 0 | csmIsDoubleSided | csmIsInvertedMask
 
       When(s"Create a ConstantDrawableFlags from that bitmap")
-      val flag = ConstantDrawableFlags(flagsValue.toByte)
+      val flag = ConstantFlags(flagsValue.toByte)
 
       Then("both isDoubledSided and isInvertedMask should be true")
       flag.isDoubleSided shouldBe true
@@ -28,7 +29,7 @@ class ConstantDrawableFlagsFeature extends AnyFeatureSpec
       val flagsValue = 0 | csmIsDoubleSided
 
       When(s"Create a ConstantDrawableFlags from that bitmap")
-      val flag = ConstantDrawableFlags(flagsValue.toByte)
+      val flag = ConstantFlags(flagsValue.toByte)
 
       Then("only isDoubledSided should be true")
       flag.isDoubleSided shouldBe true
@@ -40,7 +41,7 @@ class ConstantDrawableFlagsFeature extends AnyFeatureSpec
       val flagsValue = 0 | csmIsInvertedMask
 
       When(s"Create a ConstantDrawableFlags from that bitmap")
-      val flag = ConstantDrawableFlags(flagsValue.toByte)
+      val flag = ConstantFlags(flagsValue.toByte)
 
       Then("only isInvertedMask should be true")
       flag.isDoubleSided shouldBe false
@@ -61,7 +62,7 @@ class ConstantDrawableFlagsFeature extends AnyFeatureSpec
 
       forAll(dataTable) { (bitmap, expectedValue) =>
         When(s"Create a ConstantDrawableFlags from that bitmap $bitmap")
-        val flag = new ConstantDrawableFlags(bitmap.toByte)
+        val flag = new ConstantFlags(bitmap.toByte)
 
         Then("the blendMode should be Normal")
         flag.blendMode shouldBe expectedValue
@@ -80,7 +81,7 @@ class ConstantDrawableFlagsFeature extends AnyFeatureSpec
 
       forAll(dataTable) { (bitmap, expectedValue) =>
         When(s"Create a ConstantDrawableFlags from that bitmap $bitmap")
-        val flag = new ConstantDrawableFlags(bitmap.toByte)
+        val flag = new ConstantFlags(bitmap.toByte)
 
         Then("the blendMode should be Normal")
         flag.blendMode shouldBe expectedValue

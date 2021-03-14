@@ -1,10 +1,11 @@
-package moe.brianhsu.live2d.framework
+package moe.brianhsu.live2d.framework.model
 
 import com.sun.jna.ptr.FloatByReference
-import moe.brianhsu.live2d.core.{CsmVector, CubismCore, ICubismCore}
 import moe.brianhsu.live2d.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.core.utils.MemoryInfo
+import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
 import moe.brianhsu.live2d.framework.exception.{MocNotRevivedException, ParameterInitException, PartInitException}
+import moe.brianhsu.live2d.framework.{MocInfo, model}
 
 /**
  * The Live 2D model that represent an .moc file.
@@ -94,7 +95,7 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
         case _ => None
       }
 
-      val part = Part(opacityPointer, partId, parentId)
+      val part = model.Part(opacityPointer, partId, parentId)
 
       partIdToPart += (partId -> part)
     }
@@ -122,7 +123,7 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.getPointerToFloat(i)
-      val parameter = Parameter(currentValuePointer, id, minValue, maxValue, defaultValue)
+      val parameter = model.Parameter(currentValuePointer, id, minValue, maxValue, defaultValue)
       parameters += (id -> parameter)
     }
 
