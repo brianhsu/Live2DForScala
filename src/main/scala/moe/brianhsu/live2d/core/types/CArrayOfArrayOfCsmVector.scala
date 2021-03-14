@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.core.types
 import com.sun.jna.{Pointer, PointerType}
 import moe.brianhsu.live2d.core.CsmVector
 
-class PointerToArrayOfArrayOfCsmVector(pointer: Pointer) extends PointerType(pointer) {
+class CArrayOfArrayOfCsmVector(pointer: Pointer) extends PointerType(pointer) {
   private lazy val arrays = this.getPointer.getPointerArray(0)
   private var cachedData: Map[(Int, Int), CsmVector] = Map.empty
   def this() = this(null)

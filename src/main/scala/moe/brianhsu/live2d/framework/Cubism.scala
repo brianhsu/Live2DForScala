@@ -14,18 +14,18 @@ class Cubism(core: CubismCore) {
   def this() = this(new CubismCore)
 
   /**
-   * Get current version of Cubism Core C Library.
+   * The current version of Cubism Core C Library.
    *
    * @return  The current version of underlying C Library.
    */
-  def getCoreLibraryVersion: CsmVersion = CsmVersion(core.cLibrary.csmGetVersion())
+  val coreLibraryVersion: CsmVersion = CsmVersion(core.cLibrary.csmGetVersion())
 
   /**
    * Get the latest supported .moc file version.
    *
    * @return  The latest supported version.
    */
-  def getLatestMocVersion: MocVersion = MocVersion(core.cLibrary.csmGetLatestMocVersion())
+  val latestSupportedMocVersion: MocVersion = MocVersion(core.cLibrary.csmGetLatestMocVersion())
 
   /**
    * Load .moc files to Live2DModel instance.

@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.core
 
 import com.sun.jna._
 import com.sun.jna.ptr._
-import moe.brianhsu.live2d.core.types.{CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction, PointerToArrayOfArrayOfCsmVector}
+import moe.brianhsu.live2d.core.types.{CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction, CArrayOfArrayOfCsmVector}
 
 trait ICubismCore extends Library {
 
@@ -218,8 +218,8 @@ trait ICubismCore extends Library {
   def csmGetDrawableMaskCounts(model: CPointerToModel): CArrayOfInt
   def csmGetDrawableMasks(model: CPointerToModel): CArrayOfArrayOfInt
   def csmGetDrawableVertexCounts(model: CPointerToModel): CArrayOfInt
-  def csmGetDrawableVertexPositions(model: CPointerToModel): PointerToArrayOfArrayOfCsmVector
-  def csmGetDrawableVertexUvs(model: CPointerToModel): PointerToArrayOfArrayOfCsmVector
+  def csmGetDrawableVertexPositions(model: CPointerToModel): CArrayOfArrayOfCsmVector
+  def csmGetDrawableVertexUvs(model: CPointerToModel): CArrayOfArrayOfCsmVector
   def csmGetDrawableIndexCounts(model: CPointerToModel): CArrayOfInt
   def csmGetDrawableIndices(model: CPointerToModel): CArrayOfArrayOfShort
   def csmResetDrawableDynamicFlags(model: CPointerToModel): Unit
