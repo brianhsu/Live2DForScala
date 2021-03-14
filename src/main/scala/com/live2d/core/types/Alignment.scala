@@ -1,11 +1,6 @@
 package com.live2d.core.types
 
-sealed class Alignment2(val alignTo: Int)
+sealed class Alignment(val alignTo: Int)
 
-object MocAlignment extends Alignment2(64)
-object ModelAlignment extends Alignment2(16)
-
-object Alignment {
-  val moc: Int = 64
-  val model: Int = 16
-}
+object MocAlignment extends Alignment(64)
+object ModelAlignment extends Alignment(16)

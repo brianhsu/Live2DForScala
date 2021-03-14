@@ -11,7 +11,7 @@ public class CsmVector extends Structure {
     public float x;
     public float y;
 
-    protected CsmVector() { super(); }
+    public CsmVector() { super(); }
 
     public CsmVector(Pointer p) { 
          super(p);
