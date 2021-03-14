@@ -37,7 +37,7 @@ class Cubism(core: CubismCore) {
    */
   def loadModel(mocFilename: String): Live2DModel = {
     val fileReader = new MocFileReader(core.memoryAllocator)
-    val mocInfo = fileReader.readFile("Haru.moc3")
+    val mocInfo = fileReader.readFile(mocFilename)
     new Live2DModel(mocInfo)(core)
   }
 }

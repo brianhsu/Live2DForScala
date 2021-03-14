@@ -6,7 +6,7 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
 class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
-  val cubism = new Cubism()
+  private val cubism = new Cubism
 
   Feature("Get version information") {
     Scenario("Get core library version") {
