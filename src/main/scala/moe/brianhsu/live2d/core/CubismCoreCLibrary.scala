@@ -5,6 +5,15 @@ import com.sun.jna.ptr._
 import moe.brianhsu.live2d.core.types.{CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction, CArrayOfArrayOfCsmVector}
 
 object CubismCoreCLibrary {
+  object DynamicDrawableFlagMask {
+    val csmIsVisible = (1 << 0).toByte
+    val csmVisibilityDidChange = (1 << 1).toByte
+    val csmOpacityDidChange = (1 << 2).toByte
+    val csmDrawOrderDidChange = (1 << 3).toByte
+    val csmRenderOrderDidChange = (1 << 4).toByte
+    val csmVertexPositionsDidChange = (1 << 5).toByte
+  }
+
   object ConstantDrawableFlagMask {
     val csmBlendAdditiveBit: Byte = (1 << 0).toByte
     val csmBlendMultiplicative: Byte = (1 << 1).toByte
