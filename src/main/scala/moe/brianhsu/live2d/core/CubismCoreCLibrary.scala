@@ -4,6 +4,15 @@ import com.sun.jna._
 import com.sun.jna.ptr._
 import moe.brianhsu.live2d.core.types.{CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction, CArrayOfArrayOfCsmVector}
 
+object CubismCoreCLibrary {
+  object ConstantDrawableFlagMask {
+    val csmBlendAdditiveBit: Byte = (1 << 0).toByte
+    val csmBlendMultiplicative: Byte = (1 << 1).toByte
+    val csmIsDoubleSided: Byte = (1 << 2).toByte
+    val csmIsInvertedMask: Byte = (1 << 3).toByte
+  }
+}
+
 trait CubismCoreCLibrary extends Library {
 
   /* ------- *
