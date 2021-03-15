@@ -4,4 +4,3 @@ target/
 project/target
 *.log
 *.swp
-*.moc3
