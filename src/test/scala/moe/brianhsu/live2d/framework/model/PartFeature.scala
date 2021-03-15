@@ -1,6 +1,6 @@
-package moe.brianhsu.live2d.framework
+package moe.brianhsu.live2d.framework.model
 
-import moe.brianhsu.live2d.framework.model.Part
+import moe.brianhsu.live2d.framework.model
 import moe.brianhsu.live2d.utils.NativeMemoryUtils
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

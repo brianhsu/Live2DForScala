@@ -1,12 +1,11 @@
-package moe.brianhsu.live2d.framework
+package moe.brianhsu.live2d.framework.model.drawable
 
-import com.sun.jna.{Memory, Native, Pointer}
-import moe.brianhsu.live2d.framework.model.drawable.DynamicFlags
+import com.sun.jna.{Memory, Native}
+import moe.brianhsu.live2d.core.CubismCoreCLibrary.DynamicDrawableFlagMask._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
-import moe.brianhsu.live2d.core.CubismCoreCLibrary.DynamicDrawableFlagMask._
 
 class DynamicFlagsFeature extends AnyFeatureSpec
                           with GivenWhenThen with Matchers with TableDrivenPropertyChecks {

@@ -1,17 +1,17 @@
-package moe.brianhsu.live2d.framework
+package moe.brianhsu.live2d.framework.model
 
 import com.sun.jna.{Native, Pointer}
-import moe.brianhsu.live2d.core.{CubismCore, CubismCoreCLibrary}
-import moe.brianhsu.live2d.core.types.{CArrayOfFloat, CArrayOfInt, CPointerToModel, CStringArray, MocAlignment}
+import moe.brianhsu.live2d.core.types._
 import moe.brianhsu.live2d.core.utils.DefaultMemoryAllocator
+import moe.brianhsu.live2d.core.{CubismCore, CubismCoreCLibrary}
 import moe.brianhsu.live2d.framework.exception.{MocNotRevivedException, ParameterInitException, PartInitException}
-import moe.brianhsu.live2d.framework.model.{CanvasInfo, Live2DModel, Part}
+import moe.brianhsu.live2d.framework.{Cubism, MocInfo}
 import moe.brianhsu.live2d.utils.{ExpectedParameter, MockedCubismCore}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, Inside, OptionValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatest.{GivenWhenThen, Inside, OptionValues}
 
 import scala.io.Source
 

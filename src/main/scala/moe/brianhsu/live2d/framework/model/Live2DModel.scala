@@ -17,9 +17,6 @@ import moe.brianhsu.live2d.framework.{MocInfo, model}
  * @param core      The core library of Cubism
  */
 class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
-
-  private var mIsDisposed: Boolean = false
-
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cLibrary.csmGetSizeofModel(revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(modelSize, ModelAlignment)
@@ -30,12 +27,16 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
   /**
    * Parameters of this model
    *
+   * This is a map that key is the parameterId, and value is corresponding Parameter object.
+   *
    * @throws moe.brianhsu.live2d.framework.exception.ParameterInitException when could not get valid parameters from Live 2D Cubism Model
    */
   lazy val parameters: Map[String, Parameter] = createParameters()
 
   /**
    * Parts of this model
+   *
+   * This is a map that key is the partId, and value is corresponding Part object.
    *
    * @throws moe.brianhsu.live2d.framework.exception.PartInitException when could not get valid parts from Live 2D Cubism Model
    */
