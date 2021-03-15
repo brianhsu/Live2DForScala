@@ -24,4 +24,7 @@ test:
     - ls
     - ls -l src/test/resources/models/HaruGreeter/runtime
     - ls -l src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3
-    - sbt clean test
+    - sbt clean coverage test coverageReport
+  artifacts:
+    reports:
+      cobertura: target/scala-2.12/coverage-report/cobertura.xml
