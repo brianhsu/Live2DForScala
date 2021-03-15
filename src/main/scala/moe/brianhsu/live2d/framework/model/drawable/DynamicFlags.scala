@@ -10,10 +10,7 @@ import moe.brianhsu.live2d.core.CubismCoreCLibrary.DynamicDrawableFlagMask._
  */
 case class DynamicFlags(private val pointer: Pointer) extends Flags {
   private def byteValue = pointer.getByte(0)
-  def isVisible = {
-    println("===> byteValue:" + byteValue)
-    isBitSet(byteValue, csmIsVisible)
-  }
+  def isVisible = isBitSet(byteValue, csmIsVisible)
   def visibilityChanged = isBitSet(byteValue, csmVisibilityDidChange)
   def opacityChanged = isBitSet(byteValue, csmOpacityDidChange)
   def drawOrderChanged = isBitSet(byteValue, csmDrawOrderDidChange)
