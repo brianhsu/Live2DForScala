@@ -22,6 +22,28 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
   private val modelFile = "src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3"
   private val cubism = new Cubism
 
+  Feature("Update the model information") {
+    Scenario("Update the model") {
+      Given("a mocked Cubism Core Library and pointer to model")
+      val mockedCLibrary = stub[CubismCoreCLibrary]
+      val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
+      val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
+
+      And("a Live2D model")
+      val model = new Live2DModel(null)(mockedCubismCore) {
+        override lazy val cubismModel: CPointerToModel = mockedModel
+      }
+
+      When("update the model")
+      model.update()
+
+      Then("it should call the c library to update the model")
+      (mockedCLibrary.csmUpdateModel _).verify(mockedModel)
+      (mockedCLibrary.csmResetDrawableDynamicFlags _).verify(mockedModel)
+
+    }
+  }
+
   Feature("Reading model information") {
     Scenario("Reading canvas info from model") {
       Given("A Live2D HaruGreeter Model")
@@ -54,15 +76,16 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       val expectedParts = Source.fromResource("expectation/PartIdList.txt").getLines().toList
       parts.size shouldBe expectedParts.size
 
-      And("all expected part id should have corresponding Part object")
       expectedParts.foreach { partId =>
-        info(s"Validate $partId")
+        And(s"part $partId should have correct values")
 
-        val part = parts.get(partId)
-        part.value shouldBe a[Part]
-        part.value.id shouldBe partId
-        part.value.parentIdHolder shouldBe None
-        part.value.opacity shouldBe 1.0f
+        val part = parts.get(partId).value
+        inside(part) { case Part(opacityPointer, id, parentIdHolder) =>
+          opacityPointer should not be null
+          id shouldBe partId
+          parentIdHolder shouldBe None
+        }
+        part.opacity shouldBe 1.0f
       }
     }
 
@@ -114,37 +137,22 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       val expectedParameters = ExpectedParameter.getExpectedParameters
       parameters.size shouldBe expectedParameters.size
 
-      And("all expected parameters should have corresponding Parameter object")
       expectedParameters.foreach { expectedParameter =>
-        info(s"Validate ${expectedParameter.id}")
-        val parameter = parameters.get(expectedParameter.id)
-        parameter.value.id shouldBe expectedParameter.id
-        parameter.value.current shouldBe expectedParameter.current
-        parameter.value.default shouldBe expectedParameter.default
-        parameter.value.min shouldBe expectedParameter.min
-        parameter.value.max shouldBe expectedParameter.max
+        And(s"${expectedParameter.id} should have correct values")
+        val parameter = parameters.get(expectedParameter.id).value
+        inside(parameter) { case Parameter(pointer, id, min, max, default) =>
+          id shouldBe expectedParameter.id
+          default shouldBe expectedParameter.default
+          min shouldBe expectedParameter.min
+          max shouldBe expectedParameter.max
+        }
+        parameter.current shouldBe expectedParameter.current
 
       }
     }
 
-    Scenario("Update the model") {
-      Given("a mocked Cubism Core Library and pointer to model")
-      val mockedCLibrary = stub[CubismCoreCLibrary]
-      val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
-      val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
-
-      And("a Live2D model")
-      val model = new Live2DModel(null)(mockedCubismCore) {
-        override lazy val cubismModel: CPointerToModel = mockedModel
-      }
-
-      When("update the model")
-      model.update()
-
-      Then("it should call the c library to update the model")
-      (mockedCLibrary.csmUpdateModel _).verify(mockedModel)
-      (mockedCLibrary.csmResetDrawableDynamicFlags _).verify(mockedModel)
-
+    Scenario("reading drawables from the model") {
+      pending
     }
 
   }
