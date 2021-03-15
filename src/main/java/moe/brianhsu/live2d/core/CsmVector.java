@@ -6,6 +6,12 @@ import com.sun.jna.Pointer;
 import java.util.List;
 import java.util.Arrays;
 
+/**
+ * The JNA bridge for access CSM vector C structure.
+ *
+ * User should NEVER use this class directly.
+ *
+ */
 public class CsmVector extends Structure {
     public static int SIZE = 8;
     public float x;
@@ -14,8 +20,18 @@ public class CsmVector extends Structure {
     public CsmVector() { super(); }
 
     public CsmVector(Pointer p) { 
-         super(p);
-	 this.autoRead();
+        super(p);
+	    this.autoRead();
+    }
+
+    public float getX() {
+        this.autoRead();
+        return this.x;
+    }
+
+    public float getY() {
+        this.autoRead();
+        return this.y;
     }
 
     protected List getFieldOrder() {

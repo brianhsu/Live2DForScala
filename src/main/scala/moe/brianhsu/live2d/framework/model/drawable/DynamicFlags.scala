@@ -10,9 +10,10 @@ import moe.brianhsu.live2d.core.CubismCoreCLibrary.DynamicDrawableFlagMask._
  */
 case class DynamicFlags(private val pointer: Pointer) extends Flags {
   private def byteValue = pointer.getByte(0)
-  def isVisible = isBitSet(byteValue, csmIsVisible)
-  def visibilityChanged = isBitSet(byteValue, csmVisibilityDidChange)
-  def opacityChanged = isBitSet(byteValue, csmOpacityDidChange)
-  def drawOrderChanged = isBitSet(byteValue, csmDrawOrderDidChange)
-  def vertexPositionChanged = isBitSet(byteValue, csmDrawOrderDidChange)
+  def bitmask: Byte = byteValue
+  def isVisible: Boolean = isBitSet(byteValue, csmIsVisible)
+  def visibilityChanged: Boolean = isBitSet(byteValue, csmVisibilityDidChange)
+  def opacityChanged: Boolean = isBitSet(byteValue, csmOpacityDidChange)
+  def drawOrderChanged: Boolean = isBitSet(byteValue, csmDrawOrderDidChange)
+  def vertexPositionChanged: Boolean = isBitSet(byteValue, csmDrawOrderDidChange)
 }

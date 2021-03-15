@@ -11,13 +11,13 @@ object ConstantFlags {
   case object MultiplicativeBlend extends BlendMode
 }
 
-case class ConstantFlags(flagsValue: Byte) extends Flags {
-  val isDoubleSided: Boolean = isBitSet(flagsValue, ConstantDrawableFlagMask.csmIsDoubleSided)
-  val isInvertedMask: Boolean = isBitSet(flagsValue, ConstantDrawableFlagMask.csmIsInvertedMask)
+case class ConstantFlags(bitmask: Byte) extends Flags {
+  val isDoubleSided: Boolean = isBitSet(bitmask, ConstantDrawableFlagMask.csmIsDoubleSided)
+  val isInvertedMask: Boolean = isBitSet(bitmask, ConstantDrawableFlagMask.csmIsInvertedMask)
   val blendMode: BlendMode = {
-    if (isBitSet(flagsValue, ConstantDrawableFlagMask.csmBlendAdditiveBit)) {
+    if (isBitSet(bitmask, ConstantDrawableFlagMask.csmBlendAdditiveBit)) {
       AdditiveBlend
-    } else if (isBitSet(flagsValue, ConstantDrawableFlagMask.csmBlendMultiplicative)) {
+    } else if (isBitSet(bitmask, ConstantDrawableFlagMask.csmBlendMultiplicative)) {
       MultiplicativeBlend
     } else {
       Normal

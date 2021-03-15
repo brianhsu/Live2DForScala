@@ -32,6 +32,7 @@ class DynamicFlagsFeature extends AnyFeatureSpec
         val flags = DynamicFlags(pointer)
 
         Then("the flags should have correct value")
+        flags.bitmask shouldBe bitmap.toByte
         flags.isVisible shouldBe isVisible
         flags.visibilityChanged shouldBe visibilityChanged
         flags.opacityChanged shouldBe opacityChanged
@@ -61,6 +62,7 @@ class DynamicFlagsFeature extends AnyFeatureSpec
         val flags = DynamicFlags(pointer)
 
         Then("the flags should all be false")
+        flags.bitmask shouldBe 0
         flags.isVisible shouldBe false
         flags.visibilityChanged shouldBe false
         flags.opacityChanged shouldBe false
@@ -71,6 +73,7 @@ class DynamicFlagsFeature extends AnyFeatureSpec
         pointer.setByte(0, bitmap.toByte)
 
         Then("the flags should be updated")
+        flags.bitmask shouldBe bitmap.toByte
         flags.isVisible shouldBe isVisible
         flags.visibilityChanged shouldBe visibilityChanged
         flags.opacityChanged shouldBe opacityChanged

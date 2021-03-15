@@ -4,15 +4,17 @@ import com.sun.jna.{Native, Pointer}
 import moe.brianhsu.live2d.core.types._
 import moe.brianhsu.live2d.core.utils.DefaultMemoryAllocator
 import moe.brianhsu.live2d.core.{CubismCore, CubismCoreCLibrary}
-import moe.brianhsu.live2d.framework.exception.{MocNotRevivedException, ParameterInitException, PartInitException}
+import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException}
+import moe.brianhsu.live2d.framework.model.drawable.Drawable
 import moe.brianhsu.live2d.framework.{Cubism, MocInfo}
-import moe.brianhsu.live2d.utils.{ExpectedParameter, MockedCubismCore}
+import moe.brianhsu.live2d.utils.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter, MockedCubismCore}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{GivenWhenThen, Inside, OptionValues}
 
+import java.io.PrintWriter
 import scala.io.Source
 
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
@@ -130,7 +132,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       Given("A Live2D HaruGreeter Model")
       val model = cubism.loadModel(modelFile)
 
-      When("Get the parts")
+      When("Get the parameters")
       val parameters = model.parameters
 
       Then("it should have correct number of parameters")
@@ -152,9 +154,59 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading drawables from the model") {
-      pending
-    }
+      Given("A Live2D HaruGreeter Model")
+      val model = cubism.loadModel(modelFile)
 
+      When("Get the drawables")
+      val drawables = model.drawables
+
+      Then("the basic information of drawables should be correct")
+      ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
+        val drawable = drawables.get(expectedBasicInfo.id).value
+        inside(drawable) { case Drawable(id, constantFlags, dynamicFlags, textureIndex, masks,
+                                         vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer) =>
+          id shouldBe expectedBasicInfo.id
+          constantFlags.bitmask shouldBe expectedBasicInfo.constFlags
+          dynamicFlags.bitmask shouldBe expectedBasicInfo.dynamicFlags
+          textureIndex shouldBe expectedBasicInfo.textureIndex
+          masks.size shouldBe expectedBasicInfo.masksSize
+          vertexInfo.positions.size shouldBe expectedBasicInfo.positionsSize
+          vertexInfo.textureCoordinates.size shouldBe expectedBasicInfo.textureCoordinatesSize
+          vertexInfo.indices.size shouldBe expectedBasicInfo.indexSize
+        }
+        drawable.renderOrder shouldBe expectedBasicInfo.renderOrder
+        drawable.drawOrder shouldBe expectedBasicInfo.drawOrder
+        drawable.opacity shouldBe expectedBasicInfo.opacity
+      }
+
+      Then("the masks of drawables should be correct")
+      ExpectedDrawableMask.getList.foreach { expectedDrawableMask =>
+        val drawableId = expectedDrawableMask.id
+        val index = expectedDrawableMask.index
+        val drawable = drawables.get(drawableId).value
+        val mask = drawable.masks(index)
+        mask shouldBe expectedDrawableMask.maskValue
+      }
+
+      Then("the positions of drawables should be correct")
+      ExpectedDrawablePosition.getList.foreach { expectedDrawablePosition =>
+        val drawableId = expectedDrawablePosition.id
+        val drawable = drawables.get(drawableId).value
+        val index = expectedDrawablePosition.index
+        val position = drawable.vertexInfo.positions(index)
+        position shouldBe (expectedDrawablePosition.x, expectedDrawablePosition.y)
+      }
+
+      Then("the texture coordinate of drawables should be correct")
+      ExpectedDrawableCoordinate.getList.foreach { expectedDrawableCoordinate =>
+        val drawableId = expectedDrawableCoordinate.id
+        val drawable = drawables.get(drawableId).value
+        val index = expectedDrawableCoordinate.index
+        val coordinates = drawable.vertexInfo.textureCoordinates(index)
+        coordinates shouldBe (expectedDrawableCoordinate.x, expectedDrawableCoordinate.y)
+      }
+
+    }
   }
 
   Feature("Error handling when reading the model") {
@@ -248,6 +300,72 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         Then("it should throw ParameterInitializedException")
         a [PartInitException] should be thrownBy {
           model.parts
+        }
+      }
+    }
+
+    Scenario("The C library return invalid data when reading drawables") {
+      val cStrings = new CStringArray
+      val cFloats = new CArrayOfFloat
+      val cBytes = new CArrayOfByte
+      val cInts = new CArrayOfInt
+      val cAAInt = new CArrayOfArrayOfInt
+      val cAAShort = new CArrayOfArrayOfShort
+      val cAAVector = new CArrayOfArrayOfCsmVector
+
+      val invalidCombos = Table(
+        ("count",    "ids", "cFlags", "dFlags", "textureIndex", "drawOrder", "renderOrder", "opacities", "maskCounts", "maskLists", "indexCountList", "indexList", "vCountList",   "vList",   "uvList"),
+        (-1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,          null,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,     null,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,     null,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,           null,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,        null,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,          null,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,        null,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,         null,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,        null,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,             null,    cAAShort,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,        null,        cInts, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,         null, cAAVector,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts,      null,  cAAVector),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,       null),
+      )
+
+      forAll(invalidCombos) { (count, ids, cFlags, dFlags, textureIndex, drawOrder,
+                               renderOrder, opacities, maskCounts, maskLists, indexCountList,
+                               indexList, vCountList, vList, uvList) =>
+
+        Given("a mocked Cubism Core Library and pointer to model")
+        val mockedCLibrary = mock[CubismCoreCLibrary]
+        val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
+        val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
+
+        (mockedCLibrary.csmGetDrawableCount _).expects(*).returning(count)
+        (mockedCLibrary.csmGetDrawableIds _).expects(*).returning(ids)
+        (mockedCLibrary.csmGetDrawableConstantFlags _).expects(*).returning(cFlags)
+        (mockedCLibrary.csmGetDrawableDynamicFlags _).expects(*).returning(dFlags)
+        (mockedCLibrary.csmGetDrawableTextureIndices _).expects(*).returning(textureIndex)
+        (mockedCLibrary.csmGetDrawableDrawOrders _).expects(*).returning(drawOrder)
+        (mockedCLibrary.csmGetDrawableRenderOrders _).expects(*).returning(renderOrder)
+        (mockedCLibrary.csmGetDrawableOpacities _).expects(*).returning(opacities)
+        (mockedCLibrary.csmGetDrawableMaskCounts _).expects(*).anyNumberOfTimes().returning(maskCounts)
+        (mockedCLibrary.csmGetDrawableMasks _).expects(*).anyNumberOfTimes().returning(maskLists)
+        (mockedCLibrary.csmGetDrawableIndexCounts _).expects(*).anyNumberOfTimes().returning(indexCountList)
+        (mockedCLibrary.csmGetDrawableIndices _).expects(*).anyNumberOfTimes().returning(indexList)
+        (mockedCLibrary.csmGetDrawableVertexCounts _).expects(*).anyNumberOfTimes().returning(vCountList)
+        (mockedCLibrary.csmGetDrawableVertexPositions _).expects(*).anyNumberOfTimes().returning(vList)
+        (mockedCLibrary.csmGetDrawableVertexUvs _).expects(*).anyNumberOfTimes().returning(uvList)
+
+        And("a Live2D model")
+        val model = new Live2DModel(null)(mockedCubismCore) {
+          override lazy val cubismModel: CPointerToModel = mockedModel
+        }
+
+        When("get parameters of this model")
+        Then("it should throw ParameterInitializedException")
+        a [DrawableInitException] should be thrownBy {
+          model.drawables
         }
       }
     }

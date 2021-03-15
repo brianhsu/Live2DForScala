@@ -233,6 +233,8 @@ trait CubismCoreCLibrary extends Library {
   def csmGetDrawableDrawOrders(model: CPointerToModel): CArrayOfInt
   def csmGetDrawableRenderOrders(model: CPointerToModel): CArrayOfInt
   def csmGetDrawableOpacities(model: CPointerToModel): CArrayOfFloat
+
+
   def csmGetDrawableMaskCounts(model: CPointerToModel): CArrayOfInt
   def csmGetDrawableMasks(model: CPointerToModel): CArrayOfArrayOfInt
   def csmGetDrawableVertexCounts(model: CPointerToModel): CArrayOfInt
@@ -240,6 +242,8 @@ trait CubismCoreCLibrary extends Library {
   def csmGetDrawableVertexUvs(model: CPointerToModel): CArrayOfArrayOfCsmVector
   def csmGetDrawableIndexCounts(model: CPointerToModel): CArrayOfInt
   def csmGetDrawableIndices(model: CPointerToModel): CArrayOfArrayOfShort
+
+
   def csmResetDrawableDynamicFlags(model: CPointerToModel): Unit
 }
 
