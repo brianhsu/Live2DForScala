@@ -23,3 +23,5 @@ test:
     - pwd
     - ls
     - ls -l src/test/resources/models/HaruGreeter/runtime
+    - ls -l src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3
+    - sbt clean test
