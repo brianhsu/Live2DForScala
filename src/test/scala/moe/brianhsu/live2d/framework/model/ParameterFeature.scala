@@ -35,8 +35,8 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     Scenario("Write value that is under minimum or over maximum value to C memory") {
       Given("a Parameter associated with a C memory that minimum value is 100")
       val parameterId = "parameterId"
-      val min = 100
-      val max = 200
+      val min = 100.0f
+      val max = 200.0f
       val pointer = NativeMemoryUtils.createPointerToFloat(0)
       val parameter = Parameter(pointer, null, parameterId, min, max, default = 150)
 

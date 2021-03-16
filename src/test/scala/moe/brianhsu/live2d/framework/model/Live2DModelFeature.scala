@@ -102,21 +102,21 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       val parents = mock[CArrayOfInt]
 
       And("there is three mocked parts")
-      (opacities.getPointerToFloat _).expects(*).anyNumberOfTimes.returning(new Pointer(Native.malloc(4)))
+      (opacities.getPointerToFloat _).expects(*).anyNumberOfTimes().returning(new Pointer(Native.malloc(4)))
 
-      (ids.apply _).expects(0).anyNumberOfTimes.returning("id0")
-      (ids.apply _).expects(1).anyNumberOfTimes.returning("id1")
-      (ids.apply _).expects(2).anyNumberOfTimes.returning("id2")
+      (ids.apply _).expects(0).anyNumberOfTimes().returning("id0")
+      (ids.apply _).expects(1).anyNumberOfTimes().returning("id1")
+      (ids.apply _).expects(2).anyNumberOfTimes().returning("id2")
 
       And("the second part's parent is first part, and third part contains invalid parent index")
-      (parents.apply _).expects(0).anyNumberOfTimes.returning(-1)
-      (parents.apply _).expects(1).anyNumberOfTimes.returning(0)
-      (parents.apply _).expects(2).anyNumberOfTimes.returning(Int.MaxValue)
+      (parents.apply _).expects(0).anyNumberOfTimes().returning(-1)
+      (parents.apply _).expects(1).anyNumberOfTimes().returning(0)
+      (parents.apply _).expects(2).anyNumberOfTimes().returning(Int.MaxValue)
 
-      (mockedCLibrary.csmGetPartCount _).expects(*).anyNumberOfTimes.returning(3)
-      (mockedCLibrary.csmGetPartIds _).expects(*).anyNumberOfTimes.returning(ids)
-      (mockedCLibrary.csmGetPartOpacities _).expects(*).anyNumberOfTimes.returning(opacities)
-      (mockedCLibrary.csmGetPartParentPartIndices _).expects(*).anyNumberOfTimes.returning(parents)
+      (mockedCLibrary.csmGetPartCount _).expects(*).anyNumberOfTimes().returning(3)
+      (mockedCLibrary.csmGetPartIds _).expects(*).anyNumberOfTimes().returning(ids)
+      (mockedCLibrary.csmGetPartOpacities _).expects(*).anyNumberOfTimes().returning(opacities)
+      (mockedCLibrary.csmGetPartParentPartIndices _).expects(*).anyNumberOfTimes().returning(parents)
 
       When("construct a Live2D model from that mocked data")
       val model = new Live2DModel(null, Nil)(mockedCubismCore) {

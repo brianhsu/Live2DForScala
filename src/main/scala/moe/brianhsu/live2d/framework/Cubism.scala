@@ -63,12 +63,11 @@ class Cubism(core: ICubismCore) {
 
     val directoryFile = new File(directory)
 
-    println("Hello World")
     if (!directoryFile.exists || !directoryFile.isDirectory) {
       throw new FileNotFoundException(directory)
     }
 
-    new Avatar(directory)
+    new Avatar(directory)(this)
   }
 
 }

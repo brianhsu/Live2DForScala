@@ -69,6 +69,24 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   lazy val drawables: Map[String, Drawable] = createDrawable()
 
   /**
+   * This method will access all lazy member fields that load data from the CubismCore C Library,
+   * and throws exceptions if there is any corrupted data.
+   *
+   * @return  The model itself.
+   * @throws  DrawableInitException if it cannot construct drawable objects.
+   * @throws  MocNotRevivedException if there are errors when reading .moc3 file.
+   * @throws  ParameterInitException if it cannot construct parameter objects.
+   * @throws  PartInitException if it cannot construct part objects.
+   * @throws  TextureSizeMismatchException if the the number of provided texture does not match the information in the model.
+   */
+  def validAllDataFromNativeLibrary: Live2DModel = {
+    this.drawables
+    this.parameters
+    this.parts
+    this
+  }
+
+  /**
    * Get the drawables that is sorted by render order.
    *
    * This list is sorted by render order in ascending order.
