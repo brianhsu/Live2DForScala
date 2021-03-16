@@ -12,13 +12,13 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{GivenWhenThen, Inside, OptionValues}
+import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
 import scala.io.Source
 
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
                           with Matchers with Inside with OptionValues with MockFactory
-                          with TableDrivenPropertyChecks {
+                          with TableDrivenPropertyChecks with TryValues {
 
   private val modelFile = "src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3"
   private val textureFiles = List("texture1.png", "texture2.png")
@@ -49,7 +49,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
   Feature("Reading model information") {
     Scenario("Reading canvas info from model") {
       Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles)
+      val model = cubism.loadModel(modelFile, textureFiles).success.value
 
       When("Get the canvas info")
       val canvasInfo = model.canvasInfo
@@ -69,7 +69,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
     Scenario("reading parts that has no parent from model") {
       Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles)
+      val model = cubism.loadModel(modelFile, textureFiles).success.value
 
       When("Get the parts")
       val parts = model.parts
@@ -131,7 +131,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
     Scenario("reading parameters data from model") {
       Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles)
+      val model = cubism.loadModel(modelFile, textureFiles).success.value
 
       When("Get the parameters")
       val parameters = model.parameters
@@ -158,7 +158,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
     Scenario("reading drawables from the model") {
       Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles)
+      val model = cubism.loadModel(modelFile, textureFiles).success.value
 
       When("Get the drawables")
       val drawables = model.drawables
@@ -217,7 +217,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
     Scenario("Get drawable of the model in render order") {
       Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles)
+      val model = cubism.loadModel(modelFile, textureFiles).success.value
 
       When("Get the drawables in order")
       val drawables = model.sortedDrawables
@@ -242,7 +242,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       forAll(invalidCombos) { textureFiles =>
         Given("A Live2D HaruGreeter Model that does not match the information in the model")
         a[TextureSizeMismatchException] should be thrownBy {
-          cubism.loadModel(modelFile, textureFiles).drawables
+          val model = cubism.loadModel(modelFile, textureFiles).success.value
+          model.drawables
         }
       }
 

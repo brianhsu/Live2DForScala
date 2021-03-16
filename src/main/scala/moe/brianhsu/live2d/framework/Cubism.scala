@@ -42,11 +42,11 @@ class Cubism(core: ICubismCore) {
    *
    * @param   mocFilename   The .moc file to load into Live2DModel instance.
    * @param   textureFiles  The texture files that should be used to render this model.
-   * @return                The corresponding Live2DModel instance.
    *
-   * @throws  exception.MocNotRevivedException   Failed to revive moc file.
+   * @return                A Success[Live2DModel] if load successfully, otherwise a Failure
+   *
    */
-  def loadModel(mocFilename: String, textureFiles: List[String]): Live2DModel = {
+  def loadModel(mocFilename: String, textureFiles: List[String]): Try[Live2DModel] = Try {
     val fileReader = new MocFileReader(core.memoryAllocator)
     val mocInfo = fileReader.readFile(mocFilename)
     new Live2DModel(mocInfo, textureFiles)(core)
