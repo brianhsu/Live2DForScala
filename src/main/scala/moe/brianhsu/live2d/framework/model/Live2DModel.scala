@@ -111,7 +111,7 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
         case _ => None
       }
 
-      val part = model.Part(opacityPointer, partId, parentId)
+      val part = model.Part(opacityPointer, this, partId, parentId)
 
       (partId -> part)
     }.toMap
@@ -138,7 +138,7 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.getPointerToFloat(i)
-      val parameter = Parameter(currentValuePointer, id, minValue, maxValue, defaultValue)
+      val parameter = Parameter(currentValuePointer, this, id, minValue, maxValue, defaultValue)
 
       (id -> parameter)
     }.toMap
@@ -202,7 +202,7 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
       )
 
       val drawable = Drawable(
-        drawableId, constantFlags, dynamicFlags, textureIndex, masks,
+        this, drawableId, constantFlags, dynamicFlags, textureIndex, masks,
         vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer
       )
 

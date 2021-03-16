@@ -82,8 +82,9 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         And(s"part $partId should have correct values")
 
         val part = parts.get(partId).value
-        inside(part) { case Part(opacityPointer, id, parentIdHolder) =>
+        inside(part) { case Part(opacityPointer, belongsTo, id, parentIdHolder) =>
           opacityPointer should not be null
+          belongsTo shouldBe model
           id shouldBe partId
           parentIdHolder shouldBe None
         }
@@ -142,7 +143,9 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       expectedParameters.foreach { expectedParameter =>
         And(s"${expectedParameter.id} should have correct values")
         val parameter = parameters.get(expectedParameter.id).value
-        inside(parameter) { case Parameter(pointer, id, min, max, default) =>
+        inside(parameter) { case Parameter(pointer, belongsTo, id, min, max, default) =>
+          pointer should not be null
+          belongsTo shouldBe model
           id shouldBe expectedParameter.id
           default shouldBe expectedParameter.default
           min shouldBe expectedParameter.min
@@ -163,8 +166,9 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       Then("the basic information of drawables should be correct")
       ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
         val drawable = drawables.get(expectedBasicInfo.id).value
-        inside(drawable) { case Drawable(id, constantFlags, dynamicFlags, textureIndex, masks,
+        inside(drawable) { case Drawable(belongsTo, id, constantFlags, dynamicFlags, textureIndex, masks,
                                          vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer) =>
+          belongsTo shouldBe model
           id shouldBe expectedBasicInfo.id
           constantFlags.bitmask shouldBe expectedBasicInfo.constFlags
           dynamicFlags.bitmask shouldBe expectedBasicInfo.dynamicFlags
@@ -173,6 +177,9 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
           vertexInfo.positions.size shouldBe expectedBasicInfo.positionsSize
           vertexInfo.textureCoordinates.size shouldBe expectedBasicInfo.textureCoordinatesSize
           vertexInfo.indices.size shouldBe expectedBasicInfo.indexSize
+          drawOrderPointer should not be null
+          renderOrderPointer should not be null
+          opacityPointer should not be null
         }
         drawable.renderOrder shouldBe expectedBasicInfo.renderOrder
         drawable.drawOrder shouldBe expectedBasicInfo.drawOrder
