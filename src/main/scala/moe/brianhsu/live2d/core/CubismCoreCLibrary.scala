@@ -6,12 +6,12 @@ import moe.brianhsu.live2d.core.types.{CArrayOfArrayOfInt, CArrayOfArrayOfShort,
 
 object CubismCoreCLibrary {
   object DynamicDrawableFlagMask {
-    val csmIsVisible = (1 << 0).toByte
-    val csmVisibilityDidChange = (1 << 1).toByte
-    val csmOpacityDidChange = (1 << 2).toByte
-    val csmDrawOrderDidChange = (1 << 3).toByte
-    val csmRenderOrderDidChange = (1 << 4).toByte
-    val csmVertexPositionsDidChange = (1 << 5).toByte
+    val csmIsVisible: Byte = (1 << 0).toByte
+    val csmVisibilityDidChange: Byte = (1 << 1).toByte
+    val csmOpacityDidChange: Byte = (1 << 2).toByte
+    val csmDrawOrderDidChange: Byte = (1 << 3).toByte
+    val csmRenderOrderDidChange: Byte = (1 << 4).toByte
+    val csmVertexPositionsDidChange: Byte = (1 << 5).toByte
   }
 
   object ConstantDrawableFlagMask {

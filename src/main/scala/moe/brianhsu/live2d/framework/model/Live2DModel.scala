@@ -4,7 +4,7 @@ import com.sun.jna.ptr.FloatByReference
 import moe.brianhsu.live2d.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.core.utils.MemoryInfo
 import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
-import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException}
+import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.framework.{MocInfo, model}
 
@@ -17,16 +17,29 @@ import moe.brianhsu.live2d.framework.{MocInfo, model}
  * @param mocInfo   The moc file information
  * @param core      The core library of Cubism
  */
-class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
+class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCore) {
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cLibrary.csmGetSizeofModel(this.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
   protected lazy val cubismModel: CPointerToModel = {
-    core.cLibrary.csmInitializeModelInPlace(
+    val model = core.cLibrary.csmInitializeModelInPlace(
       this.revivedMoc,
       this.modelMemoryInfo.alignedMemory,
       this.modelSize
     )
+
+    if (textureFiles.size != getTextureCountFromModel(model)) {
+      throw new TextureSizeMismatchException
+    }
+
+    model
+  }
+
+  private def getTextureCountFromModel(model: CPointerToModel): Int = {
+    val drawableCounts = core.cLibrary.csmGetDrawableCount(model)
+    val textureIndexList = core.cLibrary.csmGetDrawableTextureIndices(model)
+    val maxIndex = (0 until drawableCounts).map(i => textureIndexList(i)).max
+    maxIndex + 1
   }
 
   /**
@@ -120,7 +133,7 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
 
       val part = model.Part(opacityPointer, this, partId, parentId)
 
-      (partId -> part)
+      partId -> part
     }.toMap
   }
 
@@ -147,7 +160,7 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
       val currentValuePointer = currentValues.getPointerToFloat(i)
       val parameter = Parameter(currentValuePointer, this, id, minValue, maxValue, defaultValue)
 
-      (id -> parameter)
+      id -> parameter
     }.toMap
   }
 
@@ -213,7 +226,7 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
         vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer
       )
 
-      (drawableId -> drawable)
+      drawableId -> drawable
     }.toMap
   }
 

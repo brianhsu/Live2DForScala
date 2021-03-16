@@ -30,7 +30,7 @@ case class Drawable(belongsTo: Live2DModel, id: String, constantFlags: ConstantF
    *
    * @return  The draw order of this drawable.
    */
-  def drawOrder = drawOrderPointer.getInt(0)
+  def drawOrder: Int = drawOrderPointer.getInt(0)
 
   /**
    * Get render order of this drawable.
@@ -41,7 +41,7 @@ case class Drawable(belongsTo: Live2DModel, id: String, constantFlags: ConstantF
    *
    * @return  The render order of this drawable.
    */
-  def renderOrder = renderOrderPointer.getInt(0)
+  def renderOrder: Int = renderOrderPointer.getInt(0)
 
   /**
    * Get opacity of this drawable.
@@ -50,5 +50,5 @@ case class Drawable(belongsTo: Live2DModel, id: String, constantFlags: ConstantF
    *
    * @return  The opacity of this drawable.
    */
-  def opacity = opacityPointer.getFloat(0)
+  def opacity: Float = opacityPointer.getFloat(0)
 }

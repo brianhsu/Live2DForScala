@@ -23,5 +23,5 @@ case class Part(private val opacityPointer: Pointer, belongsTo: Live2DModel, id:
    *
    * @param value New opacity value.
    */
-  def setOpacity(value: Float) = opacityPointer.setFloat(0, value)
+  def setOpacity(value: Float): Unit = opacityPointer.setFloat(0, value)
 }
