@@ -48,12 +48,19 @@ class Live2DModel(mocInfo: MocInfo)(core: ICubismCore) {
   lazy val parts: Map[String, Part] = createParts()
 
   /**
-   * Drwables of this model.
+   * Drawable of this model.
    *
    * This is a map that key is the drawableId, and value is corresponding Drawable object.
    *
    */
   lazy val drawables: Map[String, Drawable] = createDrawable()
+
+  /**
+   * Get the drawables that is sorted by render order.
+   *
+   * This list is sorted by render order in ascending order.
+   */
+  def sortedDrawables: List[Drawable] = drawables.values.toList.sortBy(_.renderOrder)
 
   /**
    * Get the canvas info about this Live 2D Model

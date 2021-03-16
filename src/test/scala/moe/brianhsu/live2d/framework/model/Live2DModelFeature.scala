@@ -214,7 +214,22 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       }
 
     }
+
+    Scenario("Get drawable of the model in render order") {
+      Given("A Live2D HaruGreeter Model")
+      val model = cubism.loadModel(modelFile)
+
+      When("Get the drawables in order")
+      val drawables = model.sortedDrawables
+
+      Then("the drawable list should be sorted by render order in ascending order")
+      drawables.zipWithIndex.foreach { case (drawable, index) =>
+        drawable.renderOrder shouldBe index
+      }
+
+    }
   }
+
 
   Feature("Error handling when reading the model") {
     Scenario("Cannot revive the moc file") {
