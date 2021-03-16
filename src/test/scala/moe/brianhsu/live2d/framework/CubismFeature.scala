@@ -2,11 +2,13 @@ package moe.brianhsu.live2d.framework
 
 import moe.brianhsu.live2d.core.CubismCore
 import moe.brianhsu.live2d.core.types.{CsmLogFunction, CsmVersion, MocVersion40}
-import org.scalatest.GivenWhenThen
+import org.scalatest.{GivenWhenThen, TryValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
+import java.io.FileNotFoundException
+
+class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   private val cubism = new Cubism
   Feature("Init with custom logger") {
     Scenario("create cubism with custom logger") {
@@ -40,4 +42,18 @@ class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
       version shouldBe MocVersion40
     }
   }
+
+  Feature("Error handling") {
+    Scenario("Loading an avatar from non-exist directory") {
+      Given("a non-exist directory")
+      val directory = "NotExistDirectory"
+
+      When("loading an avatar from it")
+      val avatarHolder = cubism.loadAvatar(directory)
+
+      Then("it should return a Failure")
+      avatarHolder.failure.exception shouldBe a [FileNotFoundException]
+    }
+  }
+
 }

@@ -1,6 +1,5 @@
-package moe.brianhsu.live2d.framework
+package moe.brianhsu.live2d.core
 
-import moe.brianhsu.live2d.core.CubismCore
 import moe.brianhsu.live2d.core.types.CsmLogFunction
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
