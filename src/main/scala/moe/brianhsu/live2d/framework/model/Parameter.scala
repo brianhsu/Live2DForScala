@@ -25,7 +25,7 @@ case class Parameter(private val pointer: Pointer, id: String, min: Float, max: 
    * Update this parameter to a new value.
    *
    * @param value The new value to assign.
-   * @throws ParameterInvalidException if the assigned value is invalid.
+   * @throws moe.brianhsu.live2d.framework.exception.ParameterInvalidException if the assigned value is invalid.
    */
   def update(value: Float): Unit = {
 

@@ -4,12 +4,20 @@ import com.sun.jna.Pointer
 import moe.brianhsu.live2d.core.CubismCoreCLibrary.DynamicDrawableFlagMask._
 
 /**
- * The class represent the dynamic flags of a drawab.e
+ * The class represent the dynamic flags of a [[Drawable]]
  *
  * @param pointer   The pointer to actual of memory address that contains the value of this flag
  */
 case class DynamicFlags(private val pointer: Pointer) extends Flags {
   private def byteValue = pointer.getByte(0)
+
+  /**
+   * The actual bitmap that represent which flag has been enabled.
+   *
+   * This value will be read directly from the C native memory allocated by [[moe.brianhsu.live2d.core.CubismCore]]
+   *
+   * @return  The actual bitmap represent which flag has been enabled.
+   */
   def bitmask: Byte = byteValue
   def isVisible: Boolean = isBitSet(byteValue, csmIsVisible)
   def visibilityChanged: Boolean = isBitSet(byteValue, csmVisibilityDidChange)

@@ -224,26 +224,148 @@ trait CubismCoreCLibrary extends Library {
    */
   def csmGetPartParentPartIndices(model: CPointerToModel): CArrayOfInt
 
-
+  /**
+   * Gets number of drawables.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid count on success; '-1' otherwise.
+   */
   def csmGetDrawableCount(model: CPointerToModel): Int
+
+  /**
+   * Gets drawable IDs.
+   * All IDs are null-terminated ANSI strings.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableIds(model: CPointerToModel): CStringArray
+
+  /**
+   * Gets constant drawable flags.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableConstantFlags(model: CPointerToModel): CArrayOfByte
+
+  /**
+   * Gets dynamic drawable flags.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableDynamicFlags(model: CPointerToModel): CArrayOfByte
+
+  /**
+   * Gets drawable texture indices.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableTextureIndices(model: CPointerToModel): CArrayOfInt
+
+  /**
+   * Gets drawable draw orders.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableDrawOrders(model: CPointerToModel): CArrayOfInt
+
+  /**
+   * Gets drawable render orders.
+   * The higher the order, the more up front a drawable is.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0'otherwise.
+   */
   def csmGetDrawableRenderOrders(model: CPointerToModel): CArrayOfInt
+
+  /**
+   * Gets drawable opacities.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableOpacities(model: CPointerToModel): CArrayOfFloat
 
-
+  /**
+   * Gets numbers of masks of each drawable.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableMaskCounts(model: CPointerToModel): CArrayOfInt
+
+  /**
+   * Gets mask indices of each drawable.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableMasks(model: CPointerToModel): CArrayOfArrayOfInt
+
+  /**
+   * Gets number of vertices of each drawable.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableVertexCounts(model: CPointerToModel): CArrayOfInt
+
+  /**
+   * Gets vertex position data of each drawable.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; a null pointer otherwise.
+   */
   def csmGetDrawableVertexPositions(model: CPointerToModel): CArrayOfArrayOfCsmVector
+
+  /**
+   * Gets texture coordinate data of each drawables.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableVertexUvs(model: CPointerToModel): CArrayOfArrayOfCsmVector
+
+  /**
+   * Gets number of triangle indices for each drawable.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableIndexCounts(model: CPointerToModel): CArrayOfInt
+
+  /**
+   * Gets triangle index data for each drawable.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
   def csmGetDrawableIndices(model: CPointerToModel): CArrayOfArrayOfShort
 
-
+  /**
+   * Resets all dynamic drawable flags.
+   *
+   * @param  model  Model containing flags.
+   */
   def csmResetDrawableDynamicFlags(model: CPointerToModel): Unit
 }
 
