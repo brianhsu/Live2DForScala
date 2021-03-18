@@ -2,11 +2,16 @@ package moe.brianhsu.live2d.framework
 
 import moe.brianhsu.live2d.core.CubismCore
 import moe.brianhsu.live2d.core.types.{CsmLogFunction, CsmVersion, MocVersion40}
-import org.scalatest.GivenWhenThen
+import moe.brianhsu.live2d.framework.exception.MocNotRevivedException
+import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
+import org.scalatest.{GivenWhenThen, TryValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
+import java.io.FileNotFoundException
+import scala.util.Failure
+
+class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   private val cubism = new Cubism
   Feature("Init with custom logger") {
     Scenario("create cubism with custom logger") {
@@ -40,4 +45,58 @@ class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
       version shouldBe MocVersion40
     }
   }
+
+  Feature("Error handling") {
+    Scenario("Loading an avatar from non-exist directory") {
+      Given("a non-exist directory")
+      val directory = "NotExistDirectory"
+
+      When("loading an avatar from it")
+      val avatarHolder = cubism.loadAvatar(directory)
+
+      Then("it should return a Failure")
+      avatarHolder.failure.exception shouldBe a [FileNotFoundException]
+    }
+
+    Scenario("Loading an avatar from an exist directory that is not an avatar runtime") {
+      Given("a directory that exist but not a runtime")
+      val directory = "src/main/scala"
+
+      When("loading an avatar from it")
+      val avatarHolder = cubism.loadAvatar(directory)
+
+      Then("it should return a Failure")
+      avatarHolder.failure.exception shouldBe an[AssertionError]
+    }
+
+    Scenario("Loading an avatar from an exist directory that has corrupted settings") {
+      Given("a directory that exist but not a runtime")
+      val directory = "/Users/bhsu/live2dForScala/src/test/resources/models/corruptedModel/noRequiredFields"
+
+      When("loading an avatar from it")
+      val avatarHolder = cubism.loadAvatar(directory)
+
+      Then("it should return a Failure")
+      avatarHolder.failure.exception shouldBe an[AssertionError]
+    }
+  }
+
+  Feature("Loading an avatar") {
+    Scenario("Loading an avatar from directory") {
+      Given("a runtime directory")
+      val directory = "src/test/resources/models/HaruGreeter/runtime"
+
+      When("loading an avatar from it")
+      val avatarHolder = cubism.loadAvatar(directory)
+
+      Then("it should return a Success[Avatar]")
+      val avatar = avatarHolder.success.value
+      avatar shouldBe a [Avatar]
+
+      And("parse the model successfully")
+      avatar.model.success.value shouldBe a [Live2DModel]
+    }
+
+  }
+
 }
