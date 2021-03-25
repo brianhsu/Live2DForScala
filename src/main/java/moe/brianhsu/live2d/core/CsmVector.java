@@ -34,8 +34,8 @@ public class CsmVector extends Structure {
         return this.y;
     }
 
-    protected List getFieldOrder() {
-        return Arrays.asList(new String[] {"x", "y"});
+    protected List<String> getFieldOrder() {
+        return Arrays.asList("x", "y");
     }
 
 }

@@ -23,8 +23,8 @@ class AvatarFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       val avatar = avatarHolder.success.value
 
       And("the model should be a Failure[MocNotRevivedException]")
-      avatar.model shouldBe a[Failure[_]]
-      avatar.model.failure.exception shouldBe a[MocNotRevivedException]
+      avatar.modelHolder shouldBe a[Failure[_]]
+      avatar.modelHolder.failure.exception shouldBe a[MocNotRevivedException]
     }
 
   }

@@ -39,6 +39,10 @@ case class VertexInfo(numberOfVertex: Int, numberOfTriangleIndex: Int,
    */
   def indices: List[Short] = (0 until numberOfTriangleIndex).toList.map(i => pointerToArrayOfIndex(i))
 
+  def getVertexArrayDirectBuffer = pointerToArrayOfPositions.getDirectBuffer(numberOfVertex)
+  def getUvArrayDirectBuffer = pointerToArrayOfTextureCoordinate.getDirectBuffer(numberOfVertex)
+  def getIndexArrayDirectBuffer = pointerToArrayOfIndex.getDirectBuffer(numberOfTriangleIndex)
+
   private def createTupleListFrom(vectorArray: CArrayOfCsmVector): List[(Float, Float)] = {
     (0 until numberOfVertex).toList.map { i =>
       val csmVector = vectorArray(i)

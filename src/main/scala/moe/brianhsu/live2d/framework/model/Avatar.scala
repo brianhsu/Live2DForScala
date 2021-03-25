@@ -5,7 +5,6 @@ import moe.brianhsu.live2d.framework.Cubism
 import java.io.File
 import org.json4s._
 import org.json4s.native.JsonMethods._
-import org.json4s.JsonDSL._
 
 import scala.io.Source
 import scala.util.{Try, Using}
@@ -23,6 +22,7 @@ import scala.util.{Try, Using}
  * @param   directory   The directory in the filesystem that contains the settings for the avatar
  */
 class Avatar(val directory: String)(cubism: Cubism) {
+
   private val MainSetting = ".model3.json"
   private val mainFileHolder: Option[File] = findFile(MainSetting)
   private val mocFile: Option[String] = getMocFileFromMainJson()
@@ -30,10 +30,15 @@ class Avatar(val directory: String)(cubism: Cubism) {
   assert(mainFileHolder.isDefined, s"Cannot find main settings of $directory")
   assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/${mainFileHolder.get}")
 
-  val model: Try[Live2DModel] = {
+  val modelHolder: Try[Live2DModel] = {
     cubism
       .loadModel(mocFile.get, getTextureFiles)
       .map(_.validAllDataFromNativeLibrary)
+  }
+
+
+  def update(): Unit = {
+    modelHolder.foreach(_.update())
   }
 
   private lazy val parsedMainJson: Option[JValue] = {

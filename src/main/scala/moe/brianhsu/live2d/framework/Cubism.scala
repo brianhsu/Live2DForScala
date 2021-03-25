@@ -11,7 +11,7 @@ import scala.util.Try
 /**
  * The default Cubism singleton object that could be used to load Live 2D Cubism Avatar.
  */
-object Cubism extends CubismCore()
+object Cubism extends Cubism
 
 /**
  * The main Cubism class.

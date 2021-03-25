@@ -7,6 +7,7 @@ import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
 import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.framework.{MocInfo, model}
+import moe.brianhsu.live2d.math.ModelMatrix
 
 /**
  * The Live 2D model that represent an .moc file.
@@ -18,10 +19,31 @@ import moe.brianhsu.live2d.framework.{MocInfo, model}
  * @param core      The core library of Cubism
  */
 class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCore) {
+
+
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cLibrary.csmGetSizeofModel(this.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
-  protected lazy val cubismModel: CPointerToModel = {
+  protected lazy val cubismModel: CPointerToModel = createCubsimModel()
+
+  lazy val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
+
+  def getTextureFileByIndex(index: Int) = textureFiles(index)
+
+  def isUsingMasking = drawables.values.exists(d => d.masks.nonEmpty)
+
+  def getDrawableByIndex(drawableIndex: Int) = drawablesByIndex(drawableIndex)
+
+  def isUsingMask(): Boolean = drawables.values.exists(x => x.masks.nonEmpty)
+  def GetDrawableCount(): Int = {
+    core.cLibrary.csmGetDrawableCount(cubismModel)
+  }
+
+  def GetDrawableRenderOrders() = {
+    core.cLibrary.csmGetDrawableRenderOrders(cubismModel)
+  }
+
+  private def createCubsimModel(): CPointerToModel = {
     val model = core.cLibrary.csmInitializeModelInPlace(
       this.revivedMoc,
       this.modelMemoryInfo.alignedMemory,
@@ -67,6 +89,8 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
    *
    */
   lazy val drawables: Map[String, Drawable] = createDrawable()
+
+  lazy val drawablesByIndex = drawables.values.toList.sortBy(_.index)
 
   /**
    * This method will access all lazy member fields that load data from the CubismCore C Library,
@@ -240,7 +264,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
       )
 
       val drawable = Drawable(
-        this, drawableId, constantFlags, dynamicFlags, textureIndex, masks,
+        this, drawableId, i, constantFlags, dynamicFlags, textureIndex, masks,
         vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer
       )
 

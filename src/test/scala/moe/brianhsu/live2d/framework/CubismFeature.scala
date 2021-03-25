@@ -94,7 +94,7 @@ class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       avatar shouldBe a [Avatar]
 
       And("parse the model successfully")
-      avatar.model.success.value shouldBe a [Live2DModel]
+      avatar.modelHolder.success.value shouldBe a [Live2DModel]
     }
 
   }

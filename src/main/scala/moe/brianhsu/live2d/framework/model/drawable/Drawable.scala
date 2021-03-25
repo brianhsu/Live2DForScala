@@ -17,11 +17,14 @@ import moe.brianhsu.live2d.framework.model.Live2DModel
  * @param renderOrderPointer  The pointer to the actual memory address of render order value.
  * @param opacityPointer      The pointer to the actual memory address of opacity order value.
  */
-case class Drawable(belongsTo: Live2DModel, id: String, constantFlags: ConstantFlags, dynamicFlags: DynamicFlags,
+case class Drawable(belongsTo: Live2DModel, id: String, index: Int, constantFlags: ConstantFlags, dynamicFlags: DynamicFlags,
                     textureIndex: Int, masks: List[Int], vertexInfo: VertexInfo,
                     private val drawOrderPointer: Pointer,
                     private val renderOrderPointer: Pointer,
                     private val opacityPointer: Pointer) {
+
+  def GetDrawableCulling(): Boolean = !constantFlags.isDoubleSided
+
 
   /**
    * Get draw order of this drawable.
