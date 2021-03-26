@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.renderer.opengl
 
-import com.jogamp.opengl.{GL, GL2}
+import moe.brianhsu.live2d.adapter.OpenGL
 import moe.brianhsu.live2d.framework.math.Matrix4x4
 import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.framework.model.drawable.VertexInfo
@@ -8,8 +8,9 @@ import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
 import moe.brianhsu.live2d.renderer.opengl.clipping.{ClippingContext, ClippingManager}
 import moe.brianhsu.live2d.renderer.opengl.shader.ShaderRenderer
 
-class Renderer(model: Live2DModel)(implicit gl: GL2) {
+class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
 
+  import gl._
 
   private var projection: Option[Matrix4x4] = None
   private val textureManager = new TextureManager
@@ -56,13 +57,13 @@ class Renderer(model: Live2DModel)(implicit gl: GL2) {
   }
 
   def preDraw(): Unit = {
-    gl.glDisable(GL.GL_SCISSOR_TEST)
-    gl.glDisable(GL.GL_STENCIL_TEST)
-    gl.glDisable(GL.GL_DEPTH_TEST)
-    gl.glEnable(GL.GL_BLEND)
-    gl.glColorMask(true, true, true, true)
-    gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0)
-    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0) //前にバッファがバインドされていたら破棄する必要がある
+    gl.glDisable(GL_SCISSOR_TEST)
+    gl.glDisable(GL_STENCIL_TEST)
+    gl.glDisable(GL_DEPTH_TEST)
+    gl.glEnable(GL_BLEND)
+    gl.glColorMask(red = true, green = true, blue = true, alpha = true)
+    gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+    gl.glBindBuffer(GL_ARRAY_BUFFER, 0) //前にバッファがバインドされていたら破棄する必要がある
   }
 
   def postDraw(): Unit = {}
@@ -71,11 +72,11 @@ class Renderer(model: Live2DModel)(implicit gl: GL2) {
                opacity: Float, colorBlendMode: BlendMode, invertedMask: Boolean): Unit ={
 
     isCulling match {
-      case true  => gl.glEnable(GL.GL_CULL_FACE)
-      case false => gl.glDisable(GL.GL_CULL_FACE)
+      case true  => gl.glEnable(GL_CULL_FACE)
+      case false => gl.glDisable(GL_CULL_FACE)
     }
 
-    gl.glFrontFace(GL.GL_CCW)
+    gl.glFrontFace(GL_CCW)
 
     val modelColorRGBA = getClippingContextBufferForMask match {
       case None => TextureColor(1.0f, 1.0f, 1.0f, opacity)
@@ -92,7 +93,7 @@ class Renderer(model: Live2DModel)(implicit gl: GL2) {
       invertedMask
     )
 
-    gl.glDrawElements(GL.GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL.GL_UNSIGNED_SHORT, vertexInfo.getIndexArrayDirectBuffer)
+    gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.getIndexArrayDirectBuffer)
 
     gl.glUseProgram(0)
     setClippingContextBufferForDraw(None)

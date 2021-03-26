@@ -1,13 +1,13 @@
 package moe.brianhsu.live2d.renderer.opengl.clipping
 
-import com.jogamp.opengl.GL2
+import moe.brianhsu.live2d.adapter.OpenGL
 import moe.brianhsu.live2d.framework.model.Live2DModel
 import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.live2d.framework.model.drawable.Drawable
 import moe.brianhsu.live2d.framework.math.Rectangle
 import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
 
-class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implicit gl: GL2) {
+class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implicit gl: OpenGL) {
 
   val clippingMaskBufferSize: Int = 256 ///< クリッピングマスクのバッファサイズ（初期値:256）
 

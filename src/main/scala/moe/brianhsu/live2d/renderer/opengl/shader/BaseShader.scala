@@ -1,12 +1,14 @@
 package moe.brianhsu.live2d.renderer.opengl.shader
 
-import com.jogamp.opengl.{GL2, GL2ES2}
+import moe.brianhsu.live2d.adapter.OpenGL
 
 import java.nio.{ByteBuffer, IntBuffer}
 import scala.util.Try
 
 
-abstract class BaseShader[T <: BaseShader[T]](implicit gl: GL2) { self: T =>
+abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
+
+  import gl._
 
   def vertexShaderSource: String
   def fragmentShaderSource: String
@@ -24,8 +26,8 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: GL2) { self: T =>
 
   private def createShaderProgram(): Int = {
     val shaderProgram = gl.glCreateProgram()
-    val vertexShaderHolder = compileShader(GL2ES2.GL_VERTEX_SHADER, vertexShaderSource)
-    val fragmentShaderHolder = compileShader(GL2ES2.GL_FRAGMENT_SHADER, fragmentShaderSource)
+    val vertexShaderHolder = compileShader(GL_VERTEX_SHADER, vertexShaderSource)
+    val fragmentShaderHolder = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource)
 
     vertexShaderHolder.foreach(shaderId => gl.glAttachShader(shaderProgram, shaderId))
     fragmentShaderHolder.foreach(shaderId => gl.glAttachShader(shaderProgram, shaderId))
@@ -77,7 +79,7 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: GL2) { self: T =>
 
   private def getProgramErrorLog(programId: Int): Option[String] = {
     val logLengthHolder = IntBuffer.allocate(1)
-    gl.glGetProgramiv(programId, GL2ES2.GL_INFO_LOG_LENGTH, logLengthHolder)
+    gl.glGetProgramiv(programId, GL_INFO_LOG_LENGTH, logLengthHolder)
     val logLength = logLengthHolder.get()
     logLength match {
       case 0 => None
@@ -90,7 +92,7 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: GL2) { self: T =>
 
   private def getShaderErrorLog(shaderId: Int): Option[String] = {
     val logLengthHolder = IntBuffer.allocate(1)
-    gl.glGetShaderiv(shaderId, GL2ES2.GL_INFO_LOG_LENGTH, logLengthHolder)
+    gl.glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, logLengthHolder)
     val logLength = logLengthHolder.get()
     logLength match {
       case 0 => None

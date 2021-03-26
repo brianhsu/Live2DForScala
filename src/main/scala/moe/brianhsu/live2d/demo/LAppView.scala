@@ -1,14 +1,18 @@
 package moe.brianhsu.live2d.demo
 
-import com.jogamp.opengl.{GL2, GLAutoDrawable}
-import com.jogamp.opengl.GL._
+import com.jogamp.opengl.GLAutoDrawable
+import moe.brianhsu.live2d.adapter.JavaOpenGL
 import moe.brianhsu.live2d.demo.LAppSprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
 
 class LAppView(openGLDrawable: GLAutoDrawable) {
-  private implicit val gl: GL2 = openGLDrawable.getGL.getGL2
+  private implicit val openGL: JavaOpenGL = new JavaOpenGL(openGLDrawable.getGL.getGL2)
+
+  import openGL._
+
   private val spriteShader: SpriteShader = new SpriteShader().useProgram()
   private val manager = new TextureManager()
+
   private lazy val backgroundTexture = manager.loadTexture("src/main/resources/texture/back_class_normal.png")
   private lazy val powerTexture = manager.loadTexture("src/main/resources/texture/close.png")
   private lazy val gearTexture = manager.loadTexture("src/main/resources/texture/icon_gear.png")
@@ -17,7 +21,7 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
   private val backgroundSprite: LAppSprite = new BackgroundSprite(openGLDrawable, backgroundTexture, spriteShader)
   private val powerSprite: LAppSprite = new PowerSprite(openGLDrawable, powerTexture, spriteShader)
   private val gearSprite: LAppSprite = new GearSprite(openGLDrawable, gearTexture, spriteShader)
-  private val renderer = new Renderer(model)(gl)
+  private val renderer = new Renderer(model)
   private val viewPortMatrixCalculator = new ViewPortMatrixCalculator
 
   init()
@@ -28,10 +32,10 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
       openGLDrawable.getSurfaceHeight
     )
 
-    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    gl.glEnable(GL_BLEND)
-    gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    openGL.glEnable(GL_BLEND)
+    openGL.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
   }
 
   def display(): Unit = {
@@ -57,12 +61,12 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
   }
 
   private def clearScreen(): Unit = {
-    gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
-    gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    gl.glClearDepth(1.0)
+    openGL.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+    openGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    openGL.glClearDepth(1.0)
   }
 
-  def resize() = {
+  def resize(): Unit = {
     viewPortMatrixCalculator.updateViewPort(
       openGLDrawable.getSurfaceWidth,
       openGLDrawable.getSurfaceHeight
@@ -71,6 +75,7 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
     backgroundSprite.resize()
     powerSprite.resize()
     gearSprite.resize()
+    this.display()
   }
 
   def onMouseClick(x: Int, y: Int): Unit = {

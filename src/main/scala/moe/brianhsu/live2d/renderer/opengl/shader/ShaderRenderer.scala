@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.renderer.opengl.shader
 
-import com.jogamp.opengl.{GL, GL2}
+import moe.brianhsu.live2d.adapter.OpenGL
 import moe.brianhsu.live2d.framework.math.Matrix4x4
 import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
 import moe.brianhsu.live2d.renderer.opengl.clipping.ClippingContext
@@ -8,7 +8,9 @@ import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureColor}
 
 import java.nio.{Buffer, FloatBuffer}
 
-class ShaderRenderer(implicit gl: GL2) {
+class ShaderRenderer(implicit gl: OpenGL) {
+
+  import gl._
 
   private val setupMaskShader = new SetupMask
   private val normalShader = new Normal
@@ -38,9 +40,9 @@ class ShaderRenderer(implicit gl: GL2) {
     }
 
     val blending = colorBlendMode match {
-      case Normal => Blending(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA, GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA)
-      case AdditiveBlend => Blending(GL.GL_ONE, GL.GL_ONE, GL.GL_ZERO, GL.GL_ONE)
-      case MultiplicativeBlend => Blending(GL.GL_DST_COLOR, GL.GL_ONE_MINUS_SRC_ALPHA, GL.GL_ZERO, GL.GL_ONE)
+      case Normal => Blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
+      case AdditiveBlend => Blending(GL_ONE, GL_ONE, GL_ZERO, GL_ONE)
+      case MultiplicativeBlend => Blending(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE)
     }
 
     gl.glUseProgram(shader.shaderProgram)
@@ -50,17 +52,17 @@ class ShaderRenderer(implicit gl: GL2) {
     for (context <- drawClippingContextHolder) {
       val textureIdHolder = renderer.offscreenBufferHolder.map(_.getColorBuffer)
       textureIdHolder.foreach { textureId =>
-        setGlTexture(GL.GL_TEXTURE1, textureId, shader.samplerTexture1Location, 1)
-        gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, false, FloatBuffer.wrap(context.getMatrixForDraw.getArray()))
+        setGlTexture(GL_TEXTURE1, textureId, shader.samplerTexture1Location, 1)
+        gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, FloatBuffer.wrap(context.getMatrixForDraw.getArray()))
         setGlColorChannel(context, shader)
       }
     }
 
     //テクスチャ設定
-    setGlTexture(GL.GL_TEXTURE0, textureId, shader.samplerTexture0Location, 0)
+    setGlTexture(GL_TEXTURE0, textureId, shader.samplerTexture0Location, 0)
 
     //座標変換
-    gl.glUniformMatrix4fv(shader.uniformMatrixLocation, 1, false, FloatBuffer.wrap(projection.getArray()))
+    gl.glUniformMatrix4fv(shader.uniformMatrixLocation, 1, transpose = false, FloatBuffer.wrap(projection.getArray()))
     gl.glUniform4f(shader.uniformBaseColorLocation, baseColor.r, baseColor.g, baseColor.b, baseColor.a)
     setGlBlend(blending)
   }
@@ -70,11 +72,11 @@ class ShaderRenderer(implicit gl: GL2) {
 
     gl.glUseProgram(shader.shaderProgram)
 
-    setGlTexture(GL.GL_TEXTURE0, textureId, shader.samplerTexture0Location, 0)
+    setGlTexture(GL_TEXTURE0, textureId, shader.samplerTexture0Location, 0)
     setGlVertexInfo(vertexArray, uvArray, shader)
     setGlColorChannel(context, shader)
 
-    gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, false, FloatBuffer.wrap(context.getMatrixForMask.getArray()))
+    gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, FloatBuffer.wrap(context.getMatrixForMask.getArray()))
 
     val rect = context.getLayoutBounds
 
@@ -86,7 +88,7 @@ class ShaderRenderer(implicit gl: GL2) {
       rect.bottomY * 2.0f - 1.0f
     )
 
-    setGlBlend(Blending(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR, GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_ALPHA))
+    setGlBlend(Blending(GL_ZERO, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA))
   }
 
   def setGlColorChannel(context: ClippingContext, shader: AvatarShader): Unit = {
@@ -97,17 +99,17 @@ class ShaderRenderer(implicit gl: GL2) {
 
   def setGlTexture(textureUnit: Int, textureId: Int, variable: Int, variableValue: Int): Unit = {
     gl.glActiveTexture(textureUnit)
-    gl.glBindTexture(GL.GL_TEXTURE_2D, textureId)
+    gl.glBindTexture(GL_TEXTURE_2D, textureId)
     gl.glUniform1i(variable, variableValue)
   }
 
   private def setGlVertexInfo(vertexArray: Buffer, uvArray: Buffer, shader: AvatarShader): Unit = {
     // 頂点配列の設定
     gl.glEnableVertexAttribArray(shader.attributePositionLocation)
-    gl.glVertexAttribPointer(shader.attributePositionLocation, 2, GL.GL_FLOAT, false, 4 * 2, vertexArray)
+    gl.glVertexAttribPointer(shader.attributePositionLocation, 2, GL_FLOAT, normalized = false, 4 * 2, vertexArray)
     // テクスチャ頂点の設定
     gl.glEnableVertexAttribArray(shader.attributeTexCoordLocation)
-    gl.glVertexAttribPointer(shader.attributeTexCoordLocation, 2, GL.GL_FLOAT, false, 4 * 2, uvArray)
+    gl.glVertexAttribPointer(shader.attributeTexCoordLocation, 2, GL_FLOAT, normalized = false, 4 * 2, uvArray)
   }
 
   private def setGlBlend(blending: Blending): Unit = {

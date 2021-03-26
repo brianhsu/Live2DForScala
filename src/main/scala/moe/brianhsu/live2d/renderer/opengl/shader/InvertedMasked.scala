@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.renderer.opengl.shader
 
-import com.jogamp.opengl.GL2
+import moe.brianhsu.live2d.adapter.OpenGL
 
-class InvertedMasked(implicit gl: GL2) extends AvatarShader {
+class InvertedMasked(implicit gl: OpenGL) extends AvatarShader {
   override def vertexShaderSource: String = {
     "#version 120\n"+
       "attribute vec4 a_position;" +

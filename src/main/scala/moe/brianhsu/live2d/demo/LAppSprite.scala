@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.demo
 
 import com.jogamp.common.nio.Buffers
 import com.jogamp.opengl.GLAutoDrawable
-import com.jogamp.opengl.GL._
+import moe.brianhsu.live2d.adapter.JavaOpenGL
 import moe.brianhsu.live2d.renderer.opengl.TextureManager.TextureInfo
 import moe.brianhsu.live2d.framework.math.Rectangle
 
@@ -58,7 +58,9 @@ abstract class LAppSprite(drawable: GLAutoDrawable, textureInfo: TextureInfo, sh
 
   case class Position(originX: Float, originY: Float, width: Float, height: Float)
 
-  private val gl = drawable.getGL.getGL2
+  private val gl = new JavaOpenGL(drawable.getGL.getGL2)
+
+  import gl._
 
   private val positionLocation = gl.glGetAttribLocation(shader.shaderProgram, "position")
   private val uvLocation = gl.glGetAttribLocation(shader.shaderProgram, "uv")
@@ -110,8 +112,8 @@ abstract class LAppSprite(drawable: GLAutoDrawable, textureInfo: TextureInfo, sh
     val buffer1 = Buffers.newDirectFloatBuffer(positionVertex)
     val buffer2 = Buffers.newDirectFloatBuffer(uvVertex)
 
-    gl.glVertexAttribPointer(positionLocation, 2, GL_FLOAT, false, 0, buffer1)
-    gl.glVertexAttribPointer(uvLocation, 2, GL_FLOAT, false, 0, buffer2)
+    gl.glVertexAttribPointer(positionLocation, 2, GL_FLOAT, normalized = false, 0, buffer1)
+    gl.glVertexAttribPointer(uvLocation, 2, GL_FLOAT, normalized = false, 0, buffer2)
 
     gl.glUniform4f(colorLocation, spriteColor._1, spriteColor._2, spriteColor._3, spriteColor._4)
     gl.glBindTexture(GL_TEXTURE_2D, textureInfo.textureId)

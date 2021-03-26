@@ -1,9 +1,9 @@
 package moe.brianhsu.live2d.demo
 
-import com.jogamp.opengl.GL2
+import moe.brianhsu.live2d.adapter.OpenGL
 import moe.brianhsu.live2d.renderer.opengl.shader.BaseShader
 
-class SpriteShader(implicit gl: GL2) extends BaseShader[SpriteShader] {
+class SpriteShader(implicit gl: OpenGL) extends BaseShader[SpriteShader] {
   override def vertexShaderSource: String =
     """
       |#version 120

@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.renderer.opengl
 
-import com.jogamp.opengl.GL._
 import com.jogamp.opengl.GL2
+import moe.brianhsu.live2d.adapter.{JavaOpenGL, OpenGL}
 import moe.brianhsu.live2d.renderer.opengl.TextureManager.TextureInfo
 
 import java.io.File
@@ -12,7 +12,9 @@ object TextureManager {
   case class TextureInfo(textureId: Int, width: Int, height: Int)
 }
 
-class TextureManager(implicit gl: GL2) {
+class TextureManager(implicit gl: OpenGL) {
+
+  import gl._
 
   case class ImageBitmap(width: Int, height: Int, bitmap: ByteBuffer)
 
