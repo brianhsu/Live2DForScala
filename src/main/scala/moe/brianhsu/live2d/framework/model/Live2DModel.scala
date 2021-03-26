@@ -7,7 +7,7 @@ import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
 import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.framework.{MocInfo, model}
-import moe.brianhsu.live2d.math.ModelMatrix
+import moe.brianhsu.live2d.framework.math.ModelMatrix
 
 /**
  * The Live 2D model that represent an .moc file.

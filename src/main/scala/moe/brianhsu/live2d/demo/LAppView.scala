@@ -3,8 +3,7 @@ package moe.brianhsu.live2d.demo
 import com.jogamp.opengl.{GL2, GLAutoDrawable}
 import com.jogamp.opengl.GL._
 import moe.brianhsu.live2d.demo.LAppSprite.{BackgroundSprite, GearSprite, PowerSprite}
-import moe.brianhsu.live2d.opengl.TextureManager
-import moe.brianhsu.live2d.opengl.renderer.Renderer
+import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
 
 class LAppView(openGLDrawable: GLAutoDrawable) {
   private implicit val gl: GL2 = openGLDrawable.getGL.getGL2

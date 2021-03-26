@@ -1,12 +1,11 @@
-package moe.brianhsu.live2d.opengl.renderer.clipping
+package moe.brianhsu.live2d.renderer.opengl.clipping
 
 import com.jogamp.opengl.GL2
 import moe.brianhsu.live2d.framework.model.Live2DModel
 import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.live2d.framework.model.drawable.Drawable
-import moe.brianhsu.live2d.math.Rectangle
-import moe.brianhsu.live2d.opengl.TextureManager
-import moe.brianhsu.live2d.opengl.renderer.Renderer
+import moe.brianhsu.live2d.framework.math.Rectangle
+import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
 
 class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implicit gl: GL2) {
 
@@ -55,11 +54,11 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
 
       // RGBAを順番に使っていく。
       val ColorChannelCount = 4
-      val div = usingClipCount / ColorChannelCount; //１チャンネルに配置する基本のマスク個数
-      val mod = usingClipCount % ColorChannelCount; //余り、この番号のチャンネルまでに１つずつ配分する
+      val div = usingClipCount / ColorChannelCount //１チャンネルに配置する基本のマスク個数
+      val mod = usingClipCount % ColorChannelCount //余り、この番号のチャンネルまでに１つずつ配分する
 
       // RGBAそれぞれのチャンネルを用意していく(0:R , 1:G , 2:B, 3:A, )
-      var curClipIndex = 0; //順番に設定していく
+      var curClipIndex = 0 //順番に設定していく
 
       for (channelNo <- 0 until ColorChannelCount) {
         // このチャンネルにレイアウトする数
@@ -123,7 +122,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
       cc.calcClippedDrawTotalBounds()
 
       if (cc.getIsUsing) {
-        usingClipCount += 1; //使用中としてカウント
+        usingClipCount += 1
       }
     }
 

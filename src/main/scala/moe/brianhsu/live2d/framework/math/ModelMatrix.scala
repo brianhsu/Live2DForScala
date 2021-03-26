@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.math
+package moe.brianhsu.live2d.framework.math
 
 class ModelMatrix(width: Float, height: Float) extends Matrix4x4 {
   setHeight(2.0f)

@@ -3,8 +3,8 @@ package moe.brianhsu.live2d.demo
 import com.jogamp.common.nio.Buffers
 import com.jogamp.opengl.GLAutoDrawable
 import com.jogamp.opengl.GL._
-import moe.brianhsu.live2d.opengl.TextureManager.TextureInfo
-import moe.brianhsu.live2d.math.Rectangle
+import moe.brianhsu.live2d.renderer.opengl.TextureManager.TextureInfo
+import moe.brianhsu.live2d.framework.math.Rectangle
 
 object LAppSprite {
 

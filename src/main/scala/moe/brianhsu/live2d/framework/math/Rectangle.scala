@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.math
+package moe.brianhsu.live2d.framework.math
 
 case class Rectangle(leftX: Float = 0.0f, topY: Float = 0.0f, width: Float = 0.0f, height: Float = 0.0f) {
 

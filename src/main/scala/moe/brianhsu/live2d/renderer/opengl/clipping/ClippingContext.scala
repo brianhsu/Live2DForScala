@@ -1,9 +1,9 @@
-package moe.brianhsu.live2d.opengl.renderer.clipping
+package moe.brianhsu.live2d.renderer.opengl.clipping
 
-import moe.brianhsu.live2d.opengl.TextureColor
-import moe.brianhsu.live2d.opengl.renderer.clipping.ClippingContext.channelColors
+import moe.brianhsu.live2d.renderer.opengl.clipping.ClippingContext.channelColors
 import moe.brianhsu.live2d.framework.model.drawable.Drawable
-import moe.brianhsu.live2d.math.{Matrix4x4, Rectangle}
+import moe.brianhsu.live2d.framework.math.{Matrix4x4, Rectangle}
+import moe.brianhsu.live2d.renderer.opengl.TextureColor
 
 object ClippingContext {
   private val channelColors = Array(

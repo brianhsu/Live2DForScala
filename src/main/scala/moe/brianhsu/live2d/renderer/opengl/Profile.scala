@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.opengl.renderer
+package moe.brianhsu.live2d.renderer.opengl
 
 import com.jogamp.opengl.{GL, GL2, GL2ES2}
 
@@ -21,8 +21,12 @@ class Profile(implicit gl: GL2) {
   private val lastFrontFace: Array[Int] = new Array(1)
   private val lastColorMask: Array[Byte] = new Array(4)
   private val lastBlending: Array[Int] = new Array(4)
-  val lastFBO: Array[Int] = new Array(1)
-  val lastViewport: Array[Int] = new Array(4)
+  private val lastFBO: Array[Int] = new Array(1)
+  private val lastViewport: Array[Int] = new Array(4)
+
+  def getLastFBO: Int = lastFBO(0)
+
+  def gatLastViewPort: Array[Int] = lastViewport
 
   def save(): Unit = {
     gl.glGetIntegerv(GL.GL_ARRAY_BUFFER_BINDING, lastArrayBufferBinding, 0)

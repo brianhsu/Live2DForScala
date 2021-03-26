@@ -1,14 +1,9 @@
-package moe.brianhsu.live2d
+package moe.brianhsu.live2d.demo
 
-import com.jogamp.opengl.{GL, GL2, GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile}
 import com.jogamp.opengl.awt.GLCanvas
-import moe.brianhsu.live2d.demo.{FrameTime, GLMain, LAppSprite}
-import com.jogamp.opengl.GL._
-import com.jogamp.opengl.util.Animator
+import com.jogamp.opengl.{GLCapabilities, GLProfile}
 
-import java.awt.event.{MouseAdapter, MouseEvent, MouseListener}
 import javax.swing.JFrame
-
 
 object Main {
 

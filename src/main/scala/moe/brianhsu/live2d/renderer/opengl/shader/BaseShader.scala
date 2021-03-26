@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.opengl.shader
+package moe.brianhsu.live2d.renderer.opengl.shader
 
 import com.jogamp.opengl.{GL2, GL2ES2}
 
@@ -16,6 +16,10 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: GL2) { self: T =>
   def useProgram(): T = {
     gl.glUseProgram(shaderProgram)
     this
+  }
+
+  override def finalize(): Unit = {
+   gl.glDeleteProgram(shaderProgram)
   }
 
   private def createShaderProgram(): Int = {

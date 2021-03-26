@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.opengl.renderer
+package moe.brianhsu.live2d.renderer.opengl
 
 import com.jogamp.opengl.{GL, GL2}
 

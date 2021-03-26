@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.demo
 
-import moe.brianhsu.live2d.math.{Rectangle, Matrix4x4, ModelMatrix, ViewMatrix}
+import moe.brianhsu.live2d.framework.math.{Rectangle, Matrix4x4, ModelMatrix, ViewMatrix}
 
 class ViewPortMatrixCalculator {
 

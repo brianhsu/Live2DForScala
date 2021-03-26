@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.opengl
+package moe.brianhsu.live2d.adapter
 
 object OpenGLConstant {
 

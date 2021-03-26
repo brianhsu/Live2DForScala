@@ -1,11 +1,10 @@
-package moe.brianhsu.live2d.opengl.renderer
+package moe.brianhsu.live2d.renderer.opengl.shader
 
 import com.jogamp.opengl.{GL, GL2}
+import moe.brianhsu.live2d.framework.math.Matrix4x4
 import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
-import moe.brianhsu.live2d.math.Matrix4x4
-import moe.brianhsu.live2d.opengl.TextureColor
-import moe.brianhsu.live2d.opengl.renderer.clipping.ClippingContext
-import moe.brianhsu.live2d.opengl.shader._
+import moe.brianhsu.live2d.renderer.opengl.clipping.ClippingContext
+import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureColor}
 
 import java.nio.{Buffer, FloatBuffer}
 

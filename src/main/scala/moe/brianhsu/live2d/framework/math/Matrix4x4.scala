@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.math
+package moe.brianhsu.live2d.framework.math
 
 
 object Matrix4x4 {

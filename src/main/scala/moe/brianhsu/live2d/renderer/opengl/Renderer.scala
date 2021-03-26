@@ -1,13 +1,12 @@
-package moe.brianhsu.live2d.opengl.renderer
+package moe.brianhsu.live2d.renderer.opengl
 
 import com.jogamp.opengl.{GL, GL2}
-import moe.brianhsu.live2d.demo.LAppLive2DManager
+import moe.brianhsu.live2d.framework.math.Matrix4x4
 import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.framework.model.drawable.VertexInfo
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
-import moe.brianhsu.live2d.math.Matrix4x4
-import moe.brianhsu.live2d.opengl.renderer.clipping.{ClippingContext, ClippingManager}
-import moe.brianhsu.live2d.opengl.{TextureColor, TextureManager}
+import moe.brianhsu.live2d.renderer.opengl.clipping.{ClippingContext, ClippingManager}
+import moe.brianhsu.live2d.renderer.opengl.shader.ShaderRenderer
 
 class Renderer(model: Live2DModel)(implicit gl: GL2) {
 
@@ -103,12 +102,11 @@ class Renderer(model: Live2DModel)(implicit gl: GL2) {
   def drawModel(): Unit = {
     clippingManagerHolder.foreach { manager =>
       preDraw()
-      manager.setupClippingContext(this, profile.lastFBO(0), profile.lastViewport);
+      manager.setupClippingContext(this, profile.getLastFBO, profile.gatLastViewPort)
     }
 
     preDraw()
 
-    val model =  LAppLive2DManager.avatarHolder.get.modelHolder.get
     val sortedDrawable = model.sortedDrawables
     for (drawable <- sortedDrawable.filter(_.dynamicFlags.isVisible)) {
 

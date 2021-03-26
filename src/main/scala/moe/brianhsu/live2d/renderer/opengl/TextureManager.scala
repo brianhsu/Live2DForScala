@@ -1,8 +1,8 @@
-package moe.brianhsu.live2d.opengl
+package moe.brianhsu.live2d.renderer.opengl
 
 import com.jogamp.opengl.GL._
 import com.jogamp.opengl.GL2
-import moe.brianhsu.live2d.opengl.TextureManager.TextureInfo
+import moe.brianhsu.live2d.renderer.opengl.TextureManager.TextureInfo
 
 import java.io.File
 import java.nio.ByteBuffer
