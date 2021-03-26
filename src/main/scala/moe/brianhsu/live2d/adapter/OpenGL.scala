@@ -30,7 +30,8 @@ trait OpenGL {
   def glActiveTexture(texture: Int): Unit
   def glUniform1i(location: Int, v0: Int): Unit
   def glEnableVertexAttribArray(index: Int): Unit
-  def glVertexAttribPointer(indx: Int, size: Int, `type`: Int, normalized: Boolean, stride: Int, ptr: Buffer): Unit
+  def glVertexAttribPointer(indx: Int, size: Int, `type`: Int, normalized: Boolean, stride: Int, ptr: ByteBuffer): Unit
+  def glVertexAttribPointer(indx: Int, size: Int, `type`: Int, normalized: Boolean, stride: Int, ptr: FloatBuffer): Unit
   def glBlendFuncSeparate(sfactorRGB: Int, dfactorRGB: Int, sfactorAlpha: Int, dfactorAlpha: Int): Unit
   def glGetIntegerv(pname: Int, params: Array[Int], params_offset: Int): Unit
   def glGetVertexAttribiv(index: Int, pname: Int, params: Array[Int], params_offset: Int): Unit
@@ -50,7 +51,7 @@ trait OpenGL {
   def glClear(mask: Int): Unit
   def glDeleteTextures(n: Int, textures: Array[Int], textures_offset: Int): Unit
   def glDeleteFramebuffers(n: Int, framebuffers: Array[Int], framebuffers_offset: Int): Unit
-  def glDrawElements(mode: Int, count: Int, `type`: Int, indices: Buffer): Unit
+  def glDrawElements(mode: Int, count: Int, `type`: Int, indices: ByteBuffer): Unit
   def glClearDepth(depth: Double): Unit
   def glBlendFunc(sfactor: Int, dfactor: Int): Unit
   def glDrawArrays(mode: Int, first: Int, count: Int): Unit

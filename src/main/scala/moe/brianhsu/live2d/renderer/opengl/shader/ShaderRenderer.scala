@@ -6,7 +6,7 @@ import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags.{AdditiveBlend
 import moe.brianhsu.live2d.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureColor}
 
-import java.nio.{Buffer, FloatBuffer}
+import java.nio.{Buffer, ByteBuffer, FloatBuffer}
 
 class ShaderRenderer(implicit gl: OpenGL) {
 
@@ -20,7 +20,7 @@ class ShaderRenderer(implicit gl: OpenGL) {
   case class Blending(srcColor: Int, dstColor: Int, srcAlpha: Int, dstAlpha: Int)
 
   def render(renderer: Renderer, textureId: Int,
-             vertexArray: Buffer, uvArray: Buffer, colorBlendMode: BlendMode,
+             vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode,
              baseColor: TextureColor, projection: Matrix4x4,
              invertedMask: Boolean): Unit = {
 
@@ -30,7 +30,7 @@ class ShaderRenderer(implicit gl: OpenGL) {
     }
   }
 
-  private def renderDrawable(renderer: Renderer, textureId: Int, vertexArray: Buffer, uvArray: Buffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: Matrix4x4, invertedMask: Boolean): Unit = {
+  private def renderDrawable(renderer: Renderer, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: Matrix4x4, invertedMask: Boolean): Unit = {
     val drawClippingContextHolder = renderer.getClippingContextBufferForDraw
     val masked = drawClippingContextHolder.isDefined // この描画オブジェクトはマスク対象か
     val shader = masked match {
@@ -67,7 +67,7 @@ class ShaderRenderer(implicit gl: OpenGL) {
     setGlBlend(blending)
   }
 
-  private def renderMask(context: ClippingContext, textureId: Int, vertexArray: Buffer, uvArray: Buffer): Unit = {
+  private def renderMask(context: ClippingContext, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer): Unit = {
     val shader = setupMaskShader
 
     gl.glUseProgram(shader.shaderProgram)
@@ -103,7 +103,7 @@ class ShaderRenderer(implicit gl: OpenGL) {
     gl.glUniform1i(variable, variableValue)
   }
 
-  private def setGlVertexInfo(vertexArray: Buffer, uvArray: Buffer, shader: AvatarShader): Unit = {
+  private def setGlVertexInfo(vertexArray: ByteBuffer, uvArray: ByteBuffer, shader: AvatarShader): Unit = {
     // 頂点配列の設定
     gl.glEnableVertexAttribArray(shader.attributePositionLocation)
     gl.glVertexAttribPointer(shader.attributePositionLocation, 2, GL_FLOAT, normalized = false, 4 * 2, vertexArray)

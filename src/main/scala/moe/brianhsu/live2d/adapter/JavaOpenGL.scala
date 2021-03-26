@@ -171,7 +171,12 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
   }
 
   override def glVertexAttribPointer(index: Int, size: Int, `type`: Int, normalized: Boolean,
-                                     stride: Int, ptr: Buffer): Unit = {
+                                     stride: Int, ptr: ByteBuffer): Unit = {
+    gl.glVertexAttribPointer(index, size, `type`, normalized, stride, ptr)
+  }
+
+  override def glVertexAttribPointer(index: Int, size: Int, `type`: Int, normalized: Boolean,
+                                     stride: Int, ptr: FloatBuffer): Unit = {
     gl.glVertexAttribPointer(index, size, `type`, normalized, stride, ptr)
   }
 
@@ -251,7 +256,7 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glDeleteFramebuffers(n, framebuffers, framebuffers_offset)
   }
 
-  override def glDrawElements(mode: Int, count: Int, `type`: Int, indices: Buffer): Unit = {
+  override def glDrawElements(mode: Int, count: Int, `type`: Int, indices: ByteBuffer): Unit = {
     gl.glDrawElements(mode, count, `type`, indices)
   }
 

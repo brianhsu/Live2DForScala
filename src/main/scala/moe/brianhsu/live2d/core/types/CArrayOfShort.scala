@@ -7,5 +7,5 @@ import java.nio.{Buffer, ByteBuffer, ByteOrder}
 class CArrayOfShort(pointer: Pointer) extends PointerType(pointer) {
   def apply(offset: Int): Short = this.getPointer.getShort(offset * 2)
 
-  def getDirectBuffer(size: Int): Buffer = this.pointer.getByteBuffer(0, size * 2)
+  def getDirectBuffer(size: Int): ByteBuffer = this.pointer.getByteBuffer(0, size * 2)
 }
