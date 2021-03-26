@@ -35,13 +35,6 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   def getDrawableByIndex(drawableIndex: Int) = drawablesByIndex(drawableIndex)
 
   def isUsingMask(): Boolean = drawables.values.exists(x => x.masks.nonEmpty)
-  def GetDrawableCount(): Int = {
-    core.cLibrary.csmGetDrawableCount(cubismModel)
-  }
-
-  def GetDrawableRenderOrders() = {
-    core.cLibrary.csmGetDrawableRenderOrders(cubismModel)
-  }
 
   private def createCubsimModel(): CPointerToModel = {
     val model = core.cLibrary.csmInitializeModelInPlace(

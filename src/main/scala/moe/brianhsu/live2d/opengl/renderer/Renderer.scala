@@ -115,7 +115,7 @@ class Renderer(model: Live2DModel)(implicit gl: GL2) {
       val clipContext: Option[ClippingContext] = clippingManagerHolder.flatMap(_.getClippingContextByDrawable(drawable))
       setClippingContextBufferForDraw(clipContext)
 
-      setIsCulling(drawable.GetDrawableCulling())
+      setIsCulling(drawable.isCulling)
       val textureFile = model.getTextureFileByIndex(drawable.textureIndex)
       val textureInfo = textureManager.loadTexture(textureFile)
 

@@ -23,7 +23,7 @@ case class Drawable(belongsTo: Live2DModel, id: String, index: Int, constantFlag
                     private val renderOrderPointer: Pointer,
                     private val opacityPointer: Pointer) {
 
-  def GetDrawableCulling(): Boolean = !constantFlags.isDoubleSided
+  def isCulling: Boolean = !constantFlags.isDoubleSided
 
 
   /**

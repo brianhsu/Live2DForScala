@@ -143,8 +143,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
         clipContext.calcMatrix()
 
         for (drawable <- clipContext.maskDrawable if drawable.dynamicFlags.vertexPositionChanged) {
-          renderer.setIsCulling(drawable.GetDrawableCulling())
-
+          renderer.setIsCulling(drawable.isCulling)
           renderer.setClippingContextBufferForMask(Some(clipContext))
 
           val textureFile = model.getTextureFileByIndex(drawable.textureIndex)
