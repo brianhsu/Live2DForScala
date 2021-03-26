@@ -71,7 +71,7 @@ class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
 
     Scenario("Loading an avatar from an exist directory that has corrupted settings") {
       Given("a directory that exist but not a runtime")
-      val directory = "/Users/bhsu/live2dForScala/src/test/resources/models/corruptedModel/noRequiredFields"
+      val directory = "src/test/resources/models/corruptedModel/noRequiredFields"
 
       When("loading an avatar from it")
       val avatarHolder = cubism.loadAvatar(directory)

@@ -75,7 +75,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       val parts = model.parts
 
       Then("it should have correct number of parts")
-      val expectedParts = Source.fromResource("expectation/PartIdList.txt").getLines().toList
+      val expectedParts = Source.fromResource("expectation/partIdList.txt").getLines().toList
       parts.size shouldBe expectedParts.size
 
       expectedParts.foreach { partId =>
@@ -166,7 +166,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       Then("the basic information of drawables should be correct")
       ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
         val drawable = drawables.get(expectedBasicInfo.id).value
-        inside(drawable) { case Drawable(belongsTo, id, constantFlags, dynamicFlags, textureIndex, masks,
+        inside(drawable) { case Drawable(belongsTo, id, index, constantFlags, dynamicFlags, textureIndex, masks,
                                          vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer) =>
           belongsTo shouldBe model
           id shouldBe expectedBasicInfo.id

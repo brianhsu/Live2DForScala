@@ -8,7 +8,7 @@ case class ExpectedDrawableBasic(id: String, constFlags: Byte, dynamicFlags: Byt
 
 object ExpectedDrawableBasic {
   def getList: List[ExpectedDrawableBasic] = {
-    val lines = Source.fromResource("expectation/DrawableBasicList.txt").getLines().drop(1)
+    val lines = Source.fromResource("expectation/drawableBasicList.txt").getLines().drop(1)
     lines.map { line =>
 
       val Array(

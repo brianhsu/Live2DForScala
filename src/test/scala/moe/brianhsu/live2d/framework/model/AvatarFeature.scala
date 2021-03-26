@@ -14,7 +14,7 @@ class AvatarFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
   Feature("Validate Live2DModel when accessing model") {
     Scenario("Loading an avatar from an exist directory that has corrupted .moc3 file") {
       Given("a directory that exist but not a runtime")
-      val directory = "/Users/bhsu/live2dForScala/src/test/resources/models/corruptedModel/corruptedMoc3"
+      val directory = "src/test/resources/models/corruptedModel/corruptedMoc3"
 
       When("loading an avatar from it")
       val avatarHolder = cubism.loadAvatar(directory)

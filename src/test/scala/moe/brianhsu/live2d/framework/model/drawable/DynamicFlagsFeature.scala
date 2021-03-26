@@ -10,6 +10,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 class DynamicFlagsFeature extends AnyFeatureSpec
                           with GivenWhenThen with Matchers with TableDrivenPropertyChecks {
 
+
   Feature("Reading the flag value") {
     Scenario("Read the flags from the bitmap") {
 
@@ -37,7 +38,7 @@ class DynamicFlagsFeature extends AnyFeatureSpec
         flags.visibilityChanged shouldBe visibilityChanged
         flags.opacityChanged shouldBe opacityChanged
         flags.drawOrderChanged shouldBe drawOrderChanged
-        flags.vertexPositionChanged shouldBe drawOrderChanged
+        flags.vertexPositionChanged shouldBe vertexPositionChanged
       }
     }
 
@@ -78,7 +79,7 @@ class DynamicFlagsFeature extends AnyFeatureSpec
         flags.visibilityChanged shouldBe visibilityChanged
         flags.opacityChanged shouldBe opacityChanged
         flags.drawOrderChanged shouldBe drawOrderChanged
-        flags.vertexPositionChanged shouldBe drawOrderChanged
+        flags.vertexPositionChanged shouldBe vertexPositionChanged
       }
     }
 
