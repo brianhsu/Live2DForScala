@@ -8,6 +8,7 @@ import moe.brianhsu.live2d.framework.model.Live2DModel
  *
  * @param belongsTo           Which Live2D model this drawable belongs to.
  * @param id                  The drawable id.
+ * @param index               The zero-based index that the drawable inside the original C drawables array.
  * @param constantFlags       The constant flags.
  * @param dynamicFlags        The dynamic flags.
  * @param textureIndex        The texture index indicates which texture should be used when rendering.

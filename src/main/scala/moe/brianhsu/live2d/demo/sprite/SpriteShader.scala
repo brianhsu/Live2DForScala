@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.demo
+package moe.brianhsu.live2d.demo.sprite
 
 import moe.brianhsu.live2d.adapter.OpenGL
 import moe.brianhsu.live2d.renderer.opengl.shader.BaseShader

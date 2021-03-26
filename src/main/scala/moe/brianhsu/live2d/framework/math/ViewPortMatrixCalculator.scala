@@ -1,6 +1,4 @@
-package moe.brianhsu.live2d.demo
-
-import moe.brianhsu.live2d.framework.math.{Rectangle, Matrix4x4, ModelMatrix, ViewMatrix}
+package moe.brianhsu.live2d.framework.math
 
 class ViewPortMatrixCalculator {
 
@@ -15,11 +13,10 @@ class ViewPortMatrixCalculator {
   private val ViewLogicalMaxBottom = 2.0f
 
   private val deviceToScreen: Matrix4x4 = new Matrix4x4
-  private var viewMatrix: ViewMatrix = new ViewMatrix(Rectangle(0, 0, 0, 0), Rectangle(0, 0, 0, 0), 0, 0)
+  private var viewMatrix: ViewMatrix = new ViewMatrix(Rectangle(), Rectangle(), 0, 0)
   private var surfaceWidth: Int = 0
   private var surfaceHeight: Int = 0
 
-  def getViewMatrix: ViewMatrix = viewMatrix
   def getDeviceToScreen: Matrix4x4 = deviceToScreen
 
   def updateViewPort(width: Int, height: Int): Unit = {
@@ -39,7 +36,7 @@ class ViewPortMatrixCalculator {
 
   }
 
-  private def updateViewMatrix(left: Float, right: Float, top: Float, bottom: Float) = {
+  private def updateViewMatrix(left: Float, right: Float, top: Float, bottom: Float): Unit = {
     this.viewMatrix = new ViewMatrix(
       Rectangle(left, right, right - left, bottom - top),
       Rectangle(
@@ -53,7 +50,7 @@ class ViewPortMatrixCalculator {
     this.viewMatrix.scale(ViewScale, ViewScale)
   }
 
-  private def updateDeviceToScreen(left: Float, right: Float, top: Float, bottom: Float) = {
+  private def updateDeviceToScreen(left: Float, right: Float, top: Float, bottom: Float): Unit = {
     deviceToScreen.loadIdentity()
 
     if (surfaceWidth > surfaceHeight) {

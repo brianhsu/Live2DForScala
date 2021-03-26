@@ -1,58 +1,10 @@
-package moe.brianhsu.live2d.demo
+package moe.brianhsu.live2d.demo.sprite
 
 import com.jogamp.common.nio.Buffers
 import com.jogamp.opengl.GLAutoDrawable
 import moe.brianhsu.live2d.adapter.JavaOpenGL
-import moe.brianhsu.live2d.renderer.opengl.TextureManager.TextureInfo
 import moe.brianhsu.live2d.framework.math.Rectangle
-
-object LAppSprite {
-
-  class BackgroundSprite(drawable: GLAutoDrawable, textureInfo: TextureInfo,
-                         shader: SpriteShader) extends LAppSprite(drawable, textureInfo, shader) {
-
-    override protected def calculatePosition(): Position = {
-
-      val windowWidth = drawable.getSurfaceWidth
-      val windowHeight = drawable.getSurfaceHeight
-      Position(
-        windowWidth / 2.0f, windowHeight / 2.0f,
-        textureInfo.width * 2.0f, windowHeight * 0.95f
-      )
-    }
-
-  }
-
-  class PowerSprite(drawable: GLAutoDrawable, textureInfo: TextureInfo,
-                    shader: SpriteShader) extends LAppSprite(drawable, textureInfo, shader) {
-    override protected def calculatePosition(): Position = {
-      val windowWidth = drawable.getSurfaceWidth
-      Position(
-        windowWidth - textureInfo.width * 0.5f,
-        textureInfo.height * 0.5f,
-        textureInfo.width.toFloat,
-        textureInfo.height.toFloat
-      )
-    }
-  }
-
-  class GearSprite(drawable: GLAutoDrawable, textureInfo: TextureInfo,
-                   shader: SpriteShader) extends LAppSprite(drawable, textureInfo, shader) {
-    override protected def calculatePosition(): Position = {
-      val windowWidth = drawable.getSurfaceWidth
-      val windowHeight = drawable.getSurfaceHeight
-
-      Position(
-        windowWidth - textureInfo.width * 0.5f,
-        windowHeight - textureInfo.height * 0.5f,
-        textureInfo.width.toFloat,
-        textureInfo.height.toFloat
-      )
-
-    }
-  }
-
-}
+import moe.brianhsu.live2d.renderer.opengl.TextureManager.TextureInfo
 
 abstract class LAppSprite(drawable: GLAutoDrawable, textureInfo: TextureInfo, shader: SpriteShader) {
 

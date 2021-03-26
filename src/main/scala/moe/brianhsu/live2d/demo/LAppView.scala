@@ -2,8 +2,14 @@ package moe.brianhsu.live2d.demo
 
 import com.jogamp.opengl.GLAutoDrawable
 import moe.brianhsu.live2d.adapter.JavaOpenGL
-import moe.brianhsu.live2d.demo.LAppSprite.{BackgroundSprite, GearSprite, PowerSprite}
+import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
+import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
+import moe.brianhsu.live2d.framework.Cubism
+import moe.brianhsu.live2d.framework.math.ViewPortMatrixCalculator
+import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
 import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
+
+import scala.util.Try
 
 class LAppView(openGLDrawable: GLAutoDrawable) {
   private implicit val openGL: JavaOpenGL = new JavaOpenGL(openGLDrawable.getGL.getGL2)
@@ -16,13 +22,15 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
   private lazy val backgroundTexture = manager.loadTexture("src/main/resources/texture/back_class_normal.png")
   private lazy val powerTexture = manager.loadTexture("src/main/resources/texture/close.png")
   private lazy val gearTexture = manager.loadTexture("src/main/resources/texture/icon_gear.png")
+  private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
 
-  private val model = LAppLive2DManager.avatarHolder.get.modelHolder.get
+  private val avatarHolder: Try[Avatar] = Cubism.loadAvatar("src/main/resources/Haru")
+  private val modelHolder: Try[Live2DModel] = avatarHolder.flatMap(_.modelHolder)
   private val backgroundSprite: LAppSprite = new BackgroundSprite(openGLDrawable, backgroundTexture, spriteShader)
   private val powerSprite: LAppSprite = new PowerSprite(openGLDrawable, powerTexture, spriteShader)
   private val gearSprite: LAppSprite = new GearSprite(openGLDrawable, gearTexture, spriteShader)
-  private val renderer = new Renderer(model)
-  private val viewPortMatrixCalculator = new ViewPortMatrixCalculator
+  private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
+
 
   init()
 
@@ -45,12 +53,16 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
     this.powerSprite.render()
     this.gearSprite.render()
 
-    LAppLive2DManager.avatarHolder.foreach { avatar =>
+    for {
+      avatar <- avatarHolder
+      model <- modelHolder
+      renderer <- rendererHolder
+    } {
       val projection = viewPortMatrixCalculator.getProjection(
         openGLDrawable.getSurfaceWidth,
         openGLDrawable.getSurfaceHeight,
-        avatar.modelHolder.map(_.canvasInfo.width).get,
-        avatar.modelHolder.map(_.modelMatrix).get
+        model.canvasInfo.width,
+        model.modelMatrix
       )
 
       avatar.update()
