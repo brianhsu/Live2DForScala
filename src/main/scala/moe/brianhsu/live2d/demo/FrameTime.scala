@@ -6,10 +6,10 @@ object FrameTime {
   private var lastFrame = 0L
   private var deltaTime = 0L
 
-  def getDeltaTime: Long = deltaTime
-  def updateFrameTime(currentTime: Long): Unit = {
-    this.currentFrame = currentTime
-    this.deltaTime = currentTime - this.lastFrame
-    this.lastFrame = currentTime
+  def getDeltaTime: Float = deltaTime / 1000000000.0f
+  def updateFrameTime(): Unit = {
+    this.currentFrame = System.nanoTime()
+    this.deltaTime = currentFrame - this.lastFrame
+    this.lastFrame = currentFrame
   }
 }

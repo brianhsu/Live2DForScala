@@ -4,6 +4,7 @@ import com.sun.jna.ptr.FloatByReference
 import moe.brianhsu.live2d.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.core.utils.MemoryInfo
 import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
+import moe.brianhsu.live2d.demo.FaceDirection
 import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.framework.{MocInfo, model}
@@ -20,13 +21,15 @@ import moe.brianhsu.live2d.framework.math.ModelMatrix
  */
 class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCore) {
 
-
+  private var savedParameters: Map[String, Float] = Map.empty
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cLibrary.csmGetSizeofModel(this.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
-  protected lazy val cubismModel: CPointerToModel = createCubsimModel()
+  protected val cubismModel: CPointerToModel = createCubsimModel()
 
-  lazy val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
+  val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
+  saveParameters()
+
 
   def getTextureFileByIndex(index: Int) = textureFiles(index)
 
@@ -66,6 +69,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
    */
   lazy val parameters: Map[String, Parameter] = createParameters()
 
+
   /**
    * Parts of this model
    *
@@ -84,6 +88,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   lazy val drawables: Map[String, Drawable] = createDrawable()
 
   lazy val drawablesByIndex = drawables.values.toList.sortBy(_.index)
+
 
   /**
    * This method will access all lazy member fields that load data from the CubismCore C Library,
@@ -127,12 +132,63 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
       (outOriginInPixel.getX, outOriginInPixel.getY), outPixelPerUnit.getValue)
   }
 
+  def saveParameters(): Unit = {
+
+    for (parameter <- parameters.values) {
+      savedParameters += (parameter.id -> parameter.current)
+    }
+
+  }
+
+  def loadParameters(): Unit = {
+    savedParameters.foreach { case (id, value) =>
+      parameters.get(id).foreach(_.update(value))
+    }
+  }
+
   /**
    * Update the Live 2D Model and reset all dynamic flags of drawables.
    */
   def update(): Unit = {
+
+    val _dragX = FaceDirection.getX
+    val _dragY = FaceDirection.getY
+    println(s"===> dragX: ${_dragX}, dragY: ${_dragY}")
+
+    loadParameters()
+    saveParameters()
+
+    //println(s"===> drag.X = ${_dragX}, dragY: ${_dragY}")
+    addParameterValue("ParamAngleX", _dragX * 30); // -30から30の値を加える
+    addParameterValue("ParamAngleY", _dragY * 30);
+    addParameterValue("ParamAngleZ", _dragX * _dragY * -30);
+
+    //ドラッグによる体の向きの調整
+    addParameterValue("ParamBodyAngleX", _dragX * 10); // -10から10の値を加える
+
+    //ドラッグによる目の向きの調整
+    addParameterValue("ParamEyeBall", _dragX); // -1から1の値を加える
+    addParameterValue("ParamEyeBallY", _dragY);
+
     core.cLibrary.csmUpdateModel(this.cubismModel)
     core.cLibrary.csmResetDrawableDynamicFlags(this.cubismModel)
+  }
+
+  def reset(): Unit = {
+    parameters.values.foreach { p => p.update(p.default) }
+    update()
+  }
+
+  def addParameterValue(id: String, value: Float, weight: Float = 1.0f): Unit = {
+    parameters.get(id).foreach { p =>
+
+      val valueFitInRange = (p.current + value * weight).max(p.min).min(p.max)
+      if (weight == 1) {
+        p.update(valueFitInRange)
+      } else {
+        p.update((p.current * (1 - weight)) + (value * weight))
+      }
+    }
   }
 
   private def reviveMoc(): CPointerToMoc = {

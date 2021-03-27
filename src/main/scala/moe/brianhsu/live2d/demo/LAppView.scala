@@ -12,6 +12,8 @@ import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
 import scala.util.Try
 
 class LAppView(openGLDrawable: GLAutoDrawable) {
+
+
   private implicit val openGL: JavaOpenGL = new JavaOpenGL(openGLDrawable.getGL.getGL2)
 
   import openGL._
@@ -33,6 +35,14 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
 
 
   init()
+  def resetMode(): Unit = {
+    for {
+      avatar <- avatarHolder
+      model <- modelHolder
+    } {
+      model.reset()
+    }
+  }
 
   def init(): Unit = {
     viewPortMatrixCalculator.updateViewPort(
@@ -40,10 +50,29 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
       openGLDrawable.getSurfaceHeight
     )
 
+
     openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     openGL.glEnable(GL_BLEND)
     openGL.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+    /*
+    for {
+      avatar <- avatarHolder
+      model <- modelHolder
+    } {
+      model.parameters("ParamAngleX").update(30)
+      model.parameters("ParamAngleY").update(30)
+      model.parameters("ParamAngleZ").update(30)
+
+      val p = model.parameters("ParamBodyAngleX")
+      println("===> p.min:" + p.min)
+      println("===> p.max:" + p.max)
+      println("===> p.current:" + p.current)
+      //p.update(30.0f)
+    }
+
+     */
   }
 
   def display(): Unit = {
@@ -52,6 +81,7 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
     this.backgroundSprite.render()
     this.powerSprite.render()
     this.gearSprite.render()
+    FrameTime.updateFrameTime()
 
     for {
       avatar <- avatarHolder
@@ -65,11 +95,11 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
         model.modelMatrix
       )
 
+      FaceDirection.update(FrameTime.getDeltaTime)
       avatar.update()
       renderer.draw(avatar, projection)
     }
 
-    FrameTime.updateFrameTime(System.currentTimeMillis())
   }
 
   private def clearScreen(): Unit = {
@@ -91,10 +121,32 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
   }
 
   def onMouseClick(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(y.toFloat)
+    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(939.toFloat)
+    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(851.toFloat)
+    val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
+    val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
+    //println(s"==> viewX, viewY = $viewX, $viewY")
 
-    println("===> transformedX:" + transformedX)
-    println("===> transformedY:" + transformedY)
   }
+
+  private var lastX = -1000
+  private var lastY = -1000
+  def onMouseDragged(x: Int, y: Int): Unit = {
+    println(s"===> onMouseDragged($x, $y)")
+    if (x == 0 && y == 0) {
+      FaceDirection.set(0.0f, 0.0f)
+    } else {
+      val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(lastX)
+      val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(lastY)
+      val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
+      val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
+
+      if (lastX != -1000 || lastY != -1000) {
+        FaceDirection.set(viewX, viewY)
+      }
+    }
+    lastX = x
+    lastY = y
+  }
+
 }

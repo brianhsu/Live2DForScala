@@ -18,6 +18,7 @@ class ViewPortMatrixCalculator {
   private var surfaceHeight: Int = 0
 
   def getDeviceToScreen: Matrix4x4 = deviceToScreen
+  def getViewMatrix: Matrix4x4 = viewMatrix
 
   def updateViewPort(width: Int, height: Int): Unit = {
     this.surfaceWidth = width
@@ -50,17 +51,20 @@ class ViewPortMatrixCalculator {
     this.viewMatrix.scale(ViewScale, ViewScale)
   }
 
-  private def updateDeviceToScreen(left: Float, right: Float, top: Float, bottom: Float): Unit = {
+  def updateDeviceToScreen(left: Float, right: Float, top: Float, bottom: Float): Unit = {
     deviceToScreen.loadIdentity()
 
     if (surfaceWidth > surfaceHeight) {
       val screenW: Float = (right - left).abs
+      printf("===> screenW: %.10f\n", screenW)
       deviceToScreen.scaleRelative(screenW / surfaceWidth, -screenW / surfaceWidth)
     } else {
       val screenH: Float = (bottom - top).abs
       deviceToScreen.scaleRelative(screenH / surfaceHeight, -screenH / surfaceHeight)
     }
     deviceToScreen.translateRelative(-surfaceWidth * 0.5f, -surfaceHeight * 0.5f)
+    println("===> deviceToScreen.matrix:" + deviceToScreen.getArray().map(x => "%.10f".format(x)).mkString(","))
+    printf("===> transformed: %.10f\n", deviceToScreen.transformX(183.0f))
   }
 
   def getProjection(windowWidth: Int, windowHeight: Int,

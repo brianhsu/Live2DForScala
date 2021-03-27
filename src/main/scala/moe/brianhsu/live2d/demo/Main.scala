@@ -4,6 +4,7 @@ import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLCapabilities, GLDrawableFactory, GLProfile}
 
 import java.awt.Color
+import java.awt.event.{MouseEvent, MouseMotionListener}
 import javax.swing.JFrame
 
 object Main {
@@ -26,6 +27,8 @@ object Main {
     val glMain = new GLMain
     canvas.addGLEventListener(glMain)
     canvas.addMouseListener(glMain)
+    canvas.addMouseMotionListener(glMain)
+    canvas.addKeyListener(glMain)
     canvas.setBackground(new Color(1, 0, 0, 0))
     canvas
   }

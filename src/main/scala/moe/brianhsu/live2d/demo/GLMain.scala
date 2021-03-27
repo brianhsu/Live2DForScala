@@ -3,10 +3,10 @@ package moe.brianhsu.live2d.demo
 import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
 import com.jogamp.opengl.util.Animator
 
-import java.awt.event.{MouseAdapter, MouseEvent}
+import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent, MouseWheelEvent}
 
 
-class GLMain extends MouseAdapter with GLEventListener{
+class GLMain extends MouseAdapter with GLEventListener with KeyListener {
 
   private var animator: Option[Animator] = None
   private var view: Option[LAppView] = None
@@ -29,7 +29,33 @@ class GLMain extends MouseAdapter with GLEventListener{
     this.view.foreach(_.resize())
   }
 
+  override def mouseWheelMoved(var1: MouseWheelEvent): Unit = {
+    println("===> wheel...")
+  }
+
+  override def mouseDragged(e: MouseEvent): Unit = {
+    println(s"==> dragged:  ${e.getX}, ${e.getY}, ${e.getID}")
+    this.view.foreach(_.onMouseDragged(e.getX, e.getY))
+
+  }
+
+  override def mouseReleased(mouseEvent: MouseEvent): Unit = {
+    //println("===> mouseReleased")
+    this.view.foreach(_.onMouseDragged(0, 0))
+
+  }
   override def mouseClicked(e: MouseEvent): Unit = {
     this.view.foreach(_.onMouseClick(e.getX, e.getY))
+  }
+
+  override def keyTyped(keyEvent: KeyEvent): Unit = {}
+  override def keyPressed(keyEvent: KeyEvent): Unit = {}
+
+  override def keyReleased(keyEvent: KeyEvent): Unit = {
+    if (keyEvent.getKeyCode == KeyEvent.VK_SPACE) {
+      println("===> Space hitted")
+      this.view.foreach(_.resetMode())
+
+    }
   }
 }
