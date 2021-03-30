@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.core.types.{CPointerToMoc, CPointerToModel, ModelAlig
 import moe.brianhsu.live2d.core.utils.MemoryInfo
 import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
 import moe.brianhsu.live2d.demo.{FaceDirection, FrameTime}
-import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter}
+import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter, EyeBlink}
 import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.framework.{MocInfo, model}
@@ -157,18 +157,23 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     )
     new Breath(parameters)
   }
+  lazy val eyeBlink = {
+    new EyeBlink("ParamEyeLOpen" :: "ParamEyeROpen" :: Nil)
+  }
 
   /**
    * Update the Live 2D Model and reset all dynamic flags of drawables.
    */
   def update(): Unit = {
 
+    val deltaTime = FrameTime.getDeltaTime
     val _dragX = FaceDirection.getX
     val _dragY = FaceDirection.getY
-    println(s"===> dragX: ${_dragX}, dragY: ${_dragY}")
+    //println(s"===> dragX: ${_dragX}, dragY: ${_dragY}")
 
     loadParameters()
     saveParameters()
+    eyeBlink.updateParameters(this, deltaTime)
     /*
 
     //println(s"===> drag.X = ${_dragX}, dragY: ${_dragY}")
@@ -185,7 +190,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
 
      */
 
-    breath.updateParameters(this, FrameTime.getDeltaTime)
+    //breath.updateParameters(this, deltaTime)
 
     core.cLibrary.csmUpdateModel(this.cubismModel)
     core.cLibrary.csmResetDrawableDynamicFlags(this.cubismModel)
@@ -198,7 +203,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
 
   def setParameterValue(parameterId: String, value: Float, weight: Float = 1.0f): Unit = {
     parameters.get(parameterId).foreach { p =>
-      val valueFitInRange = (p.current + value * weight).max(p.min).min(p.max)
+      val valueFitInRange = (value * weight).max(p.min).min(p.max)
 
       if (weight == 1) {
         p.update(valueFitInRange)
