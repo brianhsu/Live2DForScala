@@ -4,7 +4,8 @@ import com.sun.jna.ptr.FloatByReference
 import moe.brianhsu.live2d.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.core.utils.MemoryInfo
 import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
-import moe.brianhsu.live2d.demo.FaceDirection
+import moe.brianhsu.live2d.demo.{FaceDirection, FrameTime}
+import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter}
 import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.framework.{MocInfo, model}
@@ -146,6 +147,17 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     }
   }
 
+  lazy val breath = {
+    val parameters = List(
+      BreathParameter("ParamAngleX", 0.0f, 15.0f, 6.5345f, 0.5f),
+      BreathParameter("ParamAngleY", 0.0f, 8.0f, 3.5345f, 0.5f),
+      BreathParameter("ParamAngleZ", 0.0f, 10.0f, 5.5345f, 0.5f),
+      BreathParameter("ParamBodyAngleX", 0.0f, 4.0f, 15.5345f, 0.5f),
+      BreathParameter("ParamBreath", 0.5f, 0.5f, 3.2345f, 0.5f)
+    )
+    new Breath(parameters)
+  }
+
   /**
    * Update the Live 2D Model and reset all dynamic flags of drawables.
    */
@@ -157,6 +169,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
 
     loadParameters()
     saveParameters()
+    /*
 
     //println(s"===> drag.X = ${_dragX}, dragY: ${_dragY}")
     addParameterValue("ParamAngleX", _dragX * 30); // -30から30の値を加える
@@ -170,6 +183,10 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     addParameterValue("ParamEyeBall", _dragX); // -1から1の値を加える
     addParameterValue("ParamEyeBallY", _dragY);
 
+     */
+
+    breath.updateParameters(this, FrameTime.getDeltaTime)
+
     core.cLibrary.csmUpdateModel(this.cubismModel)
     core.cLibrary.csmResetDrawableDynamicFlags(this.cubismModel)
   }
@@ -179,15 +196,21 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     update()
   }
 
-  def addParameterValue(id: String, value: Float, weight: Float = 1.0f): Unit = {
-    parameters.get(id).foreach { p =>
-
+  def setParameterValue(parameterId: String, value: Float, weight: Float = 1.0f): Unit = {
+    parameters.get(parameterId).foreach { p =>
       val valueFitInRange = (p.current + value * weight).max(p.min).min(p.max)
+
       if (weight == 1) {
         p.update(valueFitInRange)
       } else {
-        p.update((p.current * (1 - weight)) + (value * weight))
+        p.update((p.current * (1 - weight)) + (valueFitInRange * weight))
       }
+    }
+  }
+
+  def addParameterValue(id: String, value: Float, weight: Float = 1.0f): Unit = {
+    parameters.get(id).foreach { p =>
+      setParameterValue(id, p.current + (value * weight))
     }
   }
 
