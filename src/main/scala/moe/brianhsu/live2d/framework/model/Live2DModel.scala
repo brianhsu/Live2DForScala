@@ -147,34 +147,10 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     }
   }
 
-  lazy val breath = {
-    val parameters = List(
-      BreathParameter("ParamAngleX", 0.0f, 15.0f, 6.5345f, 0.5f),
-      BreathParameter("ParamAngleY", 0.0f, 8.0f, 3.5345f, 0.5f),
-      BreathParameter("ParamAngleZ", 0.0f, 10.0f, 5.5345f, 0.5f),
-      BreathParameter("ParamBodyAngleX", 0.0f, 4.0f, 15.5345f, 0.5f),
-      BreathParameter("ParamBreath", 0.5f, 0.5f, 3.2345f, 0.5f)
-    )
-    new Breath(parameters)
-  }
-  lazy val eyeBlink = {
-    new EyeBlink("ParamEyeLOpen" :: "ParamEyeROpen" :: Nil)
-  }
-  lazy val faceDirection = new FaceDirection()
-
   /**
    * Update the Live 2D Model and reset all dynamic flags of drawables.
    */
   def update(): Unit = {
-
-    val deltaTime = FrameTime.getDeltaTime
-
-    loadParameters()
-    saveParameters()
-    eyeBlink.updateParameters(this, deltaTime)
-    faceDirection.updateParameters(this, deltaTime)
-    breath.updateParameters(this, deltaTime)
-
     core.cLibrary.csmUpdateModel(this.cubismModel)
     core.cLibrary.csmResetDrawableDynamicFlags(this.cubismModel)
   }

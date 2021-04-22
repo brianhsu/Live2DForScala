@@ -1,6 +1,8 @@
 package moe.brianhsu.live2d.framework.model
 
+import moe.brianhsu.live2d.demo.{FaceDirection, FrameTime}
 import moe.brianhsu.live2d.framework.Cubism
+import moe.brianhsu.live2d.framework.effect.EyeBlink
 
 import java.io.File
 import org.json4s._
@@ -21,72 +23,64 @@ import scala.util.{Try, Using}
  *
  * @param   directory   The directory in the filesystem that contains the settings for the avatar
  */
-class Avatar(val directory: String)(cubism: Cubism) {
+class Avatar(directory: String)(cubism: Cubism) {
 
-  private val MainSetting = ".model3.json"
-  private val mainFileHolder: Option[File] = findFile(MainSetting)
-  private val mocFile: Option[String] = getMocFileFromMainJson()
+  private val avatarSettings = new AvatarSettings(directory)
+  private val mocFile: Option[String] = avatarSettings.mocFile
 
-  assert(mainFileHolder.isDefined, s"Cannot find main settings of $directory")
-  assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/${mainFileHolder.get}")
+  assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/")
 
   val modelHolder: Try[Live2DModel] = {
     cubism
-      .loadModel(mocFile.get, getTextureFiles)
+      .loadModel(mocFile.get, avatarSettings.textureFiles)
       .map(_.validAllDataFromNativeLibrary)
   }
 
 
+  private lazy val eyeBlinkHolder = getEyeBlinkEffect()
   def update(): Unit = {
-    modelHolder.foreach(_.update())
-  }
+    modelHolder.foreach { model =>
+      val deltaTime = FrameTime.getDeltaTime
+      val _dragX = FaceDirection.getX
+      val _dragY = FaceDirection.getY
+      //println(s"===> dragX: ${_dragX}, dragY: ${_dragY}")
 
-  private lazy val parsedMainJson: Option[JValue] = {
-    for {
-      file <- mainFileHolder
-      rawText <- getRawTextFromFile(file)
-      parsedJson = parse(rawText)
-    } yield {
-      parsedJson
+      model.loadParameters()
+      model.saveParameters()
+      eyeBlinkHolder.foreach(_.updateParameters(this.modelHolder.get, deltaTime))
+      /*
+
+      //println(s"===> drag.X = ${_dragX}, dragY: ${_dragY}")
+      addParameterValue("ParamAngleX", _dragX * 30); // -30から30の値を加える
+      addParameterValue("ParamAngleY", _dragY * 30);
+      addParameterValue("ParamAngleZ", _dragX * _dragY * -30);
+
+      //ドラッグによる体の向きの調整
+      addParameterValue("ParamBodyAngleX", _dragX * 10); // -10から10の値を加える
+
+      //ドラッグによる目の向きの調整
+      addParameterValue("ParamEyeBall", _dragX); // -1から1の値を加える
+      addParameterValue("ParamEyeBallY", _dragY);
+
+       */
+
+      //breath.updateParameters(this, deltaTime)
+
+      model.update()
     }
   }
 
-  private def getTextureFiles: List[String] = {
-    parsedMainJson
-      .map(parseTextureList)
-      .getOrElse(Nil)
-  }
-
-  private def parseTextureList(mainJson: JValue): List[String] = {
-    mainJson \ "FileReferences" \ "Textures" match {
-      case JArray(textureList) => textureList.map(filename => s"$directory/${filename.values.toString}")
-      case _ => Nil
+  def getEyeBlinkEffect(blinkingIntervalSeconds: Float = 4.0f,
+                        closingSeconds: Float = 0.1f,
+                        closedSeconds: Float = 0.05f,
+                        openingSeconds: Float = 0.15f): Option[EyeBlink] = {
+    avatarSettings.eyeBlinkParameterIds match {
+      case Nil => None
+      case parameterIds => Some(
+        new EyeBlink(parameterIds, blinkingIntervalSeconds,
+                     closingSeconds, closedSeconds, openingSeconds)
+      )
     }
   }
 
-  private def getMocFileFromMainJson(): Option[String] = {
-    for {
-      parsedJson <- parsedMainJson
-      mocFile <- (parsedJson \ "FileReferences" \ "Moc")
-                    .filter(_ != JNothing)
-                    .headOption.map(filename => s"$directory/${filename.values.toString}")
-    } yield {
-      mocFile
-    }
-  }
-
-  private def getRawTextFromFile(file: File): Option[String] = {
-    Using(Source.fromFile(file)) { source => source.mkString }.toOption
-  }
-
-  private def findFile(extension: String): Option[File] = {
-    val directoryFile = new File(directory)
-
-    directoryFile
-      .list((dir: File, name: String) => name.endsWith(extension))
-      .toList
-      .headOption
-      .map(filename => new File(s"$directory/$filename"))
-      .filter(_.isFile)
-  }
 }
