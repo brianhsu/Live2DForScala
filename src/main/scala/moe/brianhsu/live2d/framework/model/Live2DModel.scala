@@ -167,6 +167,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   def update(): Unit = {
 
     val deltaTime = FrameTime.getDeltaTime
+    FaceDirection.update(deltaTime)
     val _dragX = FaceDirection.getX
     val _dragY = FaceDirection.getY
     //println(s"===> dragX: ${_dragX}, dragY: ${_dragY}")
@@ -174,7 +175,6 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     loadParameters()
     saveParameters()
     eyeBlink.updateParameters(this, deltaTime)
-    /*
 
     //println(s"===> drag.X = ${_dragX}, dragY: ${_dragY}")
     addParameterValue("ParamAngleX", _dragX * 30); // -30から30の値を加える
@@ -188,9 +188,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     addParameterValue("ParamEyeBall", _dragX); // -1から1の値を加える
     addParameterValue("ParamEyeBallY", _dragY);
 
-     */
-
-    //breath.updateParameters(this, deltaTime)
+    breath.updateParameters(this, deltaTime)
 
     core.cLibrary.csmUpdateModel(this.cubismModel)
     core.cLibrary.csmResetDrawableDynamicFlags(this.cubismModel)

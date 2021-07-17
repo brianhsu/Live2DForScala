@@ -12,8 +12,8 @@ class Breath(parameters: List[BreathParameter]) {
     val t = currentTimeInSeconds * 2.0f * Math.PI.toFloat
     parameters.foreach { parameter =>
       val value = parameter.offset + (parameter.peak * sin(t / parameter.cycle).toFloat)
-      println("===> updateParameter.value:" + value)
-      println("===> updateParameter.weight:" + parameter.weight)
+      //println("===> updateParameter.value:" + value)
+      //println("===> updateParameter.weight:" + parameter.weight)
 
       model.addParameterValue(parameter.parameterId, value, parameter.weight)
     }

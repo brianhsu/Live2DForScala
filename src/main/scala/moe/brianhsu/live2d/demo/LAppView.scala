@@ -95,7 +95,6 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
         model.modelMatrix
       )
 
-      FaceDirection.update(FrameTime.getDeltaTime)
       avatar.update()
       renderer.draw(avatar, projection)
     }
