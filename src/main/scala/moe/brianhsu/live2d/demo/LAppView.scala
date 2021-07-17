@@ -136,8 +136,8 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
     if (x == 0 && y == 0) {
       FaceDirection.set(0.0f, 0.0f)
     } else {
-      val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(lastX)
-      val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(lastY)
+      val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(lastX.toFloat)
+      val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(lastY.toFlaot)
       val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
       val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
 
