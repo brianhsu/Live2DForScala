@@ -161,6 +161,8 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     new EyeBlink("ParamEyeLOpen" :: "ParamEyeROpen" :: Nil)
   }
 
+  var lastDragX = 0.0f
+  var lastDragY = 0.0f
   /**
    * Update the Live 2D Model and reset all dynamic flags of drawables.
    */
@@ -170,7 +172,11 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     FaceDirection.update(deltaTime)
     val _dragX = FaceDirection.getX
     val _dragY = FaceDirection.getY
-    //println(s"===> dragX: ${_dragX}, dragY: ${_dragY}")
+    if (lastDragX != _dragX || lastDragY != _dragY) {
+      printf(s"===> dragX: %.10f, dragY: %.10f\n", _dragX, _dragY)
+      lastDragY = _dragY
+      lastDragX = _dragX
+    }
 
     loadParameters()
     saveParameters()

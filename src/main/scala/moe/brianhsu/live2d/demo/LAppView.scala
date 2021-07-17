@@ -45,34 +45,25 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
   }
 
   def init(): Unit = {
+
+    // TODO:
+    // 1. Check if Linux's openGLDrawable.getSurfaceWidth / getSurfaceHeight also return wrong value
+    // 2. There should be a better way to do this.
+    /*
     viewPortMatrixCalculator.updateViewPort(
       openGLDrawable.getSurfaceWidth,
       openGLDrawable.getSurfaceHeight
     )
-
+    */
+    viewPortMatrixCalculator.updateViewPort(
+      Main.frame.getWidth,
+      Main.frame.getHeight
+    )
 
     openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     openGL.glEnable(GL_BLEND)
     openGL.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-    /*
-    for {
-      avatar <- avatarHolder
-      model <- modelHolder
-    } {
-      model.parameters("ParamAngleX").update(30)
-      model.parameters("ParamAngleY").update(30)
-      model.parameters("ParamAngleZ").update(30)
-
-      val p = model.parameters("ParamBodyAngleX")
-      println("===> p.min:" + p.min)
-      println("===> p.max:" + p.max)
-      println("===> p.current:" + p.current)
-      //p.update(30.0f)
-    }
-
-     */
   }
 
   def display(): Unit = {
@@ -88,9 +79,11 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
       model <- modelHolder
       renderer <- rendererHolder
     } {
+      // TODO:
+      // There should be a better way to get width / height
       val projection = viewPortMatrixCalculator.getProjection(
-        openGLDrawable.getSurfaceWidth,
-        openGLDrawable.getSurfaceHeight,
+        Main.frame.getWidth,
+        Main.frame.getHeight,
         model.canvasInfo.width,
         model.modelMatrix
       )
@@ -108,9 +101,12 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
   }
 
   def resize(): Unit = {
+
+    // TODO:
+    // 1. There should be better way to do this.
     viewPortMatrixCalculator.updateViewPort(
-      openGLDrawable.getSurfaceWidth,
-      openGLDrawable.getSurfaceHeight
+      Main.frame.getWidth,
+      Main.frame.getHeight
     )
 
     backgroundSprite.resize()
@@ -128,10 +124,9 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
 
   }
 
-  private var lastX = -1000
-  private var lastY = -1000
+  private var lastX = 0
+  private var lastY = 0
   def onMouseDragged(x: Int, y: Int): Unit = {
-    println(s"===> onMouseDragged($x, $y)")
     if (x == 0 && y == 0) {
       FaceDirection.set(0.0f, 0.0f)
     } else {
@@ -139,10 +134,7 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
       val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(lastY.toFloat)
       val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
       val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
-
-      if (lastX != -1000 || lastY != -1000) {
-        FaceDirection.set(viewX, viewY)
-      }
+      FaceDirection.set(viewX, viewY)
     }
     lastX = x
     lastY = y

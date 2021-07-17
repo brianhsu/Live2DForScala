@@ -30,20 +30,16 @@ class GLMain extends MouseAdapter with GLEventListener with KeyListener {
   }
 
   override def mouseWheelMoved(var1: MouseWheelEvent): Unit = {
-    println("===> wheel...")
   }
 
   override def mouseDragged(e: MouseEvent): Unit = {
-    println(s"==> dragged:  ${e.getX}, ${e.getY}, ${e.getID}")
     this.view.foreach(_.onMouseDragged(e.getX, e.getY))
-
   }
 
   override def mouseReleased(mouseEvent: MouseEvent): Unit = {
-    //println("===> mouseReleased")
     this.view.foreach(_.onMouseDragged(0, 0))
-
   }
+
   override def mouseClicked(e: MouseEvent): Unit = {
     this.view.foreach(_.onMouseClick(e.getX, e.getY))
   }
@@ -55,7 +51,6 @@ class GLMain extends MouseAdapter with GLEventListener with KeyListener {
     if (keyEvent.getKeyCode == KeyEvent.VK_SPACE) {
       println("===> Space hitted")
       this.view.foreach(_.resetMode())
-
     }
   }
 }
