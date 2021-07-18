@@ -5,7 +5,6 @@ import moe.brianhsu.live2d.framework.model.Live2DModel
 
 import scala.util.Random
 
-
 object EyeBlink {
   sealed trait State
   case object Init extends State        ///< 初期状態
@@ -16,69 +15,71 @@ object EyeBlink {
 }
 
 class EyeBlink(parameterIds: List[String],
-               _blinkingIntervalSeconds: Float = 4.0f, _closingSeconds: Float = 0.1f,
-               _closedSeconds: Float = 0.05f, _openingSeconds: Float = 0.15f) {
+               blinkingIntervalSeconds: Float = 4.0f,
+               closingSeconds: Float = 0.1f,
+               closedSeconds: Float = 0.05f,
+               openingSeconds: Float = 0.15f) {
 
-  var _blinkingState: State = EyeBlink.Init        ///< 現在の状態
-  var _nextBlinkingTime: Float = 0.0f           ///< 次のまばたきの時刻[秒]
-  var _stateStartTimeSeconds: Float = 0.0f      ///< 現在の状態が開始した時刻[秒]
-  var _userTimeSeconds: Float = 0.0f            ///< デルタ時間の積算値[秒]
+  var blinkingState: State = EyeBlink.Init        ///< 現在の状態
+  var nextBlinkingTime: Float = 0.0f           ///< 次のまばたきの時刻[秒]
+  var stateStartTimeSeconds: Float = 0.0f      ///< 現在の状態が開始した時刻[秒]
+  var userTimeSeconds: Float = 0.0f            ///< デルタ時間の積算値[秒]
 
-  def determineNextBlinkingTiming(): Float = {
+  private def determineNextBlinkingTiming(): Float = {
     val r = Random.nextFloat()
-    _userTimeSeconds + (r * (2.0f * _blinkingIntervalSeconds - 1.0f))
+    userTimeSeconds + (r * (2.0f * blinkingIntervalSeconds - 1.0f))
   }
 
   def updateParameters(model: Live2DModel, deltaTimeSeconds: Float): Unit = {
-    _userTimeSeconds += deltaTimeSeconds
+    userTimeSeconds += deltaTimeSeconds
 
     var parameterValue: Float = 0
     var t: Float = 0.0f
 
-    _blinkingState match {
+    blinkingState match {
       case Closing =>
-        t = (_userTimeSeconds - _stateStartTimeSeconds) / _closingSeconds
+        t = (userTimeSeconds - stateStartTimeSeconds) / closingSeconds
 
         if (t >= 1.0f) {
-           t = 1.0f
-          _blinkingState = Closed
-          _stateStartTimeSeconds = _userTimeSeconds
+          t = 1.0f
+          blinkingState = Closed
+          stateStartTimeSeconds = userTimeSeconds
         }
 
         parameterValue = 1.0f - t
 
       case Closed =>
-        t = (_userTimeSeconds - _stateStartTimeSeconds) / _closedSeconds
+        t = (userTimeSeconds - stateStartTimeSeconds) / closedSeconds
 
         if (t >= 1.0f) {
-          _blinkingState = Opening
-          _stateStartTimeSeconds = _userTimeSeconds
+          blinkingState = Opening
+          stateStartTimeSeconds = userTimeSeconds
         }
 
         parameterValue = 0.0f
 
       case Opening =>
-        t = (_userTimeSeconds - _stateStartTimeSeconds) / _openingSeconds
+        t = (userTimeSeconds - stateStartTimeSeconds) / openingSeconds
 
         if (t >= 1.0f) {
           t = 1.0f
-          _blinkingState = Interval
-          _nextBlinkingTime = determineNextBlinkingTiming()
+          blinkingState = Interval
+          nextBlinkingTime = determineNextBlinkingTiming()
         }
 
         parameterValue = t
 
       case Interval =>
-        if (_nextBlinkingTime < _userTimeSeconds) {
-          _blinkingState = Closing
-          _stateStartTimeSeconds = _userTimeSeconds
+        if (nextBlinkingTime < userTimeSeconds) {
+          blinkingState = Closing
+          stateStartTimeSeconds = userTimeSeconds
         }
 
         parameterValue = 1.0f
 
       case Init =>
-        _blinkingState = Interval
-        _nextBlinkingTime = determineNextBlinkingTiming()
+        blinkingState = Interval
+        nextBlinkingTime = determineNextBlinkingTiming()
 
         parameterValue = 1.0f
     }
