@@ -1,16 +1,14 @@
 package moe.brianhsu.live2d.demo.sprite
 
 import com.jogamp.common.nio.Buffers
-import com.jogamp.opengl.GLAutoDrawable
-import moe.brianhsu.live2d.adapter.JavaOpenGL
+import moe.brianhsu.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.live2d.framework.math.Rectangle
 import moe.brianhsu.live2d.renderer.opengl.TextureManager.TextureInfo
 
-abstract class LAppSprite(drawable: GLAutoDrawable, textureInfo: TextureInfo, shader: SpriteShader) {
+abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureInfo, shader: SpriteShader)
+                         (implicit private val gl: OpenGL) {
 
   case class Position(originX: Float, originY: Float, width: Float, height: Float)
-
-  private val gl = new JavaOpenGL(drawable.getGL.getGL2)
 
   import gl._
 
@@ -38,8 +36,8 @@ abstract class LAppSprite(drawable: GLAutoDrawable, textureInfo: TextureInfo, sh
   }
 
   def render(): Unit = {
-    val maxWidth = drawable.getSurfaceWidth
-    val maxHeight = drawable.getSurfaceHeight
+    val maxWidth = drawCanvasInfo.currentSurfaceWidth
+    val maxHeight = drawCanvasInfo.currentSurfaceHeight
 
     gl.glEnable(GL_TEXTURE_2D)
 

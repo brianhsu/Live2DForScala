@@ -1,8 +1,7 @@
 package moe.brianhsu.live2d.demo
 
 import com.jogamp.opengl.GLAutoDrawable
-import com.jogamp.opengl.awt.GLCanvas
-import moe.brianhsu.live2d.adapter.JavaOpenGL
+import moe.brianhsu.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
 import moe.brianhsu.live2d.framework.Cubism
@@ -15,9 +14,7 @@ import scala.util.Try
 
 
 
-class LAppView(drawCanvasInfo: DrawCanvasInfo, openGLDrawable: GLAutoDrawable) {
-
-  private implicit val openGL: JavaOpenGL = new JavaOpenGL(openGLDrawable.getGL.getGL2)
+class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGL) {
 
   import openGL._
 
@@ -31,9 +28,9 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo, openGLDrawable: GLAutoDrawable) {
 
   private val avatarHolder: Try[Avatar] = Cubism.loadAvatar("src/main/resources/Haru")
   private val modelHolder: Try[Live2DModel] = avatarHolder.flatMap(_.modelHolder)
-  private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, openGLDrawable, backgroundTexture, spriteShader)
-  private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, openGLDrawable, powerTexture, spriteShader)
-  private val gearSprite: LAppSprite = new GearSprite(drawCanvasInfo, openGLDrawable, gearTexture, spriteShader)
+  private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, backgroundTexture, spriteShader)
+  private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, powerTexture, spriteShader)
+  private val gearSprite: LAppSprite = new GearSprite(drawCanvasInfo, gearTexture, spriteShader)
   private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
 
 
@@ -41,7 +38,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo, openGLDrawable: GLAutoDrawable) {
 
   def resetModel(): Unit = {
     for {
-      avatar <- avatarHolder
+      _ <- avatarHolder
       model <- modelHolder
     } {
       model.reset()

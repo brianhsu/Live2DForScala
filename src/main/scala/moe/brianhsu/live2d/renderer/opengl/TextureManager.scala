@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.renderer.opengl
 
 import com.jogamp.opengl.GL2
-import moe.brianhsu.live2d.adapter.{JavaOpenGL, OpenGL}
+import moe.brianhsu.live2d.adapter.OpenGL
 import moe.brianhsu.live2d.renderer.opengl.TextureManager.TextureInfo
 
 import java.io.File

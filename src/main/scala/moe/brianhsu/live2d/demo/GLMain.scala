@@ -2,6 +2,7 @@ package moe.brianhsu.live2d.demo
 
 import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
+import moe.brianhsu.live2d.adapter.jogl.{JavaOpenGL, JavaOpenGLCanvasInfo}
 
 import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent, MouseWheelEvent}
 import java.util.concurrent.{ScheduledFuture, ScheduledThreadPoolExecutor, TimeUnit}
@@ -41,10 +42,11 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
 
   private var animator: Option[FixedFPSAnimator] = None
   private var view: Option[LAppView] = None
-  private val canvasInfo = new OpenGLCanvasInfo(canvas)
+  private val canvasInfo = new JavaOpenGLCanvasInfo(canvas)
 
   override def init(drawable: GLAutoDrawable): Unit = {
-    this.view = Option(new LAppView(canvasInfo, drawable))
+    implicit val openGL: JavaOpenGL = new JavaOpenGL(drawable.getGL.getGL2)
+    this.view = Option(new LAppView(canvasInfo))
     this.animator = Option(new FixedFPSAnimator(30, drawable))
     this.animator.foreach { x => x.start() }
   }
