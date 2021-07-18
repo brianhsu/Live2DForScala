@@ -4,7 +4,7 @@ import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
 import moe.brianhsu.live2d.adapter.jogl.{JavaOpenGL, JavaOpenGLCanvasInfo}
 
-import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent, MouseWheelEvent}
+import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent}
 import java.util.concurrent.{ScheduledFuture, ScheduledThreadPoolExecutor, TimeUnit}
 
 class FixedFPSAnimator(fps: Int, drawable: GLAutoDrawable) {
@@ -60,11 +60,7 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
   }
 
   override def reshape(drawable: GLAutoDrawable, x: Int, y: Int, width: Int, height: Int): Unit = {
-    println(s"width: ${canvas.getWidth}, height: ${canvas.getHeight}")
     this.view.foreach(_.resize())
-  }
-
-  override def mouseWheelMoved(var1: MouseWheelEvent): Unit = {
   }
 
   override def mouseDragged(e: MouseEvent): Unit = {
@@ -77,11 +73,5 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
 
   override def keyTyped(keyEvent: KeyEvent): Unit = {}
   override def keyPressed(keyEvent: KeyEvent): Unit = {}
-
-  override def keyReleased(keyEvent: KeyEvent): Unit = {
-    if (keyEvent.getKeyCode == KeyEvent.VK_SPACE) {
-      println("===> Space hitted")
-      this.view.foreach(_.resetModel())
-    }
-  }
+  override def keyReleased(keyEvent: KeyEvent): Unit = {}
 }

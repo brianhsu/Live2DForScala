@@ -2,7 +2,8 @@ package moe.brianhsu.live2d.framework.model
 
 import moe.brianhsu.live2d.demo.FrameTime
 import moe.brianhsu.live2d.framework.Cubism
-import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter, EyeBlink, FaceDirection}
+import moe.brianhsu.live2d.framework.effect.Effect
+import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 
 import scala.util.Try
 
@@ -22,6 +23,7 @@ class Avatar(directory: String)(cubism: Cubism) {
 
   private val avatarSettings = new AvatarSettings(directory)
   private val mocFile: Option[String] = avatarSettings.mocFile
+  private var effects: List[Effect] = Nil
 
   assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/")
 
@@ -31,20 +33,21 @@ class Avatar(directory: String)(cubism: Cubism) {
       .map(_.validAllDataFromNativeLibrary)
   }
 
-
-  private lazy val eyeBlinkHolder = getEyeBlinkEffect()
-  private lazy val breath = {
-    val parameters = List(
-      BreathParameter("ParamAngleX", 0.0f, 15.0f, 6.5345f, 0.5f),
-      BreathParameter("ParamAngleY", 0.0f, 8.0f, 3.5345f, 0.5f),
-      BreathParameter("ParamAngleZ", 0.0f, 10.0f, 5.5345f, 0.5f),
-      BreathParameter("ParamBodyAngleX", 0.0f, 4.0f, 15.5345f, 0.5f),
-      BreathParameter("ParamBreath", 0.5f, 0.5f, 3.2345f, 0.5f)
-    )
-    new Breath(parameters)
+  def setEffects(effects: List[Effect]): Unit = {
+    this.effects = effects
   }
 
-  private val faceDirection = new FaceDirection
+  def appendEffect(effect: Effect): Unit = {
+    this.effects = effects.appended(effect)
+  }
+
+  def removeEffect(effect: Effect): Unit = {
+    this.effects = effects.filterNot(_ == effect)
+  }
+
+  def getAvatarSettings: AvatarSettings = avatarSettings
+
+  def getEffects: List[Effect] = effects
 
   def update(): Unit = {
     modelHolder.foreach { model =>
@@ -52,27 +55,8 @@ class Avatar(directory: String)(cubism: Cubism) {
 
       model.loadParameters()
       model.saveParameters()
-      eyeBlinkHolder.foreach(_.updateParameters(this.modelHolder.get, deltaTimeInSeconds))
-      breath.updateParameters(this.modelHolder.get, deltaTimeInSeconds)
-      faceDirection.updateParameters(this.modelHolder.get, deltaTimeInSeconds)
-
+      effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }
       model.update()
     }
   }
-
-  def getEyeBlinkEffect(blinkingIntervalSeconds: Float = 4.0f,
-                        closingSeconds: Float = 0.1f,
-                        closedSeconds: Float = 0.05f,
-                        openingSeconds: Float = 0.15f): Option[EyeBlink] = {
-    avatarSettings.eyeBlinkParameterIds match {
-      case Nil => None
-      case parameterIds => Some(
-        new EyeBlink(
-          parameterIds, blinkingIntervalSeconds,
-          closingSeconds, closedSeconds, openingSeconds
-        )
-      )
-    }
-  }
-
 }

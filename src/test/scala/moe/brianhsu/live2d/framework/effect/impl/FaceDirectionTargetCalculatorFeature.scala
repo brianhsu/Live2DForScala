@@ -1,6 +1,6 @@
-package moe.brianhsu.live2d.framework.effects
+package moe.brianhsu.live2d.framework.effect.impl
 
-import moe.brianhsu.live2d.framework.effect.FaceDirectionTargetCalculator
+import moe.brianhsu.live2d.framework.effect.impl.FaceDirection
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -16,7 +16,7 @@ class FaceDirectionTargetCalculatorFeature extends AnyFeatureSpec with GivenWhen
     val testDataList = loadTestData
 
     Then("it should calculate correct expectedTargetX / expectedTargetY from test data")
-    val targetPointCalculator = new FaceDirectionTargetCalculator(30)
+    val targetPointCalculator = new FaceDirection(30).targetPointCalculator
 
     for (row <- testDataList) {
       targetPointCalculator.setFaceTargetCoordinate(row.viewX, row.viewY)
