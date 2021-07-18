@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.framework.model
 
 import moe.brianhsu.live2d.demo.FrameTime
 import moe.brianhsu.live2d.framework.Cubism
-import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter, EyeBlink}
+import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter, EyeBlink, FaceDirection}
 
 import scala.util.Try
 
@@ -44,14 +44,17 @@ class Avatar(directory: String)(cubism: Cubism) {
     new Breath(parameters)
   }
 
+  private val faceDirection = new FaceDirection
+
   def update(): Unit = {
     modelHolder.foreach { model =>
-      val deltaTime = FrameTime.getDeltaTime
+      val deltaTimeInSeconds = FrameTime.getDeltaTime
 
       model.loadParameters()
       model.saveParameters()
-      eyeBlinkHolder.foreach(_.updateParameters(this.modelHolder.get, deltaTime))
-      breath.updateParameters(this.modelHolder.get, deltaTime)
+      eyeBlinkHolder.foreach(_.updateParameters(this.modelHolder.get, deltaTimeInSeconds))
+      breath.updateParameters(this.modelHolder.get, deltaTimeInSeconds)
+      faceDirection.updateParameters(this.modelHolder.get, deltaTimeInSeconds)
 
       model.update()
     }
