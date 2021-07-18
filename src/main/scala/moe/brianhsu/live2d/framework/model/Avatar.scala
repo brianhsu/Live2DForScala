@@ -1,9 +1,7 @@
 package moe.brianhsu.live2d.framework.model
 
-import moe.brianhsu.live2d.demo.FrameTime
 import moe.brianhsu.live2d.framework.Cubism
 import moe.brianhsu.live2d.framework.effect.Effect
-import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 
 import scala.util.Try
 
@@ -49,10 +47,14 @@ class Avatar(directory: String)(cubism: Cubism) {
 
   def getEffects: List[Effect] = effects
 
-  def update(): Unit = {
+  /**
+   * Update Live2D model parameters of this avatar according to time in seconds elapsed
+   * from last update.
+   *
+   * @param deltaTimeInSeconds How long has elapsed since last update, in seconds.
+   */
+  def update(deltaTimeInSeconds: Float): Unit = {
     modelHolder.foreach { model =>
-      val deltaTimeInSeconds = FrameTime.getDeltaTime
-
       model.loadParameters()
       model.saveParameters()
       effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }

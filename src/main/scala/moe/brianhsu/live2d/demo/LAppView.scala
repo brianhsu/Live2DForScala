@@ -25,6 +25,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private lazy val gearTexture = manager.loadTexture("src/main/resources/texture/icon_gear.png")
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
 
+  private val frameTimeCalculator = new FrameTimeCalculator
   private val avatarHolder: Try[Avatar] = Cubism.loadAvatar("src/main/resources/Haru")
   private val modelHolder: Try[Live2DModel] = avatarHolder.flatMap(_.modelHolder)
   private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, backgroundTexture, spriteShader)
@@ -50,7 +51,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     this.backgroundSprite.render()
     this.powerSprite.render()
     this.gearSprite.render()
-    FrameTime.updateFrameTime()
+    this.frameTimeCalculator.updateFrameTime()
 
     for {
       avatar <- avatarHolder
@@ -66,7 +67,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
         model.modelMatrix
       )
 
-      avatar.update()
+      avatar.update(this.frameTimeCalculator.getDeltaTimeInSeconds)
       renderer.draw(avatar, projection)
     }
 
