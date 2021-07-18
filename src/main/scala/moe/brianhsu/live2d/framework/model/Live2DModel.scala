@@ -4,8 +4,6 @@ import com.sun.jna.ptr.FloatByReference
 import moe.brianhsu.live2d.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.core.utils.MemoryInfo
 import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
-import moe.brianhsu.live2d.demo.FrameTime
-import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter, EyeBlink, FaceDirection, FaceDirectionTargetCalculator}
 import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.framework.{MocInfo, model}
@@ -29,16 +27,17 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   protected val cubismModel: CPointerToModel = createCubsimModel()
 
   val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
+
   saveParameters()
 
 
-  def getTextureFileByIndex(index: Int) = textureFiles(index)
+  def getTextureFileByIndex(index: Int): String = textureFiles(index)
 
-  def isUsingMasking = drawables.values.exists(d => d.masks.nonEmpty)
+  def isUsingMasking: Boolean = drawables.values.exists(d => d.masks.nonEmpty)
 
-  def getDrawableByIndex(drawableIndex: Int) = drawablesByIndex(drawableIndex)
+  def getDrawableByIndex(drawableIndex: Int): Drawable = drawablesByIndex(drawableIndex)
 
-  def isUsingMask(): Boolean = drawables.values.exists(x => x.masks.nonEmpty)
+  def isUsingMask: Boolean = drawables.values.exists(x => x.masks.nonEmpty)
 
   private def createCubsimModel(): CPointerToModel = {
     val model = core.cLibrary.csmInitializeModelInPlace(
@@ -88,7 +87,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
    */
   lazy val drawables: Map[String, Drawable] = createDrawable()
 
-  lazy val drawablesByIndex = drawables.values.toList.sortBy(_.index)
+  lazy val drawablesByIndex: List[Drawable] = drawables.values.toList.sortBy(_.index)
 
 
   /**
