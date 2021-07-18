@@ -41,9 +41,10 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
 
   private var animator: Option[FixedFPSAnimator] = None
   private var view: Option[LAppView] = None
+  private val canvasInfo = new OpenGLCanvasInfo(canvas)
 
   override def init(drawable: GLAutoDrawable): Unit = {
-    this.view = Option(new LAppView(drawable))
+    this.view = Option(new LAppView(canvasInfo, drawable))
     this.animator = Option(new FixedFPSAnimator(30, drawable))
     this.animator.foreach { x => x.start() }
   }

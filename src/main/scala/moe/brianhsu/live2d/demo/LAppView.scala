@@ -1,6 +1,7 @@
 package moe.brianhsu.live2d.demo
 
 import com.jogamp.opengl.GLAutoDrawable
+import com.jogamp.opengl.awt.GLCanvas
 import moe.brianhsu.live2d.adapter.JavaOpenGL
 import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
@@ -12,8 +13,9 @@ import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
 
 import scala.util.Try
 
-class LAppView(openGLDrawable: GLAutoDrawable) {
 
+
+class LAppView(drawCanvasInfo: DrawCanvasInfo, openGLDrawable: GLAutoDrawable) {
 
   private implicit val openGL: JavaOpenGL = new JavaOpenGL(openGLDrawable.getGL.getGL2)
 
@@ -29,9 +31,9 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
 
   private val avatarHolder: Try[Avatar] = Cubism.loadAvatar("src/main/resources/Haru")
   private val modelHolder: Try[Live2DModel] = avatarHolder.flatMap(_.modelHolder)
-  private val backgroundSprite: LAppSprite = new BackgroundSprite(openGLDrawable, backgroundTexture, spriteShader)
-  private val powerSprite: LAppSprite = new PowerSprite(openGLDrawable, powerTexture, spriteShader)
-  private val gearSprite: LAppSprite = new GearSprite(openGLDrawable, gearTexture, spriteShader)
+  private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, openGLDrawable, backgroundTexture, spriteShader)
+  private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, openGLDrawable, powerTexture, spriteShader)
+  private val gearSprite: LAppSprite = new GearSprite(drawCanvasInfo, openGLDrawable, gearTexture, spriteShader)
   private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
 
 
@@ -58,8 +60,8 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
     )
     */
     viewPortMatrixCalculator.updateViewPort(
-      Main.frame.getWidth,
-      Main.frame.getHeight
+      drawCanvasInfo.currentCanvasWidth,
+      drawCanvasInfo.currentCanvasHeight
     )
 
     openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
@@ -84,8 +86,8 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
       // TODO:
       // There should be a better way to get width / height
       val projection = viewPortMatrixCalculator.getProjection(
-        Main.frame.getWidth,
-        Main.frame.getHeight,
+        drawCanvasInfo.currentCanvasWidth,
+        drawCanvasInfo.currentCanvasHeight,
         model.canvasInfo.width,
         model.modelMatrix
       )
@@ -107,8 +109,8 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
     // TODO:
     // 1. There should be better way to do this.
     viewPortMatrixCalculator.updateViewPort(
-      Main.frame.getWidth,
-      Main.frame.getHeight
+      drawCanvasInfo.currentCanvasWidth,
+      drawCanvasInfo.currentCanvasHeight
     )
 
     backgroundSprite.resize()
