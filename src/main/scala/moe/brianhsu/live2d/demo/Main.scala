@@ -6,6 +6,13 @@ import com.jogamp.opengl.{GLCapabilities, GLDrawableFactory, GLProfile}
 import java.awt.Color
 import java.awt.event.{MouseEvent, MouseMotionListener}
 import javax.swing.JFrame
+import scala.util.Random
+
+object Main2 {
+  def main(args: Array[String]): Unit = {
+    println(Random.between(0, 0.02))
+  }
+}
 
 object Main {
 
