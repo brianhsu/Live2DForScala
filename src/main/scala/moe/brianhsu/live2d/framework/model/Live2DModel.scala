@@ -28,9 +28,6 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
 
   val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
 
-  saveParameters()
-
-
   def getTextureFileByIndex(index: Int): String = textureFiles(index)
 
   def isUsingMasking: Boolean = drawables.values.exists(d => d.masks.nonEmpty)
