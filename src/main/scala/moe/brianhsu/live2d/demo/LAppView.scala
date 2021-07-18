@@ -4,7 +4,7 @@ import moe.brianhsu.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
 import moe.brianhsu.live2d.framework.Cubism
-import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection, FaceDirectionTargetCalculator}
+import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.framework.math.ViewPortMatrixCalculator
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
 import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
