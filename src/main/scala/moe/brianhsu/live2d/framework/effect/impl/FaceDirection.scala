@@ -1,8 +1,9 @@
-package moe.brianhsu.live2d.framework.effect
+package moe.brianhsu.live2d.framework.effect.impl
 
+import moe.brianhsu.live2d.framework.effect.Effect
 import moe.brianhsu.live2d.framework.model.Live2DModel
 
-class FaceDirection {
+class FaceDirection extends Effect {
 
   def updateParameters(model: Live2DModel, deltaTimeInSeconds: Float): Unit = {
     FaceDirectionTargetCalculator.update(deltaTimeInSeconds)

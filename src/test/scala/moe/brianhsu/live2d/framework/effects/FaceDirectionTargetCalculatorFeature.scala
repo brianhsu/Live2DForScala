@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.framework.effects
 
-import moe.brianhsu.live2d.framework.effect.FaceDirectionTargetCalculator
+import moe.brianhsu.live2d.framework.effect.impl.FaceDirectionTargetCalculator
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

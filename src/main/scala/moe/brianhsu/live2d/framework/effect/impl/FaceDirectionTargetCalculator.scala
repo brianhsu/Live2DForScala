@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.framework.effect
+package moe.brianhsu.live2d.framework.effect.impl
 
 import moe.brianhsu.live2d.demo.LAppView
 

@@ -1,7 +1,8 @@
-package moe.brianhsu.live2d.framework.effect
+package moe.brianhsu.live2d.framework.effect.impl
 
-import moe.brianhsu.live2d.framework.effect.EyeBlink._
-import moe.brianhsu.live2d.framework.model.Live2DModel
+import moe.brianhsu.live2d.framework.effect.Effect
+import moe.brianhsu.live2d.framework.effect.impl.EyeBlink._
+import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
 
 import scala.util.Random
 
@@ -12,13 +13,25 @@ object EyeBlink {
   case object Closing extends State          ///< まぶたが閉じていく途中の状態
   case object Closed extends State           ///< まぶたが閉じている状態
   case object Opening extends State           ///< まぶたが開いていく途中の状態
+
+  def createEffect(avatarSettings: AvatarSettings,
+                   blinkingIntervalSeconds: Float = 4.0f,
+                   closingSeconds: Float = 0.1f,
+                   closedSeconds: Float = 0.05f,
+                   openingSeconds: Float = 0.15f): EyeBlink = {
+    new EyeBlink(
+      avatarSettings.eyeBlinkParameterIds,
+      blinkingIntervalSeconds,
+      closingSeconds, closedSeconds, openingSeconds
+    )
+  }
 }
 
-class EyeBlink(parameterIds: List[String],
-               blinkingIntervalSeconds: Float = 4.0f,
-               closingSeconds: Float = 0.1f,
-               closedSeconds: Float = 0.05f,
-               openingSeconds: Float = 0.15f) {
+class EyeBlink private (parameterIds: List[String],
+                        blinkingIntervalSeconds: Float = 4.0f,
+                        closingSeconds: Float = 0.1f,
+                        closedSeconds: Float = 0.05f,
+                        openingSeconds: Float = 0.15f) extends Effect {
 
   var blinkingState: State = EyeBlink.Init        ///< 現在の状態
   var nextBlinkingTime: Float = 0.0f           ///< 次のまばたきの時刻[秒]
@@ -30,7 +43,7 @@ class EyeBlink(parameterIds: List[String],
     userTimeSeconds + (r * (2.0f * blinkingIntervalSeconds - 1.0f))
   }
 
-  def updateParameters(model: Live2DModel, deltaTimeSeconds: Float): Unit = {
+  override def updateParameters(model: Live2DModel, deltaTimeSeconds: Float): Unit = {
     userTimeSeconds += deltaTimeSeconds
 
     var parameterValue: Float = 0

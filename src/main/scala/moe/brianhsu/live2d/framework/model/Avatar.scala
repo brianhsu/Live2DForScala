@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.framework.model
 
 import moe.brianhsu.live2d.demo.FrameTime
 import moe.brianhsu.live2d.framework.Cubism
-import moe.brianhsu.live2d.framework.effect.{Breath, EyeBlink, FaceDirection}
+import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 
 import scala.util.Try
 
@@ -32,8 +32,8 @@ class Avatar(directory: String)(cubism: Cubism) {
   }
 
 
-  private lazy val eyeBlinkHolder = getEyeBlinkEffect()
-  private lazy val breath = Breath.createDefaultBreathEffect()
+  private lazy val eyeBlink = EyeBlink.createEffect(avatarSettings)
+  private lazy val breath = Breath.createEffect()
 
   private val faceDirection = new FaceDirection
 
@@ -43,27 +43,11 @@ class Avatar(directory: String)(cubism: Cubism) {
 
       model.loadParameters()
       model.saveParameters()
-      eyeBlinkHolder.foreach(_.updateParameters(this.modelHolder.get, deltaTimeInSeconds))
-      breath.updateParameters(this.modelHolder.get, deltaTimeInSeconds)
-      faceDirection.updateParameters(this.modelHolder.get, deltaTimeInSeconds)
+      eyeBlink.updateParameters(model, deltaTimeInSeconds)
+      breath.updateParameters(model, deltaTimeInSeconds)
+      faceDirection.updateParameters(model, deltaTimeInSeconds)
 
       model.update()
     }
   }
-
-  def getEyeBlinkEffect(blinkingIntervalSeconds: Float = 4.0f,
-                        closingSeconds: Float = 0.1f,
-                        closedSeconds: Float = 0.05f,
-                        openingSeconds: Float = 0.15f): Option[EyeBlink] = {
-    avatarSettings.eyeBlinkParameterIds match {
-      case Nil => None
-      case parameterIds => Some(
-        new EyeBlink(
-          parameterIds, blinkingIntervalSeconds,
-          closingSeconds, closedSeconds, openingSeconds
-        )
-      )
-    }
-  }
-
 }
