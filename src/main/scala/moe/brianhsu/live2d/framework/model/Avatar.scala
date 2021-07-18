@@ -1,15 +1,10 @@
 package moe.brianhsu.live2d.framework.model
 
-import moe.brianhsu.live2d.demo.{FaceDirection, FrameTime}
+import moe.brianhsu.live2d.demo.FrameTime
 import moe.brianhsu.live2d.framework.Cubism
-import moe.brianhsu.live2d.framework.effect.{Breath, EyeBlink}
+import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter, EyeBlink}
 
-import java.io.File
-import org.json4s._
-import org.json4s.native.JsonMethods._
-
-import scala.io.Source
-import scala.util.{Try, Using}
+import scala.util.Try
 
 /**
  * This class represent a complete Live 2D Cubism Avatar runtime model.
@@ -38,7 +33,17 @@ class Avatar(directory: String)(cubism: Cubism) {
 
 
   private lazy val eyeBlinkHolder = getEyeBlinkEffect()
-  private lazy val breath = new Breath()
+  private lazy val breath = {
+    val parameters = List(
+      BreathParameter("ParamAngleX", 0.0f, 15.0f, 6.5345f, 0.5f),
+      BreathParameter("ParamAngleY", 0.0f, 8.0f, 3.5345f, 0.5f),
+      BreathParameter("ParamAngleZ", 0.0f, 10.0f, 5.5345f, 0.5f),
+      BreathParameter("ParamBodyAngleX", 0.0f, 4.0f, 15.5345f, 0.5f),
+      BreathParameter("ParamBreath", 0.5f, 0.5f, 3.2345f, 0.5f)
+    )
+    new Breath(parameters)
+  }
+
   def update(): Unit = {
     modelHolder.foreach { model =>
       val deltaTime = FrameTime.getDeltaTime
@@ -46,7 +51,7 @@ class Avatar(directory: String)(cubism: Cubism) {
       model.loadParameters()
       model.saveParameters()
       eyeBlinkHolder.foreach(_.updateParameters(this.modelHolder.get, deltaTime))
-      breath.updateParameters(this, deltaTime)
+      breath.updateParameters(this.modelHolder.get, deltaTime)
 
       model.update()
     }
@@ -59,8 +64,10 @@ class Avatar(directory: String)(cubism: Cubism) {
     avatarSettings.eyeBlinkParameterIds match {
       case Nil => None
       case parameterIds => Some(
-        new EyeBlink(parameterIds, blinkingIntervalSeconds,
-                     closingSeconds, closedSeconds, openingSeconds)
+        new EyeBlink(
+          parameterIds, blinkingIntervalSeconds,
+          closingSeconds, closedSeconds, openingSeconds
+        )
       )
     }
   }
