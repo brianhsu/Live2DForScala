@@ -1,11 +1,10 @@
 package moe.brianhsu.live2d.demo
 
-import com.jogamp.opengl.GLAutoDrawable
 import moe.brianhsu.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
 import moe.brianhsu.live2d.framework.Cubism
-import moe.brianhsu.live2d.framework.effect.impl.FaceDirectionTargetCalculator
+import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection, FaceDirectionTargetCalculator}
 import moe.brianhsu.live2d.framework.math.ViewPortMatrixCalculator
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
 import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
@@ -34,37 +33,15 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
 
 
-  init()
+  private val faceDirection = new FaceDirection(30)
 
-  def resetModel(): Unit = {
-    for {
-      _ <- avatarHolder
-      model <- modelHolder
-    } {
-      model.reset()
-    }
+  {
+    setupAvatarEffects()
+    initOpenGL()
   }
 
-  def init(): Unit = {
-
-    // TODO:
-    // 1. Check if Linux's openGLDrawable.getSurfaceWidth / getSurfaceHeight also return wrong value
-    // 2. There should be a better way to do this.
-    /*
-    viewPortMatrixCalculator.updateViewPort(
-      openGLDrawable.getSurfaceWidth,
-      openGLDrawable.getSurfaceHeight
-    )
-    */
-    viewPortMatrixCalculator.updateViewPort(
-      drawCanvasInfo.currentCanvasWidth,
-      drawCanvasInfo.currentCanvasHeight
-    )
-
-    openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    openGL.glEnable(GL_BLEND)
-    openGL.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+  def resetModel(): Unit = {
+    modelHolder.foreach(_.reset())
   }
 
   def display(): Unit = {
@@ -95,12 +72,6 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
 
   }
 
-  private def clearScreen(): Unit = {
-    openGL.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
-    openGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    openGL.glClearDepth(1.0)
-  }
-
   def resize(): Unit = {
 
     // TODO:
@@ -117,7 +88,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
 
   def onMouseReleased(): Unit = {
-    FaceDirectionTargetCalculator.setFaceTargetCoordinate(0.0f, 0.0f)
+    faceDirection.setFaceTargetCoordinate(0.0f, 0.0f)
   }
 
   def onMouseDragged(x: Int, y: Int): Unit = {
@@ -125,7 +96,47 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(y.toFloat)
     val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
     val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
-    FaceDirectionTargetCalculator.setFaceTargetCoordinate(viewX, viewY)
+    faceDirection.setFaceTargetCoordinate(viewX, viewY)
   }
+
+  private def initOpenGL(): Unit = {
+
+    // TODO:
+    // 1. Check if Linux's openGLDrawable.getSurfaceWidth / getSurfaceHeight also return wrong value
+    // 2. There should be a better way to do this.
+    /*
+    viewPortMatrixCalculator.updateViewPort(
+      openGLDrawable.getSurfaceWidth,
+      openGLDrawable.getSurfaceHeight
+    )
+    */
+    viewPortMatrixCalculator.updateViewPort(
+      drawCanvasInfo.currentCanvasWidth,
+      drawCanvasInfo.currentCanvasHeight
+    )
+
+    openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    openGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    openGL.glEnable(GL_BLEND)
+    openGL.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+  }
+
+  private def setupAvatarEffects(): Unit = {
+    avatarHolder.foreach { avatar =>
+      avatar.setEffects(
+        new Breath() ::
+        new EyeBlink(avatar.getAvatarSettings) ::
+        faceDirection ::
+        Nil
+      )
+    }
+  }
+
+  private def clearScreen(): Unit = {
+    openGL.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+    openGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    openGL.glClearDepth(1.0)
+  }
+
 
 }

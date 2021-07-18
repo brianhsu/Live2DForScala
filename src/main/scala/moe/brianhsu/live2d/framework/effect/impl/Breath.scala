@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.framework.effect.impl
 
 import moe.brianhsu.live2d.framework.effect.Effect
-import moe.brianhsu.live2d.framework.effect.impl.Breath.Parameter
+import moe.brianhsu.live2d.framework.effect.impl.Breath.{Parameter, defaultEffect}
 import moe.brianhsu.live2d.framework.model.Live2DModel
 
 import scala.math.sin
@@ -16,13 +16,9 @@ object Breath {
     Parameter("ParamBodyAngleX", 0.0f, 4.0f, 15.5345f, 0.5f),
     Parameter("ParamBreath", 0.5f, 0.5f, 3.2345f, 0.5f)
   )
-
-  def createEffect(parameters: List[Parameter] = defaultEffect): Breath = {
-    new Breath(parameters)
-  }
 }
 
-class Breath private (parameters: List[Parameter]) extends Effect {
+class Breath (parameters: List[Parameter] = defaultEffect) extends Effect {
   private var currentTimeInSeconds: Float = 0.0f
 
   override def updateParameters(model: Live2DModel, deltaTimeInSeconds: Float): Unit = {

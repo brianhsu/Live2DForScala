@@ -13,25 +13,13 @@ object EyeBlink {
   case object Closing extends State          ///< まぶたが閉じていく途中の状態
   case object Closed extends State           ///< まぶたが閉じている状態
   case object Opening extends State           ///< まぶたが開いていく途中の状態
-
-  def createEffect(avatarSettings: AvatarSettings,
-                   blinkingIntervalSeconds: Float = 4.0f,
-                   closingSeconds: Float = 0.1f,
-                   closedSeconds: Float = 0.05f,
-                   openingSeconds: Float = 0.15f): EyeBlink = {
-    new EyeBlink(
-      avatarSettings.eyeBlinkParameterIds,
-      blinkingIntervalSeconds,
-      closingSeconds, closedSeconds, openingSeconds
-    )
-  }
 }
 
-class EyeBlink private (parameterIds: List[String],
-                        blinkingIntervalSeconds: Float = 4.0f,
-                        closingSeconds: Float = 0.1f,
-                        closedSeconds: Float = 0.05f,
-                        openingSeconds: Float = 0.15f) extends Effect {
+class EyeBlink (avatarSettings: AvatarSettings,
+                blinkingIntervalSeconds: Float = 4.0f,
+                closingSeconds: Float = 0.1f,
+                closedSeconds: Float = 0.05f,
+                openingSeconds: Float = 0.15f) extends Effect {
 
   var blinkingState: State = EyeBlink.Init        ///< 現在の状態
   var nextBlinkingTime: Float = 0.0f           ///< 次のまばたきの時刻[秒]
@@ -97,7 +85,7 @@ class EyeBlink private (parameterIds: List[String],
         parameterValue = 1.0f
     }
 
-    parameterIds.foreach { id =>
+    avatarSettings.eyeBlinkParameterIds.foreach { id =>
       model.setParameterValue(id, parameterValue)
     }
   }

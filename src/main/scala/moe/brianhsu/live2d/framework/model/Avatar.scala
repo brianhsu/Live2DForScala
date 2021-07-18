@@ -2,6 +2,7 @@ package moe.brianhsu.live2d.framework.model
 
 import moe.brianhsu.live2d.demo.FrameTime
 import moe.brianhsu.live2d.framework.Cubism
+import moe.brianhsu.live2d.framework.effect.Effect
 import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 
 import scala.util.Try
@@ -22,6 +23,7 @@ class Avatar(directory: String)(cubism: Cubism) {
 
   private val avatarSettings = new AvatarSettings(directory)
   private val mocFile: Option[String] = avatarSettings.mocFile
+  private var effects: List[Effect] = Nil
 
   assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/")
 
@@ -31,11 +33,21 @@ class Avatar(directory: String)(cubism: Cubism) {
       .map(_.validAllDataFromNativeLibrary)
   }
 
+  def setEffects(effects: List[Effect]): Unit = {
+    this.effects = effects
+  }
 
-  private lazy val eyeBlink = EyeBlink.createEffect(avatarSettings)
-  private lazy val breath = Breath.createEffect()
+  def appendEffect(effect: Effect): Unit = {
+    this.effects = effects.appended(effect)
+  }
 
-  private val faceDirection = new FaceDirection
+  def removeEffect(effect: Effect): Unit = {
+    this.effects = effects.filterNot(_ == effect)
+  }
+
+  def getAvatarSettings: AvatarSettings = avatarSettings
+
+  def getEffects: List[Effect] = effects
 
   def update(): Unit = {
     modelHolder.foreach { model =>
@@ -43,10 +55,7 @@ class Avatar(directory: String)(cubism: Cubism) {
 
       model.loadParameters()
       model.saveParameters()
-      eyeBlink.updateParameters(model, deltaTimeInSeconds)
-      breath.updateParameters(model, deltaTimeInSeconds)
-      faceDirection.updateParameters(model, deltaTimeInSeconds)
-
+      effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }
       model.update()
     }
   }

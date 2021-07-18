@@ -3,9 +3,8 @@ package moe.brianhsu.live2d.framework.effect.impl
 import moe.brianhsu.live2d.demo.LAppView
 
 import scala.math.{abs, sqrt}
-object FaceDirectionTargetCalculator extends FaceDirectionTargetCalculator(30.0f)
 
-class FaceDirectionTargetCalculator(frameRate: Float) {
+class FaceDirectionTargetCalculator(frameRate: Int) {
 
   /**
    * The minimal offset required to calculate a face direction coordinate
