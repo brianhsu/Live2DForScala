@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.framework.model
 
 import moe.brianhsu.live2d.demo.{FaceDirection, FrameTime}
 import moe.brianhsu.live2d.framework.Cubism
-import moe.brianhsu.live2d.framework.effect.EyeBlink
+import moe.brianhsu.live2d.framework.effect.{Breath, EyeBlink}
 
 import java.io.File
 import org.json4s._
@@ -38,33 +38,15 @@ class Avatar(directory: String)(cubism: Cubism) {
 
 
   private lazy val eyeBlinkHolder = getEyeBlinkEffect()
+  private lazy val breath = new Breath()
   def update(): Unit = {
     modelHolder.foreach { model =>
       val deltaTime = FrameTime.getDeltaTime
-      val _dragX = FaceDirection.getX
-      val _dragY = FaceDirection.getY
-      //println(s"===> dragX: ${_dragX}, dragY: ${_dragY}")
 
       model.loadParameters()
       model.saveParameters()
       eyeBlinkHolder.foreach(_.updateParameters(this.modelHolder.get, deltaTime))
-      /*
-
-      //println(s"===> drag.X = ${_dragX}, dragY: ${_dragY}")
-      addParameterValue("ParamAngleX", _dragX * 30); // -30から30の値を加える
-      addParameterValue("ParamAngleY", _dragY * 30);
-      addParameterValue("ParamAngleZ", _dragX * _dragY * -30);
-
-      //ドラッグによる体の向きの調整
-      addParameterValue("ParamBodyAngleX", _dragX * 10); // -10から10の値を加える
-
-      //ドラッグによる目の向きの調整
-      addParameterValue("ParamEyeBall", _dragX); // -1から1の値を加える
-      addParameterValue("ParamEyeBallY", _dragY);
-
-       */
-
-      //breath.updateParameters(this, deltaTime)
+      breath.updateParameters(this, deltaTime)
 
       model.update()
     }
