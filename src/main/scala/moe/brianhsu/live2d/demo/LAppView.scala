@@ -5,6 +5,7 @@ import moe.brianhsu.live2d.adapter.JavaOpenGL
 import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
 import moe.brianhsu.live2d.framework.Cubism
+import moe.brianhsu.live2d.framework.effect.FaceDirectionTargetCalculator
 import moe.brianhsu.live2d.framework.math.ViewPortMatrixCalculator
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
 import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
@@ -35,7 +36,8 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
 
 
   init()
-  def resetMode(): Unit = {
+
+  def resetModel(): Unit = {
     for {
       avatar <- avatarHolder
       model <- modelHolder
@@ -115,29 +117,16 @@ class LAppView(openGLDrawable: GLAutoDrawable) {
     this.display()
   }
 
-  def onMouseClick(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(939.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(851.toFloat)
-    val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
-    val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
-    //println(s"==> viewX, viewY = $viewX, $viewY")
-
+  def onMouseReleased(): Unit = {
+    FaceDirectionTargetCalculator.setFaceTargetCoordinate(0.0f, 0.0f)
   }
 
-  private var lastX = 0
-  private var lastY = 0
   def onMouseDragged(x: Int, y: Int): Unit = {
-    if (x == 0 && y == 0) {
-      FaceDirection.set(0.0f, 0.0f)
-    } else {
-      val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(lastX.toFloat)
-      val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(lastY.toFloat)
-      val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
-      val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
-      FaceDirection.set(viewX, viewY)
-    }
-    lastX = x
-    lastY = y
+    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(y.toFloat)
+    val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
+    val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
+    FaceDirectionTargetCalculator.setFaceTargetCoordinate(viewX, viewY)
   }
 
 }

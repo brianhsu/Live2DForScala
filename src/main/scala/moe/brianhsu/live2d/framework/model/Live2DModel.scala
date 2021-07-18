@@ -4,8 +4,8 @@ import com.sun.jna.ptr.FloatByReference
 import moe.brianhsu.live2d.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.core.utils.MemoryInfo
 import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
-import moe.brianhsu.live2d.demo.{FaceDirection, FrameTime}
-import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter, EyeBlink}
+import moe.brianhsu.live2d.demo.FrameTime
+import moe.brianhsu.live2d.framework.effect.{Breath, BreathParameter, EyeBlink, FaceDirection, FaceDirectionTargetCalculator}
 import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.framework.{MocInfo, model}
@@ -160,40 +160,19 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   lazy val eyeBlink = {
     new EyeBlink("ParamEyeLOpen" :: "ParamEyeROpen" :: Nil)
   }
+  lazy val faceDirection = new FaceDirection()
 
-  var lastDragX = 0.0f
-  var lastDragY = 0.0f
   /**
    * Update the Live 2D Model and reset all dynamic flags of drawables.
    */
   def update(): Unit = {
 
     val deltaTime = FrameTime.getDeltaTime
-    FaceDirection.update(deltaTime)
-    val _dragX = FaceDirection.getX
-    val _dragY = FaceDirection.getY
-    if (lastDragX != _dragX || lastDragY != _dragY) {
-      printf(s"===> dragX: %.10f, dragY: %.10f\n", _dragX, _dragY)
-      lastDragY = _dragY
-      lastDragX = _dragX
-    }
 
     loadParameters()
     saveParameters()
     eyeBlink.updateParameters(this, deltaTime)
-
-    //println(s"===> drag.X = ${_dragX}, dragY: ${_dragY}")
-    addParameterValue("ParamAngleX", _dragX * 30); // -30から30の値を加える
-    addParameterValue("ParamAngleY", _dragY * 30);
-    addParameterValue("ParamAngleZ", _dragX * _dragY * -30);
-
-    //ドラッグによる体の向きの調整
-    addParameterValue("ParamBodyAngleX", _dragX * 10); // -10から10の値を加える
-
-    //ドラッグによる目の向きの調整
-    addParameterValue("ParamEyeBall", _dragX); // -1から1の値を加える
-    addParameterValue("ParamEyeBallY", _dragY);
-
+    faceDirection.updateParameters(this, deltaTime)
     breath.updateParameters(this, deltaTime)
 
     core.cLibrary.csmUpdateModel(this.cubismModel)

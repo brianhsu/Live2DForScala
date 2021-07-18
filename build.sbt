@@ -6,6 +6,8 @@ scalaVersion := "2.13.5"
 
 scalacOptions := Seq("-deprecation")
 
+Compile / doc / scalacOptions ++= Seq("-private")
+
 val lwjglVersion = "3.2.3"
 
 libraryDependencies ++= Seq(
