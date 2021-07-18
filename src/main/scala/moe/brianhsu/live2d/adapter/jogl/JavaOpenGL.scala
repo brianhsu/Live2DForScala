@@ -1,6 +1,7 @@
-package moe.brianhsu.live2d.adapter
+package moe.brianhsu.live2d.adapter.jogl
 
 import com.jogamp.opengl.{GL, GL2, GL2ES2}
+import moe.brianhsu.live2d.adapter.OpenGL
 
 import java.nio.{Buffer, ByteBuffer, FloatBuffer, IntBuffer}
 
