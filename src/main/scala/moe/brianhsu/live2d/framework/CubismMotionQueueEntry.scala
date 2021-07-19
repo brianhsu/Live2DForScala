@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.framework
 
 class CubismMotionQueueEntry {
-  private var _autoDelete: Boolean = false                   ///< 自動削除
-  private var _motion: ACubismMotion = null                        ///< モーション
+  private[framework] var _autoDelete: Boolean = false                   ///< 自動削除
+  private[framework] var _motion: ACubismMotion = null                        ///< モーション
 
   private var _available: Boolean = true                    ///< 有効化フラグ
   private var _finished: Boolean = false                     ///< 終了フラグ

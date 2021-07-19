@@ -8,13 +8,6 @@ import java.io.File
 import scala.io.Source
 import scala.util.Using
 
-object AvatarSettings {
-  def main(args: Array[String]): Unit = {
-    val avatarSettings = new AvatarSettings("/Users/bhsu/WorkRoom/live2dForScala/src/main/resources/Haru")
-
-    println(avatarSettings.expressions)
-  }
-}
 class AvatarSettings(directory: String) {
   private implicit val formats: Formats = DefaultFormats
   private lazy val mainFileHolder: Option[File] = findFile(".model3.json")
