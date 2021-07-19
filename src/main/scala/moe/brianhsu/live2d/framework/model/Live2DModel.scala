@@ -20,6 +20,7 @@ import moe.brianhsu.live2d.framework.math.ModelMatrix
  */
 class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCore) {
 
+
   private var savedParameters: Map[String, Float] = Map.empty
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cLibrary.csmGetSizeofModel(this.revivedMoc)
@@ -172,6 +173,13 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     parameters.get(id).foreach { p =>
       setParameterValue(id, p.current + (value * weight))
     }
+  }
+
+  def multiplyParameterValue(id: String, value: Float, weight: Float): Unit = {
+    parameters.get(id).foreach { p =>
+      setParameterValue(id, p.current * (1.0f + (value - 1.0f) * weight))
+    }
+
   }
 
   private def reviveMoc(): CPointerToMoc = {

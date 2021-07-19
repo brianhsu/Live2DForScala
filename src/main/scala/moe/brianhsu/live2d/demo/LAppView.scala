@@ -3,17 +3,19 @@ package moe.brianhsu.live2d.demo
 import moe.brianhsu.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
-import moe.brianhsu.live2d.framework.Cubism
+import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion}
 import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.framework.math.ViewPortMatrixCalculator
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
 import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureManager}
 
+import java.awt.event.KeyEvent
 import scala.util.Try
 
 
 
 class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGL) {
+
 
   import openGL._
 
@@ -133,10 +135,29 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     }
   }
 
+  private def startExpression(name: String): Unit = {
+    avatarHolder.foreach { avatar =>
+      avatar.setExpression(name)
+    }
+  }
+
   private def clearScreen(): Unit = {
     openGL.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
     openGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     openGL.glClearDepth(1.0)
+  }
+  def keyReleased(keyEvent: KeyEvent): Unit = {
+    keyEvent.getKeyChar match {
+      case '0' => startExpression("f00")
+      case '1' => startExpression("f01")
+      case '2' => startExpression("f02")
+      case '3' => startExpression("f03")
+      case '4' => startExpression("f04")
+      case '5' => startExpression("f05")
+      case '6' => startExpression("f06")
+      case '7' => startExpression("f07")
+      case _   => println("Unknown expression")
+    }
   }
 
 
