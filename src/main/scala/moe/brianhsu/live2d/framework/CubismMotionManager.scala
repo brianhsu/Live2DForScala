@@ -46,8 +46,7 @@ class CubismMotionManager extends CubismMotionQueueManager {
    * @return                      開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
    */
   def StartMotionPriority(motion: ACubismMotion, autoDelete: Boolean, priority: Int): CubismMotionQueueEntry = {
-    if (priority == _reservePriority)
-    {
+    if (priority == _reservePriority) {
       _reservePriority = 0           // 予約を解除
     }
 

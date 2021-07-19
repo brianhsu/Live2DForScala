@@ -10,7 +10,13 @@ import java.util.concurrent.{ScheduledFuture, ScheduledThreadPoolExecutor, TimeU
 class FixedFPSAnimator(fps: Int, drawable: GLAutoDrawable) {
   private val scheduledThreadPool = new ScheduledThreadPoolExecutor(1)
   private val updateOpenGLCanvas = new Runnable {
-    override def run(): Unit = drawable.display()
+    override def run(): Unit = {
+      try {
+        drawable.display()
+      } catch {
+        case e: Exception => e.printStackTrace()
+      }
+    }
   }
 
   private var scheduler: Option[ScheduledFuture[_]] = None
@@ -73,5 +79,8 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
 
   override def keyTyped(keyEvent: KeyEvent): Unit = {}
   override def keyPressed(keyEvent: KeyEvent): Unit = {}
-  override def keyReleased(keyEvent: KeyEvent): Unit = {}
+  override def keyReleased(keyEvent: KeyEvent): Unit = {
+    this.view.foreach(_.keyReleased(keyEvent))
+
+  }
 }

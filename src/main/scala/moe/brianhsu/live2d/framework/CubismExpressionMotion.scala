@@ -21,6 +21,7 @@ object CubismExpressionMotion {
       }
       Parameter(p.id, blendType, p.value)
     }
+
     val expression = new CubismExpressionMotion(parameters)
     expression.SetFadeInTime(expressionSettings.fadeInTime.getOrElse(1.0f))
     expression.SetFadeOutTime(expressionSettings.fadeOutTime.getOrElse(1.0f))

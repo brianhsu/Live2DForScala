@@ -11,7 +11,7 @@ object ACubismMotion {
 abstract class ACubismMotion {
   protected var _fadeInSeconds: Float = -1.0f        ///< フェードインにかかる時間[秒]
   protected var _fadeOutSeconds: Float = -1.0f       ///< フェードアウトにかかる時間[秒]
-  protected var _weight: Float = -1.0f             ///< モーションの重み
+  protected var _weight: Float = 1.0f             ///< モーションの重み
   protected var _offsetSeconds: Float = -1.0f        ///< モーション再生の開始時刻[秒]
 
   protected var _firedEventValues: List[String] = Nil
@@ -31,6 +31,7 @@ abstract class ACubismMotion {
   def UpdateParameters(model: Live2DModel, motionQueueEntry: CubismMotionQueueEntry, userTimeSeconds: Float): Unit = {
 
     if (!motionQueueEntry.IsAvailable() || motionQueueEntry.IsFinished()) {
+      println("Motion not available or finished.")
       return
     }
 

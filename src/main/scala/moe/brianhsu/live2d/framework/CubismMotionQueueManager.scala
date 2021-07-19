@@ -80,7 +80,7 @@ class CubismMotionQueueManager {
    * @param   userTimeSeconds   デルタ時間の積算値[秒]
    * @return  true    モデルへパラメータ値の反映あり / false   モデルへパラメータ値の反映なし(モーションの変化なし)
    */
-  protected def DoUpdateMotion(model: Live2DModel, userTimeSeconds: Float): Boolean = {
+  def DoUpdateMotion(model: Live2DModel, userTimeSeconds: Float): Boolean = {
      if (_motions == Nil) {
        false
      } else {
@@ -99,8 +99,8 @@ class CubismMotionQueueManager {
          if (!queueEntry.IsFinished() && queueEntry.IsTriggeredFadeOut()) {
            queueEntry.StartFadeout(queueEntry.GetFadeOutSeconds(), userTimeSeconds)
          }
-       }
 
+       }
        this._motions = this._motions.filterNot(_.IsFinished())
        true
      }
