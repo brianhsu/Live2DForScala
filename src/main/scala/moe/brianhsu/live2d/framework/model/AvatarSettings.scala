@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.framework.model
 
-import moe.brianhsu.live2d.framework.model.settings.{Group, ModelSetting}
+import moe.brianhsu.live2d.framework.model.settings.{Expression, Group, ModelSetting}
 import org.json4s.{DefaultFormats, Formats, JValue}
 import org.json4s.native.JsonMethods.parse
 
@@ -8,13 +8,20 @@ import java.io.File
 import scala.io.Source
 import scala.util.Using
 
+object AvatarSettings {
+  def main(args: Array[String]): Unit = {
+    val avatarSettings = new AvatarSettings("/Users/bhsu/WorkRoom/live2dForScala/src/main/resources/Haru")
+
+    println(avatarSettings.expressions)
+  }
+}
 class AvatarSettings(directory: String) {
   private implicit val formats: Formats = DefaultFormats
-  private val mainFileHolder: Option[File] = findFile(".model3.json")
+  private lazy val mainFileHolder: Option[File] = findFile(".model3.json")
+  private lazy val settingHolder: Option[ModelSetting] = parsedMainJson.map(_.camelizeKeys.extract[ModelSetting])
 
   assert(mainFileHolder.isDefined, s"Cannot find main settings of $directory")
 
-  lazy val settingHolder: Option[ModelSetting] = parsedMainJson.map(_.camelizeKeys.extract[ModelSetting])
   lazy val mocFile: Option[String] = {
     settingHolder.map(_.fileReferences.moc)
       .map(file => s"$directory/$file")
@@ -26,6 +33,7 @@ class AvatarSettings(directory: String) {
       .map(file => s"$directory/$file")
   }
 
+
   lazy val eyeBlinkParameterIds: List[String] = {
     for {
       setting <- settingHolder.toList
@@ -36,9 +44,26 @@ class AvatarSettings(directory: String) {
     }
   }
 
-  private lazy val parsedMainJson: Option[JValue] = {
+  lazy val expressions: Map[String, Expression] = {
+    val nameToExpressionList = for {
+      setting <- settingHolder.toList
+      expressionFileInfo <- setting.fileReferences.expressions
+      expressionJsonFilePath = s"$directory/${expressionFileInfo.file}"
+      jsonFile <- List(new File(expressionJsonFilePath)).filter(_.exists)
+      parsedJson <- parseJson(jsonFile)
+    } yield {
+      expressionFileInfo.name -> parsedJson.camelizeKeys.extract[Expression]
+    }
+    nameToExpressionList.toMap
+  }
+
+  private lazy val parsedMainJson: Option[JValue] = for {
+    file <- mainFileHolder
+    parsedJson <- parseJson(file)
+  } yield parsedJson
+
+  private def parseJson(file: File): Option[JValue] = {
     for {
-      file <- mainFileHolder
       rawText <- getRawTextFromFile(file)
       parsedJson = parse(rawText)
     } yield {
