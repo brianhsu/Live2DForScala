@@ -1,0 +1,400 @@
+package moe.brianhsu.live2d.framework
+import moe.brianhsu.live2d.framework.math.CubismMath
+import moe.brianhsu.live2d.framework.model.Live2DModel
+
+import scala.util.control.Breaks.break
+
+class CubismMotion extends ACubismMotion {
+  var _sourceFrameRate: Float = 30.0f                   ///< ロードしたファイルのFPS。記述が無ければデフォルト値15fpsとなる
+  var _loopDurationSeconds: Float = -1.0f               ///< mtnファイルで定義される一連のモーションの長さ
+  var _isLoop: Boolean = false                            ///< ループするか?
+  var _isLoopFadeIn: Boolean = true                      ///< ループ時にフェードインが有効かどうかのフラグ。初期値では有効。
+  var _lastWeight: Float = 0.0f                        ///< 最後に設定された重み
+
+  var _motionData: CubismMotionData = null                   ///< 実際のモーションデータ本体
+
+  var _eyeBlinkParameterIds: List[String] = Nil   ///< 自動まばたきを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
+  var _lipSyncParameterIds: List[String] = Nil    ///< リップシンクを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
+
+  var _modelCurveIdEyeBlink: String = null               ///< モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
+  var _modelCurveIdLipSync: String = null                ///< モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
+
+  private val EffectNameEyeBlink = "EyeBlink"
+  private val EffectNameLipSync  = "LipSync"
+  private val CubismMotionSegmentType_Linear = 0         ///< リニア
+  private val CubismMotionSegmentType_Bezier = 1         ///< ベジェ曲線
+  private val CubismMotionSegmentType_Stepped = 2        ///< ステップ
+  private val CubismMotionSegmentType_InverseStepped = 3  ///< インバースステップ
+
+  override protected def DoUpdateParameters(model: Live2DModel, userTimeSeconds: Float, fadeWeight: Float, motionQueueEntry: CubismMotionQueueEntry): Unit = {
+    if (_modelCurveIdEyeBlink == null) {
+      _modelCurveIdEyeBlink = EffectNameEyeBlink
+    }
+
+    if (_modelCurveIdLipSync == null) {
+      _modelCurveIdLipSync = EffectNameLipSync
+    }
+
+    var timeOffsetSeconds: Float = userTimeSeconds - motionQueueEntry.GetStartTime()
+
+    if (timeOffsetSeconds < 0.0f) {
+      timeOffsetSeconds = 0.0f; // エラー回避
+    }
+    var lipSyncValue: Float = Float.MaxValue
+    var eyeBlinkValue = Float.MaxValue
+
+    //まばたき、リップシンクのうちモーションの適用を検出するためのビット（maxFlagCount個まで
+    val MaxTargetSize: Int = 64
+    var lipSyncFlags: Int = 0
+    var eyeBlinkFlags: Int = 0
+
+    //瞬き、リップシンクのターゲット数が上限を超えている場合
+    if (_eyeBlinkParameterIds.size > MaxTargetSize) {
+      println(s"too many eye blink targets : ${_eyeBlinkParameterIds.size}")
+    }
+    if (_lipSyncParameterIds.size > MaxTargetSize) {
+      println(s"too many lip sync targets : ${_lipSyncParameterIds.size}")
+    }
+
+    val tmpFadeIn: Float = if (_fadeInSeconds <= 0.0f) {
+     1.0f
+    } else {
+      CubismMath.GetEasingSine((userTimeSeconds - motionQueueEntry.GetStartTime()) / _fadeInSeconds)
+    }
+
+    val tmpFadeOut: Float = if (_fadeOutSeconds <= 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
+      1.0f
+    } else {
+      CubismMath.GetEasingSine((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
+    }
+
+    var value: Float = 0.0f
+    var c: Int = 0
+    var parameterIndex: Int = 0
+
+    // 'Repeat' time as necessary.
+    var time: Float = timeOffsetSeconds
+
+    if (_isLoop) {
+      while (time > _motionData.Duration) {
+        time -= _motionData.Duration
+      }
+    }
+    // Evaluate model curves.
+    this._motionData.Curves
+      .filter(_.Type == CubismMotionCurveTarget.CubismMotionCurveTarget_Model)
+      .foreach { curve =>
+        value = EvaluateCurve(_motionData, curve, time)
+        if (curve.Id == _modelCurveIdEyeBlink)
+        {
+          eyeBlinkValue = value
+        } else if (curve.Id == _modelCurveIdLipSync) {
+          lipSyncValue = value
+        }
+      }
+
+    var parameterMotionCurveCount: Int = 0
+    this._motionData.Curves
+      .filter(_.Type == CubismMotionCurveTarget.CubismMotionCurveTarget_Parameter)
+      .foreach { curve =>
+        parameterMotionCurveCount += 1
+        if (model.parameters.contains(curve.Id)) {
+          val sourceValue: Float = model.parameters(curve.Id).current
+
+          // Evaluate curve and apply value.
+          value = EvaluateCurve(_motionData, curve, time)
+          if (eyeBlinkValue != Float.MaxValue) {
+            val loopSize = Math.min(_eyeBlinkParameterIds.size, MaxTargetSize)
+            for (i  <- 0 until loopSize) {
+              if (_eyeBlinkParameterIds(i) == curve.Id) {
+                value *= eyeBlinkValue
+                eyeBlinkFlags |= (1 << i)
+                break()
+              }
+            }
+          }
+
+          if (lipSyncValue != Float.MaxValue) {
+            val loopSize = Math.min(_lipSyncParameterIds.size, MaxTargetSize)
+
+            for (i <- 0 until loopSize) {
+              if (_lipSyncParameterIds(i) == curve.Id) {
+                value += lipSyncValue
+                lipSyncFlags |= (1 << i)
+                break()
+              }
+            }
+          }
+
+          var v: Float = 0
+          // パラメータごとのフェード
+          if (curve.FadeInTime < 0.0f && curve.FadeOutTime < 0.0f) {
+            //モーションのフェードを適用
+            v = sourceValue + (value - sourceValue) * fadeWeight
+          } else {
+            // パラメータに対してフェードインかフェードアウトが設定してある場合はそちらを適用
+            var fin: Float = 0
+            var fout: Float = 0
+
+            if (curve.FadeInTime < 0.0f) {
+              fin = tmpFadeIn
+            } else {
+              fin = if (curve.FadeInTime == 0.0f) {
+                1.0f
+              } else {
+                CubismMath.GetEasingSine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / curve.FadeInTime)
+              }
+            }
+
+            if (curve.FadeOutTime < 0.0f) {
+              fout = tmpFadeOut
+            } else {
+              fout = if (curve.FadeOutTime == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
+                1.0f
+              } else {
+                CubismMath.GetEasingSine((motionQueueEntry.GetEndTime() - userTimeSeconds) / curve.FadeOutTime)
+              }
+            }
+
+            val paramWeight: Float = _weight * fin * fout
+
+            // パラメータごとのフェードを適用
+            v = sourceValue + (value - sourceValue) * paramWeight
+          }
+          model.setParameterValue(curve.Id, v)
+        }
+      }
+
+
+    {
+      if (eyeBlinkValue != Float.MaxValue) {
+        val loopSize = Math.min(_eyeBlinkParameterIds.size, MaxTargetSize)
+
+        for (i <- 0 until loopSize) {
+          val sourceValue: Float = model.parameters(_eyeBlinkParameterIds(i)).current
+          //モーションでの上書きがあった時にはまばたきは適用しない
+          val shouldSkip = ((eyeBlinkFlags >> i) & 0x01) != 0
+          if (!shouldSkip) {
+            val v: Float = sourceValue + (eyeBlinkValue - sourceValue) * fadeWeight
+            model.setParameterValue(_eyeBlinkParameterIds(i), v)
+          }
+        }
+      }
+
+      if (lipSyncValue != Float.MaxValue) {
+        val loopSize = Math.min(_lipSyncParameterIds.size, MaxTargetSize)
+
+        for (i <- 0 until loopSize) {
+          val sourceValue: Float = model.parameters(_lipSyncParameterIds(i)).current
+          val shouldSkip = ((lipSyncFlags >> i) & 0x01) != 0
+          if (!shouldSkip) {
+            val v: Float = sourceValue + (lipSyncValue - sourceValue) * fadeWeight
+            model.setParameterValue(_lipSyncParameterIds(i), v)
+          }
+        }
+      }
+
+    }
+
+    this._motionData.Curves
+      .filter(_.Type == CubismMotionCurveTarget.CubismMotionCurveTarget_Parameter)
+      .foreach { curve =>
+        if (model.parameters.contains(curve.Id)) {
+          // Evaluate curve and apply value.
+          value = EvaluateCurve(_motionData, curve, time)
+          model.setParameterValue(curve.Id, value)
+        }
+      }
+
+    if (timeOffsetSeconds >= _motionData.Duration) {
+      if (_isLoop) {
+        motionQueueEntry.SetStartTime(userTimeSeconds) //最初の状態へ
+        if (_isLoopFadeIn) {
+          //ループ中でループ用フェードインが有効のときは、フェードイン設定し直し
+          motionQueueEntry.SetFadeInStartTime(userTimeSeconds)
+        }
+      } else {
+        if (this->_onFinishedMotion != null) {
+          this->_onFinishedMotion(this)
+        }
+        motionQueueEntry.IsFinished(true)
+      }
+    }
+
+    _lastWeight = fadeWeight
+  }
+
+  private def EvaluateCurve(motionData: CubismMotionData, curve: CubismMotionCurve, time: Float): Float = {
+
+    var target: Int = -1
+    val totalSegmentCount: Int = curve.BaseSegmentIndex + curve.SegmentCount
+    var pointPosition: Int = 0
+
+    for (i <- curve.BaseSegmentIndex until totalSegmentCount) {
+      // Get first point of next segment.
+      pointPosition = motionData.Segments(i).BasePointIndex + ( if (motionData.Segments(i).SegmentType == CubismMotionSegmentType_Bezier)  3 else 1)
+
+      // Break if time lies within current segment.
+      if (motionData.Points(pointPosition).Time > time) {
+        target = i
+        break()
+      }
+    }
+
+    if (target == -1) {
+      return motionData.Points(pointPosition).Value
+    }
+
+    val segment = motionData.Segments(target)
+    segment.Evaluate(motionData.Points.drop(segment.BasePointIndex), time)
+  }
+
+  /**
+   * ループ情報の設定
+   *
+   * ループ情報を設定する。
+   *
+   * @param   loop    ループ情報
+   */
+  def IsLoop(loop: Boolean): Unit = {
+    this._isLoop = loop
+  }
+
+  /**
+   * ループ情報の取得
+   *
+   * モーションがループするかどうか？
+   *
+   * @return  true    ループする / false   ループしない
+   */
+  def IsLoop(): Boolean = this._isLoop
+
+  /**
+   * ループ時のフェードイン情報の設定
+   *
+   * ループ時のフェードイン情報を設定する。
+   *
+   * @param   loopFadeIn  ループ時のフェードイン情報
+   */
+  def IsLoopFadeIn(loopFadeIn: Boolean): Unit = {
+    this._isLoopFadeIn = loopFadeIn
+  }
+
+  /**
+   * ループ時のフェードイン情報の取得
+   *
+   * ループ時にフェードインするかどうか？
+   *
+   * @return  true    する / false   しない
+   */
+  def IsLoopFadeIn(): Boolean = this._isLoopFadeIn
+
+  /**
+   * モーションの長さの取得
+   *
+   * モーションの長さを取得する。
+   *
+   * @return  モーションの長さ[秒]
+   */
+  override def GetDuration(): Float = if (_isLoop) -1.0f else _loopDurationSeconds
+
+  /**
+   * モーションのループ時の長さの取得
+   *
+   * モーションのループ時の長さを取得する。
+   *
+   * @return  モーションのループ時の長さ[秒]
+   */
+  override def GetLoopDuration(): Float = this._loopDurationSeconds
+
+  /**
+   * パラメータに対するフェードインの時間の設定
+   *
+   * パラメータに対するフェードインの時間を設定する。
+   *
+   * @param   parameterId     パラメータID
+   * @param   value           フェードインにかかる時間[秒]
+   */
+  def SetParameterFadeInTime(parameterId: String, value: Float): Unit = {
+    this._motionData.Curves
+      .find(_.Id == parameterId)
+      .foreach(_.FadeInTime = value)
+  }
+
+  /**
+   * パラメータに対するフェードアウトの時間の設定
+   *
+   * パラメータに対するフェードアウトの時間を設定する。
+   *
+   * @param   parameterId     パラメータID
+   * @param   value           フェードアウトにかかる時間[秒]
+   */
+  def SetParameterFadeOutTime(parameterId: String, value: Float): Unit = {
+    this._motionData.Curves
+      .find(_.Id == parameterId)
+      .foreach(_.FadeOutTime = value)
+  }
+
+  /**
+   * パラメータに対するフェードインの時間の取得
+   *
+   * パラメータに対するフェードインの時間を取得する。
+   *
+   * @param   parameterId     パラメータID
+   * @return   フェードインにかかる時間[秒]
+   */
+  def GetParameterFadeInTime(parameterId: String): Float = {
+    this._motionData.Curves
+      .find(_.Id == parameterId)
+      .map(_.FadeInTime)
+      .getOrElse(-1.0f)
+  }
+
+  /**
+   * パラメータに対するフェードアウトの時間の取得
+   *
+   * パラメータに対するフェードアウトの時間を取得する。
+   *
+   * @param   parameterId     パラメータID
+   * @return   フェードアウトにかかる時間[秒]
+   */
+  def GetParameterFadeOutTime(parameterId: String): Float = {
+    this._motionData.Curves
+      .find(_.Id == parameterId)
+      .map(_.FadeOutTime)
+      .getOrElse(-1.0f)
+  }
+
+  /**
+   * 自動エフェクトがかかっているパラメータIDリストの設定
+   *
+   * 自動エフェクトがかかっているパラメータIDリストを設定する。
+   *
+   * @param   eyeBlinkParameterIds    自動まばたきがかかっているパラメータIDのリスト
+   * @param   lipSyncParameterIds     リップシンクがかかっているパラメータIDのリスト
+   */
+  def SetEffectIds(eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): Unit = {
+    this._eyeBlinkParameterIds = eyeBlinkParameterIds
+    this._lipSyncParameterIds = lipSyncParameterIds
+  }
+
+  /**
+   * モデルのパラメータ更新
+   *
+   * イベント発火のチェック。
+   * 入力する時間は呼ばれるモーションタイミングを０とした秒数で行う。
+   *
+   * @param   beforeCheckTimeSeconds   前回のイベントチェック時間[秒]
+   * @param   motionTimeSeconds        今回の再生時間[秒]
+   */
+  override def GetFiredEvent(beforeCheckTimeSeconds: Float, motionTimeSeconds: Float): List[String] = {
+
+    this._firedEventValues = this._motionData.Events
+      .filter(e => e.FireTime >= beforeCheckTimeSeconds && e.FireTime <= motionTimeSeconds)
+      .map(_.Value)
+
+    this._firedEventValues
+  }
+
+
+}

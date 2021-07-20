@@ -7,6 +7,6 @@ case class CubismMotionCurve(
   Type: CubismMotionCurveTarget.TargetType = CubismMotionCurveTarget_Model,
   SegmentCount: Int = 0,
   BaseSegmentIndex: Int = 0,
-  FadeInTime: Float = 0.0f,
-  FadeOutTime: Float = 0.0f
+  var FadeInTime: Float = 0.0f,
+  var FadeOutTime: Float = 0.0f
 )
