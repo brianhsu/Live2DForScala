@@ -25,6 +25,7 @@ class Avatar(directory: String)(cubism: Cubism) {
   private val expressionManager = new CubismMotionManager
   private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
 
+
   assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/")
 
   val modelHolder: Try[Live2DModel] = {

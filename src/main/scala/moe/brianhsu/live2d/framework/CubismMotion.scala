@@ -1,8 +1,35 @@
 package moe.brianhsu.live2d.framework
+import moe.brianhsu.live2d.framework.ACubismMotion.FinishedMotionCallback
+import moe.brianhsu.live2d.framework.CubismMotion.{CubismMotionSegmentType_Bezier, EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.framework.math.CubismMath
-import moe.brianhsu.live2d.framework.model.Live2DModel
+import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
+import moe.brianhsu.live2d.framework.model.settings.MotionInfo
 
 import scala.util.control.Breaks.break
+
+object CubismMotion {
+  private val EffectNameEyeBlink = "EyeBlink"
+  private val EffectNameLipSync  = "LipSync"
+  val CubismMotionSegmentType_Linear = 0         ///< リニア
+  val CubismMotionSegmentType_Bezier = 1         ///< ベジェ曲線
+  val CubismMotionSegmentType_Stepped = 2        ///< ステップ
+  val CubismMotionSegmentType_InverseStepped = 3  ///< インバースステップ
+
+  def apply(motionInfo: MotionInfo, onFinishHandler: FinishedMotionCallback,
+            eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
+    val cubismMotion = new CubismMotion
+    val motionData = CubismMotionData(motionInfo)
+    cubismMotion._sourceFrameRate = motionInfo.motion.meta.fps
+    cubismMotion._loopDurationSeconds = motionInfo.motion.meta.duration
+    cubismMotion._onFinishedMotion = onFinishHandler
+    cubismMotion._fadeInSeconds = motionInfo.file.fadeInTime.filter(_ >= 0).getOrElse(1.0f)
+    cubismMotion._fadeOutSeconds = motionInfo.file.fadeOutTime.filter(_ >= 0).getOrElse(1.0f)
+    cubismMotion._motionData = motionData
+    cubismMotion.SetEffectIds(eyeBlinkParameterIds, lipSyncParameterIds)
+    cubismMotion
+  }
+
+}
 
 class CubismMotion extends ACubismMotion {
   var _sourceFrameRate: Float = 30.0f                   ///< ロードしたファイルのFPS。記述が無ければデフォルト値15fpsとなる
@@ -19,12 +46,6 @@ class CubismMotion extends ACubismMotion {
   var _modelCurveIdEyeBlink: String = null               ///< モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
   var _modelCurveIdLipSync: String = null                ///< モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
 
-  private val EffectNameEyeBlink = "EyeBlink"
-  private val EffectNameLipSync  = "LipSync"
-  private val CubismMotionSegmentType_Linear = 0         ///< リニア
-  private val CubismMotionSegmentType_Bezier = 1         ///< ベジェ曲線
-  private val CubismMotionSegmentType_Stepped = 2        ///< ステップ
-  private val CubismMotionSegmentType_InverseStepped = 3  ///< インバースステップ
 
   override protected def DoUpdateParameters(model: Live2DModel, userTimeSeconds: Float, fadeWeight: Float, motionQueueEntry: CubismMotionQueueEntry): Unit = {
     if (_modelCurveIdEyeBlink == null) {
@@ -69,8 +90,6 @@ class CubismMotion extends ACubismMotion {
     }
 
     var value: Float = 0.0f
-    var c: Int = 0
-    var parameterIndex: Int = 0
 
     // 'Repeat' time as necessary.
     var time: Float = timeOffsetSeconds

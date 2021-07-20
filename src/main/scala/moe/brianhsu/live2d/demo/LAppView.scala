@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.demo
 import moe.brianhsu.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
-import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion}
+import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion}
 import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.framework.math.ViewPortMatrixCalculator
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
@@ -41,6 +41,15 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   {
     setupAvatarEffects()
     initOpenGL()
+    for {
+      avatar <- avatarHolder
+      settings = avatar.getAvatarSettings
+      (key, motions) <- settings.motions
+      motion <- motions
+    } {
+      val m = CubismMotion(motion, e => println(e), settings.eyeBlinkParameterIds, Nil)
+      println(m)
+    }
   }
 
   def resetModel(): Unit = {

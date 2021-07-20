@@ -134,8 +134,8 @@ object CubismMotionSegment {
 }
 
 case class CubismMotionSegment(
-  Evaluate: CsmMotionSegmentEvaluationFunction,
-  BasePointIndex: Int = 0,
-  SegmentType: Int = 0
+  var Evaluate: CsmMotionSegmentEvaluationFunction,
+  var BasePointIndex: Int = 0,
+  var SegmentType: Int = 0
 )
 
