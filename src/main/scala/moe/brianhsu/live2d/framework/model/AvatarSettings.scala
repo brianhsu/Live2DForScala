@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.framework.model
 
 import moe.brianhsu.live2d.framework.model.AvatarSettings.parseJson
-import moe.brianhsu.live2d.framework.model.settings.{Expression, Group, ModelSetting, Motion, MotionInfo}
+import moe.brianhsu.live2d.framework.model.settings.{Expression, Group, ModelSetting, Motion, MotionInfo, PoseSettings}
 import org.json4s.{DefaultFormats, Formats, JValue}
 import org.json4s.native.JsonMethods.parse
 
@@ -25,7 +25,7 @@ object AvatarSettings {
 
   def main(args: Array[String]): Unit = {
     val avatarSettings = new AvatarSettings("/Users/bhsu/Downloads/CubismSdkForNative-4-r.3/Samples/Resources/Mark")
-    println(avatarSettings.motions)
+    println(avatarSettings.pose)
   }
 }
 
@@ -47,6 +47,22 @@ class AvatarSettings(directory: String) {
       .map(file => s"$directory/$file")
   }
 
+  lazy val pose: Option[PoseSettings] = {
+    println("QQQ")
+    for {
+      setting <- settingHolder
+    } yield {
+      println(setting)
+      /*
+            pose <- setting.fileReferences.pose
+      parsedJson <- AvatarSettings.parseJson(new File(s"$directory/$pose"))
+
+      parsedJson.camelizeKeys.extract[PoseSettings]
+
+       */
+    }
+    None
+  }
 
   lazy val eyeBlinkParameterIds: List[String] = {
     for {
