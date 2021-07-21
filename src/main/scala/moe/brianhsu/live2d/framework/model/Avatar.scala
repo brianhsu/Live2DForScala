@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.framework.model
 
-import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotionManager, CubismMotionQueueManager}
+import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion, CubismMotionManager, CubismMotionQueueManager}
 import moe.brianhsu.live2d.framework.effect.Effect
 
 import scala.util.Try
@@ -23,7 +23,9 @@ class Avatar(directory: String)(cubism: Cubism) {
   private val mocFile: Option[String] = avatarSettings.mocFile
   private var effects: List[Effect] = Nil
   private val expressionManager = new CubismMotionManager
+  private val motionManager = new CubismMotionManager
   private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
+
 
   assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/")
 
@@ -55,6 +57,21 @@ class Avatar(directory: String)(cubism: Cubism) {
       expressionManager.StartMotionPriority(expression, false, 3)
     }
   }
+
+  lazy val motions = avatarSettings.motions.values.toList.flatten
+
+  def startMotion(group: String, i: Int): Unit = {
+    val name = s"Motion(${group}_$i)"
+    val motionSettings = avatarSettings.motions(group)(i)
+    val m = CubismMotion(motionSettings, e => println(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
+    println("FadeInTime:" + m.GetFadeInTime())
+    println("FadeOutTime:" + m.GetFadeOutTime())
+    println("Duration:" + m.GetDuration())
+
+    println(s"Start $name")
+    motionManager.StartMotionPriority(m, false, 2)
+  }
+
   /**
    * Update Live2D model parameters of this avatar according to time in seconds elapsed
    * from last update.
@@ -64,6 +81,7 @@ class Avatar(directory: String)(cubism: Cubism) {
   def update(deltaTimeInSeconds: Float): Unit = {
     modelHolder.foreach { model =>
       model.loadParameters()
+      motionManager.UpdateMotion(model, deltaTimeInSeconds)
       model.saveParameters()
       expressionManager.UpdateMotion(model, deltaTimeInSeconds)
       effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }

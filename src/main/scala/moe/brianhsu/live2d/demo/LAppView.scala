@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.demo
 import moe.brianhsu.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
-import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion}
+import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion}
 import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.framework.math.ViewPortMatrixCalculator
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
@@ -41,6 +41,15 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   {
     setupAvatarEffects()
     initOpenGL()
+    for {
+      avatar <- avatarHolder
+      settings = avatar.getAvatarSettings
+      (key, motions) <- settings.motions
+      motion <- motions
+    } {
+      val m = CubismMotion(motion, e => println(e), settings.eyeBlinkParameterIds, Nil)
+      println(m)
+    }
   }
 
   def resetModel(): Unit = {
@@ -135,6 +144,12 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     }
   }
 
+  private def startMotion(group: String, i: Int): Unit = {
+    avatarHolder.foreach { avatar =>
+      avatar.startMotion(group, i)
+    }
+
+  }
   private def startExpression(name: String): Unit = {
     avatarHolder.foreach { avatar =>
       avatar.setExpression(name)
@@ -156,7 +171,13 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       case '5' => startExpression("f05")
       case '6' => startExpression("f06")
       case '7' => startExpression("f07")
-      case _   => println("Unknown expression")
+      case 'q' => startMotion("idle", 0)
+      case 'w' => startMotion("idle", 1)
+      case 'a' => startMotion("tapBody", 0)
+      case 's' => startMotion("tapBody", 1)
+      case 'd' => startMotion("tapBody", 2)
+      case 'f' => startMotion("tapBody", 3)
+      case _   => println("Unknow key")
     }
   }
 
