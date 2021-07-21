@@ -64,6 +64,10 @@ class Avatar(directory: String)(cubism: Cubism) {
     val name = s"Motion(${group}_$i)"
     val motionSettings = avatarSettings.motions(group)(i)
     val m = CubismMotion(motionSettings, e => println(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
+    println("FadeInTime:" + m.GetFadeInTime())
+    println("FadeOutTime:" + m.GetFadeOutTime())
+    println("Duration:" + m.GetDuration())
+
     println(s"Start $name")
     motionManager.StartMotionPriority(m, false, 2)
   }

@@ -1,6 +1,7 @@
 package moe.brianhsu.live2d.framework
 import moe.brianhsu.live2d.framework.ACubismMotion.FinishedMotionCallback
 import moe.brianhsu.live2d.framework.CubismMotion.{CubismMotionSegmentType_Bezier, EffectNameEyeBlink, EffectNameLipSync}
+import moe.brianhsu.live2d.framework.CubismMotionCurveTarget.{CubismMotionCurveTarget_Model, CubismMotionCurveTarget_Parameter, CubismMotionCurveTarget_PartOpacity}
 import moe.brianhsu.live2d.framework.math.CubismMath
 import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
 import moe.brianhsu.live2d.framework.model.settings.MotionInfo
@@ -100,133 +101,123 @@ class CubismMotion extends ACubismMotion {
       }
     }
     // Evaluate model curves.
-    this._motionData.Curves
-      .filter(_.Type == CubismMotionCurveTarget.CubismMotionCurveTarget_Model)
-      .foreach { curve =>
-        value = EvaluateCurve(_motionData, curve, time)
-        if (curve.Id == _modelCurveIdEyeBlink)
-        {
-          eyeBlinkValue = value
-        } else if (curve.Id == _modelCurveIdLipSync) {
-          lipSyncValue = value
+    var c: Int = 0
+    val curves = _motionData.Curves
+    while(c < _motionData.CurveCount && curves(c).Type == CubismMotionCurveTarget_Model) {
+      // Evaluate curve and call handler.
+      value = EvaluateCurve(_motionData, curves(c), time)
+
+      if (curves(c).Id == _modelCurveIdEyeBlink) {
+        eyeBlinkValue = value
+      } else if (curves(c).Id == _modelCurveIdLipSync) {
+        lipSyncValue = value
+      }
+      c += 1
+    }
+    var parameterMotionCurveCount = 0
+
+    while(c < _motionData.CurveCount && curves(c).Type == CubismMotionCurveTarget_Parameter) {
+      parameterMotionCurveCount += 1
+      val sourceValue: Float = model.parameters(curves(c).Id).current
+
+      // Evaluate curve and apply value.
+      value = EvaluateCurve(_motionData, curves(c), time)
+      if (eyeBlinkValue != Float.MaxValue) {
+        var isBreak: Boolean = false
+        for (i <- _eyeBlinkParameterIds.indices if i < MaxTargetSize && !isBreak) {
+          if (_eyeBlinkParameterIds(i) == curves(c).Id) {
+            value *= eyeBlinkValue
+            eyeBlinkFlags |= (1 << i)
+            isBreak = true
+          }
+        }
+      }
+      if (lipSyncValue != Float.MaxValue) {
+        var isBreak: Boolean = false
+        for (i <- _lipSyncParameterIds.indices if i < MaxTargetSize && !isBreak) {
+          if (_lipSyncParameterIds(i) == curves(c).Id)
+          {
+            value += lipSyncValue
+            lipSyncFlags |= (1 << i)
+            isBreak = true
+          }
         }
       }
 
-    var parameterMotionCurveCount: Int = 0
-    this._motionData.Curves
-      .filter(_.Type == CubismMotionCurveTarget.CubismMotionCurveTarget_Parameter)
-      .foreach { curve =>
-        parameterMotionCurveCount += 1
-        if (model.parameters.contains(curve.Id)) {
-          val sourceValue: Float = model.parameters(curve.Id).current
-
-          // Evaluate curve and apply value.
-          value = EvaluateCurve(_motionData, curve, time)
-          if (eyeBlinkValue != Float.MaxValue) {
-            val loopSize = Math.min(_eyeBlinkParameterIds.size, MaxTargetSize)
-            var isBreak: Boolean = false
-            for (i  <- 0 until loopSize if !isBreak) {
-              if (_eyeBlinkParameterIds(i) == curve.Id) {
-                value *= eyeBlinkValue
-                eyeBlinkFlags |= (1 << i)
-                isBreak = true
-              }
-            }
-          }
-
-          if (lipSyncValue != Float.MaxValue) {
-            val loopSize = Math.min(_lipSyncParameterIds.size, MaxTargetSize)
-            var isBreak: Boolean = false
-
-            for (i <- 0 until loopSize if !isBreak) {
-              if (_lipSyncParameterIds(i) == curve.Id) {
-                value += lipSyncValue
-                lipSyncFlags |= (1 << i)
-                isBreak = true
-              }
-            }
-          }
-
-          var v: Float = 0
-          // パラメータごとのフェード
-          if (curve.FadeInTime < 0.0f && curve.FadeOutTime < 0.0f) {
-            //モーションのフェードを適用
-            v = sourceValue + (value - sourceValue) * fadeWeight
+      var v: Float = 0
+      // パラメータごとのフェード
+      if (curves(c).FadeInTime < 0.0f && curves(c).FadeOutTime < 0.0f)
+      {
+        //モーションのフェードを適用
+        v = sourceValue + (value - sourceValue) * fadeWeight
+      } else {
+        // パラメータに対してフェードインかフェードアウトが設定してある場合はそちらを適用
+        var fin: Float = 0
+        var fout: Float = 0
+        if (curves(c).FadeInTime < 0.0f) {
+          fin = tmpFadeIn
+        } else {
+          fin = if (curves(c).FadeInTime == 0.0f) {
+            1.0f
           } else {
-            // パラメータに対してフェードインかフェードアウトが設定してある場合はそちらを適用
-            var fin: Float = 0
-            var fout: Float = 0
-
-            if (curve.FadeInTime < 0.0f) {
-              fin = tmpFadeIn
-            } else {
-              fin = if (curve.FadeInTime == 0.0f) {
-                1.0f
-              } else {
-                CubismMath.GetEasingSine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / curve.FadeInTime)
-              }
-            }
-
-            if (curve.FadeOutTime < 0.0f) {
-              fout = tmpFadeOut
-            } else {
-              fout = if (curve.FadeOutTime == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
-                1.0f
-              } else {
-                CubismMath.GetEasingSine((motionQueueEntry.GetEndTime() - userTimeSeconds) / curve.FadeOutTime)
-              }
-            }
-
-            val paramWeight: Float = _weight * fin * fout
-
-            // パラメータごとのフェードを適用
-            v = sourceValue + (value - sourceValue) * paramWeight
+            CubismMath.GetEasingSine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / curves(c).FadeInTime)
           }
-          model.setParameterValue(curve.Id, v)
-        }
-      }
 
+        }
+
+        if (curves(c).FadeOutTime < 0.0f) {
+          fout = tmpFadeOut
+        } else {
+          fout = if (curves(c).FadeOutTime == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
+            1.0f
+          } else {
+            CubismMath.GetEasingSine((motionQueueEntry.GetEndTime() - userTimeSeconds) / curves(c).FadeOutTime)
+          }
+        }
+        val paramWeight: Float = _weight * fin * fout
+
+        // パラメータごとのフェードを適用
+        v = sourceValue + (value - sourceValue) * paramWeight
+      }
+      model.setParameterValue(curves(c).Id, v)
+      c += 1
+    }
 
     {
       if (eyeBlinkValue != Float.MaxValue) {
-        val loopSize = Math.min(_eyeBlinkParameterIds.size, MaxTargetSize)
-
-        for (i <- 0 until loopSize) {
-          val sourceValue: Float = model.parameters(_eyeBlinkParameterIds(i)).current
+        for (i <- _eyeBlinkParameterIds.indices if i < MaxTargetSize) {
+          val sourceValue = model.parameters(_eyeBlinkParameterIds(i)).current
           //モーションでの上書きがあった時にはまばたきは適用しない
-          val shouldSkip = ((eyeBlinkFlags >> i) & 0x01) != 0
-          if (!shouldSkip) {
-            val v: Float = sourceValue + (eyeBlinkValue - sourceValue) * fadeWeight
+          if (((eyeBlinkFlags >> i) & 0x01) != 0) {
+            //continue;
+          } else {
+
+            val v = sourceValue + (eyeBlinkValue - sourceValue) * fadeWeight
             model.setParameterValue(_eyeBlinkParameterIds(i), v)
           }
         }
       }
 
       if (lipSyncValue != Float.MaxValue) {
-        val loopSize = Math.min(_lipSyncParameterIds.size, MaxTargetSize)
-
-        for (i <- 0 until loopSize) {
-          val sourceValue: Float = model.parameters(_lipSyncParameterIds(i)).current
-          val shouldSkip = ((lipSyncFlags >> i) & 0x01) != 0
-          if (!shouldSkip) {
-            val v: Float = sourceValue + (lipSyncValue - sourceValue) * fadeWeight
+        for (i <- _lipSyncParameterIds.indices if i < MaxTargetSize) {
+          val sourceValue = model.parameters(_lipSyncParameterIds(i)).current
+          //モーションでの上書きがあった時にはリップシンクは適用しない
+          if (((lipSyncFlags >> i) & 0x01) != 0) {
+            //continue;
+          } else {
+            val v = sourceValue + (lipSyncValue - sourceValue) * fadeWeight
             model.setParameterValue(_lipSyncParameterIds(i), v)
           }
         }
       }
-
     }
 
-    this._motionData.Curves
-      .filter(_.Type == CubismMotionCurveTarget.CubismMotionCurveTarget_Parameter)
-      .foreach { curve =>
-        if (model.parameters.contains(curve.Id)) {
-          // Evaluate curve and apply value.
-          value = EvaluateCurve(_motionData, curve, time)
-          model.setParameterValue(curve.Id, value)
-        }
-      }
-
+    while (c < _motionData.CurveCount && curves(c).Type == CubismMotionCurveTarget_PartOpacity) {
+      // Evaluate curve and apply value.
+      value = EvaluateCurve(_motionData, curves(c), time)
+      model.setParameterValue(curves(c).Id, value)
+      c += 1
+    }
     if (timeOffsetSeconds >= _motionData.Duration) {
       if (_isLoop) {
         motionQueueEntry.SetStartTime(userTimeSeconds) //最初の状態へ
@@ -234,15 +225,19 @@ class CubismMotion extends ACubismMotion {
           //ループ中でループ用フェードインが有効のときは、フェードイン設定し直し
           motionQueueEntry.SetFadeInStartTime(userTimeSeconds)
         }
-      } else {
+      }
+      else
+      {
         if (this->_onFinishedMotion != null) {
           this->_onFinishedMotion(this)
         }
+
         motionQueueEntry.IsFinished(true)
       }
     }
 
     _lastWeight = fadeWeight
+
   }
 
   private def EvaluateCurve(motionData: CubismMotionData, curve: CubismMotionCurve, time: Float): Float = {
