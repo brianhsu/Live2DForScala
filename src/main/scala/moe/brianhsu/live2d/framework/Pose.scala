@@ -54,70 +54,8 @@ class Pose {
    * @param   partGroupCount      フェード操作を行うパーツグループの個数
    */
   def DoFade(model: Live2DModel, deltaTimeSeconds: Float, beginIndex: Int, partGroupCount: Int): Unit = {
-    var visiblePartIndex: Int = -1
-    var newOpacity: Float = 1.0f
-
-    val Phi: Float = 0.5f
-    val BackOpacityThreshold: Float = 0.15f
-    // 現在、表示状態になっているパーツを取得
-    var isBreak: Boolean = false
-    for ( i <- beginIndex until beginIndex + partGroupCount if !isBreak) {
-      val partIndex = _partGroups(i).PartIndex
-      val paramIndex = _partGroups(i).ParameterIndex
-      if (paramIndex.map(model.parameterList(_).current).exists(_ > Epsilon)) {
-        if (visiblePartIndex >= 0) {
-          isBreak = true
-        }
-        visiblePartIndex = i
-        newOpacity = partIndex.map(model.partsList(_).opacity).getOrElse(0)
-        // 新しい不透明度を計算
-        newOpacity += (deltaTimeSeconds / _fadeTimeSeconds)
-
-        if (newOpacity > 1.0f) {
-          newOpacity = 1.0f
-        }
-
-      }
-    }
-
-    if (visiblePartIndex < 0) {
-      visiblePartIndex = 0
-      newOpacity = 1.0f
-    }
-
-    //  表示パーツ、非表示パーツの不透明度を設定する
-    for (i <- beginIndex until beginIndex + partGroupCount) {
-      val partsIndex = _partGroups(i).PartIndex
-      //  表示パーツの設定
-      if (visiblePartIndex == i) {
-        partsIndex.foreach { i =>
-          model.partsList(i).setOpacity(newOpacity)
-        }
-      } else {
-        partsIndex.foreach { i =>
-          var opacity: Float = model.partsList(i).opacity
-          var a1: Float = 0          // 計算によって求められる不透明度
-          if (newOpacity < Phi) {
-            a1 = newOpacity * (Phi - 1) / Phi + 1.0f // (0,1),(phi,phi)を通る直線式
-          } else {
-            a1 = (1 - newOpacity) * Phi / (1.0f - Phi) // (1,0),(phi,phi)を通る直線式
-          }
-
-          // 背景の見える割合を制限する場合
-          val backOpacity: Float = (1.0f - a1) * (1.0f - newOpacity)
-
-          if (backOpacity > BackOpacityThreshold) {
-            a1 = 1.0f - BackOpacityThreshold / (1.0f - newOpacity)
-          }
-
-          if (opacity > a1) {
-            opacity = a1 // 計算の不透明度よりも大きければ（濃ければ）不透明度を上げる
-          }
-          model.partsList(i).setOpacity(opacity)
-        }
-      }
-    }
   }
+
   /**
    * パーツの不透明度をコピー
    *
@@ -131,12 +69,13 @@ class Pose {
       if (partData.Link.isEmpty) {
         //continue // 連動するパラメータはない
       } else {
-        _partGroups(groupIndex).PartIndex.foreach { partIndex =>
+        val partIndex = _partGroups(groupIndex).PartIndex
+        if (partIndex >= 0) {
           val opacity: Float = model.partsList(partIndex).opacity
           for (linkIndex <- partData.Link.indices) {
             val linkPart = partData.Link(linkIndex)
-            val linkPartIndexHolder = linkPart.PartIndex
-            linkPartIndexHolder.foreach { linkPartIndex =>
+            val linkPartIndex = linkPart.PartIndex
+            if (linkPartIndex >= 0) {
               model.partsList(linkPartIndex).setOpacity(opacity)
             }
           }
@@ -161,11 +100,16 @@ class Pose {
         _partGroups(j).Initialize(model)
         val partsIndex = _partGroups(j).PartIndex
         val paramIndex = _partGroups(j).ParameterIndex
-        if (partsIndex.isEmpty) {
+        if (partsIndex < 0) {
           // continue
         } else {
-          partsIndex.foreach(model.partsList(_).setOpacity(if (j == beginIndex) 1.0f else 0.0f))
-          paramIndex.foreach(model.parameterList(_).update(if (j == beginIndex) 1.0f else 0.0f))
+
+          if (partsIndex >= 0) {
+            model.partsList(partsIndex).setOpacity(if (j == beginIndex) 1.0f else 0.0f)
+          }
+          if (paramIndex >= 0) {
+            model.parameterList(paramIndex).update(if (j == beginIndex) 1.0f else 0.0f)
+          }
           for (k <- _partGroups(j).Link.indices) {
             _partGroups(j).Link(k).Initialize(model)
           }
@@ -192,7 +136,6 @@ class Pose {
 
     _lastModel = model
 
-    /*
     var actualDeltaTimeSeconds = deltaTimeSeconds
     // 設定から時間を変更すると、経過時間がマイナスになることがあるので、経過時間0として対応。
     if (actualDeltaTimeSeconds < 0.0f) {
@@ -201,13 +144,12 @@ class Pose {
     var beginIndex = 0
     for (i <- _partGroupCounts.indices) {
       val partGroupCount = _partGroupCounts(i)
-      DoFade(model, deltaTimeSeconds, beginIndex, partGroupCount)
+      DoFade(model, actualDeltaTimeSeconds, beginIndex, partGroupCount)
       beginIndex += partGroupCount
     }
 
     CopyPartOpacities(model)
-    
-     */
+
   }
 
 }

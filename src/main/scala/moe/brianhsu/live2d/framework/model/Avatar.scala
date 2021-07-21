@@ -81,8 +81,12 @@ class Avatar(directory: String)(cubism: Cubism) {
   def update(deltaTimeInSeconds: Float): Unit = {
     modelHolder.foreach { model =>
       model.loadParameters()
+      if (motionManager.IsFinished()) {
+
+      } else {
+        motionManager.UpdateMotion(model, deltaTimeInSeconds)
+      }
       model.saveParameters()
-      motionManager.UpdateMotion(model, deltaTimeInSeconds)
       expressionManager.UpdateMotion(model, deltaTimeInSeconds)
       effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }
       pose.UpdateParameters(model, deltaTimeInSeconds)

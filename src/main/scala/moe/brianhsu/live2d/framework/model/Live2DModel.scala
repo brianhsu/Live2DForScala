@@ -226,12 +226,12 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     partsList.map(p => p.id -> p).toMap
   }
 
-  def getParameterIndex(id: String): Option[Int] = {
-    parameterList.zipWithIndex.find(_._1.id == id).map(_._2)
+  def getParameterIndex(id: String): Int = {
+    parameterList.zipWithIndex.find(_._1.id == id).map(_._2).getOrElse(-1)
   }
 
-  def getPartIndex(id: String): Option[Int] = {
-    partsList.zipWithIndex.find(_._1.id == id).map(_._2)
+  def getPartIndex(id: String): Int = {
+    partsList.zipWithIndex.find(_._1.id == id).map(_._2).getOrElse(-1)
   }
 
   private def createParameterList(): List[Parameter] = {
