@@ -24,7 +24,7 @@ object AvatarSettings {
   }
 
   def main(args: Array[String]): Unit = {
-    val avatarSettings = new AvatarSettings("/Users/bhsu/Downloads/CubismSdkForNative-4-r.3/Samples/Resources/Mark")
+    val avatarSettings = new AvatarSettings("/Users/bhsu/Downloads/CubismSdkForNative-4-r.3/Samples/Resources/Haru")
     println(avatarSettings.pose)
   }
 }
@@ -48,20 +48,13 @@ class AvatarSettings(directory: String) {
   }
 
   lazy val pose: Option[PoseSettings] = {
-    println("QQQ")
     for {
       setting <- settingHolder
+      poseJson <- setting.fileReferences.pose
+      parsedJson <- AvatarSettings.parseJson(new File(s"$directory/$poseJson"))
     } yield {
-      println(setting)
-      /*
-            pose <- setting.fileReferences.pose
-      parsedJson <- AvatarSettings.parseJson(new File(s"$directory/$pose"))
-
       parsedJson.camelizeKeys.extract[PoseSettings]
-
-       */
     }
-    None
   }
 
   lazy val eyeBlinkParameterIds: List[String] = {
