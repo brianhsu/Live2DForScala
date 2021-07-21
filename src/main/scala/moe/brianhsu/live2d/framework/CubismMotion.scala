@@ -124,23 +124,25 @@ class CubismMotion extends ACubismMotion {
           value = EvaluateCurve(_motionData, curve, time)
           if (eyeBlinkValue != Float.MaxValue) {
             val loopSize = Math.min(_eyeBlinkParameterIds.size, MaxTargetSize)
-            for (i  <- 0 until loopSize) {
+            var isBreak: Boolean = false
+            for (i  <- 0 until loopSize if !isBreak) {
               if (_eyeBlinkParameterIds(i) == curve.Id) {
                 value *= eyeBlinkValue
                 eyeBlinkFlags |= (1 << i)
-                break()
+                isBreak = true
               }
             }
           }
 
           if (lipSyncValue != Float.MaxValue) {
             val loopSize = Math.min(_lipSyncParameterIds.size, MaxTargetSize)
+            var isBreak: Boolean = false
 
-            for (i <- 0 until loopSize) {
+            for (i <- 0 until loopSize if !isBreak) {
               if (_lipSyncParameterIds(i) == curve.Id) {
                 value += lipSyncValue
                 lipSyncFlags |= (1 << i)
-                break()
+                isBreak = true
               }
             }
           }
@@ -248,15 +250,16 @@ class CubismMotion extends ACubismMotion {
     var target: Int = -1
     val totalSegmentCount: Int = curve.BaseSegmentIndex + curve.SegmentCount
     var pointPosition: Int = 0
+    var isBreak: Boolean = false
 
-    for (i <- curve.BaseSegmentIndex until totalSegmentCount) {
+    for (i <- curve.BaseSegmentIndex until totalSegmentCount if !isBreak) {
       // Get first point of next segment.
       pointPosition = motionData.Segments(i).BasePointIndex + ( if (motionData.Segments(i).SegmentType == CubismMotionSegmentType_Bezier)  3 else 1)
 
       // Break if time lies within current segment.
       if (motionData.Points(pointPosition).Time > time) {
         target = i
-        break()
+        isBreak = true
       }
     }
 

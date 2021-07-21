@@ -144,6 +144,12 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     }
   }
 
+  private def startMotion(group: String, i: Int): Unit = {
+    avatarHolder.foreach { avatar =>
+      avatar.startMotion(group, i)
+    }
+
+  }
   private def startExpression(name: String): Unit = {
     avatarHolder.foreach { avatar =>
       avatar.setExpression(name)
@@ -165,7 +171,13 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       case '5' => startExpression("f05")
       case '6' => startExpression("f06")
       case '7' => startExpression("f07")
-      case _   => println("Unknown expression")
+      case 'q' => startMotion("idle", 0)
+      case 'w' => startMotion("idle", 1)
+      case 'a' => startMotion("tapBody", 0)
+      case 's' => startMotion("tapBody", 1)
+      case 'd' => startMotion("tapBody", 2)
+      case 'f' => startMotion("tapBody", 3)
+      case _   => println("Unknow key")
     }
   }
 
