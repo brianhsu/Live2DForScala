@@ -1,7 +1,40 @@
 package moe.brianhsu.live2d.framework
 
-import moe.brianhsu.live2d.framework.model.Live2DModel
+import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
 
+object Pose {
+  private val DefaultFadeInSeconds = 0.5f
+  def apply(avatarSettings: AvatarSettings): Pose = {
+    val ret = new Pose
+    avatarSettings.pose.foreach { poseSettings =>
+      ret._fadeTimeSeconds = poseSettings.fadeInTime.filterNot(_ < 0).getOrElse(DefaultFadeInSeconds)
+      val groups = poseSettings.groups
+      for (poseIndex <- groups.indices) {
+        var groupCount = 0
+        for (groupIndex  <- groups(poseIndex).indices) {
+          val partInfo = groups(poseIndex)(groupIndex)
+          val partData = new PartData
+          partData.PartId = partInfo.id
+          println(partData.PartId)
+          if (partInfo.link.nonEmpty) {
+            for (linkIndex <- partInfo.link.indices) {
+              val linkPart = new PartData
+              linkPart.PartId = partInfo.link(linkIndex)
+              partData.Link = partData.Link.appended(linkPart)
+            }
+
+          }
+          ret._partGroups = ret._partGroups.appended(partData)
+          groupCount += 1
+        }
+        ret._partGroupCounts = ret._partGroupCounts.appended(groupCount)
+      }
+
+    }
+    println(ret._partGroups)
+    ret
+  }
+}
 
 class Pose {
   private val Epsilon: Float = 0.001f
@@ -156,8 +189,10 @@ class Pose {
       // パラメータインデックスの初期化
       Reset(model)
     }
-    _lastModel = model;
 
+    _lastModel = model
+
+    /*
     var actualDeltaTimeSeconds = deltaTimeSeconds
     // 設定から時間を変更すると、経過時間がマイナスになることがあるので、経過時間0として対応。
     if (actualDeltaTimeSeconds < 0.0f) {
@@ -171,6 +206,8 @@ class Pose {
     }
 
     CopyPartOpacities(model)
+    
+     */
   }
 
 }

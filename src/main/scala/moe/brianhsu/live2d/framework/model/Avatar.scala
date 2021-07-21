@@ -25,7 +25,7 @@ class Avatar(directory: String)(cubism: Cubism) {
   private val expressionManager = new CubismMotionManager
   private val motionManager = new CubismMotionManager
   private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
-  private val pose = new Pose
+  private val pose = Pose(avatarSettings)
 
   assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/")
 
