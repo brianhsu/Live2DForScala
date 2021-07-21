@@ -114,13 +114,18 @@ object CubismMotionData {
 }
 
 case class CubismMotionData(
-  Curves: List[CubismMotionCurve],
-  Segments: List[CubismMotionSegment],
-  Points: List[CubismMotionPoint],
-  Events: List[CubismMotionEvent],
+  CurvesList: List[CubismMotionCurve],
+  SegmentsList: List[CubismMotionSegment],
+  PointsList: List[CubismMotionPoint],
+  EventsList: List[CubismMotionEvent],
   Duration: Float = 0.0f,
   Loop: Boolean = false,
   CurveCount: Int = 0,
   EventCount: Int = 0,
   Fps: Float = 0.0f
-)
+) {
+  lazy val Curves = CurvesList.toArray
+  lazy val Segments = SegmentsList.toArray
+  lazy val Points = PointsList.toArray
+  lazy val Events = EventsList.toArray
+}

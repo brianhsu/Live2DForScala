@@ -408,7 +408,7 @@ class CubismMotion extends ACubismMotion {
 
     this._firedEventValues = this._motionData.Events
       .filter(e => e.FireTime >= beforeCheckTimeSeconds && e.FireTime <= motionTimeSeconds)
-      .map(_.Value)
+      .map(_.Value).toList
 
     this._firedEventValues
   }

@@ -13,7 +13,7 @@ object CubismMotionSegment {
      * @param points      モーションカーブの制御点リスト
      * @param time        評価する時間[秒]
      */
-    def apply(points: List[CubismMotionPoint], time: Float): Float
+    def apply(points: Array[CubismMotionPoint], time: Float): Float
   }
 
   private def LerpPoints(a: CubismMotionPoint, b: CubismMotionPoint, t: Float): CubismMotionPoint = {
@@ -31,7 +31,7 @@ object CubismMotionSegment {
      * @param points モーションカーブの制御点リスト
      * @param time   評価する時間[秒]
      */
-    override def apply(points: List[CubismMotionPoint], time: Float): Float = {
+    override def apply(points: Array[CubismMotionPoint], time: Float): Float = {
       var t: Float = (time - points.head.Time) / (points(1).Time - points.head.Time)
 
       if (t < 0.0f) {
@@ -51,7 +51,7 @@ object CubismMotionSegment {
      * @param points モーションカーブの制御点リスト
      * @param time   評価する時間[秒]
      */
-    override def apply(points: List[CubismMotionPoint], time: Float): Float = {
+    override def apply(points: Array[CubismMotionPoint], time: Float): Float = {
       var t: Float = (time - points.head.Time) / (points(3).Time - points.head.Time)
 
       if (t < 0.0f) {
@@ -78,7 +78,7 @@ object CubismMotionSegment {
      * @param points モーションカーブの制御点リスト
      * @param time   評価する時間[秒]
      */
-    override def apply(points: List[CubismMotionPoint], time: Float): Float = {
+    override def apply(points: Array[CubismMotionPoint], time: Float): Float = {
       val x: Float = time
       val x1: Float = points.head.Time
       val x2: Float = points(3).Time
@@ -112,7 +112,7 @@ object CubismMotionSegment {
      * @param points モーションカーブの制御点リスト
      * @param time   評価する時間[秒]
      */
-    override def apply(points: List[CubismMotionPoint], time: Float): Float = {
+    override def apply(points: Array[CubismMotionPoint], time: Float): Float = {
       points.head.Value
     }
   }
@@ -126,7 +126,7 @@ object CubismMotionSegment {
      * @param points モーションカーブの制御点リスト
      * @param time   評価する時間[秒]
      */
-    override def apply(points: List[CubismMotionPoint], time: Float): Float = {
+    override def apply(points: Array[CubismMotionPoint], time: Float): Float = {
       points(1).Value
     }
   }
