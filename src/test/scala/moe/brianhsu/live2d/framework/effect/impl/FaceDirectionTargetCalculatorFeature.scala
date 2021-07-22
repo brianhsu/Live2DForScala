@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.io.Source
 
-class FaceDirectionTargetCalculatorFeature extends AnyFeatureSpec with GivenWhenThen with Matchers{
+class FaceDirectionTargetCalculatorFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   case class TimedData(interval: Float, viewX: Float, viewY: Float, expectedTargetX: Float, expectedTargetY: Float)
 
