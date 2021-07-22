@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.framework.model
 
-import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion, CubismMotionManager, CubismMotionQueueManager}
+import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion, CubismMotionManager, CubismMotionQueueManager, Pose}
 import moe.brianhsu.live2d.framework.effect.Effect
 
 import scala.util.Try
@@ -25,7 +25,7 @@ class Avatar(directory: String)(cubism: Cubism) {
   private val expressionManager = new CubismMotionManager
   private val motionManager = new CubismMotionManager
   private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
-
+  private val pose = Pose(avatarSettings)
 
   assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/")
 
@@ -81,10 +81,15 @@ class Avatar(directory: String)(cubism: Cubism) {
   def update(deltaTimeInSeconds: Float): Unit = {
     modelHolder.foreach { model =>
       model.loadParameters()
-      motionManager.UpdateMotion(model, deltaTimeInSeconds)
+      if (motionManager.IsFinished()) {
+
+      } else {
+        motionManager.UpdateMotion(model, deltaTimeInSeconds)
+      }
       model.saveParameters()
       expressionManager.UpdateMotion(model, deltaTimeInSeconds)
       effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }
+      pose.UpdateParameters(model, deltaTimeInSeconds)
       model.update()
     }
   }

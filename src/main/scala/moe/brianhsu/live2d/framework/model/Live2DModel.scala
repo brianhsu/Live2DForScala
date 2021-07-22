@@ -58,6 +58,8 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     maxIndex + 1
   }
 
+  lazy val parameterList: List[Parameter] = createParameterList()
+
   /**
    * Parameters of this model
    *
@@ -67,6 +69,31 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
    */
   lazy val parameters: Map[String, Parameter] = createParameters()
 
+  lazy val partsList: List[Part] = createPartList()
+  var nonExistParamIndexToValue: Map[Int, Float] = Map.empty
+  var nonExistParamIdToIndex: Map[String, Int] = Map.empty
+
+  def setParameterValueUsingIndex(index: Int, value: Float): Unit = {
+
+    if (index >= 0 && index < parameters.size) {
+      setParameterValue(parameterList(index).id, value)
+    } else {
+      nonExistParamIndexToValue += (index -> value)
+    }
+  }
+  def getParameterValueUsingIndex(paramIndex: Int): Float = {
+    if (nonExistParamIndexToValue.contains(paramIndex)) {
+      nonExistParamIndexToValue(paramIndex)
+    } else {
+      parameterList(paramIndex).current
+    }
+  }
+
+  def setPartOpacityUsingIndex(index: Int, value: Float): Unit = {
+    if (index >= 0 && index < parts.size) {
+      partsList(index).setOpacity(value)
+    }
+  }
 
   /**
    * Parts of this model
@@ -192,7 +219,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     revivedMoc
   }
 
-  private def createParts(): Map[String, Part] = {
+  private def createPartList(): List[Part] = {
     val partCount = core.cLibrary.csmGetPartCount(this.cubismModel)
     val partIds = core.cLibrary.csmGetPartIds(this.cubismModel)
     val parentIndices = core.cLibrary.csmGetPartParentPartIndices(this.cubismModel)
@@ -215,11 +242,36 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
 
       val part = model.Part(opacityPointer, this, partId, parentId)
 
-      partId -> part
-    }.toMap
+      part
+    }
   }
 
-  private def createParameters(): Map[String, Parameter] = {
+  private def createParts(): Map[String, Part] = {
+    partsList.map(p => p.id -> p).toMap
+  }
+
+  def getParameterIndex(id: String): Int = {
+    if (nonExistParamIdToIndex.contains(id)) {
+      return nonExistParamIdToIndex(id)
+    }
+    parameterList.zipWithIndex
+      .find(_._1.id == id)
+      .map(_._2)
+      .getOrElse {
+        val newIndex = parameterList.size - 1 + nonExistParamIndexToValue.size + 1
+        nonExistParamIdToIndex += (id -> newIndex)
+        newIndex
+      }
+  }
+
+  def getPartIndex(id: String): Int = {
+    partsList.zipWithIndex
+      .find(_._1.id == id)
+      .map(_._2)
+      .getOrElse(-1)
+  }
+
+  private def createParameterList(): List[Parameter] = {
     val parametersCount = core.cLibrary.csmGetParameterCount(this.cubismModel)
     val parametersIds = core.cLibrary.csmGetParameterIds(this.cubismModel)
     val currentValues = core.cLibrary.csmGetParameterValues(this.cubismModel)
@@ -228,7 +280,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     val maxValues = core.cLibrary.csmGetParameterMaximumValues(this.cubismModel)
 
     if (parametersCount == -1 || parametersIds == null || currentValues == null ||
-        defaultValues == null || minValues == null || maxValues == null) {
+      defaultValues == null || minValues == null || maxValues == null) {
       throw new ParameterInitException
     }
 
@@ -241,9 +293,13 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.getPointerToFloat(i)
       val parameter = Parameter(currentValuePointer, this, id, minValue, maxValue, defaultValue)
+      parameter
+    }
 
-      id -> parameter
-    }.toMap
+  }
+
+  private def createParameters(): Map[String, Parameter] = {
+    parameterList.map(p => p.id -> p).toMap
   }
 
   private def createDrawable(): Map[String, Drawable] = {
