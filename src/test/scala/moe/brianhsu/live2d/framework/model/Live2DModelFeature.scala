@@ -33,7 +33,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
       And("a Live2D model")
       val model = new Live2DModel(null, Nil)(mockedCubismCore) {
-        override val cubismModel: CPointerToModel = mockedModel
+        override lazy val cubismModel: CPointerToModel = mockedModel
       }
 
       When("update the model")
@@ -120,7 +120,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
       When("construct a Live2D model from that mocked data")
       val model = new Live2DModel(null, Nil)(mockedCubismCore) {
-        override val cubismModel: CPointerToModel = mockedModel
+        override lazy val cubismModel: CPointerToModel = mockedModel
       }
 
       Then("only the second part has parentId")
@@ -294,7 +294,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
         And("a Live2D model")
         val model = new Live2DModel(null, textureFiles)(mockedCubismCore) {
-          override val cubismModel: CPointerToModel = mockedModel
+          override lazy val cubismModel: CPointerToModel = mockedModel
         }
 
         When("get parameters of this model")
@@ -332,7 +332,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
         And("a Live2D model")
         val model = new Live2DModel(null, textureFiles)(mockedCubismCore) {
-          override val cubismModel: CPointerToModel = mockedModel
+          override lazy val cubismModel: CPointerToModel = mockedModel
         }
 
         When("get parameters of this model")
@@ -398,7 +398,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
         And("a Live2D model")
         val model = new Live2DModel(null, Nil)(mockedCubismCore) {
-          override val cubismModel: CPointerToModel = mockedModel
+          override lazy val cubismModel: CPointerToModel = mockedModel
         }
 
         When("get parameters of this model")
