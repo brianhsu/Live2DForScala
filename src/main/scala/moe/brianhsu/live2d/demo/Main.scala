@@ -17,7 +17,7 @@ object Main {
     System.setProperty("sun.awt.noerasebackground", "true")
 
     this.frame = new JFrame("Sample")
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+    frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
     frame.setSize(1024, 768)
     frame.getContentPane.add(createGLCanvas())
     frame.setVisible(true)

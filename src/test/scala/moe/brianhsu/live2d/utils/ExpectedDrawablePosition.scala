@@ -6,7 +6,12 @@ case class ExpectedDrawablePosition(id: String, index: Int, x: Float, y: Float)
 
 object ExpectedDrawablePosition {
   def getList: List[ExpectedDrawablePosition] = {
-    val lines = Source.fromResource("expectation/drawablePositionList.txt").getLines().drop(1)
+    val fileName = System.getProperty("os.name") match {
+      case "Linux" => "expectation/drawablePositionListLinux.txt"
+      case "Mac OS X" => "expectation/drawablePositionListMacOSX.txt"
+    }
+
+    val lines = Source.fromResource(fileName).getLines().drop(1)
 
     lines.map { line =>
       val Array(id, index, x, y) = line.split(" ")

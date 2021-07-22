@@ -25,9 +25,9 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cLibrary.csmGetSizeofModel(this.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
-  protected val cubismModel: CPointerToModel = createCubsimModel()
+  protected lazy val cubismModel: CPointerToModel = createCubsimModel()
 
-  val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
+  lazy val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
 
   def getTextureFileByIndex(index: Int): String = textureFiles(index)
 

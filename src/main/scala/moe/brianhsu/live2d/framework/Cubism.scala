@@ -67,7 +67,12 @@ class Cubism(core: ICubismCore) {
       throw new FileNotFoundException(directory)
     }
 
-    new Avatar(directory)(this)
+    try {
+      new Avatar(directory)(this)
+    } catch {
+      case e: AssertionError => throw e
+      case e: Exception => throw new AssertionError("Cannot load avatar settings")
+    }
   }
 
 }
