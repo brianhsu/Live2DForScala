@@ -70,6 +70,30 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   lazy val parameters: Map[String, Parameter] = createParameters()
 
   lazy val partsList: List[Part] = createPartList()
+  var nonExistParamIndexToValue: Map[Int, Float] = Map.empty
+  var nonExistParamIdToIndex: Map[String, Int] = Map.empty
+
+  def setParameterValueUsingIndex(index: Int, value: Float): Unit = {
+
+    if (index >= 0 && index < parameters.size) {
+      setParameterValue(parameterList(index).id, value)
+    } else {
+      nonExistParamIndexToValue += (index -> value)
+    }
+  }
+  def getParameterValueUsingIndex(paramIndex: Int): Float = {
+    if (nonExistParamIndexToValue.contains(paramIndex)) {
+      nonExistParamIndexToValue(paramIndex)
+    } else {
+      parameterList(paramIndex).current
+    }
+  }
+
+  def setPartOpacityUsingIndex(index: Int, value: Float): Unit = {
+    if (index >= 0 && index < parts.size) {
+      partsList(index).setOpacity(value)
+    }
+  }
 
   /**
    * Parts of this model
@@ -227,11 +251,24 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   }
 
   def getParameterIndex(id: String): Int = {
-    parameterList.zipWithIndex.find(_._1.id == id).map(_._2).getOrElse(-1)
+    if (nonExistParamIdToIndex.contains(id)) {
+      return nonExistParamIdToIndex(id)
+    }
+    parameterList.zipWithIndex
+      .find(_._1.id == id)
+      .map(_._2)
+      .getOrElse {
+        val newIndex = parameterList.size - 1 + nonExistParamIndexToValue.size + 1
+        nonExistParamIdToIndex += (id -> newIndex)
+        newIndex
+      }
   }
 
   def getPartIndex(id: String): Int = {
-    partsList.zipWithIndex.find(_._1.id == id).map(_._2).getOrElse(-1)
+    partsList.zipWithIndex
+      .find(_._1.id == id)
+      .map(_._2)
+      .getOrElse(-1)
   }
 
   private def createParameterList(): List[Parameter] = {

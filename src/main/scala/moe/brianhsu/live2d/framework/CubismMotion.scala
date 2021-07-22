@@ -179,7 +179,8 @@ class CubismMotion extends ACubismMotion {
         // パラメータごとのフェードを適用
         v = sourceValue + (value - sourceValue) * paramWeight
       }
-      model.setParameterValue(curves(c).Id, v)
+      model.setParameterValueUsingIndex(model.getParameterIndex(curves(c).Id), v)
+      //model.setParameterValue(curves(c).Id, v)
       c += 1
     }
 
@@ -215,9 +216,12 @@ class CubismMotion extends ACubismMotion {
     while (c < _motionData.CurveCount && curves(c).Type == CubismMotionCurveTarget_PartOpacity) {
       // Evaluate curve and apply value.
       value = EvaluateCurve(_motionData, curves(c), time)
-      model.setParameterValue(curves(c).Id, value)
+      model.setParameterValueUsingIndex(model.getParameterIndex(curves(c).Id), value)
+
+      //model.setParameterValue(curves(c).Id, value)
       c += 1
     }
+
     if (timeOffsetSeconds >= _motionData.Duration) {
       if (_isLoop) {
         motionQueueEntry.SetStartTime(userTimeSeconds) //最初の状態へ

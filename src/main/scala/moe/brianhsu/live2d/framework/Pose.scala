@@ -54,6 +54,71 @@ class Pose {
    * @param   partGroupCount      フェード操作を行うパーツグループの個数
    */
   def DoFade(model: Live2DModel, deltaTimeSeconds: Float, beginIndex: Int, partGroupCount: Int): Unit = {
+    var visiblePartIndex: Int = -1
+    var newOpacity: Float = 1.0f
+
+    val Phi: Float = 0.5f
+    val BackOpacityThreshold: Float = 0.15f
+    var isBreak: Boolean = false
+
+    for (i <- beginIndex until beginIndex + partGroupCount if !isBreak) {
+      val partIndex = _partGroups(i).PartIndex
+      val paramIndex = _partGroups(i).ParameterIndex
+
+      val v: Float = model.getParameterValueUsingIndex(paramIndex)
+      if (v > Epsilon) {
+        if (visiblePartIndex >= 0) {
+          isBreak = true
+        }
+
+        visiblePartIndex = i
+        newOpacity = model.partsList(partIndex).opacity
+
+        // 新しい不透明度を計算
+        newOpacity += (deltaTimeSeconds / _fadeTimeSeconds)
+
+        if (newOpacity > 1.0f) {
+          newOpacity = 1.0f
+        }
+      }
+    }
+
+    if (visiblePartIndex < 0) {
+      visiblePartIndex = 0
+      newOpacity = 1.0f
+    }
+
+    for (i <- beginIndex until  beginIndex + partGroupCount){
+      val partsIndex = _partGroups(i).PartIndex
+      //  表示パーツの設定
+      if (visiblePartIndex == i) {
+        model.partsList(partsIndex).setOpacity(newOpacity)// 先に設定
+      } else {
+        var opacity = model.partsList(partsIndex).opacity
+        var a1: Float = 0          // 計算によって求められる不透明度
+
+        if (newOpacity < Phi) {
+          a1 = newOpacity * (Phi - 1) / Phi + 1.0f // (0,1),(phi,phi)を通る直線式
+        } else {
+          a1 = (1 - newOpacity) * Phi / (1.0f - Phi) // (1,0),(phi,phi)を通る直線式
+        }
+
+        // 背景の見える割合を制限する場合
+        val backOpacity = (1.0f - a1) * (1.0f - newOpacity)
+
+        if (backOpacity > BackOpacityThreshold) {
+          a1 = 1.0f - BackOpacityThreshold / (1.0f - newOpacity)
+        }
+
+        if (opacity > a1) {
+          opacity = a1 // 計算の不透明度よりも大きければ（濃ければ）不透明度を上げる
+        }
+        model.partsList(partsIndex).setOpacity(opacity)
+
+      }
+
+    }
+
   }
 
   /**
@@ -76,7 +141,7 @@ class Pose {
             val linkPart = partData.Link(linkIndex)
             val linkPartIndex = linkPart.PartIndex
             if (linkPartIndex >= 0) {
-              model.partsList(linkPartIndex).setOpacity(opacity)
+              model.setPartOpacityUsingIndex(linkPartIndex, opacity)
             }
           }
         }
@@ -93,6 +158,7 @@ class Pose {
    * @note 不透明度の初期値が0でないパラメータは、不透明度を1に設定する。
    */
   def Reset(model: Live2DModel): Unit = {
+    println("========== Reset[start] =========")
     var beginIndex: Int = 0
     for (i <- _partGroupCounts.indices) {
       val groupCount = _partGroupCounts(i)
@@ -104,12 +170,10 @@ class Pose {
           // continue
         } else {
 
-          if (partsIndex >= 0) {
-            model.partsList(partsIndex).setOpacity(if (j == beginIndex) 1.0f else 0.0f)
-          }
-          if (paramIndex >= 0) {
-            model.parameterList(paramIndex).update(if (j == beginIndex) 1.0f else 0.0f)
-          }
+          val v = if (j == beginIndex) 1.0f else 0.0f
+          //printf("SetPartOpacity(%d, %f)\n", partsIndex, v)
+          model.setPartOpacityUsingIndex(partsIndex, v)
+          model.setParameterValueUsingIndex(paramIndex, v)
           for (k <- _partGroups(j).Link.indices) {
             _partGroups(j).Link(k).Initialize(model)
           }
@@ -117,6 +181,7 @@ class Pose {
       }
       beginIndex += groupCount
     }
+    println("========== Reset[done] =========")
 
   }
   /**
