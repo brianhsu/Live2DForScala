@@ -1,7 +1,9 @@
 package moe.brianhsu.live2d.framework.model
 
+import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion, CubismMotionManager, CubismMotionQueueManager, Pose}
 import moe.brianhsu.live2d.framework.effect.Effect
+import moe.brianhsu.live2d.gateway.impl.JsonSettingsReader
 
 import scala.util.Try
 
@@ -19,19 +21,17 @@ import scala.util.Try
  */
 class Avatar(directory: String)(cubism: Cubism) {
 
-  private val avatarSettings = new AvatarSettings(directory)
-  private val mocFile: Option[String] = avatarSettings.mocFile
+  private val avatarSettings: Settings = new JsonSettingsReader(directory).loadSettings()
+  private val mocFile: String = avatarSettings.mocFile
   private var effects: List[Effect] = Nil
   private val expressionManager = new CubismMotionManager
   private val motionManager = new CubismMotionManager
   private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
   private val pose = Pose(avatarSettings)
 
-  assert(mocFile.isDefined, s"Cannot find moc file inside the $directory/")
-
   val modelHolder: Try[Live2DModel] = {
     cubism
-      .loadModel(mocFile.get, avatarSettings.textureFiles)
+      .loadModel(mocFile, avatarSettings.textureFiles)
       .map(_.validAllDataFromNativeLibrary)
   }
 
@@ -47,7 +47,7 @@ class Avatar(directory: String)(cubism: Cubism) {
     this.effects = effects.filterNot(_ == effect)
   }
 
-  def getAvatarSettings: AvatarSettings = avatarSettings
+  def getAvatarSettings: Settings = avatarSettings
 
   def getEffects: List[Effect] = effects
 
@@ -58,11 +58,11 @@ class Avatar(directory: String)(cubism: Cubism) {
     }
   }
 
-  lazy val motions = avatarSettings.motions.values.toList.flatten
+  lazy val motions = avatarSettings.motionGroups.values.toList.flatten
 
   def startMotion(group: String, i: Int): Unit = {
     val name = s"Motion(${group}_$i)"
-    val motionSettings = avatarSettings.motions(group)(i)
+    val motionSettings = avatarSettings.motionGroups(group)(i)
     val m = CubismMotion(motionSettings, e => println(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
     println(s"Start motionmotion  $name")
     motionManager.StartMotionPriority(m, false, 2)

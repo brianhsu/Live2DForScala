@@ -1,7 +1,8 @@
 package moe.brianhsu.live2d.framework.model
 
+import moe.brianhsu.live2d.enitiy.avatar.settings.{ExpressionSettings, MotionSetting, PoseSettings, Settings}
 import moe.brianhsu.live2d.framework.model.AvatarSettings.parseJson
-import moe.brianhsu.live2d.framework.model.settings.{Expression, Group, ModelSetting, Motion, MotionInfo, PoseSettings}
+import moe.brianhsu.live2d.framework.model.settings.{Group, ModelSetting, Motion, MotionInfo}
 import org.json4s.{DefaultFormats, Formats, JValue}
 import org.json4s.native.JsonMethods.parse
 
@@ -62,7 +63,7 @@ class AvatarSettings(directory: String) {
     }
   }
 
-  lazy val expressions: Map[String, Expression] = {
+  lazy val expressions: Map[String, ExpressionSettings] = {
     val nameToExpressionList = for {
       setting <- settingHolder.toList
       expressionFileInfo <- setting.fileReferences.expressions
@@ -70,12 +71,12 @@ class AvatarSettings(directory: String) {
       jsonFile <- List(new File(expressionJsonFilePath)).filter(_.exists)
       parsedJson <- parseJson(jsonFile)
     } yield {
-      expressionFileInfo.name -> parsedJson.camelizeKeys.extract[Expression]
+      expressionFileInfo.name -> parsedJson.camelizeKeys.extract[ExpressionSettings]
     }
     nameToExpressionList.toMap
   }
 
-  lazy val motions: Map[String, List[MotionInfo]] = {
+  lazy val motionGroups: Map[String, List[MotionSetting]] = {
     val nameToExpressionList = for {
       setting <- settingHolder.toList
       (groupName, motionList) <- setting.fileReferences.motions
@@ -83,7 +84,16 @@ class AvatarSettings(directory: String) {
       val motionJsonList = for {
         motionFile <- motionList
         paredJson <- motionFile.loadMotion(directory)
-      } yield MotionInfo(motionFile, paredJson)
+      } yield {
+        MotionSetting(
+          paredJson.version,
+          motionFile.fadeInTime,
+          motionFile.fadeOutTime,
+          paredJson.meta,
+          paredJson.userData,
+          paredJson.curves
+        )
+      }
 
       groupName -> motionJsonList
     }

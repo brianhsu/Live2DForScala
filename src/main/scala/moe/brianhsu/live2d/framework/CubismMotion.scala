@@ -1,4 +1,5 @@
 package moe.brianhsu.live2d.framework
+import moe.brianhsu.live2d.enitiy.avatar.settings.MotionSetting
 import moe.brianhsu.live2d.framework.ACubismMotion.FinishedMotionCallback
 import moe.brianhsu.live2d.framework.CubismMotion.{CubismMotionSegmentType_Bezier, EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.framework.CubismMotionCurveTarget.{CubismMotionCurveTarget_Model, CubismMotionCurveTarget_Parameter, CubismMotionCurveTarget_PartOpacity}
@@ -16,15 +17,15 @@ object CubismMotion {
   val CubismMotionSegmentType_Stepped = 2        ///< ステップ
   val CubismMotionSegmentType_InverseStepped = 3  ///< インバースステップ
 
-  def apply(motionInfo: MotionInfo, onFinishHandler: FinishedMotionCallback,
+  def apply(motionInfo: MotionSetting, onFinishHandler: FinishedMotionCallback,
             eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
     val cubismMotion = new CubismMotion
     val motionData = CubismMotionData(motionInfo)
-    cubismMotion._sourceFrameRate = motionInfo.motion.meta.fps
-    cubismMotion._loopDurationSeconds = motionInfo.motion.meta.duration
+    cubismMotion._sourceFrameRate = motionInfo.meta.fps
+    cubismMotion._loopDurationSeconds = motionInfo.meta.duration
     cubismMotion._onFinishedMotion = onFinishHandler
-    cubismMotion._fadeInSeconds = motionInfo.file.fadeInTime.filter(_ >= 0).getOrElse(1.0f)
-    cubismMotion._fadeOutSeconds = motionInfo.file.fadeOutTime.filter(_ >= 0).getOrElse(1.0f)
+    cubismMotion._fadeInSeconds = motionInfo.fadeInTime.filter(_ >= 0).getOrElse(1.0f)
+    cubismMotion._fadeOutSeconds = motionInfo.fadeOutTime.filter(_ >= 0).getOrElse(1.0f)
     cubismMotion._motionData = motionData
     cubismMotion.SetEffectIds(eyeBlinkParameterIds, lipSyncParameterIds)
     cubismMotion

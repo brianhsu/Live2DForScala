@@ -1,10 +1,11 @@
 package moe.brianhsu.live2d.framework
 
+import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
 
 object Pose {
   private val DefaultFadeInSeconds = 0.5f
-  def apply(avatarSettings: AvatarSettings): Pose = {
+  def apply(avatarSettings: Settings): Pose = {
     val ret = new Pose
     avatarSettings.pose.foreach { poseSettings =>
       ret._fadeTimeSeconds = poseSettings.fadeInTime.filterNot(_ < 0).getOrElse(DefaultFadeInSeconds)

@@ -1,5 +1,6 @@
 package moe.brianhsu.live2d.framework.effect.impl
 
+import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.framework.effect.Effect
 import moe.brianhsu.live2d.framework.effect.impl.EyeBlink._
 import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
@@ -15,7 +16,7 @@ object EyeBlink {
   case object Opening extends State           ///< まぶたが開いていく途中の状態
 }
 
-class EyeBlink (avatarSettings: AvatarSettings,
+class EyeBlink (avatarSettings: Settings,
                 blinkingIntervalSeconds: Float = 4.0f,
                 closingSeconds: Float = 0.1f,
                 closedSeconds: Float = 0.05f,

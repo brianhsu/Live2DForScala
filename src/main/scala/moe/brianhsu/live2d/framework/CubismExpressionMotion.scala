@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.framework
+import moe.brianhsu.live2d.enitiy.avatar.settings.{ExpressionSettings, Settings}
 import moe.brianhsu.live2d.framework.CubismExpressionMotion.{Add, Multiply, Overwrite}
-import moe.brianhsu.live2d.framework.model.settings.Expression
 import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
 
 object CubismExpressionMotion {
@@ -11,7 +11,7 @@ object CubismExpressionMotion {
 
   case class Parameter(parameterId: String, blendType: BlendType, value: Float)
 
-  def createExpression(expressionSettings: Expression): CubismExpressionMotion = {
+  def createExpression(expressionSettings: ExpressionSettings): CubismExpressionMotion = {
     val parameters = expressionSettings.parameters.map { p =>
       val blendType = p.blend match {
         case Some("Add") => Add
@@ -28,7 +28,7 @@ object CubismExpressionMotion {
     expression
   }
 
-  def createExpressions(avatarSettings: AvatarSettings): Map[String, CubismExpressionMotion] = {
+  def createExpressions(avatarSettings: Settings): Map[String, CubismExpressionMotion] = {
     avatarSettings.expressions
       .view
       .mapValues(createExpression)
