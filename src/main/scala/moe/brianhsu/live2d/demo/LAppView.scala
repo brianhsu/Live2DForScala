@@ -41,15 +41,6 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   {
     setupAvatarEffects()
     initOpenGL()
-    for {
-      avatar <- avatarHolder
-      settings = avatar.getAvatarSettings
-      (key, motions) <- settings.motions
-      motion <- motions
-    } {
-      val m = CubismMotion(motion, e => println(e), settings.eyeBlinkParameterIds, Nil)
-      println(m)
-    }
   }
 
   def resetModel(): Unit = {
@@ -105,12 +96,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
     val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
 
-    printf("Clicked on: x = %.2f, y = %.2f\n", transformedX, transformedY);
     faceDirection.setFaceTargetCoordinate(0.0f, 0.0f)
     for {
       avatar <- avatarHolder
       model <- modelHolder
-
     } {
       val isHead = model.isHit("HitArea", viewX, viewY)
       val isBody = model.isHit("HitArea2", viewX, viewY)

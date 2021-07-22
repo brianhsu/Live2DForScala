@@ -22,11 +22,6 @@ object AvatarSettings {
   private def getRawTextFromFile(file: File): Option[String] = {
     Using(Source.fromFile(file)) { source => source.mkString }.toOption
   }
-
-  def main(args: Array[String]): Unit = {
-    val avatarSettings = new AvatarSettings("/Users/bhsu/Downloads/CubismSdkForNative-4-r.3/Samples/Resources/Haru")
-    println(avatarSettings.pose)
-  }
 }
 
 class AvatarSettings(directory: String) {

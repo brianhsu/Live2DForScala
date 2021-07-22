@@ -15,7 +15,6 @@ object Pose {
           val partInfo = groups(poseIndex)(groupIndex)
           val partData = new PartData
           partData.PartId = partInfo.id
-          println(partData.PartId)
           if (partInfo.link.nonEmpty) {
             for (linkIndex <- partInfo.link.indices) {
               val linkPart = new PartData
@@ -31,7 +30,6 @@ object Pose {
       }
 
     }
-    println(ret._partGroups)
     ret
   }
 }
@@ -158,7 +156,6 @@ class Pose {
    * @note 不透明度の初期値が0でないパラメータは、不透明度を1に設定する。
    */
   def Reset(model: Live2DModel): Unit = {
-    println("========== Reset[start] =========")
     var beginIndex: Int = 0
     for (i <- _partGroupCounts.indices) {
       val groupCount = _partGroupCounts(i)
@@ -171,7 +168,6 @@ class Pose {
         } else {
 
           val v = if (j == beginIndex) 1.0f else 0.0f
-          //printf("SetPartOpacity(%d, %f)\n", partsIndex, v)
           model.setPartOpacityUsingIndex(partsIndex, v)
           model.setParameterValueUsingIndex(paramIndex, v)
           for (k <- _partGroups(j).Link.indices) {
@@ -181,7 +177,6 @@ class Pose {
       }
       beginIndex += groupCount
     }
-    println("========== Reset[done] =========")
 
   }
   /**

@@ -9,14 +9,9 @@ class PartData {
   var Link: List[PartData] = Nil
 
   def Initialize(model: Live2DModel): Unit = {
-    println("======= Initialize[Start] ======")
     ParameterIndex = model.getParameterIndex(PartId)
     PartIndex = model.getPartIndex(PartId)
-    printf("    ParameterIndex[%s] = %d\n", PartId, ParameterIndex);
-    printf("    PartIndex[%s] = %d\n", PartId, PartIndex);
-    printf("    SetParameterValue(%d, %f)\n", ParameterIndex, 1.0);
     model.setParameterValueUsingIndex(ParameterIndex, 1)
-    println("======= Initialize[Done] ======")
 
   }
 }
