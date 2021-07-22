@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.core.types
+package moe.brianhsu.live2d.enitiy.core.types
 
 /**
  * The supported version of .moc file

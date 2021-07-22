@@ -1,9 +1,9 @@
-package moe.brianhsu.live2d.core
+package moe.brianhsu.live2d.enitiy.core
 
 import com.sun.jna.Native
-import moe.brianhsu.live2d.core.exception.NativeLibraryNotFoundError
-import moe.brianhsu.live2d.core.types.CsmLogFunction
-import moe.brianhsu.live2d.core.utils.{DefaultMemoryAllocator, MemoryAllocator}
+import moe.brianhsu.live2d.enitiy.core.exception.NativeLibraryNotFoundError
+import moe.brianhsu.live2d.enitiy.core.types.CsmLogFunction
+import moe.brianhsu.live2d.enitiy.core.utils.{DefaultMemoryAllocator, MemoryAllocator}
 
 class CubismCore(val memoryAllocator: MemoryAllocator, logger: CsmLogFunction) extends ICubismCore {
 

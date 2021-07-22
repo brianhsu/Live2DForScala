@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.core.utils
+package moe.brianhsu.live2d.enitiy.core.utils
 
 import com.sun.jna.Memory
 

@@ -1,6 +1,6 @@
-package moe.brianhsu.live2d.core
+package moe.brianhsu.live2d.enitiy.core
 
-import moe.brianhsu.live2d.core.types.CsmLogFunction
+import moe.brianhsu.live2d.enitiy.core.types.CsmLogFunction
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

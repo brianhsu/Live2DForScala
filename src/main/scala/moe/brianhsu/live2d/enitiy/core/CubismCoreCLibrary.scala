@@ -1,8 +1,8 @@
-package moe.brianhsu.live2d.core
+package moe.brianhsu.live2d.enitiy.core
 
 import com.sun.jna._
 import com.sun.jna.ptr._
-import moe.brianhsu.live2d.core.types.{CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction, CArrayOfArrayOfCsmVector}
+import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction, CArrayOfArrayOfCsmVector}
 
 object CubismCoreCLibrary {
   object DynamicDrawableFlagMask {

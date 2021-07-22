@@ -1,9 +1,9 @@
 package moe.brianhsu.live2d.framework.model
 
 import com.sun.jna.ptr.FloatByReference
-import moe.brianhsu.live2d.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
-import moe.brianhsu.live2d.core.utils.MemoryInfo
-import moe.brianhsu.live2d.core.{CsmVector, ICubismCore}
+import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
+import moe.brianhsu.live2d.enitiy.core.utils.MemoryInfo
+import moe.brianhsu.live2d.enitiy.core.{CsmVector, ICubismCore}
 import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.framework.{MocInfo, model}

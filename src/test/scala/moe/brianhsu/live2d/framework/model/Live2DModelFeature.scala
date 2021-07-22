@@ -1,9 +1,9 @@
 package moe.brianhsu.live2d.framework.model
 
 import com.sun.jna.{Native, Pointer}
-import moe.brianhsu.live2d.core.types._
-import moe.brianhsu.live2d.core.utils.DefaultMemoryAllocator
-import moe.brianhsu.live2d.core.{CubismCore, CubismCoreCLibrary}
+import moe.brianhsu.live2d.enitiy.core.types._
+import moe.brianhsu.live2d.enitiy.core.utils.DefaultMemoryAllocator
+import moe.brianhsu.live2d.enitiy.core.{CubismCore, CubismCoreCLibrary}
 import moe.brianhsu.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.live2d.framework.model.drawable.Drawable
 import moe.brianhsu.live2d.framework.{Cubism, MocInfo}

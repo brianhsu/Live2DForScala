@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.framework.model.drawable
 
 import com.sun.jna.{Memory, Native}
-import moe.brianhsu.live2d.core.CubismCoreCLibrary.DynamicDrawableFlagMask._
+import moe.brianhsu.live2d.enitiy.core.CubismCoreCLibrary.DynamicDrawableFlagMask._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

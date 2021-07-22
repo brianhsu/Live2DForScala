@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.framework
 
-import moe.brianhsu.live2d.core.{CubismCore, ICubismCore}
-import moe.brianhsu.live2d.core.types.{CsmVersion, MocVersion}
+import moe.brianhsu.live2d.enitiy.core.{CubismCore, ICubismCore}
+import moe.brianhsu.live2d.enitiy.core.types.{CsmVersion, MocVersion}
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
 import moe.brianhsu.live2d.framework.util.MocFileReader
 

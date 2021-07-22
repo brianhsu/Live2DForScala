@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.core;
+package moe.brianhsu.live2d.enitiy.core;
 
 import com.sun.jna.Structure;
 import com.sun.jna.Pointer;

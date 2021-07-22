@@ -1,7 +1,7 @@
-package moe.brianhsu.live2d.core.types
+package moe.brianhsu.live2d.enitiy.core.types
 
 import com.sun.jna.{Pointer, PointerType}
-import moe.brianhsu.live2d.core.CsmVector
+import moe.brianhsu.live2d.enitiy.core.CsmVector
 
 class CArrayOfCsmVector(pointer: Pointer) extends PointerType(pointer) {
   def apply(offset: Int): CsmVector = new CsmVector(getPointerCsmVector(offset))
