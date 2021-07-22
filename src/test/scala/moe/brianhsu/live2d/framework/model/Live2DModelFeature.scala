@@ -14,6 +14,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
+import java.io.PrintWriter
 import scala.io.Source
 
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
@@ -201,7 +202,9 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         val drawable = drawables.get(drawableId).value
         val index = expectedDrawablePosition.index
         val position = drawable.vertexInfo.positions(index)
+
         position shouldBe (expectedDrawablePosition.x, expectedDrawablePosition.y)
+
       }
 
       Then("the texture coordinate of drawables should be correct")
