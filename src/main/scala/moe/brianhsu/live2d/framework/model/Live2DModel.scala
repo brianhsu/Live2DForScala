@@ -368,4 +368,41 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     }.toMap
   }
 
+  def isHit(drawableId: String, pointX: Float, pointY: Float): Boolean = {
+    val isHitHolder = drawables.get(drawableId).map { drawable =>
+      val vertices = drawable.vertexInfo.positions
+
+      var left: Float = vertices(0)._1
+      var right: Float = vertices(0)._1
+      var top = vertices(0)._2
+      var bottom = vertices(0)._2
+
+      for (vertex <- vertices.drop(1)) {
+        val (x, y) = vertex
+        if (x < left) {
+          left = x; // Min x
+        }
+
+        if (x > right) {
+          right = x; // Max x
+        }
+
+        if (y < top) {
+          top = y; // Min y
+        }
+
+        if (y > bottom) {
+          bottom = y; // Max y
+        }
+      }
+      val tx = modelMatrix.invertTransformX(pointX)
+      val ty = modelMatrix.invertTransformY(pointY)
+
+      (left <= tx) &&
+        (tx <= right) &&
+        (top <= ty) &&
+        (ty <= bottom)
+    }
+    isHitHolder.getOrElse(false)
+  }
 }

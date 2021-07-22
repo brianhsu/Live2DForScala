@@ -79,7 +79,9 @@ class Avatar(directory: String)(cubism: Cubism) {
    * @param deltaTimeInSeconds How long has elapsed since last update, in seconds.
    */
   def update(deltaTimeInSeconds: Float): Unit = {
+
     modelHolder.foreach { model =>
+      /*
       model.loadParameters()
       if (motionManager.IsFinished()) {
 
@@ -90,6 +92,8 @@ class Avatar(directory: String)(cubism: Cubism) {
       expressionManager.UpdateMotion(model, deltaTimeInSeconds)
       effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }
       pose.UpdateParameters(model, deltaTimeInSeconds)
+
+       */
       model.update()
     }
   }

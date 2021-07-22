@@ -99,8 +99,24 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     this.display()
   }
 
-  def onMouseReleased(): Unit = {
+  def onMouseReleased(x: Int, y: Int): Unit = {
+    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(y.toFloat)
+    val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
+    val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
+
+    printf("Clicked on: x = %.2f, y = %.2f\n", transformedX, transformedY);
     faceDirection.setFaceTargetCoordinate(0.0f, 0.0f)
+    for {
+      avatar <- avatarHolder
+      model <- modelHolder
+
+    } {
+      val isHead = model.isHit("HitArea", viewX, viewY)
+      val isBody = model.isHit("HitArea2", viewX, viewY)
+
+      println(s"isHead = $isHead, isBody = $isBody")
+    }
   }
 
   def onMouseDragged(x: Int, y: Int): Unit = {
