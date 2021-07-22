@@ -204,7 +204,6 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         val position = drawable.vertexInfo.positions(index)
 
         position shouldBe (expectedDrawablePosition.x, expectedDrawablePosition.y)
-
       }
 
       Then("the texture coordinate of drawables should be correct")
