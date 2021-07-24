@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.demo
 import moe.brianhsu.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.demo.sprite.{LAppSprite, SpriteShader}
-import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion}
+import moe.brianhsu.live2d.framework.Cubism
 import moe.brianhsu.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.framework.math.ViewPortMatrixCalculator
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
@@ -98,7 +98,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
 
     faceDirection.setFaceTargetCoordinate(0.0f, 0.0f)
     for {
-      avatar <- avatarHolder
+      _ <- avatarHolder
       model <- modelHolder
     } {
       val isHead = model.isHit("HitArea", viewX, viewY)

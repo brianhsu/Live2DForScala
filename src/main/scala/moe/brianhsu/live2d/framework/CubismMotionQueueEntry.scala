@@ -16,8 +16,6 @@ class CubismMotionQueueEntry {
   private var _fadeOutSeconds: Float = 0.0f
   private var _IsTriggeredFadeOut: Boolean = false
 
-  private var _motionQueueEntryHandle: CubismMotionQueueEntry = this   ///< インスタンスごとに一意の値を持つ識別番号
-
   /**
    *  フェードアウト開始の設定
    *

@@ -6,7 +6,7 @@ package moe.brianhsu.live2d.enitiy.core.types
  * @param min The minimum version of the .moc file.
  * @param max The maximum version of the .moc file.
  */
-sealed abstract class MocVersion(min: String, max: String)
+sealed abstract class MocVersion(val min: String, val max: String)
 
 /**
  * Unknown version

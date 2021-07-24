@@ -6,7 +6,7 @@ import moe.brianhsu.live2d.framework.model.drawable.ConstantFlags.{AdditiveBlend
 import moe.brianhsu.live2d.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.renderer.opengl.{Renderer, TextureColor}
 
-import java.nio.{Buffer, ByteBuffer, FloatBuffer}
+import java.nio.{ByteBuffer, FloatBuffer}
 
 class ShaderRenderer(implicit gl: OpenGL) {
 

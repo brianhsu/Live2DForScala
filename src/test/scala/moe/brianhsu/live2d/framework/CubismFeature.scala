@@ -2,14 +2,12 @@ package moe.brianhsu.live2d.framework
 
 import moe.brianhsu.live2d.enitiy.core.CubismCore
 import moe.brianhsu.live2d.enitiy.core.types.{CsmLogFunction, CsmVersion, MocVersion40}
-import moe.brianhsu.live2d.framework.exception.MocNotRevivedException
 import moe.brianhsu.live2d.framework.model.{Avatar, Live2DModel}
 import org.scalatest.{GivenWhenThen, TryValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
 import java.io.FileNotFoundException
-import scala.util.Failure
 
 class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   private val cubism = new Cubism
@@ -23,8 +21,9 @@ class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       }
 
       When("create a Cubism object with that logger")
-      val cubism = new CubismCore(CustomLogger)
+      new CubismCore(CustomLogger)
 
+      Then("Everything should be fine.")
     }
   }
 

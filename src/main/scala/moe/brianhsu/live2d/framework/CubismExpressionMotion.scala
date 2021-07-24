@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.framework
 import moe.brianhsu.live2d.enitiy.avatar.settings.{ExpressionSettings, Settings}
 import moe.brianhsu.live2d.framework.CubismExpressionMotion.{Add, Multiply, Overwrite}
-import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
+import moe.brianhsu.live2d.framework.model.Live2DModel
 
 object CubismExpressionMotion {
   sealed trait BlendType

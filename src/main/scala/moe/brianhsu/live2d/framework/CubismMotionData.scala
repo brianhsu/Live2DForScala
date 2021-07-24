@@ -3,7 +3,6 @@ package moe.brianhsu.live2d.framework
 import moe.brianhsu.live2d.enitiy.avatar.settings.MotionSetting
 import moe.brianhsu.live2d.framework.CubismMotion.{CubismMotionSegmentType_Bezier, CubismMotionSegmentType_InverseStepped, CubismMotionSegmentType_Linear, CubismMotionSegmentType_Stepped}
 import moe.brianhsu.live2d.framework.CubismMotionSegment.{BezierEvaluate, BezierEvaluateCardanoInterpretation, InverseSteppedEvaluate, LinearEvaluate, SteppedEvaluate}
-import moe.brianhsu.live2d.framework.model.settings.MotionInfo
 
 object CubismMotionData {
   def apply(motion: MotionSetting): CubismMotionData = {

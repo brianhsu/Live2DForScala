@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.framework.model
 
-import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion, CubismMotionManager, CubismMotionQueueManager, Pose}
+import moe.brianhsu.live2d.enitiy.avatar.settings.{MotionSetting, Settings}
 import moe.brianhsu.live2d.framework.effect.Effect
+import moe.brianhsu.live2d.framework._
 import moe.brianhsu.live2d.gateway.impl.JsonSettingsReader
 
 import scala.util.Try
@@ -21,7 +21,7 @@ import scala.util.Try
  */
 class Avatar(directory: String)(cubism: Cubism) {
 
-  private val avatarSettings: Settings = new JsonSettingsReader(directory).loadSettings()
+  private val avatarSettings: Settings = new JsonSettingsReader(directory).loadSettings().get
   private val mocFile: String = avatarSettings.mocFile
   private var effects: List[Effect] = Nil
   private val expressionManager = new CubismMotionManager
@@ -54,18 +54,18 @@ class Avatar(directory: String)(cubism: Cubism) {
   def setExpression(name: String): Unit = {
     expressions.get(name).foreach { expression =>
       println(s"Start $name expression")
-      expressionManager.StartMotionPriority(expression, false, 3)
+      expressionManager.StartMotionPriority(expression, autoDelete = false, 3)
     }
   }
 
-  lazy val motions = avatarSettings.motionGroups.values.toList.flatten
+  lazy val motions: Seq[MotionSetting] = avatarSettings.motionGroups.values.toList.flatten
 
   def startMotion(group: String, i: Int): Unit = {
     val name = s"Motion(${group}_$i)"
     val motionSettings = avatarSettings.motionGroups(group)(i)
-    val m = CubismMotion(motionSettings, e => println(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
+    val m = CubismMotion(motionSettings, _ => println(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
     println(s"Start motionmotion  $name")
-    motionManager.StartMotionPriority(m, false, 2)
+    motionManager.StartMotionPriority(m, autoDelete = false, 2)
   }
 
   /**

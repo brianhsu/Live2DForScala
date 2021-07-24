@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.framework.effect.impl
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.framework.effect.Effect
 import moe.brianhsu.live2d.framework.effect.impl.EyeBlink._
-import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
+import moe.brianhsu.live2d.framework.model.Live2DModel
 
 import scala.util.Random
 

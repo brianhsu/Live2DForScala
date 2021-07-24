@@ -4,6 +4,8 @@ import moe.brianhsu.live2d.framework.ACubismMotion.FinishedMotionCallback
 import moe.brianhsu.live2d.framework.math.CubismMath
 import moe.brianhsu.live2d.framework.model.Live2DModel
 
+import scala.annotation.unused
+
 object ACubismMotion {
   type FinishedMotionCallback = ACubismMotion => Unit
 }
@@ -188,7 +190,7 @@ abstract class ACubismMotion {
    * @param   beforeCheckTimeSeconds   前回のイベントチェック時間[秒]
    * @param   motionTimeSeconds        今回の再生時間[秒]
    */
-  def GetFiredEvent(beforeCheckTimeSeconds: Float, motionTimeSeconds: Float): List[String] = _firedEventValues
+  def GetFiredEvent(@unused beforeCheckTimeSeconds: Float, @unused motionTimeSeconds: Float): List[String] = _firedEventValues
 
 
   /**

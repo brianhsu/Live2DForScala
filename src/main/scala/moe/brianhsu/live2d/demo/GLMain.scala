@@ -5,7 +5,7 @@ import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
 import moe.brianhsu.live2d.adapter.jogl.{JavaOpenGL, JavaOpenGLCanvasInfo}
 
 import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent}
-import java.util.concurrent.{ScheduledFuture, ScheduledThreadPoolExecutor, TimeUnit}
+import java.util.concurrent.{ScheduledThreadPoolExecutor, TimeUnit}
 
 class FixedFPSAnimator(fps: Int, drawable: GLAutoDrawable) {
   private val scheduledThreadPool = new ScheduledThreadPoolExecutor(1)
@@ -19,10 +19,8 @@ class FixedFPSAnimator(fps: Int, drawable: GLAutoDrawable) {
     }
   }
 
-  private var scheduler: Option[ScheduledFuture[_]] = None
-
   def start(): Unit = {
-    scheduler = Some(createScheduledFuture())
+    createScheduledFuture()
   }
 
   def stop(): Unit = {

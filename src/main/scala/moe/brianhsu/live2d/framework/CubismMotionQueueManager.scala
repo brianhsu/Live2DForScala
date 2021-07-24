@@ -3,13 +3,14 @@ package moe.brianhsu.live2d.framework
 import moe.brianhsu.live2d.framework.CubismMotionQueueManager.CubismMotionEventFunction
 import moe.brianhsu.live2d.framework.model.Live2DModel
 
-import scala.collection.mutable.ListBuffer
+import scala.annotation.unused
 
 object CubismMotionQueueManager {
   trait CubismMotionEventFunction {
     def apply(caller: CubismMotionQueueManager, eventValue: String, customData: AnyRef): Unit
   }
 }
+
 class CubismMotionQueueManager {
   protected var _userTimeSeconds: Float = 0.0f
   private var _motions: List[CubismMotionQueueEntry] = Nil
@@ -26,7 +27,7 @@ class CubismMotionQueueManager {
    * @param   userTimeSeconds デルタ時間の積算値[秒]
    * @return                      開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
    */
-  def StartMotion(motion: ACubismMotion, autoDelete: Boolean, userTimeSeconds: Float): CubismMotionQueueEntry = {
+  def StartMotion(motion: ACubismMotion, autoDelete: Boolean, @unused userTimeSeconds: Float): CubismMotionQueueEntry = {
 
     if (motion == null) {
       return null

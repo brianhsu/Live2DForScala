@@ -4,10 +4,7 @@ import moe.brianhsu.live2d.framework.ACubismMotion.FinishedMotionCallback
 import moe.brianhsu.live2d.framework.CubismMotion.{CubismMotionSegmentType_Bezier, EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.framework.CubismMotionCurveTarget.{CubismMotionCurveTarget_Model, CubismMotionCurveTarget_Parameter, CubismMotionCurveTarget_PartOpacity}
 import moe.brianhsu.live2d.framework.math.CubismMath
-import moe.brianhsu.live2d.framework.model.{AvatarSettings, Live2DModel}
-import moe.brianhsu.live2d.framework.model.settings.MotionInfo
-
-import scala.util.control.Breaks.break
+import moe.brianhsu.live2d.framework.model.Live2DModel
 
 object CubismMotion {
   private val EffectNameEyeBlink = "EyeBlink"

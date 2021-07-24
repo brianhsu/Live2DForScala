@@ -4,11 +4,13 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.ExpressionSettings.ExpressionP
 import moe.brianhsu.live2d.enitiy.avatar.settings.PoseSettings.Group
 import moe.brianhsu.live2d.enitiy.avatar.settings.{ExpressionSettings, MotionSetting, PoseSettings, Settings}
 import moe.brianhsu.live2d.framework.model.settings.{MotionCurve, MotionMeta}
-import org.scalatest.{GivenWhenThen, Inside, OptionValues}
+import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues {
+import java.io.FileNotFoundException
+
+class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues with TryValues {
   Feature("Read Live2D avatar settings") {
     Scenario("Load from Live 2D json setting folder") {
       Given("A folder path contains json files for a Live2D avatar model")
@@ -16,9 +18,9 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
 
       When("Load it using JsonSettingsReader")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
-      val settings = jsonSettingsReader.loadSettings()
+      val settings = jsonSettingsReader.loadSettings().success.value
 
-      Then("the loaded setting should have correct data")
+      Then("the success loaded setting should have correct data")
       inside(settings) { case Settings(mocFile, textureFiles, pose, eyeBlinkParameterIds, expressions, motionGroups) =>
         mocFile shouldBe "src/test/resources/models/Haru/Haru.moc3"
         textureFiles shouldBe List(
@@ -32,6 +34,31 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
         shouldHaveCorrectMotionGroup(motionGroups)
       }
     }
+
+    Scenario("Load model fom a non exist folder") {
+      Given("A folder path that does not exist")
+      val folderPath = "src/test/resources/models/DoNoExist"
+
+      When("Load it with JsonSettingReder")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val loadedSettings = jsonSettingsReader.loadSettings()
+
+      Then("it should be a failure contains FileNotFoundException")
+      loadedSettings.failure.exception shouldBe a[FileNotFoundException]
+    }
+
+    Scenario("Load model fom a folder not containing the main json file") {
+      Given("A folder path that does not exist")
+      val folderPath = "src/test/resources/models/corruptedModel/noMainModelJson"
+
+      When("Load it with JsonSettingReder")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val loadedSettings = jsonSettingsReader.loadSettings()
+
+      Then("it should be a failure contains FileNotFoundException")
+      loadedSettings.failure.exception shouldBe a[FileNotFoundException]
+    }
+
   }
 
   def shouldHaveCorrectMotionGroup(motionGroups: Map[String, List[MotionSetting]]): Unit = {
@@ -59,6 +86,8 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       inside(curves.head) { case MotionCurve(target, id, fadeInTime, fadeOutTime, segments) =>
         target shouldBe "Model"
         id shouldBe "Opacity"
+        fadeInTime shouldBe None
+        fadeOutTime shouldBe None
         segments should contain theSameElementsInOrderAs List(
           0, 1, 1, 3.322f,
           1, 6.644f, 1, 9.967f,
