@@ -1,9 +1,10 @@
 package moe.brianhsu.live2d.framework.model
 
-import moe.brianhsu.live2d.enitiy.avatar.settings.{MotionSetting, Settings}
+import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.framework.effect.Effect
 import moe.brianhsu.live2d.framework._
-import moe.brianhsu.live2d.gateway.impl.JsonSettingsReader
+import moe.brianhsu.live2d.gateway.avatar.settings.impl.json.JsonSettingsReader
 
 import scala.util.Try
 

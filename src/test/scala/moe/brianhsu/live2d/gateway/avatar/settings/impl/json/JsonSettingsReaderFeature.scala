@@ -1,12 +1,13 @@
-package moe.brianhsu.live2d.gateway.impl
+package moe.brianhsu.live2d.gateway.avatar.settings.impl.json
 
-import moe.brianhsu.live2d.enitiy.avatar.settings.ExpressionSettings.ExpressionParameter
-import moe.brianhsu.live2d.enitiy.avatar.settings.PoseSettings.Group
-import moe.brianhsu.live2d.enitiy.avatar.settings.{ExpressionSettings, MotionSetting, PoseSettings, Settings}
-import moe.brianhsu.live2d.framework.model.settings.{MotionCurve, MotionMeta}
-import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PoseSetting}
+import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting.Parameters
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.{Curve, Meta}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Group
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
 import java.io.FileNotFoundException
 
@@ -21,7 +22,7 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       val settings = jsonSettingsReader.loadSettings().success.value
 
       Then("the success loaded setting should have correct data")
-      inside(settings) { case Settings(mocFile, textureFiles, pose, eyeBlinkParameterIds, expressions, motionGroups) =>
+      inside(settings) { case Settings(mocFile, textureFiles, pose, eyeBlinkParameterIds, expressions, motionGroups, hitArea) =>
         mocFile shouldBe "src/test/resources/models/Haru/Haru.moc3"
         textureFiles shouldBe List(
           "src/test/resources/models/Haru/Haru.2048/texture_00.png",
@@ -32,6 +33,10 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
         shouldHaveCorrectPoseSettings(pose.value)
         shouldHaveCorrectExpressions(expressions)
         shouldHaveCorrectMotionGroup(motionGroups)
+        hitArea should contain theSameElementsInOrderAs List(
+          HitAreaSetting("Head", "HitArea"),
+          HitAreaSetting("Body", "HitArea2"),
+        )
       }
     }
 
@@ -70,7 +75,7 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       version shouldBe "3"
       fadeInTime.value shouldBe 0.5
       fadeOutTime.value shouldBe 0.5
-      inside(meta) { case MotionMeta(duration, fps, loop, areBeziersRestricted, curveCount, totalSegmentCount, totalPointCount, userDataCount, totalUserDataSize) =>
+      inside(meta) { case Meta(duration, fps, loop, areBeziersRestricted, curveCount, totalSegmentCount, totalPointCount, userDataCount, totalUserDataSize) =>
         duration shouldBe 10
         fps shouldBe 30
         loop shouldBe true
@@ -83,7 +88,7 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       }
       userData shouldBe Nil
       curves.size shouldBe 65
-      inside(curves.head) { case MotionCurve(target, id, fadeInTime, fadeOutTime, segments) =>
+      inside(curves.head) { case Curve(target, id, fadeInTime, fadeOutTime, segments) =>
         target shouldBe "Model"
         id shouldBe "Opacity"
         fadeInTime shouldBe None
@@ -99,26 +104,26 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
 
   }
 
-  private def shouldHaveCorrectExpressions(expressions: Map[String, ExpressionSettings]): Unit = {
+  private def shouldHaveCorrectExpressions(expressions: Map[String, ExpressionSetting]): Unit = {
     expressions.size shouldBe 8
     expressions.keys should contain theSameElementsAs Set("f00", "f01", "f02", "f03", "f04", "f05", "f06", "f07")
     val aExpression = expressions("f07")
-    inside(aExpression) { case ExpressionSettings(typeName, fadeInTime, fadeOutTime, parameters) =>
+    inside(aExpression) { case ExpressionSetting(typeName, fadeInTime, fadeOutTime, parameters) =>
       typeName shouldBe "Live2D Expression"
       fadeInTime.value shouldBe 0.5f
       fadeOutTime.value shouldBe 0.7f
       parameters should contain theSameElementsInOrderAs List(
-        ExpressionParameter("ParamEyeLOpen", 0.8f, Some("Multiply")),
-        ExpressionParameter("ParamEyeROpen", 0.8f, Some("Multiply")),
-        ExpressionParameter("ParamBrowLForm", -0.33f, Some("Add")),
-        ExpressionParameter("ParamBrowRForm", -0.33f, Some("Add")),
-        ExpressionParameter("ParamMouthForm", -1.76f, Some("Add")),
+        Parameters("ParamEyeLOpen", 0.8f, Some("Multiply")),
+        Parameters("ParamEyeROpen", 0.8f, Some("Multiply")),
+        Parameters("ParamBrowLForm", -0.33f, Some("Add")),
+        Parameters("ParamBrowRForm", -0.33f, Some("Add")),
+        Parameters("ParamMouthForm", -1.76f, Some("Add")),
       )
     }
   }
 
-  private def shouldHaveCorrectPoseSettings(pose: PoseSettings) = {
-    inside(pose) { case PoseSettings(typeName, fadeInTime, groups) =>
+  private def shouldHaveCorrectPoseSettings(pose: PoseSetting) = {
+    inside(pose) { case PoseSetting(typeName, fadeInTime, groups) =>
       typeName shouldBe "Live2D Pose"
       fadeInTime shouldBe Some(1.5f)
       groups should contain theSameElementsAs List(

@@ -1,12 +1,12 @@
-package moe.brianhsu.live2d.gateway.impl
+package moe.brianhsu.live2d.gateway.avatar.settings.impl.json
 
-import moe.brianhsu.live2d.enitiy.avatar.settings.{ExpressionSettings, MotionSetting, PoseSettings, Settings}
-import moe.brianhsu.live2d.framework.model.settings.{Group, ModelSetting}
-import moe.brianhsu.live2d.gateway.SettingsReader
 import moe.brianhsu.live2d.RichPath._
-
-import org.json4s.{DefaultFormats, Formats}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, MotionSetting, PoseSetting}
+import moe.brianhsu.live2d.enitiy.avatar.settings.{Settings, detail}
+import moe.brianhsu.live2d.gateway.avatar.settings.SettingsReader
+import moe.brianhsu.live2d.gateway.avatar.settings.impl.json.model.{Group, ModelSetting}
 import org.json4s.native.JsonMethods.parse
+import org.json4s.{DefaultFormats, Formats}
 
 import java.io.FileNotFoundException
 import java.nio.file.{Files, Path, Paths}
@@ -30,7 +30,8 @@ class JsonSettingsReader(directory: String) extends SettingsReader {
       Settings(
         mocFile, textureFiles, pose,
         eyeBlinkParameterIds, expressions,
-        motionGroups
+        motionGroups,
+        settings.hitAreas
       )
     }
   }
@@ -93,17 +94,17 @@ class JsonSettingsReader(directory: String) extends SettingsReader {
     }
   }
 
-  private def parsePose(modelSetting: ModelSetting): Try[Option[PoseSettings]] = Try {
+  private def parsePose(modelSetting: ModelSetting): Try[Option[PoseSetting]] = Try {
     for {
       pose <- modelSetting.fileReferences.pose
       jsonFile <- Option(Paths.get(s"$directory/$pose")) if jsonFile.isLoadableFile
       jsonFileContent <- jsonFile.readToString().toOption
     } yield {
-      parse(jsonFileContent).camelizeKeys.extract[PoseSettings]
+      parse(jsonFileContent).camelizeKeys.extract[PoseSetting]
     }
   }
 
-  private def parseExpressions(modelSetting: ModelSetting): Try[Map[String, ExpressionSettings]] = Try {
+  private def parseExpressions(modelSetting: ModelSetting): Try[Map[String, ExpressionSetting]] = Try {
     val nameToExpressionList = for {
       expressionFileInfo <- modelSetting.fileReferences.expressions
       expressionJsonFilePath = Paths.get(s"$directory/${expressionFileInfo.file}")
@@ -111,7 +112,7 @@ class JsonSettingsReader(directory: String) extends SettingsReader {
       jsonFileContent <- jsonFile.readToString().toOption
       parsedJson <- Try(parse(jsonFileContent)).toOption
     } yield {
-      expressionFileInfo.name -> parsedJson.camelizeKeys.extract[ExpressionSettings]
+      expressionFileInfo.name -> parsedJson.camelizeKeys.extract[ExpressionSetting]
     }
     nameToExpressionList.toMap
   }
@@ -124,7 +125,7 @@ class JsonSettingsReader(directory: String) extends SettingsReader {
         motionFile <- motionList
         paredJson <- motionFile.loadMotion(directory)
       } yield {
-        MotionSetting(
+        detail.MotionSetting(
           paredJson.version,
           motionFile.fadeInTime,
           motionFile.fadeOutTime,

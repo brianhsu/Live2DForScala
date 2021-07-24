@@ -1,5 +1,5 @@
 package moe.brianhsu.live2d.framework
-import moe.brianhsu.live2d.enitiy.avatar.settings.MotionSetting
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.framework.ACubismMotion.FinishedMotionCallback
 import moe.brianhsu.live2d.framework.CubismMotion.{CubismMotionSegmentType_Bezier, EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.framework.CubismMotionCurveTarget.{CubismMotionCurveTarget_Model, CubismMotionCurveTarget_Parameter, CubismMotionCurveTarget_PartOpacity}

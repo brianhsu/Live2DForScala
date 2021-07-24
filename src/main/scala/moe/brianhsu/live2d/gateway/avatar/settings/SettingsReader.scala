@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.gateway
+package moe.brianhsu.live2d.gateway.avatar.settings
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 

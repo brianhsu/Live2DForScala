@@ -1,7 +1,7 @@
-package moe.brianhsu.live2d.framework.model.settings
+package moe.brianhsu.live2d.gateway.avatar.settings.impl.json.model
 
-import moe.brianhsu.live2d.RichPath._
-import org.json4s.native.JsonMethods._
+import moe.brianhsu.live2d.RichPath.convertFromPath
+import org.json4s.native.JsonMethods.parse
 import org.json4s.{DefaultFormats, Formats}
 
 import java.nio.file.Paths
