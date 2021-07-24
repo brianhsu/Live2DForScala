@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.framework
 
 import ACubismMotion.FinishedMotionCallback
 import CubismMotion.{CubismMotionSegmentType_Bezier, EffectNameEyeBlink, EffectNameLipSync}
-import moe.brianhsu.porting.live2d.enitiy.avatar.settings.detail.MotionSetting
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.{CubismMotionCurveTarget_Model, CubismMotionCurveTarget_Parameter, CubismMotionCurveTarget_PartOpacity}
 import moe.brianhsu.porting.live2d.framework.math.CubismMath
 import moe.brianhsu.porting.live2d.framework.model.Live2DModel

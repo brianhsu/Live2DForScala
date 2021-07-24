@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework.effect.impl
 
 import EyeBlink._
-import moe.brianhsu.porting.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.porting.live2d.framework.effect.Effect
 import moe.brianhsu.porting.live2d.framework.model.Live2DModel
 

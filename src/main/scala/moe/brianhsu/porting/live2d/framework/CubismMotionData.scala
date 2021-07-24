@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
 import CubismMotion.{CubismMotionSegmentType_Bezier, CubismMotionSegmentType_InverseStepped, CubismMotionSegmentType_Linear, CubismMotionSegmentType_Stepped}
-import moe.brianhsu.porting.live2d.enitiy.avatar.settings.detail.MotionSetting
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.porting.live2d.framework.CubismMotionSegment.{BezierEvaluate, BezierEvaluateCardanoInterpretation, InverseSteppedEvaluate, LinearEvaluate, SteppedEvaluate}
 
 object CubismMotionData {
@@ -10,7 +10,7 @@ object CubismMotionData {
     val curveCount = meta.curveCount
     val segmentsTotalCount = meta.totalSegmentCount
     val pointCount = meta.totalPointCount
-    val eventCount = meta.totalUserDataSize
+    val eventCount = meta.userDataCount
     val curves: Array[CubismMotionCurve] = Array.fill(curveCount)(CubismMotionCurve(null, null))
     val segments: Array[CubismMotionSegment] = Array.fill(segmentsTotalCount)(CubismMotionSegment(null))
     val points: Array[CubismMotionPoint] = Array.fill(pointCount)(CubismMotionPoint(0, 0))

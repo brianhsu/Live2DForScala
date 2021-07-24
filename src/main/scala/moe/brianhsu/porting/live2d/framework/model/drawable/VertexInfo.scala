@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework.model.drawable
 
-import moe.brianhsu.porting.live2d.enitiy.core.types.{CArrayOfCsmVector, CArrayOfShort}
+import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfCsmVector, CArrayOfShort}
 
 /**
  * This class represent information about vertices of a drawable when rendering.

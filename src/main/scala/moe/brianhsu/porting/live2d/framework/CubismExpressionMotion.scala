@@ -1,8 +1,8 @@
 package moe.brianhsu.porting.live2d.framework
 
 import CubismExpressionMotion.{Add, Multiply, Overwrite}
-import moe.brianhsu.porting.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.porting.live2d.enitiy.avatar.settings.detail.ExpressionSetting
+import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting
 import moe.brianhsu.porting.live2d.framework.model.Live2DModel
 
 object CubismExpressionMotion {

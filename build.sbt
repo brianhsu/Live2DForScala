@@ -8,6 +8,8 @@ scalacOptions := Seq("-deprecation", "-Ywarn-unused")
 
 Compile / doc / scalacOptions ++= Seq("-private")
 
+autoAPIMappings := true
+
 val lwjglVersion = "3.2.3"
 
 libraryDependencies ++= Seq(

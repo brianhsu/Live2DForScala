@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework
 
-import moe.brianhsu.porting.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.porting.live2d.framework.model.Live2DModel
 
 object Pose {
