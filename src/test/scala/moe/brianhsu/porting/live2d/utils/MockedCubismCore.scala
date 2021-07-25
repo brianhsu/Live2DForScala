@@ -1,8 +1,9 @@
 package moe.brianhsu.porting.live2d.utils
 
-import moe.brianhsu.live2d.enitiy.core.{CubismCoreCLibrary, ICubismCore}
-import moe.brianhsu.live2d.enitiy.core.utils.{DefaultMemoryAllocator, MemoryAllocator}
+import moe.brianhsu.live2d.boundary.gateway.core.memory.DefaultMemoryAllocator
+import moe.brianhsu.live2d.enitiy.core.{NativeCubismAPI, CubismCore}
+import moe.brianhsu.live2d.enitiy.core.memory.MemoryAllocator
 
-class MockedCubismCore(val cLibrary: CubismCoreCLibrary) extends ICubismCore {
-  override def memoryAllocator: MemoryAllocator = DefaultMemoryAllocator
+class MockedCubismCore(val cubismAPI: NativeCubismAPI) extends CubismCore {
+  override val memoryAllocator: MemoryAllocator = DefaultMemoryAllocator
 }

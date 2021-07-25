@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.framework.model.drawable
 
 import com.sun.jna.Pointer
+import moe.brianhsu.live2d.boundary.gateway.core.JnaCubismCore
 import moe.brianhsu.porting.live2d.framework.model.Live2DModel
 
 /**
@@ -30,7 +31,7 @@ case class Drawable(belongsTo: Live2DModel, id: String, index: Int, constantFlag
   /**
    * Get draw order of this drawable.
    *
-   * This value will be read directly from the native C memory allocated by [[moe.brianhsu.live2d.enitiy.core.CubismCore]].
+   * This value will be read directly from the native C memory allocated by [[JnaCubismCore]].
    *
    * @return  The draw order of this drawable.
    */
@@ -41,7 +42,7 @@ case class Drawable(belongsTo: Live2DModel, id: String, index: Int, constantFlag
    *
    * The higher the order, the more up front a drawable is.
    *
-   * This value will be read directly from the native C memory allocated by [[moe.brianhsu.live2d.enitiy.core.CubismCore]].
+   * This value will be read directly from the native C memory allocated by [[JnaCubismCore]].
    *
    * @return  The render order of this drawable.
    */
@@ -50,7 +51,7 @@ case class Drawable(belongsTo: Live2DModel, id: String, index: Int, constantFlag
   /**
    * Get opacity of this drawable.
    *
-   * This value will be read directly from the native C memory allocated by [[moe.brianhsu.live2d.enitiy.core.CubismCore]].
+   * This value will be read directly from the native C memory allocated by [[JnaCubismCore]].
    *
    * @return  The opacity of this drawable.
    */

@@ -4,7 +4,7 @@ import com.sun.jna._
 import com.sun.jna.ptr._
 import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction}
 
-object CubismCoreCLibrary {
+object NativeCubismAPI {
   object DynamicDrawableFlagMask {
     val csmIsVisible: Byte = (1 << 0).toByte
     val csmVisibilityDidChange: Byte = (1 << 1).toByte
@@ -22,7 +22,14 @@ object CubismCoreCLibrary {
   }
 }
 
-trait CubismCoreCLibrary extends Library {
+/**
+ * Native Cubism C API interface
+ *
+ * This is intended for use with JNA, library user should not use this
+ * trait directly, unless you want interact with Cubism Live 2D underlying
+ * native C library.
+ */
+trait NativeCubismAPI extends Library {
 
   /* ------- *
    * VERSION *

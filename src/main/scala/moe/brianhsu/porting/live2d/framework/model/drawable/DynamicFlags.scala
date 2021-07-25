@@ -1,7 +1,8 @@
 package moe.brianhsu.porting.live2d.framework.model.drawable
 
 import com.sun.jna.Pointer
-import moe.brianhsu.live2d.enitiy.core.CubismCoreCLibrary.DynamicDrawableFlagMask._
+import moe.brianhsu.live2d.boundary.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.DynamicDrawableFlagMask._
 
 /**
  * The class represent the dynamic flags of a [[Drawable]]
@@ -14,7 +15,7 @@ case class DynamicFlags(private val pointer: Pointer) extends Flags {
   /**
    * The actual bitmap that represent which flag has been enabled.
    *
-   * This value will be read directly from the C native memory allocated by [[moe.brianhsu.live2d.enitiy.core.CubismCore]]
+   * This value will be read directly from the C native memory allocated by [[JnaCubismCore]]
    *
    * @return  The actual bitmap represent which flag has been enabled.
    */

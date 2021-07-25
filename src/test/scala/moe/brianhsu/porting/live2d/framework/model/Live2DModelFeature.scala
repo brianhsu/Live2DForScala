@@ -1,9 +1,10 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import com.sun.jna.{Native, Pointer}
-import moe.brianhsu.live2d.enitiy.core.{CubismCore, CubismCoreCLibrary}
+import moe.brianhsu.live2d.boundary.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.boundary.gateway.core.memory.DefaultMemoryAllocator
+import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToModel, CStringArray, MocAlignment}
-import moe.brianhsu.live2d.enitiy.core.utils.DefaultMemoryAllocator
 import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
 import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
@@ -27,7 +28,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
   Feature("Update the model information") {
     Scenario("Update the model") {
       Given("a mocked Cubism Core Library and pointer to model")
-      val mockedCLibrary = stub[CubismCoreCLibrary]
+      val mockedCLibrary = stub[NativeCubismAPI]
       val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
       val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
 
@@ -94,7 +95,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
     Scenario("reading parts that has parent from model") {
       Given("a mocked Cubism Core Library and pointer to model")
-      val mockedCLibrary = mock[CubismCoreCLibrary]
+      val mockedCLibrary = mock[NativeCubismAPI]
       val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
       val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
       val opacities = mock[CArrayOfFloat]
@@ -257,7 +258,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       val mocInfo = MocInfo(memoryInfo, 1024)
 
       And("create a Live2D model from that memory")
-      val model = new Live2DModel(mocInfo, textureFiles)(new CubismCore())
+      val model = new Live2DModel(mocInfo, textureFiles)(new JnaCubismCore())
 
       When("reading the internal cubismModel parameters")
       Then("it should throw MocNotRevivedException")
@@ -282,7 +283,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
       forAll(invalidCombos) { (count, ids, current, default, min, max) =>
         Given("a mocked Cubism Core Library and pointer to model")
-        val mockedCLibrary = mock[CubismCoreCLibrary]
+        val mockedCLibrary = mock[NativeCubismAPI]
         val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
         val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
 
@@ -322,7 +323,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
       forAll(invalidCombos) { (count, ids, opacities, parents) =>
         Given("a mocked Cubism Core Library and pointer to model")
-        val mockedCLibrary = mock[CubismCoreCLibrary]
+        val mockedCLibrary = mock[NativeCubismAPI]
         val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
         val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
 
@@ -378,7 +379,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
                                indexList, vCountList, vList, uvList) =>
 
         Given("a mocked Cubism Core Library and pointer to model")
-        val mockedCLibrary = mock[CubismCoreCLibrary]
+        val mockedCLibrary = mock[NativeCubismAPI]
         val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
         val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
 

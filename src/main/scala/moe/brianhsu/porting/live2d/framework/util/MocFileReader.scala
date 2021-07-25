@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework.util
 
 import moe.brianhsu.live2d.enitiy.core.types.MocAlignment
-import moe.brianhsu.live2d.enitiy.core.utils.MemoryAllocator
+import moe.brianhsu.live2d.enitiy.core.memory.MemoryAllocator
 import moe.brianhsu.porting.live2d.framework.MocInfo
 
 import java.nio.file.{Files, Paths}

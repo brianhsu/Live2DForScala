@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework.model.drawable
 
-import moe.brianhsu.live2d.enitiy.core.CubismCoreCLibrary.ConstantDrawableFlagMask._
+import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.ConstantDrawableFlagMask._
 import ConstantFlags.{AdditiveBlend, MultiplicativeBlend, Normal}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

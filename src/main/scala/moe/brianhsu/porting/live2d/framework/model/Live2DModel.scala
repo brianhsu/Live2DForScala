@@ -1,9 +1,9 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import com.sun.jna.ptr.FloatByReference
-import moe.brianhsu.live2d.enitiy.core.{CsmVector, ICubismCore}
+import moe.brianhsu.live2d.enitiy.core.{CsmVector, CubismCore}
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
-import moe.brianhsu.live2d.enitiy.core.utils.MemoryInfo
+import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.porting.live2d.framework
 import moe.brianhsu.porting.live2d.framework.MocInfo
 import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
@@ -19,12 +19,12 @@ import moe.brianhsu.porting.live2d.framework.model.drawable.{ConstantFlags, Draw
  * @param mocInfo   The moc file information
  * @param core      The core library of Cubism
  */
-class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCore) {
+class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore) {
 
 
   private var savedParameters: Map[String, Float] = Map.empty
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
-  private lazy val modelSize: Int =  core.cLibrary.csmGetSizeofModel(this.revivedMoc)
+  private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
   protected lazy val cubismModel: CPointerToModel = createCubsimModel()
 
@@ -39,7 +39,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   def isUsingMask: Boolean = drawables.values.exists(x => x.masks.nonEmpty)
 
   private def createCubsimModel(): CPointerToModel = {
-    val model = core.cLibrary.csmInitializeModelInPlace(
+    val model = core.cubismAPI.csmInitializeModelInPlace(
       this.revivedMoc,
       this.modelMemoryInfo.alignedMemory,
       this.modelSize
@@ -53,8 +53,8 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   }
 
   private def getTextureCountFromModel(model: CPointerToModel): Int = {
-    val drawableCounts = core.cLibrary.csmGetDrawableCount(model)
-    val textureIndexList = core.cLibrary.csmGetDrawableTextureIndices(model)
+    val drawableCounts = core.cubismAPI.csmGetDrawableCount(model)
+    val textureIndexList = core.cubismAPI.csmGetDrawableTextureIndices(model)
     val maxIndex = (0 until drawableCounts).map(i => textureIndexList(i)).max
     maxIndex + 1
   }
@@ -151,7 +151,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     val outOriginInPixel = new CsmVector()
     val outPixelPerUnit = new FloatByReference()
 
-    core.cLibrary.csmReadCanvasInfo(this.cubismModel, outSizeInPixel, outOriginInPixel, outPixelPerUnit)
+    core.cubismAPI.csmReadCanvasInfo(this.cubismModel, outSizeInPixel, outOriginInPixel, outPixelPerUnit)
 
     framework.model.CanvasInfo(
       outSizeInPixel.getX, outSizeInPixel.getY,
@@ -176,8 +176,8 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
    * Update the Live 2D Model and reset all dynamic flags of drawables.
    */
   def update(): Unit = {
-    core.cLibrary.csmUpdateModel(this.cubismModel)
-    core.cLibrary.csmResetDrawableDynamicFlags(this.cubismModel)
+    core.cubismAPI.csmUpdateModel(this.cubismModel)
+    core.cubismAPI.csmResetDrawableDynamicFlags(this.cubismModel)
   }
 
   def reset(): Unit = {
@@ -211,7 +211,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   }
 
   private def reviveMoc(): CPointerToMoc = {
-    val revivedMoc = core.cLibrary.csmReviveMocInPlace(mocInfo.memory.alignedMemory, mocInfo.originalSize)
+    val revivedMoc = core.cubismAPI.csmReviveMocInPlace(mocInfo.memory.alignedMemory, mocInfo.originalSize)
 
     if (revivedMoc == null) {
       throw new MocNotRevivedException
@@ -221,10 +221,10 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   }
 
   private def createPartList(): List[Part] = {
-    val partCount = core.cLibrary.csmGetPartCount(this.cubismModel)
-    val partIds = core.cLibrary.csmGetPartIds(this.cubismModel)
-    val parentIndices = core.cLibrary.csmGetPartParentPartIndices(this.cubismModel)
-    val partOpacities = core.cLibrary.csmGetPartOpacities(this.cubismModel)
+    val partCount = core.cubismAPI.csmGetPartCount(this.cubismModel)
+    val partIds = core.cubismAPI.csmGetPartIds(this.cubismModel)
+    val parentIndices = core.cubismAPI.csmGetPartParentPartIndices(this.cubismModel)
+    val partOpacities = core.cubismAPI.csmGetPartOpacities(this.cubismModel)
 
     if (partCount == -1 || partIds == null || parentIndices == null || partOpacities == null) {
       throw new PartInitException
@@ -273,12 +273,12 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   }
 
   private def createParameterList(): List[Parameter] = {
-    val parametersCount = core.cLibrary.csmGetParameterCount(this.cubismModel)
-    val parametersIds = core.cLibrary.csmGetParameterIds(this.cubismModel)
-    val currentValues = core.cLibrary.csmGetParameterValues(this.cubismModel)
-    val defaultValues = core.cLibrary.csmGetParameterDefaultValues(this.cubismModel)
-    val minValues = core.cLibrary.csmGetParameterMinimumValues(this.cubismModel)
-    val maxValues = core.cLibrary.csmGetParameterMaximumValues(this.cubismModel)
+    val parametersCount = core.cubismAPI.csmGetParameterCount(this.cubismModel)
+    val parametersIds = core.cubismAPI.csmGetParameterIds(this.cubismModel)
+    val currentValues = core.cubismAPI.csmGetParameterValues(this.cubismModel)
+    val defaultValues = core.cubismAPI.csmGetParameterDefaultValues(this.cubismModel)
+    val minValues = core.cubismAPI.csmGetParameterMinimumValues(this.cubismModel)
+    val maxValues = core.cubismAPI.csmGetParameterMaximumValues(this.cubismModel)
 
     if (parametersCount == -1 || parametersIds == null || currentValues == null ||
       defaultValues == null || minValues == null || maxValues == null) {
@@ -304,14 +304,14 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
   }
 
   private def createDrawable(): Map[String, Drawable] = {
-    val drawableCounts = core.cLibrary.csmGetDrawableCount(this.cubismModel)
-    val drawableIdList = core.cLibrary.csmGetDrawableIds(this.cubismModel)
-    val constantFlagsList = core.cLibrary.csmGetDrawableConstantFlags(this.cubismModel)
-    val dynamicFlagsList = core.cLibrary.csmGetDrawableDynamicFlags(this.cubismModel)
-    val textureIndexList = core.cLibrary.csmGetDrawableTextureIndices(this.cubismModel)
-    val drawOrderList = core.cLibrary.csmGetDrawableDrawOrders(this.cubismModel)
-    val renderOrderList = core.cLibrary.csmGetDrawableRenderOrders(this.cubismModel)
-    val opacityList = core.cLibrary.csmGetDrawableOpacities(this.cubismModel)
+    val drawableCounts = core.cubismAPI.csmGetDrawableCount(this.cubismModel)
+    val drawableIdList = core.cubismAPI.csmGetDrawableIds(this.cubismModel)
+    val constantFlagsList = core.cubismAPI.csmGetDrawableConstantFlags(this.cubismModel)
+    val dynamicFlagsList = core.cubismAPI.csmGetDrawableDynamicFlags(this.cubismModel)
+    val textureIndexList = core.cubismAPI.csmGetDrawableTextureIndices(this.cubismModel)
+    val drawOrderList = core.cubismAPI.csmGetDrawableDrawOrders(this.cubismModel)
+    val renderOrderList = core.cubismAPI.csmGetDrawableRenderOrders(this.cubismModel)
+    val opacityList = core.cubismAPI.csmGetDrawableOpacities(this.cubismModel)
 
     if (drawableCounts == -1 || drawableIdList == null || constantFlagsList == null ||
       dynamicFlagsList == null || textureIndexList == null || drawOrderList == null ||
@@ -320,19 +320,19 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: ICubismCor
     }
 
     // Mask Related
-    val maskCountList = core.cLibrary.csmGetDrawableMaskCounts(this.cubismModel)
-    val masksList = core.cLibrary.csmGetDrawableMasks(this.cubismModel)
+    val maskCountList = core.cubismAPI.csmGetDrawableMaskCounts(this.cubismModel)
+    val masksList = core.cubismAPI.csmGetDrawableMasks(this.cubismModel)
 
     if (maskCountList == null || masksList == null) {
       throw new DrawableInitException
     }
 
     // Vertex Related
-    val indexCountList = core.cLibrary.csmGetDrawableIndexCounts(this.cubismModel)
-    val indexList = core.cLibrary.csmGetDrawableIndices(this.cubismModel)
-    val vertexCountList = core.cLibrary.csmGetDrawableVertexCounts(this.cubismModel)
-    val positionList =  core.cLibrary.csmGetDrawableVertexPositions(this.cubismModel)
-    val textureCoordinateList =  core.cLibrary.csmGetDrawableVertexUvs(this.cubismModel)
+    val indexCountList = core.cubismAPI.csmGetDrawableIndexCounts(this.cubismModel)
+    val indexList = core.cubismAPI.csmGetDrawableIndices(this.cubismModel)
+    val vertexCountList = core.cubismAPI.csmGetDrawableVertexCounts(this.cubismModel)
+    val positionList =  core.cubismAPI.csmGetDrawableVertexPositions(this.cubismModel)
+    val textureCoordinateList =  core.cubismAPI.csmGetDrawableVertexUvs(this.cubismModel)
 
     if (indexCountList == null || indexList == null || vertexCountList == null ||
         positionList == null || textureCoordinateList == null) {

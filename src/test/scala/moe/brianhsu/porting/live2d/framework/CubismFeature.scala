@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework
 
-import moe.brianhsu.live2d.enitiy.core.CubismCore
+import moe.brianhsu.live2d.boundary.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.enitiy.core.types.{CsmLogFunction, CsmVersion, MocVersion40}
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, Live2DModel}
 import org.scalatest.{GivenWhenThen, TryValues}
@@ -21,7 +21,7 @@ class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       }
 
       When("create a Cubism object with that logger")
-      new CubismCore(CustomLogger)
+      new JnaCubismCore(CustomLogger)
 
       Then("Everything should be fine.")
     }

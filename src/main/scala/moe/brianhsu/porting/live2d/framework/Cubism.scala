@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
-import moe.brianhsu.live2d.enitiy.core.{CubismCore, ICubismCore}
+import moe.brianhsu.live2d.boundary.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.enitiy.core.CubismCore
 import moe.brianhsu.live2d.enitiy.core.types.{CsmVersion, MocVersion}
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, Live2DModel}
 import moe.brianhsu.porting.live2d.framework.util.MocFileReader
@@ -18,24 +19,24 @@ object Cubism extends Cubism
  *
  * @param core  The core library of Cubism
  */
-class Cubism(core: ICubismCore) {
+class Cubism(core: CubismCore) {
 
 
-  def this() = this(new CubismCore)
+  def this() = this(new JnaCubismCore)
 
   /**
    * The current version of Cubism Core C Library.
    *
    * @return  The current version of underlying C Library.
    */
-  lazy val coreLibraryVersion: CsmVersion = CsmVersion(core.cLibrary.csmGetVersion())
+  lazy val coreLibraryVersion: CsmVersion = CsmVersion(core.cubismAPI.csmGetVersion())
 
   /**
    * Get the latest supported .moc file version.
    *
    * @return  The latest supported version.
    */
-  lazy val latestSupportedMocVersion: MocVersion = MocVersion(core.cLibrary.csmGetLatestMocVersion())
+  lazy val latestSupportedMocVersion: MocVersion = MocVersion(core.cubismAPI.csmGetLatestMocVersion())
 
   /**
    * Load .moc files to Live2DModel instance.
