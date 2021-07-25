@@ -4,9 +4,11 @@ organization := "moe.brianhsu.live2d"
 
 scalaVersion := "2.13.5"
 
-scalacOptions := Seq("-deprecation")
+scalacOptions := Seq("-deprecation", "-Ywarn-unused")
 
 Compile / doc / scalacOptions ++= Seq("-private")
+
+autoAPIMappings := true
 
 val lwjglVersion = "3.2.3"
 

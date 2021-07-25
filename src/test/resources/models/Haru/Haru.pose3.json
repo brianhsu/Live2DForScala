@@ -1,0 +1,26 @@
+{
+	"Type": "Live2D Pose",
+	"FadeInTime": 1.5,
+	"Groups": [
+		[
+			{
+				"Id": "Part01ArmLB001",
+				"Link": ["link1", "link2"]
+			},
+			{
+				"Id": "Part01ArmRA001",
+				"Link": []
+			}
+		],
+		[
+			{
+				"Id": "Part01ArmRB001",
+				"Link": []
+			},
+			{
+				"Id": "Part01ArmLA001",
+				"Link": ["link3", "link4"]
+			}
+		]
+	]
+}
