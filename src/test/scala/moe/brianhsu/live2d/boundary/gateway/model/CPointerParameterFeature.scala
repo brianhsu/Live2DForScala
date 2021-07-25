@@ -1,5 +1,6 @@
-package moe.brianhsu.porting.live2d.framework.model
+package moe.brianhsu.live2d.boundary.gateway.model
 
+import moe.brianhsu.live2d.boundary.gateway.model
 import moe.brianhsu.porting.live2d.framework.exception.ParameterInvalidException
 import moe.brianhsu.porting.live2d.utils.NativeMemoryUtils
 import org.scalatest.GivenWhenThen
@@ -23,7 +24,7 @@ class CPointerParameterFeature extends AnyFeatureSpec with GivenWhenThen with Ma
     Scenario("Write valid current value to C memory") {
       Given("a Parameter associated with a C memory")
       val pointer = NativeMemoryUtils.createPointerToFloat(0)
-      val parameter = CPointerParameter(pointer, "parameterId", 0, 100, 0)
+      val parameter = model.CPointerParameter(pointer, "parameterId", 0, 100, 0)
 
       When("update current value of a Parameter")
       parameter.update(12.3f)
@@ -38,7 +39,7 @@ class CPointerParameterFeature extends AnyFeatureSpec with GivenWhenThen with Ma
       val min = 100.0f
       val max = 200.0f
       val pointer = NativeMemoryUtils.createPointerToFloat(0)
-      val parameter = CPointerParameter(pointer, parameterId, min, max, default = 150)
+      val parameter = model.CPointerParameter(pointer, parameterId, min, max, default = 150)
 
       When("update current value that is lower than minimum or greater than maximum value")
       Then("it should throw exception")
