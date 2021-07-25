@@ -140,7 +140,7 @@ class Pose {
             val linkPart = partData.Link(linkIndex)
             val linkPartIndex = linkPart.PartIndex
             if (linkPartIndex >= 0) {
-              model.setPartOpacityUsingIndex(linkPartIndex, opacity)
+              model.parts(_partGroups(groupIndex).PartId).setOpacity(opacity)
             }
           }
         }
@@ -169,7 +169,7 @@ class Pose {
         } else {
 
           val v = if (j == beginIndex) 1.0f else 0.0f
-          model.setPartOpacityUsingIndex(partsIndex, v)
+          model.parts(_partGroups(j).PartId).setOpacity(v)
           model.setParameterValueUsingIndex(paramIndex, v)
           for (k <- _partGroups(j).Link.indices) {
             _partGroups(j).Link(k).Initialize(model)

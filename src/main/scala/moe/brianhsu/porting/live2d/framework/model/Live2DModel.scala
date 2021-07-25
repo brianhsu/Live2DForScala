@@ -92,12 +92,6 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
     }
   }
 
-  def setPartOpacityUsingIndex(index: Int, value: Float): Unit = {
-    if (index >= 0 && index < parts.size) {
-      partsList(index).setOpacity(value)
-    }
-  }
-
   /**
    * Parts of this model
    *
