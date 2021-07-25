@@ -144,7 +144,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       expectedParameters.foreach { expectedParameter =>
         And(s"${expectedParameter.id} should have correct values")
         val parameter = parameters.get(expectedParameter.id).value
-        inside(parameter) { case Parameter(pointer, id, min, max, default) =>
+        inside(parameter) { case CPointerParameter(pointer, id, min, max, default) =>
           pointer should not be null
           id shouldBe expectedParameter.id
           default shouldBe expectedParameter.default

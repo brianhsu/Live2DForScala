@@ -3,7 +3,7 @@ package moe.brianhsu.porting.live2d.framework.model
 import com.sun.jna.Pointer
 import moe.brianhsu.porting.live2d.framework.exception.ParameterInvalidException
 
-trait IParameter {
+trait Parameter {
   def id: String
   def min: Float
   def max: Float
@@ -21,12 +21,12 @@ trait IParameter {
  * @param max         The maximum value of this parameter.
  * @param default     The default value of this parameter.
  */
-case class Parameter(
+case class CPointerParameter(
   private val pointer: Pointer,
   override val id: String,
   override val min: Float,
   override val max: Float,
-  override val default: Float) extends IParameter {
+  override val default: Float) extends Parameter {
 
   /**
    * Get the current value of this parameter.
