@@ -61,8 +61,7 @@ class Pose {
     var isBreak: Boolean = false
 
     for (i <- beginIndex until beginIndex + partGroupCount if !isBreak) {
-      val partIndex = _partGroups(i).PartIndex
-      val paramIndex = _partGroups(i).ParameterIndex
+      val partId = _partGroups(i).PartId
 
       val v: Float = model.getParameterWithFallback(_partGroups(i).PartId).current
       if (v > Epsilon) {
@@ -71,7 +70,7 @@ class Pose {
         }
 
         visiblePartIndex = i
-        newOpacity = model.partsList(partIndex).opacity
+        newOpacity = model.parts(partId).opacity
 
         // 新しい不透明度を計算
         newOpacity += (deltaTimeSeconds / _fadeTimeSeconds)
@@ -88,12 +87,12 @@ class Pose {
     }
 
     for (i <- beginIndex until  beginIndex + partGroupCount){
-      val partsIndex = _partGroups(i).PartIndex
+      val partId = _partGroups(i).PartId
       //  表示パーツの設定
       if (visiblePartIndex == i) {
-        model.partsList(partsIndex).setOpacity(newOpacity)// 先に設定
+        model.parts(partId).setOpacity(newOpacity)// 先に設定
       } else {
-        var opacity = model.partsList(partsIndex).opacity
+        var opacity = model.parts(partId).opacity
         var a1: Float = 0          // 計算によって求められる不透明度
 
         if (newOpacity < Phi) {
@@ -112,7 +111,7 @@ class Pose {
         if (opacity > a1) {
           opacity = a1 // 計算の不透明度よりも大きければ（濃ければ）不透明度を上げる
         }
-        model.partsList(partsIndex).setOpacity(opacity)
+        model.parts(partId).setOpacity(opacity)
 
       }
 
@@ -133,13 +132,13 @@ class Pose {
       if (partData.Link.isEmpty) {
         //continue // 連動するパラメータはない
       } else {
-        val partIndex = _partGroups(groupIndex).PartIndex
-        if (partIndex >= 0) {
-          val opacity: Float = model.partsList(partIndex).opacity
+        val partId = _partGroups(groupIndex).PartId
+        if (model.parts.contains(partId)) {
+          val opacity: Float = model.parts(partId).opacity
           for (linkIndex <- partData.Link.indices) {
             val linkPart = partData.Link(linkIndex)
-            val linkPartIndex = linkPart.PartIndex
-            if (linkPartIndex >= 0) {
+            val linkPartId = linkPart.PartId
+            if (model.parts.contains(linkPartId)) {
               model.parts(_partGroups(groupIndex).PartId).setOpacity(opacity)
             }
           }
@@ -162,9 +161,8 @@ class Pose {
       val groupCount = _partGroupCounts(i)
       for (j <- beginIndex until beginIndex + groupCount) {
         _partGroups(j).Initialize(model)
-        val partsIndex = _partGroups(j).PartIndex
-        val paramIndex = _partGroups(j).ParameterIndex
-        if (partsIndex < 0) {
+        val partId = _partGroups(j).PartId
+        if (!model.parts.contains(partId)) {
           // continue
         } else {
 

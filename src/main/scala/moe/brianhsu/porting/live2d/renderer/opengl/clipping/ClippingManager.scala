@@ -145,7 +145,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
           renderer.setIsCulling(drawable.isCulling)
           renderer.setClippingContextBufferForMask(Some(clipContext))
 
-          val textureFile = model.getTextureFileByIndex(drawable.textureIndex)
+          val textureFile = model.textureFiles(drawable.textureIndex)
           val textureInfo = textureManager.loadTexture(textureFile)
           renderer.drawMesh(
             textureInfo.textureId,

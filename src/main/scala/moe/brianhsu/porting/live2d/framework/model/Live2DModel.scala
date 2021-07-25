@@ -4,7 +4,6 @@ import com.sun.jna.ptr.FloatByReference
 import moe.brianhsu.live2d.enitiy.core.{CsmVector, CubismCore}
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
-import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, JavaVMParameter, Parameter}
 import moe.brianhsu.porting.live2d.framework
 import moe.brianhsu.porting.live2d.framework.MocInfo
@@ -21,8 +20,7 @@ import moe.brianhsu.porting.live2d.framework.model.drawable.{ConstantFlags, Draw
  * @param mocInfo   The moc file information
  * @param core      The core library of Cubism
  */
-class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore) {
-
+class Live2DModel(mocInfo: MocInfo, val textureFiles: List[String])(core: CubismCore) {
 
   private var savedParameters: Map[String, Float] = Map.empty
   private var fallbackParameters: Map[String, Parameter] = Map.empty
@@ -33,13 +31,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
 
   lazy val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
 
-  def getTextureFileByIndex(index: Int): String = textureFiles(index)
-
   def isUsingMasking: Boolean = drawables.values.exists(d => d.masks.nonEmpty)
-
-  def getDrawableByIndex(drawableIndex: Int): Drawable = drawablesByIndex(drawableIndex)
-
-  def isUsingMask: Boolean = drawables.values.exists(x => x.masks.nonEmpty)
 
   private def createCubsimModel(): CPointerToModel = {
     val model = core.cubismAPI.csmInitializeModelInPlace(
@@ -62,8 +54,6 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
     maxIndex + 1
   }
 
-  lazy val parameterList: List[Parameter] = createParameterList()
-
   /**
    * Parameters of this model
    *
@@ -72,10 +62,6 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
    * @throws ParameterInitException when could not get valid parameters from Live 2D Cubism Model
    */
   lazy val parameters: Map[String, Parameter] = createParameters()
-
-  lazy val partsList: List[Part] = createPartList()
-  var nonExistParamIndexToValue: Map[Int, Float] = Map.empty
-  var nonExistParamIdToIndex: Map[String, Int] = Map.empty
 
   def getParameterWithFallback(parameterId: String): Parameter = {
     parameters.get(parameterId)
@@ -214,29 +200,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
   }
 
   private def createParts(): Map[String, Part] = {
-    partsList.map(p => p.id -> p).toMap
-  }
-
-  def getParameterIndex(id: String): Int = {
-    if (nonExistParamIdToIndex.contains(id)) {
-      return nonExistParamIdToIndex(id)
-    }
-    parameterList.zipWithIndex
-      .find(_._1.id == id)
-      .map(_._2)
-      .getOrElse {
-        val newIndex = parameterList.size - 1 + nonExistParamIndexToValue.size + 1
-        println("Create new parameter:" + id)
-        nonExistParamIdToIndex += (id -> newIndex)
-        newIndex
-      }
-  }
-
-  def getPartIndex(id: String): Int = {
-    partsList.zipWithIndex
-      .find(_._1.id == id)
-      .map(_._2)
-      .getOrElse(-1)
+    createPartList().map(part => part.id -> part).toMap
   }
 
   private def createParameterList(): List[Parameter] = {
@@ -260,14 +224,14 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.getPointerToFloat(i)
-      val parameter = model.CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
+      val parameter = CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
       parameter
     }
 
   }
 
   private def createParameters(): Map[String, Parameter] = {
-    parameterList.map(p => p.id -> p).toMap
+    createParameterList().map(p => p.id -> p).toMap
   }
 
   private def createDrawable(): Map[String, Drawable] = {
@@ -340,10 +304,10 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
     val isHitHolder = drawables.get(drawableId).map { drawable =>
       val vertices = drawable.vertexInfo.positions
 
-      var left: Float = vertices(0)._1
-      var right: Float = vertices(0)._1
-      var top = vertices(0)._2
-      var bottom = vertices(0)._2
+      var left: Float = vertices.head._1
+      var right: Float = vertices.head._1
+      var top = vertices.head._2
+      var bottom = vertices.head._2
 
       for (vertex <- vertices.drop(1)) {
         val (x, y) = vertex
