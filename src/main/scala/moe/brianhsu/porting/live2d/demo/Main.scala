@@ -18,7 +18,7 @@ object Main {
 
     this.frame = new JFrame("Sample")
     frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
-    frame.setSize(1024, 768)
+    frame.setSize(1920, 1080)
     frame.getContentPane.add(createGLCanvas())
     frame.setVisible(true)
 

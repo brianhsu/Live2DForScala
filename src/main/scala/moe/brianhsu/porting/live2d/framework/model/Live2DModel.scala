@@ -59,7 +59,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
     maxIndex + 1
   }
 
-  lazy val parameterList: List[Parameter] = createParameterList()
+  lazy val parameterList: List[IParameter] = createParameterList()
 
   /**
    * Parameters of this model
@@ -68,7 +68,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
    *
    * @throws ParameterInitException when could not get valid parameters from Live 2D Cubism Model
    */
-  lazy val parameters: Map[String, Parameter] = createParameters()
+  lazy val parameters: Map[String, IParameter] = createParameters()
 
   lazy val partsList: List[Part] = createPartList()
   var nonExistParamIndexToValue: Map[Int, Float] = Map.empty
@@ -272,7 +272,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
       .getOrElse(-1)
   }
 
-  private def createParameterList(): List[Parameter] = {
+  private def createParameterList(): List[IParameter] = {
     val parametersCount = core.cubismAPI.csmGetParameterCount(this.cubismModel)
     val parametersIds = core.cubismAPI.csmGetParameterIds(this.cubismModel)
     val currentValues = core.cubismAPI.csmGetParameterValues(this.cubismModel)
@@ -293,13 +293,13 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.getPointerToFloat(i)
-      val parameter = Parameter(currentValuePointer, this, id, minValue, maxValue, defaultValue)
+      val parameter = Parameter(currentValuePointer, id, minValue, maxValue, defaultValue)
       parameter
     }
 
   }
 
-  private def createParameters(): Map[String, Parameter] = {
+  private def createParameters(): Map[String, IParameter] = {
     parameterList.map(p => p.id -> p).toMap
   }
 

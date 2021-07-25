@@ -14,7 +14,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
       val pointer = NativeMemoryUtils.createPointerToFloat(expectedValue)
 
       When("create a Parameter from that pointer")
-      val parameter = Parameter(pointer, null, "parameterId", 0, 1000.0f, 456.0f)
+      val parameter = Parameter(pointer, "parameterId", 0, 1000.0f, 456.0f)
 
       Then("it should able to read correct opacity value")
       parameter.current shouldBe expectedValue
@@ -23,7 +23,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     Scenario("Write valid current value to C memory") {
       Given("a Parameter associated with a C memory")
       val pointer = NativeMemoryUtils.createPointerToFloat(0)
-      val parameter = Parameter(pointer, null, "parameterId", 0, 100, 0)
+      val parameter = Parameter(pointer, "parameterId", 0, 100, 0)
 
       When("update current value of a Parameter")
       parameter.update(12.3f)
@@ -38,7 +38,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
       val min = 100.0f
       val max = 200.0f
       val pointer = NativeMemoryUtils.createPointerToFloat(0)
-      val parameter = Parameter(pointer, null, parameterId, min, max, default = 150)
+      val parameter = Parameter(pointer, parameterId, min, max, default = 150)
 
       When("update current value that is lower than minimum or greater than maximum value")
       Then("it should throw exception")
