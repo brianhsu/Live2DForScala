@@ -166,9 +166,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       Then("the basic information of drawables should be correct")
       ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
         val drawable = drawables.get(expectedBasicInfo.id).value
-        inside(drawable) { case Drawable(belongsTo, id, index, constantFlags, dynamicFlags, textureIndex, masks,
+        inside(drawable) { case Drawable(id, index, constantFlags, dynamicFlags, textureIndex, masks,
                                          vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer) =>
-          belongsTo shouldBe model
           id shouldBe expectedBasicInfo.id
           index shouldBe >= (0)
           constantFlags.bitmask shouldBe expectedBasicInfo.constFlags

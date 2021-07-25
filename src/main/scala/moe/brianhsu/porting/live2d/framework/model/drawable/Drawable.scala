@@ -7,7 +7,6 @@ import moe.brianhsu.porting.live2d.framework.model.Live2DModel
 /**
  * This class represent the drawable objects inside a Live2D model.
  *
- * @param belongsTo           Which Live2D model this drawable belongs to.
  * @param id                  The drawable id.
  * @param index               The zero-based index that the drawable inside the original C drawables array.
  * @param constantFlags       The constant flags.
@@ -19,7 +18,7 @@ import moe.brianhsu.porting.live2d.framework.model.Live2DModel
  * @param renderOrderPointer  The pointer to the actual memory address of render order value.
  * @param opacityPointer      The pointer to the actual memory address of opacity order value.
  */
-case class Drawable(belongsTo: Live2DModel, id: String, index: Int, constantFlags: ConstantFlags, dynamicFlags: DynamicFlags,
+case class Drawable(id: String, index: Int, constantFlags: ConstantFlags, dynamicFlags: DynamicFlags,
                     textureIndex: Int, masks: List[Int], vertexInfo: VertexInfo,
                     private val drawOrderPointer: Pointer,
                     private val renderOrderPointer: Pointer,

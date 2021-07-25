@@ -361,7 +361,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
       )
 
       val drawable = Drawable(
-        this, drawableId, i, constantFlags, dynamicFlags, textureIndex, masks,
+        drawableId, i, constantFlags, dynamicFlags, textureIndex, masks,
         vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer
       )
 
