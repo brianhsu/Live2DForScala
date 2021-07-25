@@ -1,7 +1,5 @@
 package moe.brianhsu.live2d.enitiy.model
 
-import moe.brianhsu.porting.live2d.framework.exception.ParameterInvalidException
-
 trait Parameter {
   /**
    * The parameter id.
@@ -34,7 +32,48 @@ trait Parameter {
    * Update this parameter to a new value.
    *
    * @param value The new value to assign.
-   * @throws ParameterInvalidException if the assigned value is invalid.
+   * @throws moe.brianhsu.live2d.exception.ParameterInvalidException if the assigned value is invalid.
    */
-  def update(value: Float): Unit
+  protected def doUpdateValue(value: Float): Unit
+
+  /**
+   * Update to new value with weight and truncation.
+   *
+   * This method will update the value of this parameter to the assigned value.
+   *
+   * If the assigned value after weighted is less or large than the [[min]] or [[max]]
+   * value, it will use [[min]] or [[max]] value, instead of assigned value.
+   *
+   * @param value   The new value of this parameter.
+   * @param weight  The weight of the assigned value.
+   */
+  def update(value: Float, weight: Float = 1.0f): Unit = {
+    val valueFitInRange = (value * weight).max(this.min).min(this.max)
+
+    if (weight == 1) {
+      doUpdateValue(valueFitInRange)
+    } else {
+      doUpdateValue((this.current * (1 - weight)) + (valueFitInRange * weight))
+    }
+  }
+
+  /**
+   * Add a weighted value to the current value.
+   *
+   * @param value   The value to added.
+   * @param weight  The weight of `value`.
+   */
+  def add(value: Float, weight: Float = 1.0f): Unit = {
+    update(this.current + (value * weight))
+  }
+
+  /**
+   * Multiply a weighted value to the current value.
+   *
+   * @param value   The value to added.
+   * @param weight  The weight of `value`.
+   */
+  def multiply(value: Float, weight: Float = 1.0f): Unit = {
+    update(this.current * (1.0f + (value - 1.0f) * weight))
+  }
 }

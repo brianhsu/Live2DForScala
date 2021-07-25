@@ -11,7 +11,8 @@ class PartData {
   def Initialize(model: Live2DModel): Unit = {
     ParameterIndex = model.getParameterIndex(PartId)
     PartIndex = model.getPartIndex(PartId)
-    model.setParameterValueUsingIndex(ParameterIndex, 1)
+    model.getParameterWithFallback(PartId).update(value = 1)
+    //model.setParameterValueUsingIndex(PartId, ParameterIndex, 1)
 
   }
 }

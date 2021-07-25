@@ -178,7 +178,8 @@ class CubismMotion extends ACubismMotion {
         // パラメータごとのフェードを適用
         v = sourceValue + (value - sourceValue) * paramWeight
       }
-      model.setParameterValueUsingIndex(model.getParameterIndex(curves(c).Id), v)
+      //model.setParameterValueUsingIndex(curves(c).Id, model.getParameterIndex(curves(c).Id), v)
+      model.getParameterWithFallback(curves(c).Id).update(v)
       //model.setParameterValue(curves(c).Id, v)
       c += 1
     }
@@ -193,7 +194,8 @@ class CubismMotion extends ACubismMotion {
           } else {
 
             val v = sourceValue + (eyeBlinkValue - sourceValue) * fadeWeight
-            model.setParameterValue(_eyeBlinkParameterIds(i), v)
+            model.parameters.get(_eyeBlinkParameterIds(i)).foreach(_.update(v))
+            //model.setParameterValue(_eyeBlinkParameterIds(i), v)
           }
         }
       }
@@ -206,7 +208,8 @@ class CubismMotion extends ACubismMotion {
             //continue;
           } else {
             val v = sourceValue + (lipSyncValue - sourceValue) * fadeWeight
-            model.setParameterValue(_lipSyncParameterIds(i), v)
+            model.parameters.get(_lipSyncParameterIds(i)).foreach(_.update(v))
+            //model.setParameterValue(_lipSyncParameterIds(i), v)
           }
         }
       }
@@ -215,8 +218,8 @@ class CubismMotion extends ACubismMotion {
     while (c < _motionData.CurveCount && curves(c).Type == CubismMotionCurveTarget_PartOpacity) {
       // Evaluate curve and apply value.
       value = EvaluateCurve(_motionData, curves(c), time)
-      model.setParameterValueUsingIndex(model.getParameterIndex(curves(c).Id), value)
-
+      model.getParameterWithFallback(curves(c).Id).update(value)
+      //model.setParameterValueUsingIndex(curves(c).Id, model.getParameterIndex(curves(c).Id), value)
       //model.setParameterValue(curves(c).Id, value)
       c += 1
     }

@@ -64,7 +64,7 @@ class Pose {
       val partIndex = _partGroups(i).PartIndex
       val paramIndex = _partGroups(i).ParameterIndex
 
-      val v: Float = model.getParameterValueUsingIndex(paramIndex)
+      val v: Float = model.getParameterWithFallback(_partGroups(i).PartId).current
       if (v > Epsilon) {
         if (visiblePartIndex >= 0) {
           isBreak = true
@@ -170,7 +170,8 @@ class Pose {
 
           val v = if (j == beginIndex) 1.0f else 0.0f
           model.parts(_partGroups(j).PartId).setOpacity(v)
-          model.setParameterValueUsingIndex(paramIndex, v)
+          model.getParameterWithFallback(_partGroups(j).PartId).update(v)
+          //model.setParameterValueUsingIndex(_partGroups(j).PartId, paramIndex, v)
           for (k <- _partGroups(j).Link.indices) {
             _partGroups(j).Link(k).Initialize(model)
           }

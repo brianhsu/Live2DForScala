@@ -1,11 +1,11 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import com.sun.jna.ptr.FloatByReference
-import moe.brianhsu.live2d.boundary.gateway.model.CPointerParameter
 import moe.brianhsu.live2d.enitiy.core.{CsmVector, CubismCore}
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
-import moe.brianhsu.live2d.enitiy.model.Parameter
+import moe.brianhsu.live2d.enitiy.model
+import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, JavaVMParameter, Parameter}
 import moe.brianhsu.porting.live2d.framework
 import moe.brianhsu.porting.live2d.framework.MocInfo
 import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
@@ -25,6 +25,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
 
 
   private var savedParameters: Map[String, Float] = Map.empty
+  private var fallbackParameters: Map[String, Parameter] = Map.empty
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
@@ -76,20 +77,14 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
   var nonExistParamIndexToValue: Map[Int, Float] = Map.empty
   var nonExistParamIdToIndex: Map[String, Int] = Map.empty
 
-  def setParameterValueUsingIndex(index: Int, value: Float): Unit = {
-
-    if (index >= 0 && index < parameters.size) {
-      setParameterValue(parameterList(index).id, value)
-    } else {
-      nonExistParamIndexToValue += (index -> value)
-    }
-  }
-  def getParameterValueUsingIndex(paramIndex: Int): Float = {
-    if (nonExistParamIndexToValue.contains(paramIndex)) {
-      nonExistParamIndexToValue(paramIndex)
-    } else {
-      parameterList(paramIndex).current
-    }
+  def getParameterWithFallback(parameterId: String): Parameter = {
+    parameters.get(parameterId)
+      .orElse(fallbackParameters.get(parameterId))
+      .getOrElse {
+        val newParameter = new JavaVMParameter(parameterId)
+        this.fallbackParameters += (parameterId -> newParameter)
+        newParameter
+      }
   }
 
   /**
@@ -181,31 +176,6 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
     update()
   }
 
-  def setParameterValue(parameterId: String, value: Float, weight: Float = 1.0f): Unit = {
-    parameters.get(parameterId).foreach { p =>
-      val valueFitInRange = (value * weight).max(p.min).min(p.max)
-
-      if (weight == 1) {
-        p.update(valueFitInRange)
-      } else {
-        p.update((p.current * (1 - weight)) + (valueFitInRange * weight))
-      }
-    }
-  }
-
-  def addParameterValue(id: String, value: Float, weight: Float = 1.0f): Unit = {
-    parameters.get(id).foreach { p =>
-      setParameterValue(id, p.current + (value * weight))
-    }
-  }
-
-  def multiplyParameterValue(id: String, value: Float, weight: Float): Unit = {
-    parameters.get(id).foreach { p =>
-      setParameterValue(id, p.current * (1.0f + (value - 1.0f) * weight))
-    }
-
-  }
-
   private def reviveMoc(): CPointerToMoc = {
     val revivedMoc = core.cubismAPI.csmReviveMocInPlace(mocInfo.memory.alignedMemory, mocInfo.originalSize)
 
@@ -256,6 +226,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
       .map(_._2)
       .getOrElse {
         val newIndex = parameterList.size - 1 + nonExistParamIndexToValue.size + 1
+        println("Create new parameter:" + id)
         nonExistParamIdToIndex += (id -> newIndex)
         newIndex
       }
@@ -289,7 +260,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.getPointerToFloat(i)
-      val parameter = CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
+      val parameter = model.CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
       parameter
     }
 

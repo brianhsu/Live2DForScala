@@ -1,8 +1,7 @@
-package moe.brianhsu.live2d.boundary.gateway.model
+package moe.brianhsu.live2d.enitiy.model
 
 import com.sun.jna.Pointer
-import moe.brianhsu.live2d.enitiy.model.Parameter
-import moe.brianhsu.porting.live2d.framework.exception.ParameterInvalidException
+import moe.brianhsu.live2d.exception.ParameterInvalidException
 
 /**
  * This class represent parameters of a Live 2D Cubism model.
@@ -14,11 +13,11 @@ import moe.brianhsu.porting.live2d.framework.exception.ParameterInvalidException
  * @param default The default value of this parameter.
  */
 case class CPointerParameter(
-                              private val pointer: Pointer,
-                              override val id: String,
-                              override val min: Float,
-                              override val max: Float,
-                              override val default: Float) extends Parameter {
+  private val pointer: Pointer,
+  override val id: String,
+  override val min: Float,
+  override val max: Float,
+  override val default: Float) extends Parameter {
 
   /**
    * Get the current value of this parameter.
@@ -31,9 +30,9 @@ case class CPointerParameter(
    * Update this parameter to a new value.
    *
    * @param value The new value to assign.
-   * @throws ParameterInvalidException if the assigned value is invalid.
+   * @throws moe.brianhsu.live2d.exception.ParameterInvalidException if the assigned value is invalid.
    */
-  override def update(value: Float): Unit = {
+  override def doUpdateValue(value: Float): Unit = {
 
     if (value < min || value > max) {
       throw new ParameterInvalidException(id, value, min, max)

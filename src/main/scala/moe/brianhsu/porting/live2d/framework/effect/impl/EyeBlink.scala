@@ -87,7 +87,8 @@ class EyeBlink (avatarSettings: Settings,
     }
 
     avatarSettings.eyeBlinkParameterIds.foreach { id =>
-      model.setParameterValue(id, parameterValue)
+      model.parameters.get(id).foreach(_.update(parameterValue))
+      //model.setParameterValue(id, parameterValue)
     }
   }
 
