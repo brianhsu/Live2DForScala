@@ -1,5 +1,6 @@
-package moe.brianhsu.live2d.enitiy.core.memory
+package moe.brianhsu.live2d.boundary.gateway.core.memory
 
+import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.Alignment
 
 /**
@@ -15,7 +16,7 @@ trait MemoryAllocator {
    *
    * @param size      Desired size, in bytes.
    * @param alignment Desired alignment in bytes, should be a power of two.
-   * @return          The allocated memory information.
+   * @return The allocated memory information.
    */
   def allocate(size: Int, alignment: Alignment): MemoryInfo
 }

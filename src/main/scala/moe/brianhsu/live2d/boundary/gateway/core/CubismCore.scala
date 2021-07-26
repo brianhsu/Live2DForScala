@@ -1,6 +1,7 @@
-package moe.brianhsu.live2d.enitiy.core
+package moe.brianhsu.live2d.boundary.gateway.core
 
-import moe.brianhsu.live2d.enitiy.core.memory.MemoryAllocator
+import moe.brianhsu.live2d.boundary.gateway.core.memory.MemoryAllocator
+import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 
 /**
  * Basic Cubism core library interface.

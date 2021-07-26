@@ -1,10 +1,10 @@
-package moe.brianhsu.live2d.boundary.gateway.avatar.settings.json
+package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json
 
 import moe.brianhsu.live2d.RichPath.convertFromPath
-import moe.brianhsu.live2d.boundary.gateway.avatar.settings.SettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, MotionSetting, PoseSetting}
-import moe.brianhsu.live2d.boundary.gateway.avatar.settings.json.model.{Group, ModelSetting}
+import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.model.{Group, ModelSetting}
+import moe.brianhsu.live2d.boundary.gateway.avatar.SettingsReader
 import org.json4s.native.JsonMethods.parse
 import org.json4s.{DefaultFormats, Formats}
 

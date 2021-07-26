@@ -4,7 +4,7 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.porting.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion, CubismMotionManager, Pose}
 import moe.brianhsu.porting.live2d.framework.effect.Effect
-import moe.brianhsu.live2d.boundary.gateway.avatar.settings.json.JsonSettingsReader
+import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 
 import scala.util.Try
 

@@ -1,7 +1,8 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import com.sun.jna.ptr.FloatByReference
-import moe.brianhsu.live2d.enitiy.core.{CsmVector, CubismCore}
+import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
+import moe.brianhsu.live2d.enitiy.core.CsmVector
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, JavaVMParameter, Parameter}

@@ -1,8 +1,6 @@
-package moe.brianhsu.live2d.boundary.gateway.model
+package moe.brianhsu.live2d.enitiy.model
 
-import moe.brianhsu.live2d.boundary.gateway.model
 import moe.brianhsu.live2d.enitiy
-import moe.brianhsu.live2d.enitiy.model.CPointerParameter
 import moe.brianhsu.live2d.exception.ParameterInvalidException
 import moe.brianhsu.porting.live2d.utils.NativeMemoryUtils
 import org.scalatest.GivenWhenThen

@@ -1,8 +1,8 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import com.sun.jna.{Native, Pointer}
-import moe.brianhsu.live2d.boundary.gateway.core.JnaCubismCore
-import moe.brianhsu.live2d.boundary.gateway.core.memory.DefaultMemoryAllocator
+import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToModel, CStringArray, MocAlignment}
 import moe.brianhsu.live2d.enitiy.model.CPointerParameter

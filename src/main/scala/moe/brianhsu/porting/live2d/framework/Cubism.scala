@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
-import moe.brianhsu.live2d.boundary.gateway.core.JnaCubismCore
-import moe.brianhsu.live2d.enitiy.core.CubismCore
+import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.enitiy.core.types.{CsmVersion, MocVersion}
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, Live2DModel}
 import moe.brianhsu.porting.live2d.framework.util.MocFileReader

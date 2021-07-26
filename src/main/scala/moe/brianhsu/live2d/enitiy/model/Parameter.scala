@@ -48,7 +48,7 @@ trait Parameter {
    * @param weight  The weight of the assigned value.
    */
   def update(value: Float, weight: Float = 1.0f): Unit = {
-    val valueFitInRange = (value * weight).max(this.min).min(this.max)
+    val valueFitInRange = value.max(this.min).min(this.max)
 
     if (weight == 1) {
       doUpdateValue(valueFitInRange)

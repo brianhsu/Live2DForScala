@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.boundary.gateway.avatar.settings.json.model
+package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.model
 
 /**
  * Represent the Group object in JSON file.
