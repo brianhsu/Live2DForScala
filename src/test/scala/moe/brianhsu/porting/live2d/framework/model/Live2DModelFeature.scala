@@ -9,13 +9,14 @@ import moe.brianhsu.live2d.enitiy.model.CPointerParameter
 import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
 import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.utils.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter, MockedCubismCore}
+import moe.brianhsu.porting.live2d.utils.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableIndex, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter, MockedCubismCore}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
+import java.io.PrintWriter
 import scala.io.Source
 
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
@@ -166,7 +167,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
       Then("the basic information of drawables should be correct")
       ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
-        val drawable = drawables.get(expectedBasicInfo.id).value
+        val drawable = drawables(expectedBasicInfo.id)
         inside(drawable) { case Drawable(id, index, constantFlags, dynamicFlags, textureIndex, masks,
                                          vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer) =>
           id shouldBe expectedBasicInfo.id
@@ -187,32 +188,70 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         drawable.opacity shouldBe expectedBasicInfo.opacity
       }
 
-      Then("the masks of drawables should be correct")
+      And("the masks of drawables should be correct")
       ExpectedDrawableMask.getList.foreach { expectedDrawableMask =>
         val drawableId = expectedDrawableMask.id
         val index = expectedDrawableMask.index
-        val drawable = drawables.get(drawableId).value
+        val drawable = drawables(drawableId)
         val mask = drawable.masks(index)
         mask shouldBe expectedDrawableMask.maskValue
       }
 
-      Then("the positions of drawables should be correct")
+      And("the positions of drawables should be correct")
       ExpectedDrawablePosition.getList.foreach { expectedDrawablePosition =>
         val drawableId = expectedDrawablePosition.id
-        val drawable = drawables.get(drawableId).value
+        val drawable = drawables(drawableId)
         val index = expectedDrawablePosition.index
         val position = drawable.vertexInfo.positions(index)
 
         position shouldBe (expectedDrawablePosition.x, expectedDrawablePosition.y)
       }
 
-      Then("the texture coordinate of drawables should be correct")
+      And("the texture coordinate of drawables should be correct")
       ExpectedDrawableCoordinate.getList.foreach { expectedDrawableCoordinate =>
         val drawableId = expectedDrawableCoordinate.id
-        val drawable = drawables.get(drawableId).value
+        val drawable = drawables(drawableId)
         val index = expectedDrawableCoordinate.index
         val coordinates = drawable.vertexInfo.textureCoordinates(index)
         coordinates shouldBe (expectedDrawableCoordinate.x, expectedDrawableCoordinate.y)
+      }
+
+      And("the triangle index of drawables should be correct")
+      ExpectedDrawableIndex.getList.foreach { expectedDrawableIndex =>
+        val drawable = drawables(expectedDrawableIndex.id)
+        val index = expectedDrawableIndex.index
+        drawable.vertexInfo.indices(index) shouldBe expectedDrawableIndex.value
+      }
+
+      And("the vertex array direct buffer should point to correct location and can access correct data")
+      ExpectedDrawablePosition.getList.foreach { expectedDrawablePosition =>
+        val drawableId = expectedDrawablePosition.id
+        val drawable = drawables(drawableId)
+        val index = expectedDrawablePosition.index
+        val buffer = drawable.vertexInfo.vertexArrayDirectBuffer
+
+        buffer.asFloatBuffer.get(index * 2) shouldBe expectedDrawablePosition.x
+        buffer.asFloatBuffer.get(index * 2 + 1) shouldBe expectedDrawablePosition.y
+      }
+
+      And("the uv array direct buffer should point to correct location and can access correct data")
+      ExpectedDrawableCoordinate.getList.foreach { expectedDrawableCoordinate =>
+        val drawableId = expectedDrawableCoordinate.id
+        val drawable = drawables(drawableId)
+        val index = expectedDrawableCoordinate.index
+        val buffer = drawable.vertexInfo.uvArrayDirectBuffer
+
+        buffer.asFloatBuffer.get(index * 2) shouldBe expectedDrawableCoordinate.x
+        buffer.asFloatBuffer.get(index * 2 + 1) shouldBe expectedDrawableCoordinate.y
+      }
+
+      And("the direct buffer of triangle index of drawables should be correct")
+      ExpectedDrawableIndex.getList.foreach { expectedDrawableIndex =>
+        val drawable = drawables(expectedDrawableIndex.id)
+        val index = expectedDrawableIndex.index
+        val buffer = drawable.vertexInfo.indexArrayDirectBuffer
+
+        buffer.asShortBuffer().get(index) shouldBe expectedDrawableIndex.value
       }
 
     }

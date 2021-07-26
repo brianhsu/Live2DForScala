@@ -85,15 +85,15 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
 
     shaderRenderer.render(
       this, drawTextureId,
-      vertexInfo.getVertexArrayDirectBuffer,
-      vertexInfo.getUvArrayDirectBuffer,
+      vertexInfo.vertexArrayDirectBuffer,
+      vertexInfo.uvArrayDirectBuffer,
       colorBlendMode,
       modelColorRGBA,
       projection.getOrElse(new Matrix4x4),
       invertedMask
     )
 
-    gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.getIndexArrayDirectBuffer)
+    gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.indexArrayDirectBuffer)
 
     gl.glUseProgram(0)
     setClippingContextBufferForDraw(None)
