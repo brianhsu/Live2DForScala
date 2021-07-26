@@ -1,10 +1,11 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import com.sun.jna.{Native, Pointer}
-import moe.brianhsu.live2d.boundary.gateway.core.JnaCubismCore
-import moe.brianhsu.live2d.boundary.gateway.core.memory.DefaultMemoryAllocator
+import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToModel, CStringArray, MocAlignment}
+import moe.brianhsu.live2d.enitiy.model.CPointerParameter
 import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
 import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
@@ -144,9 +145,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       expectedParameters.foreach { expectedParameter =>
         And(s"${expectedParameter.id} should have correct values")
         val parameter = parameters.get(expectedParameter.id).value
-        inside(parameter) { case Parameter(pointer, belongsTo, id, min, max, default) =>
+        inside(parameter) { case CPointerParameter(pointer, id, min, max, default) =>
           pointer should not be null
-          belongsTo shouldBe model
           id shouldBe expectedParameter.id
           default shouldBe expectedParameter.default
           min shouldBe expectedParameter.min
@@ -167,9 +167,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       Then("the basic information of drawables should be correct")
       ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
         val drawable = drawables.get(expectedBasicInfo.id).value
-        inside(drawable) { case Drawable(belongsTo, id, index, constantFlags, dynamicFlags, textureIndex, masks,
+        inside(drawable) { case Drawable(id, index, constantFlags, dynamicFlags, textureIndex, masks,
                                          vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer) =>
-          belongsTo shouldBe model
           id shouldBe expectedBasicInfo.id
           index shouldBe >= (0)
           constantFlags.bitmask shouldBe expectedBasicInfo.constFlags

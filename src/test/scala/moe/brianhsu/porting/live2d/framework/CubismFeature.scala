@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework
 
-import moe.brianhsu.live2d.boundary.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.enitiy.core.types.{CsmLogFunction, CsmVersion, MocVersion40}
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, Live2DModel}
 import org.scalatest.{GivenWhenThen, TryValues}

@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.boundary.gateway.avatar.settings
+package moe.brianhsu.live2d.boundary.gateway.avatar
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 
@@ -11,7 +11,7 @@ trait SettingsReader {
   /**
    * Load Live2D Cubism Avatar settings
    *
-   * @return  A [[scala.util.Success]]`[Settings]` if load successful, otherwise a [[scala.util.Failure]].
+   * @return A [[scala.util.Success]]`[Settings]` if load successful, otherwise a [[scala.util.Failure]].
    */
   def loadSettings(): Try[Settings]
 }

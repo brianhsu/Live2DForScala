@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.boundary.gateway.avatar.settings.json.model
+package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.model
 
 import moe.brianhsu.live2d.RichPath.convertFromPath
 import org.json4s.native.JsonMethods.parse

@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.boundary.gateway.avatar.settings.json
+package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting.Parameters

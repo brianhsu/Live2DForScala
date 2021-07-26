@@ -1,7 +1,8 @@
-package moe.brianhsu.live2d.boundary.gateway.core.memory
+package moe.brianhsu.live2d.adapter.gateway.core.memory
 
 import com.sun.jna.Memory
-import moe.brianhsu.live2d.enitiy.core.memory.{MemoryAllocator, MemoryInfo}
+import moe.brianhsu.live2d.boundary.gateway.core.memory.MemoryAllocator
+import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.Alignment
 
 /**

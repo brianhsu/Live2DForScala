@@ -115,7 +115,7 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
       setClippingContextBufferForDraw(clipContext)
 
       setIsCulling(drawable.isCulling)
-      val textureFile = model.getTextureFileByIndex(drawable.textureIndex)
+      val textureFile = model.textureFiles(drawable.textureIndex)
       val textureInfo = textureManager.loadTexture(textureFile)
 
       drawMesh(

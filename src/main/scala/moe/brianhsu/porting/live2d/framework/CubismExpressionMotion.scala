@@ -44,10 +44,11 @@ class CubismExpressionMotion private (parameters: List[CubismExpressionMotion.Pa
                                             motionQueueEntry: CubismMotionQueueEntry): Unit = {
 
     parameters.foreach { parameter =>
+      val modelParameterHolder = model.parameters.get(parameter.parameterId)
       parameter.blendType match {
-        case Add       => model.addParameterValue(parameter.parameterId, parameter.value, weight)
-        case Multiply  => model.multiplyParameterValue(parameter.parameterId, parameter.value, weight)
-        case Overwrite => model.setParameterValue(parameter.parameterId, parameter.value, weight)
+        case Add       => modelParameterHolder.foreach(_.add(parameter.value, weight))
+        case Multiply  => modelParameterHolder.foreach(_.multiply(parameter.value, weight))
+        case Overwrite => modelParameterHolder.foreach(_.update(parameter.value, weight))
       }
     }
   }

@@ -26,7 +26,7 @@ class Breath (parameters: List[Parameter] = defaultEffect) extends Effect {
     val perimeter = currentTimeInSeconds * 2.0f * Math.PI.toFloat
     parameters.foreach { parameter =>
       val value = parameter.offset + (parameter.peak * sin(perimeter / parameter.cycle).toFloat)
-      model.addParameterValue(parameter.parameterId, value, parameter.weight)
+      model.parameters.get(parameter.parameterId).foreach(_.add(value, parameter.weight))
     }
   }
 }

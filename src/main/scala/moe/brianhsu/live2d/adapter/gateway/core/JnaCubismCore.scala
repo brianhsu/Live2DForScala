@@ -1,11 +1,12 @@
-package moe.brianhsu.live2d.boundary.gateway.core
+package moe.brianhsu.live2d.adapter.gateway.core
 
 import com.sun.jna.Native
-import moe.brianhsu.live2d.boundary.gateway.core.memory.DefaultMemoryAllocator
-import moe.brianhsu.live2d.exception.NativeLibraryNotFoundError
-import moe.brianhsu.live2d.enitiy.core.memory.MemoryAllocator
+import moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator
+import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
+import moe.brianhsu.live2d.boundary.gateway.core.memory.MemoryAllocator
+import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types.CsmLogFunction
-import moe.brianhsu.live2d.enitiy.core.{CubismCore, NativeCubismAPI}
+import moe.brianhsu.live2d.exception.NativeLibraryNotFoundError
 
 /**
  * CubismCore implemented with JNA
@@ -18,13 +19,13 @@ import moe.brianhsu.live2d.enitiy.core.{CubismCore, NativeCubismAPI}
 class JnaCubismCore(override val memoryAllocator: MemoryAllocator, logger: CsmLogFunction) extends CubismCore {
 
   /**
-   * Create an instance with [[memory.DefaultMemoryAllocator]], and log message into
+   * Create an instance with [[DefaultMemoryAllocator]], and log message into
    * the standard output.
    */
   def this() = this(DefaultMemoryAllocator, line => println(line))
 
   /**
-   * Create an instance with [[memory.DefaultMemoryAllocator]], and customize how to
+   * Create an instance with [[DefaultMemoryAllocator]], and customize how to
    * log message.
    *
    * @param logger  The logger that will log message from underlying C Cubism Library.

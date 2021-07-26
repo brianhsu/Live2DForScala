@@ -33,16 +33,16 @@ class FaceDirection(frameRate: Int) extends Effect {
 
     val (dragX, dragY) = targetPointCalculator.getFaceCoordinate
 
-    model.addParameterValue("ParamAngleX", dragX * 30) // -30から30の値を加える
-    model.addParameterValue("ParamAngleY", dragY * 30)
-    model.addParameterValue("ParamAngleZ", dragX * dragY * -30)
+    model.parameters.get("ParamAngleX").foreach(_.add(dragX * 30)) // -30から30の値を加える
+    model.parameters.get("ParamAngleY").foreach(_.add(dragY * 30))
+    model.parameters.get("ParamAngleZ").foreach(_.add(dragX * dragY * -30))
 
     //ドラッグによる体の向きの調整
-    model.addParameterValue("ParamBodyAngleX", dragX * 10) // -10から10の値を加える
+    model.parameters.get("ParamBodyAngleX").foreach(_.add(dragX * 10)) // -10から10の値を加える
 
     //ドラッグによる目の向きの調整
-    model.addParameterValue("ParamEyeBall", dragX) // -1から1の値を加える
-    model.addParameterValue("ParamEyeBallY", dragY)
+    model.parameters.get("ParamEyeBall").foreach(_.update(dragX)) // -1から1の値を加える
+    model.parameters.get("ParamEyeBallY").foreach(_.update(dragY))
   }
 
   class FaceDirectionTargetCalculator(frameRate: Int) {

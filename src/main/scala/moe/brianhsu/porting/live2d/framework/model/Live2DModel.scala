@@ -1,9 +1,11 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import com.sun.jna.ptr.FloatByReference
-import moe.brianhsu.live2d.enitiy.core.{CsmVector, CubismCore}
+import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
+import moe.brianhsu.live2d.enitiy.core.CsmVector
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
+import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, JavaVMParameter, Parameter}
 import moe.brianhsu.porting.live2d.framework
 import moe.brianhsu.porting.live2d.framework.MocInfo
 import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
@@ -19,10 +21,10 @@ import moe.brianhsu.porting.live2d.framework.model.drawable.{ConstantFlags, Draw
  * @param mocInfo   The moc file information
  * @param core      The core library of Cubism
  */
-class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore) {
-
+class Live2DModel(mocInfo: MocInfo, val textureFiles: List[String])(core: CubismCore) {
 
   private var savedParameters: Map[String, Float] = Map.empty
+  private var fallbackParameters: Map[String, Parameter] = Map.empty
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
@@ -30,13 +32,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
 
   lazy val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
 
-  def getTextureFileByIndex(index: Int): String = textureFiles(index)
-
   def isUsingMasking: Boolean = drawables.values.exists(d => d.masks.nonEmpty)
-
-  def getDrawableByIndex(drawableIndex: Int): Drawable = drawablesByIndex(drawableIndex)
-
-  def isUsingMask: Boolean = drawables.values.exists(x => x.masks.nonEmpty)
 
   private def createCubsimModel(): CPointerToModel = {
     val model = core.cubismAPI.csmInitializeModelInPlace(
@@ -59,8 +55,6 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
     maxIndex + 1
   }
 
-  lazy val parameterList: List[Parameter] = createParameterList()
-
   /**
    * Parameters of this model
    *
@@ -70,30 +64,14 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
    */
   lazy val parameters: Map[String, Parameter] = createParameters()
 
-  lazy val partsList: List[Part] = createPartList()
-  var nonExistParamIndexToValue: Map[Int, Float] = Map.empty
-  var nonExistParamIdToIndex: Map[String, Int] = Map.empty
-
-  def setParameterValueUsingIndex(index: Int, value: Float): Unit = {
-
-    if (index >= 0 && index < parameters.size) {
-      setParameterValue(parameterList(index).id, value)
-    } else {
-      nonExistParamIndexToValue += (index -> value)
-    }
-  }
-  def getParameterValueUsingIndex(paramIndex: Int): Float = {
-    if (nonExistParamIndexToValue.contains(paramIndex)) {
-      nonExistParamIndexToValue(paramIndex)
-    } else {
-      parameterList(paramIndex).current
-    }
-  }
-
-  def setPartOpacityUsingIndex(index: Int, value: Float): Unit = {
-    if (index >= 0 && index < parts.size) {
-      partsList(index).setOpacity(value)
-    }
+  def getParameterWithFallback(parameterId: String): Parameter = {
+    parameters.get(parameterId)
+      .orElse(fallbackParameters.get(parameterId))
+      .getOrElse {
+        val newParameter = new JavaVMParameter(parameterId)
+        this.fallbackParameters += (parameterId -> newParameter)
+        newParameter
+      }
   }
 
   /**
@@ -185,31 +163,6 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
     update()
   }
 
-  def setParameterValue(parameterId: String, value: Float, weight: Float = 1.0f): Unit = {
-    parameters.get(parameterId).foreach { p =>
-      val valueFitInRange = (value * weight).max(p.min).min(p.max)
-
-      if (weight == 1) {
-        p.update(valueFitInRange)
-      } else {
-        p.update((p.current * (1 - weight)) + (valueFitInRange * weight))
-      }
-    }
-  }
-
-  def addParameterValue(id: String, value: Float, weight: Float = 1.0f): Unit = {
-    parameters.get(id).foreach { p =>
-      setParameterValue(id, p.current + (value * weight))
-    }
-  }
-
-  def multiplyParameterValue(id: String, value: Float, weight: Float): Unit = {
-    parameters.get(id).foreach { p =>
-      setParameterValue(id, p.current * (1.0f + (value - 1.0f) * weight))
-    }
-
-  }
-
   private def reviveMoc(): CPointerToMoc = {
     val revivedMoc = core.cubismAPI.csmReviveMocInPlace(mocInfo.memory.alignedMemory, mocInfo.originalSize)
 
@@ -248,28 +201,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
   }
 
   private def createParts(): Map[String, Part] = {
-    partsList.map(p => p.id -> p).toMap
-  }
-
-  def getParameterIndex(id: String): Int = {
-    if (nonExistParamIdToIndex.contains(id)) {
-      return nonExistParamIdToIndex(id)
-    }
-    parameterList.zipWithIndex
-      .find(_._1.id == id)
-      .map(_._2)
-      .getOrElse {
-        val newIndex = parameterList.size - 1 + nonExistParamIndexToValue.size + 1
-        nonExistParamIdToIndex += (id -> newIndex)
-        newIndex
-      }
-  }
-
-  def getPartIndex(id: String): Int = {
-    partsList.zipWithIndex
-      .find(_._1.id == id)
-      .map(_._2)
-      .getOrElse(-1)
+    createPartList().map(part => part.id -> part).toMap
   }
 
   private def createParameterList(): List[Parameter] = {
@@ -293,14 +225,14 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.getPointerToFloat(i)
-      val parameter = Parameter(currentValuePointer, this, id, minValue, maxValue, defaultValue)
+      val parameter = CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
       parameter
     }
 
   }
 
   private def createParameters(): Map[String, Parameter] = {
-    parameterList.map(p => p.id -> p).toMap
+    createParameterList().map(p => p.id -> p).toMap
   }
 
   private def createDrawable(): Map[String, Drawable] = {
@@ -361,7 +293,7 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
       )
 
       val drawable = Drawable(
-        this, drawableId, i, constantFlags, dynamicFlags, textureIndex, masks,
+        drawableId, i, constantFlags, dynamicFlags, textureIndex, masks,
         vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer
       )
 
@@ -373,10 +305,10 @@ class Live2DModel(mocInfo: MocInfo, textureFiles: List[String])(core: CubismCore
     val isHitHolder = drawables.get(drawableId).map { drawable =>
       val vertices = drawable.vertexInfo.positions
 
-      var left: Float = vertices(0)._1
-      var right: Float = vertices(0)._1
-      var top = vertices(0)._2
-      var bottom = vertices(0)._2
+      var left: Float = vertices.head._1
+      var right: Float = vertices.head._1
+      var top = vertices.head._2
+      var bottom = vertices.head._2
 
       for (vertex <- vertices.drop(1)) {
         val (x, y) = vertex

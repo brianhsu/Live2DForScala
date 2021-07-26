@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.boundary.gateway.core
+package moe.brianhsu.live2d.adapter.gateway.core
 
 import moe.brianhsu.live2d.enitiy.core.types.CsmLogFunction
 import org.scalatest.GivenWhenThen

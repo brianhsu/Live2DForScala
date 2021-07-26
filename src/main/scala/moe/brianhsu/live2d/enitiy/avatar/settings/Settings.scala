@@ -7,7 +7,7 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, Hit
  *
  * This class represent the settings of a Live2D Cubism Avatar.
  *
- * User should obtain instance of this class using a [[moe.brianhsu.live2d.boundary.gateway.avatar.settings.SettingsReader]],
+ * User should obtain instance of this class using a [[moe.brianhsu.live2d.boundary.gateway.avatar.SettingsReader]],
  * instead of create the class directly.
  *
  * @param mocFile The absolute path of .moc file for this avatar.

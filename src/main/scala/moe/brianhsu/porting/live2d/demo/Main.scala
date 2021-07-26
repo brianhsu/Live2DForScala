@@ -16,9 +16,9 @@ object Main {
 
     System.setProperty("sun.awt.noerasebackground", "true")
 
-    this.frame = new JFrame("Sample")
+    this.frame = new JFrame("Live 2D Scala Demo")
     frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
-    frame.setSize(1024, 768)
+    frame.setSize(1920, 1080)
     frame.getContentPane.add(createGLCanvas())
     frame.setVisible(true)
 
