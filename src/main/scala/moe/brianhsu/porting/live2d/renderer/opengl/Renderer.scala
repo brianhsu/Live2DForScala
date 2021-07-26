@@ -19,7 +19,7 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
   private var isCulling: Boolean = false
   private var clippingContextBufferForMask: Option[ClippingContext] = None
   private var clippingContextBufferForDraw: Option[ClippingContext] = None
-  private val clippingManagerHolder: Option[ClippingManager] = model.isUsingMasking match {
+  private val clippingManagerHolder: Option[ClippingManager] = model.containMaskedDrawables match {
     case true => Some(new ClippingManager(model, textureManager))
     case false => None
   }

@@ -16,7 +16,6 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
-import java.io.PrintWriter
 import scala.io.Source
 
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
@@ -269,6 +268,10 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       }
 
     }
+  }
+
+  Feature("dd"){
+    pending
   }
 
 
