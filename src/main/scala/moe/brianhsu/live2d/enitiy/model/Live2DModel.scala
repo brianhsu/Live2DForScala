@@ -66,8 +66,7 @@ trait Live2DModel {
    *
    * This list is sorted by render order in ascending order.
    */
-  lazy val sortedDrawables: List[Drawable] = sortDrawableByRenderOrder()
-
+  def sortedDrawables: List[Drawable] = sortDrawableByRenderOrder()
 
   def snapshotParameters(): Unit = {
 
