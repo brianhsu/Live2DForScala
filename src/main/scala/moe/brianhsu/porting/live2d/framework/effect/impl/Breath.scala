@@ -1,8 +1,9 @@
 package moe.brianhsu.porting.live2d.framework.effect.impl
 
 import Breath.{Parameter, defaultEffect}
+import moe.brianhsu.live2d.adapter.gateway.model.CubismLive2DModel
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.effect.Effect
-import moe.brianhsu.porting.live2d.framework.model.Live2DModel
 
 import scala.math.sin
 

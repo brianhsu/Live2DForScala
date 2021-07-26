@@ -5,6 +5,7 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.porting.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion, CubismMotionManager, Pose}
 import moe.brianhsu.porting.live2d.framework.effect.Effect
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 import scala.util.Try
 
@@ -33,7 +34,7 @@ class Avatar(directory: String)(cubism: Cubism) {
   val modelHolder: Try[Live2DModel] = {
     cubism
       .loadModel(mocFile, avatarSettings.textureFiles)
-      .map(_.validAllDataFromNativeLibrary)
+      .map(_.validateAllData)
   }
 
   def setEffects(effects: List[Effect]): Unit = {
@@ -78,13 +79,13 @@ class Avatar(directory: String)(cubism: Cubism) {
   def update(deltaTimeInSeconds: Float): Unit = {
 
     modelHolder.foreach { model =>
-      model.loadParameters()
+      model.restoreParameters()
       if (motionManager.IsFinished()) {
 
       } else {
         motionManager.UpdateMotion(model, deltaTimeInSeconds)
       }
-      model.saveParameters()
+      model.snapshotParameters()
       expressionManager.UpdateMotion(model, deltaTimeInSeconds)
       effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }
       pose.UpdateParameters(model, deltaTimeInSeconds)

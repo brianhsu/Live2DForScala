@@ -3,9 +3,9 @@ package moe.brianhsu.porting.live2d.framework.model
 import com.sun.jna.{Native, Pointer}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator
+import moe.brianhsu.live2d.adapter.gateway.model.{CPointerParameter, CubismLive2DModel}
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToModel, CStringArray, MocAlignment}
-import moe.brianhsu.live2d.enitiy.model.CPointerParameter
 import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
 import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
@@ -18,7 +18,7 @@ import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
 import scala.io.Source
 
-class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
+class CubismLive2DModelFeature extends AnyFeatureSpec with GivenWhenThen
                           with Matchers with Inside with OptionValues with MockFactory
                           with TableDrivenPropertyChecks with TryValues {
 
@@ -34,7 +34,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
 
       And("a Live2D model")
-      val model = new Live2DModel(null, Nil)(mockedCubismCore) {
+      val model = new CubismLive2DModel(null, Nil)(mockedCubismCore) {
         override lazy val cubismModel: CPointerToModel = mockedModel
       }
 
@@ -121,7 +121,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       (mockedCLibrary.csmGetPartParentPartIndices _).expects(*).anyNumberOfTimes().returning(parents)
 
       When("construct a Live2D model from that mocked data")
-      val model = new Live2DModel(null, Nil)(mockedCubismCore) {
+      val model = new CubismLive2DModel(null, Nil)(mockedCubismCore) {
         override lazy val cubismModel: CPointerToModel = mockedModel
       }
 
@@ -254,26 +254,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       }
 
     }
-
-    Scenario("Get drawable of the model in render order") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
-
-      When("Get the drawables in order")
-      val drawables = model.sortedDrawables
-
-      Then("the drawable list should be sorted by render order in ascending order")
-      drawables.zipWithIndex.foreach { case (drawable, index) =>
-        drawable.renderOrder shouldBe index
-      }
-
-    }
   }
-
-  Feature("dd"){
-    pending
-  }
-
 
   Feature("Error handling when reading the model") {
     Scenario("It should throw TextureSizeMismatch exception when textureFiles size is not correct") {
@@ -299,7 +280,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       val mocInfo = MocInfo(memoryInfo, 1024)
 
       And("create a Live2D model from that memory")
-      val model = new Live2DModel(mocInfo, textureFiles)(new JnaCubismCore())
+      val model = new CubismLive2DModel(mocInfo, textureFiles)(new JnaCubismCore())
 
       When("reading the internal cubismModel parameters")
       Then("it should throw MocNotRevivedException")
@@ -337,7 +318,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
 
         And("a Live2D model")
-        val model = new Live2DModel(null, textureFiles)(mockedCubismCore) {
+        val model = new CubismLive2DModel(null, textureFiles)(mockedCubismCore) {
           override lazy val cubismModel: CPointerToModel = mockedModel
         }
 
@@ -375,7 +356,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
 
         And("a Live2D model")
-        val model = new Live2DModel(null, textureFiles)(mockedCubismCore) {
+        val model = new CubismLive2DModel(null, textureFiles)(mockedCubismCore) {
           override lazy val cubismModel: CPointerToModel = mockedModel
         }
 
@@ -441,7 +422,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         (mockedCLibrary.csmGetDrawableVertexUvs _).expects(*).anyNumberOfTimes().returning(uvList)
 
         And("a Live2D model")
-        val model = new Live2DModel(null, Nil)(mockedCubismCore) {
+        val model = new CubismLive2DModel(null, Nil)(mockedCubismCore) {
           override lazy val cubismModel: CPointerToModel = mockedModel
         }
 

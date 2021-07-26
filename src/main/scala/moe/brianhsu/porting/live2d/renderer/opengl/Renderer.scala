@@ -1,9 +1,10 @@
 package moe.brianhsu.porting.live2d.renderer.opengl
 
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 import moe.brianhsu.porting.live2d.framework.math.Matrix4x4
-import moe.brianhsu.porting.live2d.framework.model.{Avatar, Live2DModel}
+import moe.brianhsu.porting.live2d.framework.model.Avatar
 import moe.brianhsu.porting.live2d.framework.model.drawable.VertexInfo
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.{ClippingContext, ClippingManager}
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.ShaderRenderer

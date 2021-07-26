@@ -1,9 +1,10 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.clipping
 
+import moe.brianhsu.live2d.adapter.gateway.model.CubismLive2DModel
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 import moe.brianhsu.porting.live2d.framework.math.Rectangle
-import moe.brianhsu.porting.live2d.framework.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 

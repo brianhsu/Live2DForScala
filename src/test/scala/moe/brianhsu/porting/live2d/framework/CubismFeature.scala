@@ -1,8 +1,9 @@
 package moe.brianhsu.porting.live2d.framework
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.adapter.gateway.model.CubismLive2DModel
 import moe.brianhsu.live2d.enitiy.core.types.{CsmLogFunction, CsmVersion, MocVersion40}
-import moe.brianhsu.porting.live2d.framework.model.{Avatar, Live2DModel}
+import moe.brianhsu.porting.live2d.framework.model.Avatar
 import org.scalatest.{GivenWhenThen, TryValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -93,7 +94,7 @@ class CubismFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       avatar shouldBe a [Avatar]
 
       And("parse the model successfully")
-      avatar.modelHolder.success.value shouldBe a [Live2DModel]
+      avatar.modelHolder.success.value shouldBe a [CubismLive2DModel]
     }
 
   }
