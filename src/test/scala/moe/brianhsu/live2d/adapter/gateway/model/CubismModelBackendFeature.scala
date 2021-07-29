@@ -1,15 +1,17 @@
-package moe.brianhsu.porting.live2d.framework.model
+package moe.brianhsu.live2d.adapter.gateway.model
 
 import com.sun.jna.{Native, Pointer}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator
-import moe.brianhsu.live2d.adapter.gateway.model.{CPointerParameter, CubismModelBackend}
+import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
-import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToModel, CStringArray, MocAlignment}
-import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
-import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
+import moe.brianhsu.live2d.enitiy.core.types._
+import moe.brianhsu.porting.live2d.framework.exception._
 import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.utils.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableIndex, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter, MockedCubismCore}
+import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
+import moe.brianhsu.porting.live2d.framework.util.MocFileReader
+import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
+import moe.brianhsu.porting.live2d.utils._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -33,7 +35,7 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
       val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
 
-      And("a Live2D model")
+      And("a Cubism model backend")
       val model = new CubismModelBackend(null, Nil)(mockedCubismCore) {
         override lazy val cubismModel: CPointerToModel = mockedModel
       }
@@ -50,8 +52,8 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
 
   Feature("Reading model information") {
     Scenario("Reading canvas info from model") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
+      Given("A Cubism HaruGreeter Model")
+      val model = createModelBackend(modelFile)
 
       When("Get the canvas info")
       val canvasInfo = model.canvasInfo
@@ -70,8 +72,8 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading parts that has no parent from model") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
+      Given("A Cubism HaruGreeter Model")
+      val model = createModelBackend(modelFile)
 
       When("Get the parts")
       val parts = model.parts
@@ -131,8 +133,8 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading parameters data from model") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
+      Given("A Cubism HaruGreeter Model")
+      val model = createModelBackend(modelFile)
 
       When("Get the parameters")
       val parameters = model.parameters
@@ -157,8 +159,8 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading drawables from the model") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
+      Given("A Cubism HaruGreeter Model")
+      val model = createModelBackend(modelFile)
 
       When("Get the drawables")
       val drawables = model.drawables
@@ -432,6 +434,14 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
         }
       }
     }
+
+  }
+
+  private def createModelBackend(mocFilename: String): ModelBackend = {
+    val core = new JnaCubismCore()
+    val fileReader = new MocFileReader(core.memoryAllocator)
+    val mocInfo = fileReader.readFile(mocFilename)
+    new CubismModelBackend(mocInfo, textureFiles)(core)
 
   }
 }

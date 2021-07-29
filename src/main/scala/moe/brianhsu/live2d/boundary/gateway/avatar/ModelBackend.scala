@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.boundary.gateway.avatar
 
-import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
+import moe.brianhsu.live2d.enitiy.model.Parameter
 import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
 import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
 
@@ -57,6 +57,6 @@ trait ModelBackend {
   /**
    * Update the Live 2D Model and reset all dynamic flags of drawables.
    */
-  def update()
+  def update(): Unit
 
 }

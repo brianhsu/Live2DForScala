@@ -45,7 +45,7 @@ class Live2DModel(modelBackend: ModelBackend) {
   def canvasInfo: CanvasInfo = modelBackend.canvasInfo
 
   // TODO: Should delete this and has a better way to do this.
-  def validateAllData: Unit = modelBackend.validateAllData()
+  def validateAllData(): Unit = modelBackend.validateAllData()
 
   /**
    * Drawable sorted by index
@@ -69,6 +69,11 @@ class Live2DModel(modelBackend: ModelBackend) {
    */
   def sortedDrawables: List[Drawable] = sortDrawableByRenderOrder()
 
+  /**
+   * Snapshot current value of parameters that is backed by model backend.
+   *
+   * @note This will NOT snapshot the fallback parameters created by [[getParameterWithFallback]].
+   */
   def snapshotParameters(): Unit = {
 
     for (parameter <- parameters.values) {
@@ -77,19 +82,51 @@ class Live2DModel(modelBackend: ModelBackend) {
 
   }
 
+  /**
+   * Restore model backend backed parameters value from previous snapshot.
+   *
+   * @note This will NOT restore the fallback parameters created by [[getParameterWithFallback]].
+   */
   def restoreParameters(): Unit = {
     savedParameters.foreach { case (id, value) =>
       parameters.get(id).foreach(_.update(value))
     }
   }
 
-  def update(): Unit = modelBackend.update()
+  /**
+   * Update model
+   *
+   * Update the Live2D model status according to current parameters.
+   */
+  def update(): Unit = {
+    modelBackend.update()
+  }
 
+  /**
+   * Reset all parameters to default value and update model
+   */
   def reset(): Unit = {
     parameters.values.foreach { p => p.update(p.default) }
     update()
   }
 
+  /**
+   * Get parameter with fallback
+   *
+   * This method will first look into the model backend, see if there is parameter has
+   * the same id of the `parameterId` argument. If so, it will return that parameter.
+   *
+   * Otherwise, it will create a dummy one inside this `Live2DModel` instance, and
+   * return that dummy parameter when user requested that parameterId by this method
+   * again.
+   *
+   * This is essential for motions, as Live 2D's motion use these dummy parameter to
+   * track some properties of motions that does not resident inside the .moc model it self.
+   *
+   * @param parameterId The id of parameter
+   *
+   * @return The requested parameter, either backed by backend or a in-memory dummy one.
+   */
   def getParameterWithFallback(parameterId: String): Parameter = {
     parameters.get(parameterId)
       .orElse(fallbackParameters.get(parameterId))
@@ -100,40 +137,30 @@ class Live2DModel(modelBackend: ModelBackend) {
       }
   }
 
+  /**
+   * Test if the provided coordinate is inside an drawable.
+   *
+   * @param drawableId  The drawable id wish to test.
+   * @param pointX      The X coordinate
+   * @param pointY      The Y coordinate
+   * @return If the coordinate is inside the boundary of `drawableId`
+   */
   def isHit(drawableId: String, pointX: Float, pointY: Float): Boolean = {
     val isHitHolder = drawables.get(drawableId).map { drawable =>
-      val vertices = drawable.vertexInfo.positions
+      val xCoordinates = drawable.vertexInfo.positions.map(_._1)
+      val yCoordinates = drawable.vertexInfo.positions.map(_._2)
+      val left: Float = xCoordinates.min
+      val right: Float = xCoordinates.max
+      val top: Float = yCoordinates.min
+      val bottom = yCoordinates.max
 
-      var left: Float = vertices.head._1
-      var right: Float = vertices.head._1
-      var top = vertices.head._2
-      var bottom = vertices.head._2
+      val transformedX = modelMatrix.invertTransformX(pointX)
+      val transformedY = modelMatrix.invertTransformY(pointY)
 
-      for (vertex <- vertices.drop(1)) {
-        val (x, y) = vertex
-        if (x < left) {
-          left = x; // Min x
-        }
-
-        if (x > right) {
-          right = x; // Max x
-        }
-
-        if (y < top) {
-          top = y; // Min y
-        }
-
-        if (y > bottom) {
-          bottom = y; // Max y
-        }
-      }
-      val tx = modelMatrix.invertTransformX(pointX)
-      val ty = modelMatrix.invertTransformY(pointY)
-
-      (left <= tx) &&
-        (tx <= right) &&
-        (top <= ty) &&
-        (ty <= bottom)
+      (left <= transformedX) &&
+        (transformedX <= right) &&
+        (top <= transformedY) &&
+        (transformedY <= bottom)
     }
     isHitHolder.getOrElse(false)
   }

@@ -35,7 +35,7 @@ class Avatar(directory: String)(cubism: Cubism) {
     val model = cubism
       .loadModel(mocFile, avatarSettings.textureFiles)
 
-      model.foreach(_.validateAllData)
+      model.foreach(_.validateAllData())
 
     model
   }
