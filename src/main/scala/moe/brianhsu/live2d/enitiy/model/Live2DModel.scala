@@ -1,10 +1,11 @@
 package moe.brianhsu.live2d.enitiy.model
 
+import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.porting.live2d.framework.math.ModelMatrix
 import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
 import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
 
-trait Live2DModel {
+class Live2DModel(modelBackend: ModelBackend) {
   private var savedParameters: Map[String, Float] = Map.empty
   private var fallbackParameters: Map[String, Parameter] = Map.empty
 
@@ -13,38 +14,38 @@ trait Live2DModel {
   /**
    * The list of texture file path of this model.
    */
-  def textureFiles: List[String]
+  def textureFiles: List[String] = modelBackend.textureFiles
 
   /**
    * Parameters of this model
    *
    * This is a map that key is the parameterId, and value is corresponding Parameter object.
    */
-  def parameters: Map[String, Parameter]
+  def parameters: Map[String, Parameter] = modelBackend.parameters
 
   /**
    * Parts of this model
    *
    * This is a map that key is the partId, and value is corresponding Part object.
    */
-  def parts: Map[String, Part]
+  def parts: Map[String, Part] = modelBackend.parts
 
   /**
    * Drawable of this model.
    *
    * This is a map that key is the drawableId, and value is corresponding Drawable object.
    */
-  def drawables: Map[String, Drawable]
+  def drawables: Map[String, Drawable] = modelBackend.drawables
 
   /**
    * Get the canvas info about this Live 2D Model
    *
    * @return The canvas info
    */
-  def canvasInfo: CanvasInfo
+  def canvasInfo: CanvasInfo = modelBackend.canvasInfo
 
   // TODO: Should delete this and has a better way to do this.
-  def validateAllData: Live2DModel
+  def validateAllData: Unit = modelBackend.validateAllData()
 
   /**
    * Drawable sorted by index
@@ -82,7 +83,7 @@ trait Live2DModel {
     }
   }
 
-  def update(): Unit
+  def update(): Unit = modelBackend.update()
 
   def reset(): Unit = {
     parameters.values.foreach { p => p.update(p.default) }

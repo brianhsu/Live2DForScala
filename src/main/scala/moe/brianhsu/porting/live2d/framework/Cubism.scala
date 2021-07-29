@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
-import moe.brianhsu.live2d.adapter.gateway.model.{CubismModelReader}
+import moe.brianhsu.live2d.adapter.gateway.model.CubismModelBackend
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.enitiy.core.types.{CsmVersion, MocVersion}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -52,7 +52,8 @@ class Cubism(core: CubismCore) {
   def loadModel(mocFilename: String, textureFiles: List[String]): Try[Live2DModel] = Try {
     val fileReader = new MocFileReader(core.memoryAllocator)
     val mocInfo = fileReader.readFile(mocFilename)
-    new CubismModelReader(mocInfo, textureFiles)(core).loadModel
+    val backend = new CubismModelBackend(mocInfo, textureFiles)(core)
+    new Live2DModel(backend)
   }
 
   /**

@@ -32,9 +32,12 @@ class Avatar(directory: String)(cubism: Cubism) {
   private val pose = Pose(avatarSettings)
 
   val modelHolder: Try[Live2DModel] = {
-    cubism
+    val model = cubism
       .loadModel(mocFile, avatarSettings.textureFiles)
-      .map(_.validateAllData)
+
+      model.foreach(_.validateAllData)
+
+    model
   }
 
   def setEffects(effects: List[Effect]): Unit = {

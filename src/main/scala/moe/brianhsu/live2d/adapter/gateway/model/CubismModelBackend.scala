@@ -1,6 +1,7 @@
 package moe.brianhsu.live2d.adapter.gateway.model
 
 import com.sun.jna.ptr.FloatByReference
+import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.enitiy.core.CsmVector
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
@@ -23,7 +24,7 @@ import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
  * @param mocInfo   The moc file information
  * @param core      The core library of Cubism
  */
-class CubismLive2DModel(mocInfo: MocInfo, override val textureFiles: List[String])(core: CubismCore) extends Live2DModel {
+class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[String])(core: CubismCore) extends ModelBackend {
 
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.revivedMoc)
@@ -95,11 +96,10 @@ class CubismLive2DModel(mocInfo: MocInfo, override val textureFiles: List[String
    * @throws  PartInitException if it cannot construct part objects.
    * @throws  TextureSizeMismatchException if the the number of provided texture does not match the information in the model.
    */
-  override def validateAllData: Live2DModel = {
+  override def validateAllData() = {
     this.drawables
     this.parameters
     this.parts
-    this
   }
 
   /**
@@ -155,7 +155,7 @@ class CubismLive2DModel(mocInfo: MocInfo, override val textureFiles: List[String
         case _ => None
       }
 
-      val part = framework.model.Part(opacityPointer, this, partId, parentId)
+      val part = framework.model.Part(opacityPointer, partId, parentId)
 
       part
     }

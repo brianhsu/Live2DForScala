@@ -7,11 +7,10 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
  * This class represent the part in the Live 2D model.
  *
  * @param opacityPointer The pointer to the actual opacity value of this part
- * @param belongsTo      Which Live2D this part belongs to
  * @param id             The part id
  * @param parentIdHolder The id of this part's parent
  */
-case class Part(private val opacityPointer: Pointer, belongsTo: Live2DModel, id: String, parentIdHolder: Option[String]) {
+case class Part(private val opacityPointer: Pointer, id: String, parentIdHolder: Option[String]) {
   /**
    * Get the current opacity of this part.
    *

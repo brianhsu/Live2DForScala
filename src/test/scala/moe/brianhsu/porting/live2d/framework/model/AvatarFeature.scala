@@ -19,13 +19,9 @@ class AvatarFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       When("loading an avatar from it")
       val avatarHolder = cubism.loadAvatar(directory)
 
-      Then("it should return a Success[Avatar]")
-      val avatar = avatarHolder.success.value
-
-      And("the model should be a Failure[MocNotRevivedException]")
-      avatar.modelHolder shouldBe a[Failure[_]]
-      avatar.modelHolder.failure.exception shouldBe a[MocNotRevivedException]
+      Then("it should return a Failure[AssertionError]")
+      avatarHolder shouldBe a[Failure[_]]
+      avatarHolder.failure.exception shouldBe a[AssertionError]
     }
-
   }
 }

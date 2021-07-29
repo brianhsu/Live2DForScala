@@ -1,6 +1,7 @@
 package moe.brianhsu.live2d.enitiy.model
 
 import com.sun.jna.Memory
+import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
 import moe.brianhsu.porting.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags}
 import org.scalatest.GivenWhenThen
@@ -12,7 +13,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
   Feature("Use containMaskedDrawables to get whether drawable has mask or not") {
     Scenario("No drawable at all") {
       Given("A model without any drawable")
-      val live2DModel = new MockedLive2DModel(drawables = Map.empty)
+      val backend = new MockedBackend(drawables = Map.empty)
+      val live2DModel = new Live2DModel(backend)
 
       Then("containMaskedDrawables should be false")
       live2DModel.containMaskedDrawables shouldBe false
@@ -25,7 +27,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         "id2" -> createDrawable("id2", index = 1),
         "id3" -> createDrawable("id3", index = 2),
       )
-      val live2DModel = new MockedLive2DModel(drawables = mockedDrawables)
+      val backend = new MockedBackend(drawables = mockedDrawables)
+      val live2DModel = new Live2DModel(backend)
 
       Then("containMaskedDrawables should be false")
       live2DModel.containMaskedDrawables shouldBe false
@@ -38,7 +41,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         "id2" -> createDrawable("id2", index = 1, hasMask = true),
         "id3" -> createDrawable("id3", index = 2),
       )
-      val live2DModel = new MockedLive2DModel(drawables = mockedDrawables)
+      val backend = new MockedBackend(drawables = mockedDrawables)
+      val live2DModel = new Live2DModel(backend)
 
       Then("containMaskedDrawables should be true")
       live2DModel.containMaskedDrawables shouldBe true
@@ -51,7 +55,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         "id2" -> createDrawable("id2", index = 1, hasMask = true),
         "id3" -> createDrawable("id3", index = 2, hasMask = true),
       )
-      val live2DModel = new MockedLive2DModel(drawables = mockedDrawables)
+      val backend = new MockedBackend(drawables = mockedDrawables)
+      val live2DModel = new Live2DModel(backend)
 
       Then("containMaskedDrawables should be true")
       live2DModel.containMaskedDrawables shouldBe true
@@ -62,7 +67,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
   Feature("Get drawable sorted by index") {
     Scenario("No drawable at all") {
       Given("A model without any drawable")
-      val live2DModel = new MockedLive2DModel(drawables = Map.empty)
+      val backend = new MockedBackend(drawables = Map.empty)
+      val live2DModel = new Live2DModel(backend)
 
       Then("the drawableByIndex should be an empty list")
       live2DModel.drawablesByIndex shouldBe Nil
@@ -78,7 +84,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         "id4" -> createDrawable("id4", index = 4),
 
       )
-      val live2DModel = new MockedLive2DModel(drawables = mockedDrawables)
+      val backend = new MockedBackend(drawables = mockedDrawables)
+      val live2DModel = new Live2DModel(backend)
 
       When("get the drawable by index")
       val drawableByIndex = live2DModel.drawablesByIndex
@@ -99,7 +106,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
   Feature("Get drawable sorted by render order") {
     Scenario("No drawable at all") {
       Given("A model without any drawable")
-      val live2DModel = new MockedLive2DModel(drawables = Map.empty)
+      val backend = new MockedBackend(drawables = Map.empty)
+      val live2DModel = new Live2DModel(backend)
 
       Then("the drawableByIndex should be an empty list")
       live2DModel.sortedDrawables shouldBe Nil
@@ -114,7 +122,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         "id3" -> createDrawable("id3", index = 3, renderOrder = 4),
         "id4" -> createDrawable("id4", index = 4, renderOrder = 2),
       )
-      val live2DModel = new MockedLive2DModel(drawables = mockedDrawables)
+      val backend = new MockedBackend(drawables = mockedDrawables)
+      val live2DModel = new Live2DModel(backend)
 
       When("get the drawable by render order")
       val drawableByRenderOrder = live2DModel.sortedDrawables
@@ -146,14 +155,17 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     )
   }
 
-  class MockedLive2DModel(
+
+  class MockedBackend(
     override val textureFiles: List[String] = Nil,
     override val parameters: Map[String, Parameter] = Map.empty,
     override val parts: Map[String, Part] = Map.empty,
     override val drawables: Map[String, Drawable] = Map.empty
-  ) extends Live2DModel {
-    override val validateAllData: Live2DModel = this
+  ) extends ModelBackend {
+    override def validateAllData: Unit = ???
     override def canvasInfo: CanvasInfo = ???
     override def update(): Unit = ???
   }
+
+
 }
