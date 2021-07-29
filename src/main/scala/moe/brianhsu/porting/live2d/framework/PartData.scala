@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework
 
-import moe.brianhsu.porting.live2d.framework.model.Live2DModel
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 class PartData {
   var PartId: String = null                ///< パーツID

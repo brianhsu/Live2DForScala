@@ -1,9 +1,10 @@
 package moe.brianhsu.porting.live2d.renderer.opengl
 
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 import moe.brianhsu.porting.live2d.framework.math.Matrix4x4
-import moe.brianhsu.porting.live2d.framework.model.{Avatar, Live2DModel}
+import moe.brianhsu.porting.live2d.framework.model.Avatar
 import moe.brianhsu.porting.live2d.framework.model.drawable.VertexInfo
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.{ClippingContext, ClippingManager}
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.ShaderRenderer
@@ -19,7 +20,7 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
   private var isCulling: Boolean = false
   private var clippingContextBufferForMask: Option[ClippingContext] = None
   private var clippingContextBufferForDraw: Option[ClippingContext] = None
-  private val clippingManagerHolder: Option[ClippingManager] = model.isUsingMasking match {
+  private val clippingManagerHolder: Option[ClippingManager] = model.containMaskedDrawables match {
     case true => Some(new ClippingManager(model, textureManager))
     case false => None
   }
@@ -85,15 +86,15 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
 
     shaderRenderer.render(
       this, drawTextureId,
-      vertexInfo.getVertexArrayDirectBuffer,
-      vertexInfo.getUvArrayDirectBuffer,
+      vertexInfo.vertexArrayDirectBuffer,
+      vertexInfo.uvArrayDirectBuffer,
       colorBlendMode,
       modelColorRGBA,
       projection.getOrElse(new Matrix4x4),
       invertedMask
     )
 
-    gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.getIndexArrayDirectBuffer)
+    gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.indexArrayDirectBuffer)
 
     gl.glUseProgram(0)
     setClippingContextBufferForDraw(None)

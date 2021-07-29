@@ -1,15 +1,17 @@
-package moe.brianhsu.porting.live2d.framework.model
+package moe.brianhsu.live2d.adapter.gateway.model
 
 import com.sun.jna.{Native, Pointer}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator
+import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
-import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToModel, CStringArray, MocAlignment}
-import moe.brianhsu.live2d.enitiy.model.CPointerParameter
-import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
-import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
+import moe.brianhsu.live2d.enitiy.core.types._
+import moe.brianhsu.porting.live2d.framework.exception._
 import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.utils.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter, MockedCubismCore}
+import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
+import moe.brianhsu.porting.live2d.framework.util.MocFileReader
+import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
+import moe.brianhsu.porting.live2d.utils._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -18,7 +20,7 @@ import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
 import scala.io.Source
 
-class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
+class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
                           with Matchers with Inside with OptionValues with MockFactory
                           with TableDrivenPropertyChecks with TryValues {
 
@@ -33,8 +35,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       val mockedCubismCore = new MockedCubismCore(mockedCLibrary)
       val mockedModel = new CPointerToModel(new Pointer(Native.malloc(1024)))
 
-      And("a Live2D model")
-      val model = new Live2DModel(null, Nil)(mockedCubismCore) {
+      And("a Cubism model backend")
+      val model = new CubismModelBackend(null, Nil)(mockedCubismCore) {
         override lazy val cubismModel: CPointerToModel = mockedModel
       }
 
@@ -50,8 +52,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
   Feature("Reading model information") {
     Scenario("Reading canvas info from model") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
+      Given("A Cubism HaruGreeter Model")
+      val model = createModelBackend(modelFile)
 
       When("Get the canvas info")
       val canvasInfo = model.canvasInfo
@@ -70,8 +72,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading parts that has no parent from model") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
+      Given("A Cubism HaruGreeter Model")
+      val model = createModelBackend(modelFile)
 
       When("Get the parts")
       val parts = model.parts
@@ -84,9 +86,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         And(s"part $partId should have correct values")
 
         val part = parts.get(partId).value
-        inside(part) { case Part(opacityPointer, belongsTo, id, parentIdHolder) =>
+        inside(part) { case Part(opacityPointer, id, parentIdHolder) =>
           opacityPointer should not be null
-          belongsTo shouldBe model
           id shouldBe partId
           parentIdHolder shouldBe None
         }
@@ -121,7 +122,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       (mockedCLibrary.csmGetPartParentPartIndices _).expects(*).anyNumberOfTimes().returning(parents)
 
       When("construct a Live2D model from that mocked data")
-      val model = new Live2DModel(null, Nil)(mockedCubismCore) {
+      val model = new CubismModelBackend(null, Nil)(mockedCubismCore) {
         override lazy val cubismModel: CPointerToModel = mockedModel
       }
 
@@ -132,8 +133,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading parameters data from model") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
+      Given("A Cubism HaruGreeter Model")
+      val model = createModelBackend(modelFile)
 
       When("Get the parameters")
       val parameters = model.parameters
@@ -158,15 +159,15 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading drawables from the model") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
+      Given("A Cubism HaruGreeter Model")
+      val model = createModelBackend(modelFile)
 
       When("Get the drawables")
       val drawables = model.drawables
 
       Then("the basic information of drawables should be correct")
       ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
-        val drawable = drawables.get(expectedBasicInfo.id).value
+        val drawable = drawables(expectedBasicInfo.id)
         inside(drawable) { case Drawable(id, index, constantFlags, dynamicFlags, textureIndex, masks,
                                          vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer) =>
           id shouldBe expectedBasicInfo.id
@@ -187,51 +188,74 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         drawable.opacity shouldBe expectedBasicInfo.opacity
       }
 
-      Then("the masks of drawables should be correct")
+      And("the masks of drawables should be correct")
       ExpectedDrawableMask.getList.foreach { expectedDrawableMask =>
         val drawableId = expectedDrawableMask.id
         val index = expectedDrawableMask.index
-        val drawable = drawables.get(drawableId).value
+        val drawable = drawables(drawableId)
         val mask = drawable.masks(index)
         mask shouldBe expectedDrawableMask.maskValue
       }
 
-      Then("the positions of drawables should be correct")
+      And("the positions of drawables should be correct")
       ExpectedDrawablePosition.getList.foreach { expectedDrawablePosition =>
         val drawableId = expectedDrawablePosition.id
-        val drawable = drawables.get(drawableId).value
+        val drawable = drawables(drawableId)
         val index = expectedDrawablePosition.index
         val position = drawable.vertexInfo.positions(index)
 
         position shouldBe (expectedDrawablePosition.x, expectedDrawablePosition.y)
       }
 
-      Then("the texture coordinate of drawables should be correct")
+      And("the texture coordinate of drawables should be correct")
       ExpectedDrawableCoordinate.getList.foreach { expectedDrawableCoordinate =>
         val drawableId = expectedDrawableCoordinate.id
-        val drawable = drawables.get(drawableId).value
+        val drawable = drawables(drawableId)
         val index = expectedDrawableCoordinate.index
         val coordinates = drawable.vertexInfo.textureCoordinates(index)
         coordinates shouldBe (expectedDrawableCoordinate.x, expectedDrawableCoordinate.y)
       }
 
-    }
+      And("the triangle index of drawables should be correct")
+      ExpectedDrawableIndex.getList.foreach { expectedDrawableIndex =>
+        val drawable = drawables(expectedDrawableIndex.id)
+        val index = expectedDrawableIndex.index
+        drawable.vertexInfo.indices(index) shouldBe expectedDrawableIndex.value
+      }
 
-    Scenario("Get drawable of the model in render order") {
-      Given("A Live2D HaruGreeter Model")
-      val model = cubism.loadModel(modelFile, textureFiles).success.value
+      And("the vertex array direct buffer should point to correct location and can access correct data")
+      ExpectedDrawablePosition.getList.foreach { expectedDrawablePosition =>
+        val drawableId = expectedDrawablePosition.id
+        val drawable = drawables(drawableId)
+        val index = expectedDrawablePosition.index
+        val buffer = drawable.vertexInfo.vertexArrayDirectBuffer
 
-      When("Get the drawables in order")
-      val drawables = model.sortedDrawables
+        buffer.asFloatBuffer.get(index * 2) shouldBe expectedDrawablePosition.x
+        buffer.asFloatBuffer.get(index * 2 + 1) shouldBe expectedDrawablePosition.y
+      }
 
-      Then("the drawable list should be sorted by render order in ascending order")
-      drawables.zipWithIndex.foreach { case (drawable, index) =>
-        drawable.renderOrder shouldBe index
+      And("the uv array direct buffer should point to correct location and can access correct data")
+      ExpectedDrawableCoordinate.getList.foreach { expectedDrawableCoordinate =>
+        val drawableId = expectedDrawableCoordinate.id
+        val drawable = drawables(drawableId)
+        val index = expectedDrawableCoordinate.index
+        val buffer = drawable.vertexInfo.uvArrayDirectBuffer
+
+        buffer.asFloatBuffer.get(index * 2) shouldBe expectedDrawableCoordinate.x
+        buffer.asFloatBuffer.get(index * 2 + 1) shouldBe expectedDrawableCoordinate.y
+      }
+
+      And("the direct buffer of triangle index of drawables should be correct")
+      ExpectedDrawableIndex.getList.foreach { expectedDrawableIndex =>
+        val drawable = drawables(expectedDrawableIndex.id)
+        val index = expectedDrawableIndex.index
+        val buffer = drawable.vertexInfo.indexArrayDirectBuffer
+
+        buffer.asShortBuffer().get(index) shouldBe expectedDrawableIndex.value
       }
 
     }
   }
-
 
   Feature("Error handling when reading the model") {
     Scenario("It should throw TextureSizeMismatch exception when textureFiles size is not correct") {
@@ -257,7 +281,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
       val mocInfo = MocInfo(memoryInfo, 1024)
 
       And("create a Live2D model from that memory")
-      val model = new Live2DModel(mocInfo, textureFiles)(new JnaCubismCore())
+      val model = new CubismModelBackend(mocInfo, textureFiles)(new JnaCubismCore())
 
       When("reading the internal cubismModel parameters")
       Then("it should throw MocNotRevivedException")
@@ -295,7 +319,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
 
         And("a Live2D model")
-        val model = new Live2DModel(null, textureFiles)(mockedCubismCore) {
+        val model = new CubismModelBackend(null, textureFiles)(mockedCubismCore) {
           override lazy val cubismModel: CPointerToModel = mockedModel
         }
 
@@ -333,7 +357,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
 
 
         And("a Live2D model")
-        val model = new Live2DModel(null, textureFiles)(mockedCubismCore) {
+        val model = new CubismModelBackend(null, textureFiles)(mockedCubismCore) {
           override lazy val cubismModel: CPointerToModel = mockedModel
         }
 
@@ -399,7 +423,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         (mockedCLibrary.csmGetDrawableVertexUvs _).expects(*).anyNumberOfTimes().returning(uvList)
 
         And("a Live2D model")
-        val model = new Live2DModel(null, Nil)(mockedCubismCore) {
+        val model = new CubismModelBackend(null, Nil)(mockedCubismCore) {
           override lazy val cubismModel: CPointerToModel = mockedModel
         }
 
@@ -410,6 +434,14 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen
         }
       }
     }
+
+  }
+
+  private def createModelBackend(mocFilename: String): ModelBackend = {
+    val core = new JnaCubismCore()
+    val fileReader = new MocFileReader(core.memoryAllocator)
+    val mocInfo = fileReader.readFile(mocFilename)
+    new CubismModelBackend(mocInfo, textureFiles)(core)
 
   }
 }

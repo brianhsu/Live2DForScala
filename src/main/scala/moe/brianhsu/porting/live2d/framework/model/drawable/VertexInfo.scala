@@ -2,6 +2,8 @@ package moe.brianhsu.porting.live2d.framework.model.drawable
 
 import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfCsmVector, CArrayOfShort}
 
+import java.nio.ByteBuffer
+
 /**
  * This class represent information about vertices of a drawable when rendering.
  *
@@ -39,9 +41,26 @@ case class VertexInfo(numberOfVertex: Int, numberOfTriangleIndex: Int,
    */
   def indices: List[Short] = (0 until numberOfTriangleIndex).toList.map(i => pointerToArrayOfIndex(i))
 
-  def getVertexArrayDirectBuffer = pointerToArrayOfPositions.getDirectBuffer(numberOfVertex)
-  def getUvArrayDirectBuffer = pointerToArrayOfTextureCoordinate.getDirectBuffer(numberOfVertex)
-  def getIndexArrayDirectBuffer = pointerToArrayOfIndex.getDirectBuffer(numberOfTriangleIndex)
+  /**
+   * Direct buffer of vertex array
+   *
+   * @return  This will return a ByteBuffer that represent the array of vertex.
+   */
+  def vertexArrayDirectBuffer: ByteBuffer = pointerToArrayOfPositions.getDirectBuffer(numberOfVertex)
+
+  /**
+   * Direct buffer of uv (texture coordinate) array
+   *
+   * @return  This will return a ByteBuffer that represent the array of uv (texture coordinate).
+   */
+  def uvArrayDirectBuffer: ByteBuffer = pointerToArrayOfTextureCoordinate.getDirectBuffer(numberOfVertex)
+
+  /**
+   * Direct buffer of triangle index array
+   *
+   * @return  This will return a ByteBuffer that represent the array of triangle index.
+   */
+  def indexArrayDirectBuffer: ByteBuffer = pointerToArrayOfIndex.getDirectBuffer(numberOfTriangleIndex)
 
   private def createTupleListFrom(vectorArray: CArrayOfCsmVector): List[(Float, Float)] = {
     (0 until numberOfVertex).toList.map { i =>

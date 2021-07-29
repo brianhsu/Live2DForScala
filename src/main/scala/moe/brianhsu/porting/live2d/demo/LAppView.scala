@@ -1,11 +1,12 @@
 package moe.brianhsu.porting.live2d.demo
 
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, LAppSprite, PowerSprite, SpriteShader}
 import moe.brianhsu.porting.live2d.framework.Cubism
 import moe.brianhsu.porting.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.porting.live2d.framework.math.ViewPortMatrixCalculator
-import moe.brianhsu.porting.live2d.framework.model.{Avatar, Live2DModel}
+import moe.brianhsu.porting.live2d.framework.model.Avatar
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
 import java.awt.event.KeyEvent

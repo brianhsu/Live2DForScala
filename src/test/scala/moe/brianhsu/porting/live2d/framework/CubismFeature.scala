@@ -1,8 +1,10 @@
 package moe.brianhsu.porting.live2d.framework
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.adapter.gateway.model.CubismModelBackend
 import moe.brianhsu.live2d.enitiy.core.types.{CsmLogFunction, CsmVersion, MocVersion40}
-import moe.brianhsu.porting.live2d.framework.model.{Avatar, Live2DModel}
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.porting.live2d.framework.model.Avatar
 import org.scalatest.{GivenWhenThen, TryValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

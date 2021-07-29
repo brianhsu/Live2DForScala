@@ -10,9 +10,8 @@ class JavaVMParameter(
   override val id: String,
   override val min: Float = Float.MinValue,
   override val max: Float = Float.MaxValue,
-  override val default: Float = 0) extends Parameter {
-
-  private var value: Float = 0
+  override val default: Float = 0,
+  private var value: Float = 0) extends Parameter {
 
   /**
    * Get the current value of this parameter.

@@ -1,6 +1,7 @@
-package moe.brianhsu.live2d.enitiy.model
+package moe.brianhsu.live2d.adapter.gateway.model
 
 import com.sun.jna.Pointer
+import moe.brianhsu.live2d.enitiy.model.Parameter
 import moe.brianhsu.live2d.exception.ParameterInvalidException
 
 /**

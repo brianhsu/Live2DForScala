@@ -1,16 +1,19 @@
-package moe.brianhsu.porting.live2d.framework.model
+package moe.brianhsu.live2d.adapter.gateway.model
 
 import com.sun.jna.ptr.FloatByReference
+import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.enitiy.core.CsmVector
-import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
-import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, JavaVMParameter, Parameter}
+import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
+import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
 import moe.brianhsu.porting.live2d.framework
 import moe.brianhsu.porting.live2d.framework.MocInfo
-import moe.brianhsu.porting.live2d.framework.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
-import moe.brianhsu.porting.live2d.framework.math.ModelMatrix
+import moe.brianhsu.porting.live2d.framework.exception._
 import moe.brianhsu.porting.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
+
+
 
 /**
  * The Live 2D model that represent an .moc file.
@@ -21,18 +24,12 @@ import moe.brianhsu.porting.live2d.framework.model.drawable.{ConstantFlags, Draw
  * @param mocInfo   The moc file information
  * @param core      The core library of Cubism
  */
-class Live2DModel(mocInfo: MocInfo, val textureFiles: List[String])(core: CubismCore) {
+class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[String])(core: CubismCore) extends ModelBackend {
 
-  private var savedParameters: Map[String, Float] = Map.empty
-  private var fallbackParameters: Map[String, Parameter] = Map.empty
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
   protected lazy val cubismModel: CPointerToModel = createCubsimModel()
-
-  lazy val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
-
-  def isUsingMasking: Boolean = drawables.values.exists(d => d.masks.nonEmpty)
 
   private def createCubsimModel(): CPointerToModel = {
     val model = core.cubismAPI.csmInitializeModelInPlace(
@@ -62,17 +59,7 @@ class Live2DModel(mocInfo: MocInfo, val textureFiles: List[String])(core: Cubism
    *
    * @throws ParameterInitException when could not get valid parameters from Live 2D Cubism Model
    */
-  lazy val parameters: Map[String, Parameter] = createParameters()
-
-  def getParameterWithFallback(parameterId: String): Parameter = {
-    parameters.get(parameterId)
-      .orElse(fallbackParameters.get(parameterId))
-      .getOrElse {
-        val newParameter = new JavaVMParameter(parameterId)
-        this.fallbackParameters += (parameterId -> newParameter)
-        newParameter
-      }
-  }
+  override lazy val parameters: Map[String, Parameter] = createParameters()
 
   /**
    * Parts of this model
@@ -81,7 +68,7 @@ class Live2DModel(mocInfo: MocInfo, val textureFiles: List[String])(core: Cubism
    *
    * @throws PartInitException when could not get valid parts from Live 2D Cubism Model
    */
-  lazy val parts: Map[String, Part] = createParts()
+  override lazy val parts: Map[String, Part] = createParts()
 
   /**
    * Drawable of this model.
@@ -89,10 +76,14 @@ class Live2DModel(mocInfo: MocInfo, val textureFiles: List[String])(core: Cubism
    * This is a map that key is the drawableId, and value is corresponding Drawable object.
    *
    */
-  lazy val drawables: Map[String, Drawable] = createDrawable()
+  override lazy val drawables: Map[String, Drawable] = createDrawable()
 
-  lazy val drawablesByIndex: List[Drawable] = drawables.values.toList.sortBy(_.index)
-
+  /**
+   * Get the canvas info about this Live 2D Model
+   *
+   * @return  The canvas info
+   */
+  override lazy val canvasInfo: CanvasInfo = createCanvasInfo()
 
   /**
    * This method will access all lazy member fields that load data from the CubismCore C Library,
@@ -105,62 +96,32 @@ class Live2DModel(mocInfo: MocInfo, val textureFiles: List[String])(core: Cubism
    * @throws  PartInitException if it cannot construct part objects.
    * @throws  TextureSizeMismatchException if the the number of provided texture does not match the information in the model.
    */
-  def validAllDataFromNativeLibrary: Live2DModel = {
+  override def validateAllData() = {
     this.drawables
     this.parameters
     this.parts
-    this
   }
 
   /**
-   * Get the drawables that is sorted by render order.
-   *
-   * This list is sorted by render order in ascending order.
+   * Update the Live 2D Model and reset all dynamic flags of drawables.
    */
-  def sortedDrawables: List[Drawable] = drawables.values.toList.sortBy(_.renderOrder)
+  override def update(): Unit = {
+    core.cubismAPI.csmUpdateModel(this.cubismModel)
+    core.cubismAPI.csmResetDrawableDynamicFlags(this.cubismModel)
+  }
 
-  /**
-   * Get the canvas info about this Live 2D Model
-   *
-   * @return  The canvas info
-   */
-  def canvasInfo: CanvasInfo = {
+  private def createCanvasInfo() = {
     val outSizeInPixel = new CsmVector()
     val outOriginInPixel = new CsmVector()
     val outPixelPerUnit = new FloatByReference()
 
     core.cubismAPI.csmReadCanvasInfo(this.cubismModel, outSizeInPixel, outOriginInPixel, outPixelPerUnit)
 
-    framework.model.CanvasInfo(
+    CanvasInfo(
       outSizeInPixel.getX, outSizeInPixel.getY,
-      (outOriginInPixel.getX, outOriginInPixel.getY), outPixelPerUnit.getValue)
-  }
-
-  def saveParameters(): Unit = {
-
-    for (parameter <- parameters.values) {
-      savedParameters += (parameter.id -> parameter.current)
-    }
-
-  }
-
-  def loadParameters(): Unit = {
-    savedParameters.foreach { case (id, value) =>
-      parameters.get(id).foreach(_.update(value))
-    }
-  }
-
-  /**
-   * Update the Live 2D Model and reset all dynamic flags of drawables.
-   */
-  def update(): Unit = {
-    core.cubismAPI.csmUpdateModel(this.cubismModel)
-    core.cubismAPI.csmResetDrawableDynamicFlags(this.cubismModel)
-  }
-
-  def reset(): Unit = {
-    parameters.values.foreach { p => p.update(p.default) }
-    update()
+      (outOriginInPixel.getX, outOriginInPixel.getY),
+      outPixelPerUnit.getValue
+    )
   }
 
   private def reviveMoc(): CPointerToMoc = {
@@ -194,7 +155,7 @@ class Live2DModel(mocInfo: MocInfo, val textureFiles: List[String])(core: Cubism
         case _ => None
       }
 
-      val part = framework.model.Part(opacityPointer, this, partId, parentId)
+      val part = framework.model.Part(opacityPointer, partId, parentId)
 
       part
     }
@@ -299,43 +260,5 @@ class Live2DModel(mocInfo: MocInfo, val textureFiles: List[String])(core: Cubism
 
       drawableId -> drawable
     }.toMap
-  }
-
-  def isHit(drawableId: String, pointX: Float, pointY: Float): Boolean = {
-    val isHitHolder = drawables.get(drawableId).map { drawable =>
-      val vertices = drawable.vertexInfo.positions
-
-      var left: Float = vertices.head._1
-      var right: Float = vertices.head._1
-      var top = vertices.head._2
-      var bottom = vertices.head._2
-
-      for (vertex <- vertices.drop(1)) {
-        val (x, y) = vertex
-        if (x < left) {
-          left = x; // Min x
-        }
-
-        if (x > right) {
-          right = x; // Max x
-        }
-
-        if (y < top) {
-          top = y; // Min y
-        }
-
-        if (y > bottom) {
-          bottom = y; // Max y
-        }
-      }
-      val tx = modelMatrix.invertTransformX(pointX)
-      val ty = modelMatrix.invertTransformY(pointY)
-
-      (left <= tx) &&
-        (tx <= right) &&
-        (top <= ty) &&
-        (ty <= bottom)
-    }
-    isHitHolder.getOrElse(false)
   }
 }

@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
 import CubismMotionQueueManager.CubismMotionEventFunction
-import moe.brianhsu.porting.live2d.framework.model.Live2DModel
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 import scala.annotation.unused
 
