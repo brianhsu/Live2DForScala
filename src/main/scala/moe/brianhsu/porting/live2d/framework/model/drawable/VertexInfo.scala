@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework.model.drawable
 
-import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfCsmVector, CArrayOfShort}
+import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfCsmCoordinate, CArrayOfShort}
 
 import java.nio.ByteBuffer
 
@@ -14,8 +14,8 @@ import java.nio.ByteBuffer
  * @param pointerToArrayOfIndex               The pointer to the actual memory address that stores the array of triangle index.
  */
 case class VertexInfo(numberOfVertex: Int, numberOfTriangleIndex: Int,
-                      pointerToArrayOfPositions: CArrayOfCsmVector,
-                      pointerToArrayOfTextureCoordinate: CArrayOfCsmVector,
+                      pointerToArrayOfPositions: CArrayOfCsmCoordinate,
+                      pointerToArrayOfTextureCoordinate: CArrayOfCsmCoordinate,
                       pointerToArrayOfIndex: CArrayOfShort) {
 
 
@@ -62,7 +62,7 @@ case class VertexInfo(numberOfVertex: Int, numberOfTriangleIndex: Int,
    */
   def indexArrayDirectBuffer: ByteBuffer = pointerToArrayOfIndex.getDirectBuffer(numberOfTriangleIndex)
 
-  private def createTupleListFrom(vectorArray: CArrayOfCsmVector): List[(Float, Float)] = {
+  private def createTupleListFrom(vectorArray: CArrayOfCsmCoordinate): List[(Float, Float)] = {
     (0 until numberOfVertex).toList.map { i =>
       val csmVector = vectorArray(i)
       (csmVector.getX, csmVector.getY)

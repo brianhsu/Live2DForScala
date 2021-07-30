@@ -12,14 +12,14 @@ import java.util.Arrays;
  * User should NEVER use this class directly.
  *
  */
-public class CsmVector extends Structure {
+public class CsmCoordinate extends Structure {
     public static int SIZE = 8;
     public float x;
     public float y;
 
-    public CsmVector() { super(); }
+    public CsmCoordinate() { super(); }
 
-    public CsmVector(Pointer p) { 
+    public CsmCoordinate(Pointer p) {
         super(p);
 	    this.autoRead();
     }

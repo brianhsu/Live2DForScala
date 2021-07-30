@@ -7,5 +7,5 @@ class CArrayOfArrayOfCsmVector(pointer: Pointer) extends PointerType(pointer) {
 
   def this() = this(null)
 
-  def apply(i: Int): CArrayOfCsmVector = new CArrayOfCsmVector(arrays(i))
+  def apply(i: Int): CArrayOfCsmCoordinate = new CArrayOfCsmCoordinate(arrays(i))
 }

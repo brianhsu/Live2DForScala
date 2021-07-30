@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.adapter.gateway.model
 import com.sun.jna.ptr.FloatByReference
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
-import moe.brianhsu.live2d.enitiy.core.CsmVector
+import moe.brianhsu.live2d.enitiy.core.CsmCoordinate
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
@@ -111,8 +111,8 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
   }
 
   private def createCanvasInfo() = {
-    val outSizeInPixel = new CsmVector()
-    val outOriginInPixel = new CsmVector()
+    val outSizeInPixel = new CsmCoordinate()
+    val outOriginInPixel = new CsmCoordinate()
     val outPixelPerUnit = new FloatByReference()
 
     core.cubismAPI.csmReadCanvasInfo(this.cubismModel, outSizeInPixel, outOriginInPixel, outPixelPerUnit)
