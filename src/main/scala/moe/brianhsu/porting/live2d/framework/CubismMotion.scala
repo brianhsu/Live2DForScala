@@ -80,13 +80,13 @@ class CubismMotion extends ACubismMotion {
     val tmpFadeIn: Float = if (_fadeInSeconds <= 0.0f) {
      1.0f
     } else {
-      CubismMath.GetEasingSine((userTimeSeconds - motionQueueEntry.GetStartTime()) / _fadeInSeconds)
+      CubismMath.getEasingSin((userTimeSeconds - motionQueueEntry.GetStartTime()) / _fadeInSeconds)
     }
 
     val tmpFadeOut: Float = if (_fadeOutSeconds <= 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
       1.0f
     } else {
-      CubismMath.GetEasingSine((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
+      CubismMath.getEasingSin((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
     }
 
     var value: Float = 0.0f
@@ -159,7 +159,7 @@ class CubismMotion extends ACubismMotion {
           fin = if (curves(c).FadeInTime == 0.0f) {
             1.0f
           } else {
-            CubismMath.GetEasingSine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / curves(c).FadeInTime)
+            CubismMath.getEasingSin((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / curves(c).FadeInTime)
           }
 
         }
@@ -170,7 +170,7 @@ class CubismMotion extends ACubismMotion {
           fout = if (curves(c).FadeOutTime == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
             1.0f
           } else {
-            CubismMath.GetEasingSine((motionQueueEntry.GetEndTime() - userTimeSeconds) / curves(c).FadeOutTime)
+            CubismMath.getEasingSin((motionQueueEntry.GetEndTime() - userTimeSeconds) / curves(c).FadeOutTime)
           }
         }
         val paramWeight: Float = _weight * fin * fout

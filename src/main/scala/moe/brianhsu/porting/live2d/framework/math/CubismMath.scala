@@ -11,7 +11,7 @@ object CubismMath {
    *@param    value  ->  イージングを行う値
    *@return   イージング処理されたサイン値
    */
-  def GetEasingSine(value: Float): Float = {
+  def getEasingSin(value: Float): Float = {
 
     value match {
       case x if x < 0.0f => 0.0f
@@ -28,11 +28,11 @@ object CubismMath {
    * @param max   ->  範囲の最大値
    * @return 最小値と最大値の範囲に収めた値
    */
-  def RangeF(value: Float, min: Float, max: Float): Float = {
+  private def limitToRange(value: Float, min: Float, max: Float): Float = {
     value.max(min).min(max)
   }
 
-  def QuadraticEquation(a: Float, b: Float, c: Float): Float = {
+  def quadraticEquation(a: Float, b: Float, c: Float): Float = {
     if (Math.abs(a) < Epsilon) {
       if (Math.abs(b) < Epsilon) {
         return -c
@@ -45,7 +45,7 @@ object CubismMath {
 
   def CardanoAlgorithmForBezier(a: Float, b: Float, c: Float, d: Float): Float = {
     if (Math.abs(a) < Epsilon) {
-      return RangeF(QuadraticEquation(b, c, d), 0.0f, 1.0f)
+      return limitToRange(quadraticEquation(b, c, d), 0.0f, 1.0f)
     }
 
     val ba: Float = b / a
@@ -66,23 +66,23 @@ object CubismMath {
       val mp33: Float = mp3*mp3*mp3
       val r: Float = Math.sqrt(mp33).toFloat
       val t: Float = -q / (2.0f * r)
-      val cosphi: Float = RangeF(t, -1.0f, 1.0f)
+      val cosphi: Float = limitToRange(t, -1.0f, 1.0f)
       val phi: Float = Math.acos(cosphi).toFloat
       val crtr: Float = Math.cbrt(r).toFloat
       val t1: Float = 2.0f * crtr
 
       val root1 = t1 * Math.cos(phi / 3.0f).toFloat - ba / 3.0f
       if (Math.abs(root1 - center) < threshold) {
-        return RangeF( root1, 0.0f, 1.0f)
+        return limitToRange(root1, 0.0f, 1.0f)
       }
 
       val root2: Float = t1 * Math.cos((phi + 2.0f * Math.PI) / 3.0f).toFloat - ba / 3.0f
       if (Math.abs(root2 - center) < threshold) {
-        return RangeF(root2, 0.0f, 1.0f)
+        return limitToRange(root2, 0.0f, 1.0f)
       }
 
       val root3: Float = t1 * Math.cos((phi + 4.0f * Math.PI) / 3.0f).toFloat - ba / 3.0f
-      return RangeF(root3, 0.0f, 1.0f)
+      return limitToRange(root3, 0.0f, 1.0f)
     }
 
     if (discriminant == 0.0f) {
@@ -95,11 +95,11 @@ object CubismMath {
       val root1: Float = 2.0f * u1 - ba / 3.0f
 
       if (Math.abs(root1 - center) < threshold) {
-        return RangeF(root1, 0.0f, 1.0f)
+        return limitToRange(root1, 0.0f, 1.0f)
       }
 
       val root2: Float = -u1 - ba / 3.0f
-      return RangeF(root2, 0.0f, 1.0f)
+      return limitToRange(root2, 0.0f, 1.0f)
     }
 
     val sd: Float = Math.sqrt(discriminant).toFloat
@@ -107,8 +107,6 @@ object CubismMath {
     val v1: Float = Math.cbrt(sd + q2).toFloat
     val root1: Float = u1 - v1 - ba / 3.0f
 
-    RangeF(root1, 0.0f, 1.0f)
-
+    limitToRange(root1, 0.0f, 1.0f)
   }
-
 }

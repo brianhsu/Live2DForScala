@@ -58,13 +58,13 @@ abstract class ACubismMotion {
     val fadeIn: Float = if (_fadeInSeconds == 0.0f) {
       1.0f
     } else {
-      CubismMath.GetEasingSine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / _fadeInSeconds)
+      CubismMath.getEasingSin((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / _fadeInSeconds)
     }
 
     val fadeOut = if (_fadeOutSeconds == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
       1.0f
     } else {
-      CubismMath.GetEasingSine((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
+      CubismMath.getEasingSin((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
     }
 
     fadeWeight = fadeWeight * fadeIn * fadeOut
