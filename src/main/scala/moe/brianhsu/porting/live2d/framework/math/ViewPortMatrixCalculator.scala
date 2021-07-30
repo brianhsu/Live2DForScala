@@ -1,7 +1,8 @@
 package moe.brianhsu.porting.live2d.framework.math
 
+import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.porting.live2d.framework.math
-import moe.brianhsu.porting.live2d.framework.math.matrix.{GeneralMatrix, ViewMatrix}
+import moe.brianhsu.porting.live2d.framework.math.matrix.ViewMatrix
 
 class ViewPortMatrixCalculator {
 

@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.framework.math.matrix
+package moe.brianhsu.live2d.enitiy.math.matrix
 
 object Matrix4x4 {
   val NumberOfElements: Int = 4 * 4
@@ -15,7 +15,7 @@ trait Matrix4x4[T] {
   protected val dataArray: Array[Float]
   protected def buildFrom(x: Array[Float]): T
 
-  def matrixArraySnapshot: Array[Float] = dataArray
+  def matrixArraySnapshot: Array[Float] = copyDataArray(dataArray)
 
   def transformX(src: Float): Float = this.dataArray(0) * src + this.dataArray(12)
   def transformY(src: Float): Float = this.dataArray(5) * src + this.dataArray(13)
@@ -82,6 +82,7 @@ trait Matrix4x4[T] {
   def multiply(matrix: Matrix4x4[_]): T = {
     multiply(matrix.dataArray, this.dataArray)
   }
+
 
   private def multiply(a: Array[Float], b: Array[Float]): T = {
     val c = Array[Float](

@@ -1,5 +1,7 @@
 package moe.brianhsu.porting.live2d.framework.math.matrix
 
+import moe.brianhsu.live2d.enitiy.math.matrix.Matrix4x4
+
 class ModelMatrix(width: Float, height: Float, override val dataArray: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4[ModelMatrix] {
 
   def setCenterPosition(x: Float, y: Float): Unit = {

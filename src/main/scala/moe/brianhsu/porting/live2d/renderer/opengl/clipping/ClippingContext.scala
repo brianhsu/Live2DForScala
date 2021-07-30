@@ -1,9 +1,9 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.clipping
 
 import ClippingContext.channelColors
+import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
 import moe.brianhsu.porting.live2d.framework.math.Rectangle
-import moe.brianhsu.porting.live2d.framework.math.matrix.GeneralMatrix
 import moe.brianhsu.porting.live2d.renderer.opengl.TextureColor
 
 object ClippingContext {
