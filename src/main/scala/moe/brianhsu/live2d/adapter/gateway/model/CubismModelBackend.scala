@@ -243,7 +243,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val opacityPointer = opacityList.getPointerToFloat(i)
       val maskCount = maskCountList(i)
       val masks = (0 until maskCount).toList.map(j => masksList(i)(j))
-      val vertexInfo = drawable.VertexInfo(
+      val vertexInfo = VertexInfo(
         vertexCountList(i),
         indexCountList(i),
         positionList(i),
