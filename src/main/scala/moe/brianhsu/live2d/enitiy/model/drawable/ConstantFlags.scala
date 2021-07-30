@@ -1,7 +1,7 @@
-package moe.brianhsu.porting.live2d.framework.model.drawable
+package moe.brianhsu.live2d.enitiy.model.drawable
 
-import ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.ConstantDrawableFlagMask
+import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
 
 object ConstantFlags {
   sealed trait BlendMode

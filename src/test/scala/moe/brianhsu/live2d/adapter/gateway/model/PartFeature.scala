@@ -1,6 +1,7 @@
-package moe.brianhsu.porting.live2d.framework.model
+package moe.brianhsu.live2d.adapter.gateway.model
 
-import moe.brianhsu.porting.live2d.framework
+import moe.brianhsu.live2d.enitiy.model
+import moe.brianhsu.live2d.enitiy.model.Part
 import moe.brianhsu.porting.live2d.utils.NativeMemoryUtils
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -14,7 +15,7 @@ class PartFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
       val pointer = NativeMemoryUtils.createPointerToFloat(expectedOpacity)
 
       When("create a Part from that pointer")
-      val part = Part(pointer, "partId", None)
+      val part = model.Part(pointer, "partId", None)
 
       Then("it should able to read correct opacity value")
       part.opacity shouldBe expectedOpacity
@@ -23,7 +24,7 @@ class PartFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     Scenario("Write opacity value to C memory") {
       Given("a Part associated with a C memory")
       val pointer = NativeMemoryUtils.createPointerToFloat(0)
-      val part = framework.model.Part(pointer, "partId", None)
+      val part = Part(pointer, "partId", None)
 
       When("set opacity of a Part")
       part.setOpacity(567.123f)

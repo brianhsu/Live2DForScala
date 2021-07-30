@@ -6,13 +6,11 @@ import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.enitiy.core.CsmCoordinate
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
-import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
-import moe.brianhsu.porting.live2d.framework
+import moe.brianhsu.live2d.enitiy.model
+import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Parameter, Part, drawable}
 import moe.brianhsu.porting.live2d.framework.MocInfo
 import moe.brianhsu.porting.live2d.framework.exception._
-import moe.brianhsu.porting.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
-import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
-
 
 
 /**
@@ -96,7 +94,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
    * @throws  PartInitException if it cannot construct part objects.
    * @throws  TextureSizeMismatchException if the the number of provided texture does not match the information in the model.
    */
-  override def validateAllData() = {
+  override def validateAllData(): Unit = {
     this.drawables
     this.parameters
     this.parts
@@ -155,7 +153,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
         case _ => None
       }
 
-      val part = framework.model.Part(opacityPointer, partId, parentId)
+      val part = model.Part(opacityPointer, partId, parentId)
 
       part
     }
@@ -245,7 +243,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val opacityPointer = opacityList.getPointerToFloat(i)
       val maskCount = maskCountList(i)
       val masks = (0 until maskCount).toList.map(j => masksList(i)(j))
-      val vertexInfo = VertexInfo(
+      val vertexInfo = drawable.VertexInfo(
         vertexCountList(i),
         indexCountList(i),
         positionList(i),

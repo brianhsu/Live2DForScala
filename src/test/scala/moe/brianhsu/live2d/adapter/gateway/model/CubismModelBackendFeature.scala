@@ -6,9 +6,9 @@ import moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types._
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
+import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Part}
 import moe.brianhsu.porting.live2d.framework.exception._
-import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
 import moe.brianhsu.porting.live2d.framework.util.MocFileReader
 import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
 import moe.brianhsu.porting.live2d.utils._

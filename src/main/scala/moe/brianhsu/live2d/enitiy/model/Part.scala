@@ -1,7 +1,6 @@
-package moe.brianhsu.porting.live2d.framework.model
+package moe.brianhsu.live2d.enitiy.model
 
 import com.sun.jna.Pointer
-import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 /**
  * This class represent the part in the Live 2D model.

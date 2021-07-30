@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.framework.model
+package moe.brianhsu.live2d.enitiy.model
 
 /**
  * This class represent the canvas information about the Live 2D model
@@ -9,16 +9,19 @@ package moe.brianhsu.porting.live2d.framework.model
  * @param pixelPerUnit  How many pixels per unit.
  */
 case class CanvasInfo(widthInPixel: Float, heightInPixel: Float, originInPixel: (Float, Float), pixelPerUnit: Float) {
+
   assert(pixelPerUnit > 0, "pixelPerUnit should > 0")
 
   /**
    * Get canvas width in unit
+   *
    * @return Width in unit
    */
   def width: Float = widthInPixel / pixelPerUnit
 
   /**
    * Get canvas height in unit
+   *
    * @return Height in unit
    */
   def height: Float = heightInPixel / pixelPerUnit

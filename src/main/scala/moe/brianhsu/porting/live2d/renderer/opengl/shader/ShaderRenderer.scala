@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
-import moe.brianhsu.porting.live2d.framework.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
+import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 import moe.brianhsu.porting.live2d.framework.math.Matrix4x4
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureColor}

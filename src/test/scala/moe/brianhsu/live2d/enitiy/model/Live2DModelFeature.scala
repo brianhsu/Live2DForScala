@@ -2,8 +2,7 @@ package moe.brianhsu.live2d.enitiy.model
 
 import com.sun.jna.Memory
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
-import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
-import moe.brianhsu.porting.live2d.framework.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -151,7 +150,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val mockedParameters: Map[String, Parameter] = Map("p1" -> stub[Parameter])
       val mockedParts: Map[String, Part] = Map("p1" -> stub[Part])
       val mockedDrawables: Map[String, Drawable] = Map("d1" -> stub[Drawable])
-      val mockedCanvasInfo: CanvasInfo = stub[CanvasInfo]
+      val mockedCanvasInfo: CanvasInfo = CanvasInfo(1920, 1080, (0, 0), 1)
 
       val mockedBackend = new ModelBackend {
         override def textureFiles: List[String] = mockedTextureFiles
@@ -159,8 +158,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         override def parts: Map[String, Part] = mockedParts
         override def drawables: Map[String, Drawable] = mockedDrawables
         override def canvasInfo: CanvasInfo = mockedCanvasInfo
-        override def validateAllData(): Unit = ???
-        override def update(): Unit = ???
+        override def validateAllData(): Unit = canvasInfo
+        override def update(): Unit = {}
       }
 
       And("a Live2DModel backed by that backend")
@@ -370,7 +369,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     (() => vertexInfo.positions).when().returning(boundary)
 
-    Drawable(
+    drawable.Drawable(
       id, 0, ConstantFlags(0), DynamicFlags(null),
       textureIndex = 0, Nil,
       vertexInfo, drawOrderPointer = null,
@@ -385,8 +384,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     val renderOrderPointer = new Memory(4)
     renderOrderPointer.setInt(0, renderOrder)
 
-    Drawable(
-      id, index, ConstantFlags(0), DynamicFlags(null),
+    drawable.Drawable(
+      id, index, ConstantFlags(0), drawable.DynamicFlags(null),
       textureIndex = 0, masks,
       vertexInfo = null, drawOrderPointer = null,
       renderOrderPointer = renderOrderPointer, opacityPointer = null
@@ -401,8 +400,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     override val drawables: Map[String, Drawable] = Map.empty,
     override val canvasInfo: CanvasInfo = null
   ) extends ModelBackend {
-    override def validateAllData(): Unit = ???
-    override def update(): Unit = ???
+    override def validateAllData(): Unit = {}
+    override def update(): Unit = {}
   }
 
 

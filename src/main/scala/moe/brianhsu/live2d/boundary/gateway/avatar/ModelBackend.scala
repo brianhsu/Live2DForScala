@@ -1,8 +1,7 @@
 package moe.brianhsu.live2d.boundary.gateway.avatar
 
-import moe.brianhsu.live2d.enitiy.model.Parameter
-import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
-import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
+import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Parameter, Part}
 
 trait ModelBackend {
   /**
