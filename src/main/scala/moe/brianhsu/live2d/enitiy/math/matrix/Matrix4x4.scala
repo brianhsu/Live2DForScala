@@ -12,10 +12,9 @@ object Matrix4x4 {
 
 trait Matrix4x4[T] {
 
-  protected val dataArray: Array[Float]
-  protected def buildFrom(x: Array[Float]): T
+  val dataArray: Array[Float]
 
-  def matrixArraySnapshot: Array[Float] = copyDataArray(dataArray)
+  protected def buildFrom(x: Array[Float]): T
 
   def transformX(src: Float): Float = this.dataArray(0) * src + this.dataArray(12)
   def transformY(src: Float): Float = this.dataArray(5) * src + this.dataArray(13)

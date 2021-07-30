@@ -1,15 +1,14 @@
 package moe.brianhsu.live2d.enitiy.model
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
-import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.framework.math.matrix.{ModelMatrix, ViewMatrix}
+import moe.brianhsu.porting.live2d.framework.math.matrix.ModelMatrix
 
 class Live2DModel(modelBackend: ModelBackend) {
   private var savedParameters: Map[String, Float] = Map.empty
   private var fallbackParameters: Map[String, Parameter] = Map.empty
 
-  var modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height).setHeight(2.0f)
+  var modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
 
   /**
    * The list of texture file path of this model.
@@ -72,7 +71,7 @@ class Live2DModel(modelBackend: ModelBackend) {
   /**
    * Snapshot current value of parameters that is backed by model backend.
    *
-   * @note This will NOT snapshot the fallback parameters created by [[getParameterWithFallback]].
+   * @note This will NOT snapshot the fallback parameters created by [[parameterWithFallback]].
    */
   def snapshotParameters(): Unit = {
 
@@ -85,7 +84,7 @@ class Live2DModel(modelBackend: ModelBackend) {
   /**
    * Restore model backend backed parameters value from previous snapshot.
    *
-   * @note This will NOT restore the fallback parameters created by [[getParameterWithFallback]].
+   * @note This will NOT restore the fallback parameters created by [[parameterWithFallback]].
    */
   def restoreParameters(): Unit = {
     savedParameters.foreach { case (id, value) =>
@@ -127,7 +126,7 @@ class Live2DModel(modelBackend: ModelBackend) {
    *
    * @return The requested parameter, either backed by backend or a in-memory dummy one.
    */
-  def getParameterWithFallback(parameterId: String): Parameter = {
+  def parameterWithFallback(parameterId: String): Parameter = {
     parameters.get(parameterId)
       .orElse(fallbackParameters.get(parameterId))
       .getOrElse {
@@ -163,23 +162,6 @@ class Live2DModel(modelBackend: ModelBackend) {
         (transformedY <= bottom)
     }
     isHitHolder.getOrElse(false)
-  }
-
-  def getProjection(windowWidth: Int, windowHeight: Int, viewMatrix: ViewMatrix): GeneralMatrix = {
-    val isWindowVertical = canvasInfo.width > 1.0 && windowWidth < windowHeight
-    if (isWindowVertical) {
-      this.modelMatrix = modelMatrix.setWidth(2.0f)
-    }
-
-    val projection = if (isWindowVertical) {
-      (new GeneralMatrix).scale(1.0f, windowWidth.toFloat / windowHeight.toFloat)
-    } else {
-      new GeneralMatrix
-    }
-
-    projection
-      .scale(windowHeight.toFloat / windowWidth.toFloat, 1.0f)
-      .multiply(viewMatrix)
   }
 
   private def sortDrawableByIndex(): List[Drawable] = {

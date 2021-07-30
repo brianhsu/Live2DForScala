@@ -27,7 +27,7 @@ class PartFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
       val part = Part(pointer, "partId", None)
 
       When("set opacity of a Part")
-      part.setOpacity(567.123f)
+      part.opacity = 567.123f
 
       Then("the value of the native memory should have the updated value")
       pointer.getFloat(0) shouldBe 567.123f

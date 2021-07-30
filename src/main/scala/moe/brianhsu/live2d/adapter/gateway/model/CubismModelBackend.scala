@@ -8,7 +8,7 @@ import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
-import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Parameter, Part, drawable}
+import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Parameter, Part}
 import moe.brianhsu.porting.live2d.framework.MocInfo
 import moe.brianhsu.porting.live2d.framework.exception._
 
@@ -36,14 +36,14 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       this.modelSize
     )
 
-    if (textureFiles.size != getTextureCountFromModel(model)) {
+    if (textureFiles.size != calculateTextureCountFromModel(model)) {
       throw new TextureSizeMismatchException
     }
 
     model
   }
 
-  private def getTextureCountFromModel(model: CPointerToModel): Int = {
+  private def calculateTextureCountFromModel(model: CPointerToModel): Int = {
     val drawableCounts = core.cubismAPI.csmGetDrawableCount(model)
     val textureIndexList = core.cubismAPI.csmGetDrawableTextureIndices(model)
     val maxIndex = (0 until drawableCounts).map(i => textureIndexList(i)).max
@@ -145,7 +145,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     val range = (0 until partCount).toList
 
     range.map { i =>
-      val opacityPointer = partOpacities.getPointerToFloat(i)
+      val opacityPointer = partOpacities.pointerToFloat(i)
       val partId = partIds(i)
       val parentIndex = parentIndices(i)
       val parentId = parentIndex match {
@@ -183,7 +183,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val minValue = minValues(i)
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
-      val currentValuePointer = currentValues.getPointerToFloat(i)
+      val currentValuePointer = currentValues.pointerToFloat(i)
       val parameter = CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
       parameter
     }
@@ -236,11 +236,11 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     range.map { i =>
       val drawableId = drawableIdList(i)
       val constantFlags = ConstantFlags(constantFlagsList(i))
-      val dynamicFlags = DynamicFlags(dynamicFlagsList.getPointerToByte(i))
+      val dynamicFlags = DynamicFlags(dynamicFlagsList.pointerToByte(i))
       val textureIndex = textureIndexList(i)
-      val drawOrderPointer = drawOrderList.getPointerToInt(i)
-      val renderOrderPointer = renderOrderList.getPointerToInt(i)
-      val opacityPointer = opacityList.getPointerToFloat(i)
+      val drawOrderPointer = drawOrderList.pointerToInt(i)
+      val renderOrderPointer = renderOrderList.pointerToInt(i)
+      val opacityPointer = opacityList.pointerToFloat(i)
       val maskCount = maskCountList(i)
       val masks = (0 until maskCount).toList.map(j => masksList(i)(j))
       val vertexInfo = VertexInfo(

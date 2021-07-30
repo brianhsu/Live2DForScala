@@ -218,7 +218,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val live2DModel = new Live2DModel(backend)
 
       And("Update a fallback parameter created by getParameterWithFallback")
-      val fallbackParameter = live2DModel.getParameterWithFallback("notExistId")
+      val fallbackParameter = live2DModel.parameterWithFallback("notExistId")
       fallbackParameter.update(0.3f)
 
       And("snapshot the Live 2D model parameters")
@@ -280,7 +280,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val live2DModel = new Live2DModel(backend)
 
       When("get a parameter using getParameterWithFallback")
-      val parameter = live2DModel.getParameterWithFallback("id1")
+      val parameter = live2DModel.parameterWithFallback("id1")
 
       And("update the value of that parameter")
       parameter.update(0.5f)
@@ -295,13 +295,13 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val live2DModel = new Live2DModel(backend)
 
       And("get a parameter using getParameterWithFallback")
-      val parameter = live2DModel.getParameterWithFallback("nonExistId")
+      val parameter = live2DModel.parameterWithFallback("nonExistId")
 
       When("update the value of that parameter")
       parameter.update(0.5f)
 
       Then("we should able to get same value when call getParameterWithFallback again")
-      live2DModel.getParameterWithFallback("nonExistId").current shouldBe 0.5f
+      live2DModel.parameterWithFallback("nonExistId").current shouldBe 0.5f
     }
   }
 

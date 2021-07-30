@@ -105,7 +105,7 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       val parents = mock[CArrayOfInt]
 
       And("there is three mocked parts")
-      (opacities.getPointerToFloat _).expects(*).anyNumberOfTimes().returning(new Pointer(Native.malloc(4)))
+      (opacities.pointerToFloat _).expects(*).anyNumberOfTimes().returning(new Pointer(Native.malloc(4)))
 
       (ids.apply _).expects(0).anyNumberOfTimes().returning("id0")
       (ids.apply _).expects(1).anyNumberOfTimes().returning("id1")

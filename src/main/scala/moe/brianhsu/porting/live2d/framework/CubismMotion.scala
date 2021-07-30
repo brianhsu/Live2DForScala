@@ -179,7 +179,7 @@ class CubismMotion extends ACubismMotion {
         v = sourceValue + (value - sourceValue) * paramWeight
       }
       //model.setParameterValueUsingIndex(curves(c).Id, model.getParameterIndex(curves(c).Id), v)
-      model.getParameterWithFallback(curves(c).Id).update(v)
+      model.parameterWithFallback(curves(c).Id).update(v)
       //model.setParameterValue(curves(c).Id, v)
       c += 1
     }
@@ -218,7 +218,7 @@ class CubismMotion extends ACubismMotion {
     while (c < _motionData.CurveCount && curves(c).Type == CubismMotionCurveTarget_PartOpacity) {
       // Evaluate curve and apply value.
       value = EvaluateCurve(_motionData, curves(c), time)
-      model.getParameterWithFallback(curves(c).Id).update(value)
+      model.parameterWithFallback(curves(c).Id).update(value)
       //model.setParameterValueUsingIndex(curves(c).Id, model.getParameterIndex(curves(c).Id), value)
       //model.setParameterValue(curves(c).Id, value)
       c += 1

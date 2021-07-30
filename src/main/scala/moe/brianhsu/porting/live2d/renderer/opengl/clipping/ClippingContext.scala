@@ -54,8 +54,8 @@ class ClippingContext(val maskDrawable: List[Drawable], val clippedDrawables: Li
     val scaleX = layoutBoundsOnTex01.width / tmpBoundsOnModel.width
     val scaleY = layoutBoundsOnTex01.height / tmpBoundsOnModel.height
 
-    matrixForMask = matrixForMask.setMatrix(calcMaskMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY).matrixArraySnapshot)
-    matrixForDraw = matrixForDraw.setMatrix(calcDrawMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY).matrixArraySnapshot)
+    matrixForMask = matrixForMask.setMatrix(calcMaskMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY).dataArray)
+    matrixForDraw = matrixForDraw.setMatrix(calcDrawMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY).dataArray)
   }
 
   private def calcDrawMatrix(layoutBoundsOnTex01: Rectangle, tmpBoundsOnModel: Rectangle,
