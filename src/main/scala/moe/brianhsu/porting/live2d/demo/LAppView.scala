@@ -62,11 +62,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     } {
       // TODO:
       // There should be a better way to get width / height
-      val projection = viewPortMatrixCalculator.getProjection(
+      val projection = model.getProjection(
         drawCanvasInfo.currentCanvasWidth,
         drawCanvasInfo.currentCanvasHeight,
-        model.canvasInfo.width,
-        model.modelMatrix
+        viewPortMatrixCalculator.getViewMatrix
       )
 
       avatar.update(this.frameTimeCalculator.getDeltaTimeInSeconds)

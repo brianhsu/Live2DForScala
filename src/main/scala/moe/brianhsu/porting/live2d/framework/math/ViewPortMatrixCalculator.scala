@@ -1,5 +1,7 @@
 package moe.brianhsu.porting.live2d.framework.math
 
+import moe.brianhsu.porting.live2d.framework.math
+
 class ViewPortMatrixCalculator {
 
   private val ViewScale = 1.0f
@@ -12,7 +14,7 @@ class ViewPortMatrixCalculator {
   private val ViewLogicalMaxTop = -2.0f
   private val ViewLogicalMaxBottom = 2.0f
 
-  private val deviceToScreen: Matrix4x4 = new Matrix4x4
+  private var deviceToScreen: Matrix4x4 = new Matrix4x4
   private var viewMatrix: ViewMatrix = new ViewMatrix(Rectangle(), Rectangle(), 0, 0)
   private var surfaceWidth: Int = 0
   private var surfaceHeight: Int = 0
@@ -46,36 +48,22 @@ class ViewPortMatrixCalculator {
         ViewLogicalMaxBottom - ViewLogicalMaxTop
       ),
       ViewMaxScale, ViewMinScale
-    )
-
-    this.viewMatrix.scale(ViewScale, ViewScale)
+    ).scale(ViewScale, ViewScale).asInstanceOf[ViewMatrix]
   }
 
   def updateDeviceToScreen(left: Float, right: Float, top: Float, bottom: Float): Unit = {
-    deviceToScreen.loadIdentity()
-
-    if (surfaceWidth > surfaceHeight) {
+    val (scaleRelativeX, scaleRelativeY) = if (surfaceWidth > surfaceHeight) {
       val screenW: Float = (right - left).abs
-      deviceToScreen.scaleRelative(screenW / surfaceWidth, -screenW / surfaceWidth)
+      (screenW / surfaceWidth, -screenW / surfaceWidth)
     } else {
       val screenH: Float = (bottom - top).abs
-      deviceToScreen.scaleRelative(screenH / surfaceHeight, -screenH / surfaceHeight)
-    }
-    deviceToScreen.translateRelative(-surfaceWidth * 0.5f, -surfaceHeight * 0.5f)
-  }
-
-  def getProjection(windowWidth: Int, windowHeight: Int,
-                    modelCanvasWidth: Float, modelMatrix: ModelMatrix): Matrix4x4 = {
-    val projection = new Matrix4x4
-
-    if (modelCanvasWidth > 1.0 && windowWidth < windowHeight) {
-      modelMatrix.setWidth(2.0f)
-      projection.scale(1.0f, windowWidth.toFloat / windowHeight.toFloat)
+      (screenH / surfaceHeight, -screenH / surfaceHeight)
     }
 
-    projection.scale(windowHeight.toFloat / windowWidth.toFloat, 1.0f)
-    projection.multiplyByMatrix(viewMatrix)
-    projection
+    deviceToScreen =
+      (new Matrix4x4)
+        .scaleRelative(scaleRelativeX, scaleRelativeY)
+        .translateRelative(-surfaceWidth * 0.5f, -surfaceHeight * 0.5f)
   }
 
 }

@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.enitiy.model
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.framework.math.ModelMatrix
+import moe.brianhsu.porting.live2d.framework.math.{Matrix4x4, ModelMatrix, ViewMatrix}
 
 class Live2DModel(modelBackend: ModelBackend) {
   private var savedParameters: Map[String, Float] = Map.empty
@@ -162,6 +162,23 @@ class Live2DModel(modelBackend: ModelBackend) {
         (transformedY <= bottom)
     }
     isHitHolder.getOrElse(false)
+  }
+
+  def getProjection(windowWidth: Int, windowHeight: Int, viewMatrix: Matrix4x4): Matrix4x4 = {
+    val isWindowVertical = canvasInfo.width > 1.0 && windowWidth < windowHeight
+    if (isWindowVertical) {
+      modelMatrix.setWidth(2.0f)
+    }
+
+    val projection = if (isWindowVertical) {
+      (new Matrix4x4).scale(1.0f, windowWidth.toFloat / windowHeight.toFloat)
+    } else {
+      new Matrix4x4
+    }
+
+    projection
+      .scale(windowHeight.toFloat / windowWidth.toFloat, 1.0f)
+      .multiplyByMatrix(viewMatrix)
   }
 
   private def sortDrawableByIndex(): List[Drawable] = {

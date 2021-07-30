@@ -36,6 +36,7 @@ class ViewMatrix(screen: Rectangle, max: Rectangle, maxScale: Float, minScale: F
     }
   }
 
+  /*
   def adjustTranslate(x: Float, y: Float): Unit = {
 
     val tr1 = Array[Float](
@@ -45,7 +46,7 @@ class ViewMatrix(screen: Rectangle, max: Rectangle, maxScale: Float, minScale: F
       getXForTranslate(x),      getYForTranslate(y),      0.0f, 1.0f
     )
 
-    Matrix4x4.multiply(tr1, this.tr, this.tr)
+    Matrix4x4.staticMultiply(tr1, this.tr, this.tr)
   }
 
   def adjustScale(cx: Float, cy: Float, scale: Float): Unit = {
@@ -86,9 +87,11 @@ class ViewMatrix(screen: Rectangle, max: Rectangle, maxScale: Float, minScale: F
       -cx,  -cy,  0.0f, 1.0f
     )
 
-    Matrix4x4.multiply(tr3, this.tr, this.tr)
-    Matrix4x4.multiply(tr2, this.tr, this.tr)
-    Matrix4x4.multiply(tr1, this.tr, this.tr)
+    Matrix4x4.staticMultiply(tr3, this.tr, this.tr)
+    Matrix4x4.staticMultiply(tr2, this.tr, this.tr)
+    Matrix4x4.staticMultiply(tr1, this.tr, this.tr)
   }
+
+   */
 
 }

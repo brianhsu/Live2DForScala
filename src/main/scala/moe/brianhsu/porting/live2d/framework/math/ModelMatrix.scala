@@ -21,7 +21,7 @@ class ModelMatrix(width: Float, height: Float) extends Matrix4x4 {
   }
 
   def setRight(x: Float): Unit = {
-    val w = width * getScaleX()
+    val w = width * scaleX
     translateX(x - w)
   }
 
@@ -30,16 +30,16 @@ class ModelMatrix(width: Float, height: Float) extends Matrix4x4 {
   }
 
   def setBottom(y: Float): Unit = {
-    translateY(y - height * getScaleY())
+    translateY(y - height * scaleY)
   }
 
   def setCenterY(y: Float): Unit = {
-    val h = height * getScaleY()
+    val h = height * scaleY
     translateY(y - (h / 2.0f))
   }
 
   def setCenterX(x: Float): Unit = {
-    val w = width * getScaleX()
+    val w = width * scaleX
     translateX(x - (w / 2.0f))
   }
 

@@ -48,9 +48,7 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
 
   def draw(avatar: Avatar, projection: Matrix4x4): Unit = {
       for(model <- avatar.modelHolder) {
-        projection.multiplyByMatrix(model.modelMatrix)
-        this.setProjection(projection)
-
+        this.setProjection(projection.multiplyByMatrix(model.modelMatrix))
         this.profile.save()
         this.drawModel()
         this.profile.restore()

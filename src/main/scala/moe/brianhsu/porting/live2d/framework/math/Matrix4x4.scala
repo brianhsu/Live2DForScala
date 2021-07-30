@@ -1,9 +1,9 @@
 package moe.brianhsu.porting.live2d.framework.math
 
 object Matrix4x4 {
-  val NumberOfElements = 4 * 4
+  val NumberOfElements: Int = 4 * 4
 
-  def multiply(a: Array[Float], b: Array[Float], dst: Array[Float]): Unit = {
+  def staticMultiply(a: Array[Float], b: Array[Float], dst: Array[Float]): Unit = {
     val c = Array[Float](
       0.0f, 0.0f, 0.0f, 0.0f,
       0.0f, 0.0f, 0.0f, 0.0f,
@@ -30,22 +30,19 @@ object Matrix4x4 {
 class Matrix4x4 {
 
   import Matrix4x4.NumberOfElements
-  import Matrix4x4.multiply
 
-  protected val tr = createIdentity()
+  protected val tr: Array[Float] = createIdentity()
 
-  def createIdentity(): Array[Float] = Array[Float](
+  private def createIdentity(): Array[Float] = Array[Float](
       1.0f, 0.0f, 0.0f, 0.0f,
       0.0f, 1.0f, 0.0f, 0.0f,
       0.0f, 0.0f, 1.0f, 0.0f,
       0.0f, 0.0f, 0.0f, 1.0f
   )
 
-  def loadIdentity(): Unit = setMatrix(createIdentity())
+  def matrixArray: Array[Float] = tr
 
-  def getArray(): Array[Float] = tr
-
-  def translateRelative(x: Float, y: Float): Unit = {
+  def translateRelative(x: Float, y: Float): Matrix4x4 = {
     val tr1 = Array[Float](
       1.0f, 0.0f, 0.0f, 0.0f,
       0.0f, 1.0f, 0.0f, 0.0f,
@@ -54,14 +51,16 @@ class Matrix4x4 {
     )
 
     multiply(tr1, this.tr, this.tr)
+    this
   }
 
-  def translate(x: Float, y: Float): Unit = {
+  def translate(x: Float, y: Float): Matrix4x4 = {
     this.tr(12) = x
     this.tr(13) = y
+    this
   }
 
-  def scaleRelative(x: Float, y: Float): Unit = {
+  def scaleRelative(x: Float, y: Float): Matrix4x4 = {
     val tr1 = Array(
       x,      0.0f,   0.0f, 0.0f,
       0.0f,   y,      0.0f, 0.0f,
@@ -70,11 +69,13 @@ class Matrix4x4 {
     )
 
     multiply(tr1, this.tr, this.tr)
+    this
   }
 
-  def scale(x: Float, y: Float): Unit = {
+  def scale(x: Float, y: Float): Matrix4x4 = {
     this.tr(0) = x
     this.tr(5) = y
+    this
   }
 
   def transformX(src: Float): Float = this.tr(0) * src + this.tr(12)
@@ -85,25 +86,55 @@ class Matrix4x4 {
 
   def invertTransformY(src: Float): Float = (src - this.tr(13)) / this.tr(5)
 
-  def setMatrix(tr: Array[Float]): Unit = {
+  def setMatrix(tr: Array[Float]): Matrix4x4 = {
     for (i <- 0 until NumberOfElements) {
       this.tr(i) = tr(i)
     }
+    this
   }
 
-  def getScaleX(): Float = this.tr(0)
-  def getScaleY(): Float = this.tr(5)
-  def getTranslateX: Float = this.tr(12)
-  def getTranslateY: Float = this.tr(13)
-  def translateX(x: Float): Unit = {
+  def scaleX: Float = this.tr(0)
+  def scaleY: Float = this.tr(5)
+  def translateX: Float = this.tr(12)
+  def translateY: Float = this.tr(13)
+
+  def translateX(x: Float): Matrix4x4 = {
     this.tr(12) = x
+    this
   }
 
-  def translateY(y: Float): Unit = {
+  def translateY(y: Float): Matrix4x4 = {
     this.tr(13) = y
+    this
   }
 
-  def multiplyByMatrix(matrix4x4: Matrix4x4): Unit = {
-    multiply(matrix4x4.getArray(), this.tr, this.tr)
+  def multiplyByMatrix(matrix4x4: Matrix4x4): Matrix4x4 = {
+    multiply(matrix4x4.matrixArray, this.tr, this.tr)
+    this
   }
+
+  def multiply(a: Array[Float], b: Array[Float], dst: Array[Float]): Unit = {
+    val c = Array[Float](
+      0.0f, 0.0f, 0.0f, 0.0f,
+      0.0f, 0.0f, 0.0f, 0.0f,
+      0.0f, 0.0f, 0.0f, 0.0f,
+      0.0f, 0.0f, 0.0f, 0.0f
+    )
+
+    val n = 4
+
+    for (i <- 0 until n) {
+      for (j <- 0 until n) {
+        for (k <- 0 until n) {
+          c(j + i * 4) += a(k + i * 4) * b(j + k * 4)
+        }
+      }
+    }
+
+    for (i <- 0 until NumberOfElements) {
+      dst(i) = c(i)
+    }
+
+  }
+
 }
