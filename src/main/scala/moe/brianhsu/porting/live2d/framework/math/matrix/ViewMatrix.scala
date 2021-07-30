@@ -1,4 +1,6 @@
-package moe.brianhsu.porting.live2d.framework.math
+package moe.brianhsu.porting.live2d.framework.math.matrix
+
+import moe.brianhsu.porting.live2d.framework.math.Rectangle
 
 /**
  *  screen.left: Float = 0        ///< デバイスに対応する論理座標上の範囲（左辺X軸位置）
@@ -12,14 +14,16 @@ package moe.brianhsu.porting.live2d.framework.math
  *  maxScale: Float = 0          ///< 拡大率の最大値
  *  minScale: Float = 0          ///< 拡大率の最小値
  */
-class ViewMatrix(screen: Rectangle, max: Rectangle, maxScale: Float, minScale: Float) extends Matrix4x4 {
+class ViewMatrix(screen: Rectangle, max: Rectangle,
+                 maxScale: Float, minScale: Float,
+                 override val dataArray: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4[ViewMatrix] {
 
   private def getXForTranslate(x: Float): Float = {
 
-    if (this.tr(0) * this.max.rightX + (this.tr(12) + x) < this.screen.rightX)  {
-      this.screen.rightX - this.tr(0) * this.max.rightX - this.tr(12)
-    } else if (this.tr(0) * this.max.leftX + (this.tr(12) + x) > this.screen.leftX) {
-      this.screen.leftX - this.tr(0) * this.max.leftX - this.tr(12)
+    if (this.dataArray(0) * this.max.rightX + (this.dataArray(12) + x) < this.screen.rightX)  {
+      this.screen.rightX - this.dataArray(0) * this.max.rightX - this.dataArray(12)
+    } else if (this.dataArray(0) * this.max.leftX + (this.dataArray(12) + x) > this.screen.leftX) {
+      this.screen.leftX - this.dataArray(0) * this.max.leftX - this.dataArray(12)
     } else {
       x
     }
@@ -27,10 +31,10 @@ class ViewMatrix(screen: Rectangle, max: Rectangle, maxScale: Float, minScale: F
   }
 
   private def getYForTranslate(y: Float): Float = {
-    if (this.tr(5) * this.max.topY + (this.tr(13) + y) > this.screen.topY) {
-      this.screen.topY - this.tr(5) * this.max.topY - this.tr(13)
-    } else if (this.tr(5) * this.max.bottomY + (this.tr(13) + y) < this.screen.bottomY) {
-      this.screen.bottomY - this.tr(5) * this.max.bottomY - this.tr(13)
+    if (this.dataArray(5) * this.max.topY + (this.dataArray(13) + y) > this.screen.topY) {
+      this.screen.topY - this.dataArray(5) * this.max.topY - this.dataArray(13)
+    } else if (this.dataArray(5) * this.max.bottomY + (this.dataArray(13) + y) < this.screen.bottomY) {
+      this.screen.bottomY - this.dataArray(5) * this.max.bottomY - this.dataArray(13)
     } else {
       y
     }
@@ -94,4 +98,7 @@ class ViewMatrix(screen: Rectangle, max: Rectangle, maxScale: Float, minScale: F
 
    */
 
+  override protected def buildFrom(x: Array[Float]): ViewMatrix = {
+    new ViewMatrix(screen, max, maxScale, minScale, dataArray)
+  }
 }

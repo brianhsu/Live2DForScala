@@ -12,6 +12,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory
   with TableDrivenPropertyChecks {
 
+  private val mockedCanvasInfo = CanvasInfo(1980, 1020, (0, 0), 1)
   Feature("Use containMaskedDrawables to get whether drawable has mask or not") {
     Scenario("No drawable at all") {
       Given("A model without any drawable")
@@ -175,14 +176,14 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Update model") {
       Given("A Live2DModel backed by mocked model backend")
-      val mockedBackend = stub[MockedBackend]
+      val mockedBackend = new MockedBackend()
       val model = new Live2DModel(mockedBackend)
 
       When("update model")
       model.update()
 
       Then("it should delegate to mocked backend")
-      (mockedBackend.update _).verify().once()
+      mockedBackend.updatedCount shouldBe 1
     }
   }
 
@@ -251,10 +252,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         "id2" -> new JavaVMParameter("id2", default = 0.7f, value = 0.2f),
         "id3" -> new JavaVMParameter("id3", default = 0.8f, value = 0.3f),
       )
-      val backend = stub[ModelBackend]
+      val backend = new MockedBackend(parameters = parameters)
       val live2DModel = new Live2DModel(backend)
-
-      (() => backend.parameters).when().returning(parameters)
 
       When("reset the model")
       live2DModel.reset()
@@ -266,7 +265,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       }
 
       And("it should call update on backend")
-      (backend.update _).verify().once()
+      backend.updatedCount shouldBe 1
     }
   }
 
@@ -398,10 +397,13 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     override val parameters: Map[String, Parameter] = Map.empty,
     override val parts: Map[String, Part] = Map.empty,
     override val drawables: Map[String, Drawable] = Map.empty,
-    override val canvasInfo: CanvasInfo = null
+    override val canvasInfo: CanvasInfo = mockedCanvasInfo
   ) extends ModelBackend {
+    var updatedCount: Int = 0
     override def validateAllData(): Unit = {}
-    override def update(): Unit = {}
+    override def update(): Unit = {
+      updatedCount += 1
+    }
   }
 
 

@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
 import moe.brianhsu.porting.live2d.adapter.OpenGL
-import moe.brianhsu.porting.live2d.framework.math.Matrix4x4
+import moe.brianhsu.porting.live2d.framework.math.matrix.GeneralMatrix
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureColor}
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingContext
 
@@ -21,7 +21,7 @@ class ShaderRenderer(implicit gl: OpenGL) {
 
   def render(renderer: Renderer, textureId: Int,
              vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode,
-             baseColor: TextureColor, projection: Matrix4x4,
+             baseColor: TextureColor, projection: GeneralMatrix,
              invertedMask: Boolean): Unit = {
 
     renderer.getClippingContextBufferForMask match {
@@ -30,7 +30,7 @@ class ShaderRenderer(implicit gl: OpenGL) {
     }
   }
 
-  private def renderDrawable(renderer: Renderer, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: Matrix4x4, invertedMask: Boolean): Unit = {
+  private def renderDrawable(renderer: Renderer, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: GeneralMatrix, invertedMask: Boolean): Unit = {
     val drawClippingContextHolder = renderer.getClippingContextBufferForDraw
     val masked = drawClippingContextHolder.isDefined // この描画オブジェクトはマスク対象か
     val shader = masked match {
@@ -53,7 +53,7 @@ class ShaderRenderer(implicit gl: OpenGL) {
       val textureIdHolder = renderer.offscreenBufferHolder.map(_.getColorBuffer)
       textureIdHolder.foreach { textureId =>
         setGlTexture(GL_TEXTURE1, textureId, shader.samplerTexture1Location, 1)
-        gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, FloatBuffer.wrap(context.getMatrixForDraw.matrixArray))
+        gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, FloatBuffer.wrap(context.getMatrixForDraw.matrixArraySnapshot))
         setGlColorChannel(context, shader)
       }
     }
@@ -62,7 +62,7 @@ class ShaderRenderer(implicit gl: OpenGL) {
     setGlTexture(GL_TEXTURE0, textureId, shader.samplerTexture0Location, 0)
 
     //座標変換
-    gl.glUniformMatrix4fv(shader.uniformMatrixLocation, 1, transpose = false, FloatBuffer.wrap(projection.matrixArray))
+    gl.glUniformMatrix4fv(shader.uniformMatrixLocation, 1, transpose = false, FloatBuffer.wrap(projection.matrixArraySnapshot))
     gl.glUniform4f(shader.uniformBaseColorLocation, baseColor.r, baseColor.g, baseColor.b, baseColor.a)
     setGlBlend(blending)
   }
@@ -76,7 +76,7 @@ class ShaderRenderer(implicit gl: OpenGL) {
     setGlVertexInfo(vertexArray, uvArray, shader)
     setGlColorChannel(context, shader)
 
-    gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, FloatBuffer.wrap(context.getMatrixForMask.matrixArray))
+    gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, FloatBuffer.wrap(context.getMatrixForMask.matrixArraySnapshot))
 
     val rect = context.getLayoutBounds
 

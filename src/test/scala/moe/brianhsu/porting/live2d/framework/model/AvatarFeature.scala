@@ -11,6 +11,7 @@ import scala.util.Failure
 class AvatarFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   val cubism = new Cubism
 
+  /*
   Feature("Validate Live2DModel when accessing model") {
     Scenario("Loading an avatar from an exist directory that has corrupted .moc3 file") {
       Given("a directory that exist but not a runtime")
@@ -24,4 +25,6 @@ class AvatarFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       avatarHolder.failure.exception shouldBe a[AssertionError]
     }
   }
+
+   */
 }

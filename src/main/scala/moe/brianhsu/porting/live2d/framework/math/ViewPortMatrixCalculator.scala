@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.framework.math
 
 import moe.brianhsu.porting.live2d.framework.math
+import moe.brianhsu.porting.live2d.framework.math.matrix.{GeneralMatrix, ViewMatrix}
 
 class ViewPortMatrixCalculator {
 
@@ -14,13 +15,13 @@ class ViewPortMatrixCalculator {
   private val ViewLogicalMaxTop = -2.0f
   private val ViewLogicalMaxBottom = 2.0f
 
-  private var deviceToScreen: Matrix4x4 = new Matrix4x4
+  private var deviceToScreen: GeneralMatrix = new GeneralMatrix
   private var viewMatrix: ViewMatrix = new ViewMatrix(Rectangle(), Rectangle(), 0, 0)
   private var surfaceWidth: Int = 0
   private var surfaceHeight: Int = 0
 
-  def getDeviceToScreen: Matrix4x4 = deviceToScreen
-  def getViewMatrix: Matrix4x4 = viewMatrix
+  def getDeviceToScreen: GeneralMatrix = deviceToScreen
+  def getViewMatrix: ViewMatrix = viewMatrix
 
   def updateViewPort(width: Int, height: Int): Unit = {
     this.surfaceWidth = width
@@ -48,7 +49,7 @@ class ViewPortMatrixCalculator {
         ViewLogicalMaxBottom - ViewLogicalMaxTop
       ),
       ViewMaxScale, ViewMinScale
-    ).scale(ViewScale, ViewScale).asInstanceOf[ViewMatrix]
+    ).scale(ViewScale, ViewScale)
   }
 
   def updateDeviceToScreen(left: Float, right: Float, top: Float, bottom: Float): Unit = {
@@ -61,7 +62,7 @@ class ViewPortMatrixCalculator {
     }
 
     deviceToScreen =
-      (new Matrix4x4)
+      (new GeneralMatrix)
         .scaleRelative(scaleRelativeX, scaleRelativeY)
         .translateRelative(-surfaceWidth * 0.5f, -surfaceHeight * 0.5f)
   }
