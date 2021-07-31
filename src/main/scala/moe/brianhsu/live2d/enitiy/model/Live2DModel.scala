@@ -153,8 +153,8 @@ class Live2DModel(modelBackend: ModelBackend) {
       val top: Float = yCoordinates.min
       val bottom = yCoordinates.max
 
-      val transformedX = modelMatrix.invertTransformX(pointX)
-      val transformedY = modelMatrix.invertTransformY(pointY)
+      val transformedX = modelMatrix.invertedTransformedX(pointX)
+      val transformedY = modelMatrix.invertedTransformedY(pointY)
 
       (left <= transformedX) &&
         (transformedX <= right) &&

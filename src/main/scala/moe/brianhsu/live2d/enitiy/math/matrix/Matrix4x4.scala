@@ -10,41 +10,39 @@ object Matrix4x4 {
   )
 }
 
-trait Matrix4x4[T] {
+trait Matrix4x4 {
 
-  val dataArray: Array[Float]
+  type T <: Matrix4x4
+
+  val elements: Array[Float]
 
   protected def buildFrom(x: Array[Float]): T
 
-  def transformX(src: Float): Float = this.dataArray(0) * src + this.dataArray(12)
-  def transformY(src: Float): Float = this.dataArray(5) * src + this.dataArray(13)
-  def invertTransformX(src: Float): Float = (src - this.dataArray(12)) / this.dataArray(0)
-  def invertTransformY(src: Float): Float = (src - this.dataArray(13)) / this.dataArray(5)
-  def scaleX: Float = this.dataArray(0)
-  def scaleY: Float = this.dataArray(5)
-  def translateX: Float = this.dataArray(12)
-  def translateY: Float = this.dataArray(13)
+  def transformedX(src: Float): Float = this.elements(0) * src + this.elements(12)
+  def transformedY(src: Float): Float = this.elements(5) * src + this.elements(13)
+  def invertedTransformedX(src: Float): Float = (src - this.elements(12)) / this.elements(0)
+  def invertedTransformedY(src: Float): Float = (src - this.elements(13)) / this.elements(5)
+
+  def xScalar: Float = this.elements(0)
+  def yScalar: Float = this.elements(5)
+  def xTranslator: Float = this.elements(12)
+  def yTranslator: Float = this.elements(13)
 
   def scale(x: Float, y: Float): T = {
-    val newDataArray = copyDataArray(this.dataArray)
+    val newDataArray = copyDataArray(this.elements)
     newDataArray(0) = x
     newDataArray(5) = y
     buildFrom(newDataArray)
   }
 
-  def setMatrix(tr: Array[Float]): T = {
-    val newDataArray = copyDataArray(tr)
-    buildFrom(newDataArray)
-  }
-
   def translateX(x: Float): T = {
-    val newDataArray = copyDataArray(this.dataArray)
+    val newDataArray = copyDataArray(this.elements)
     newDataArray(12) = x
     buildFrom(newDataArray)
   }
 
   def translateY(y: Float): T = {
-    val newDataArray = copyDataArray(this.dataArray)
+    val newDataArray = copyDataArray(this.elements)
     newDataArray(13) = y
     buildFrom(newDataArray)
   }
@@ -57,11 +55,11 @@ trait Matrix4x4[T] {
       x,    y,    0.0f, 1.0f
     )
 
-    multiply(tr1, this.dataArray)
+    multiply(tr1, this.elements)
   }
 
   def translate(x: Float, y: Float): T = {
-    val newArray = copyDataArray(this.dataArray)
+    val newArray = copyDataArray(this.elements)
     newArray(12) = x
     newArray(13) = y
     buildFrom(newArray)
@@ -75,11 +73,11 @@ trait Matrix4x4[T] {
       0.0f,   0.0f,   0.0f, 1.0f
     )
 
-    multiply(tr1, this.dataArray)
+    multiply(tr1, this.elements)
   }
 
-  def multiply(matrix: Matrix4x4[_]): T = {
-    multiply(matrix.dataArray, this.dataArray)
+  def multiply(matrix: Matrix4x4): T = {
+    multiply(matrix.elements, this.elements)
   }
 
 

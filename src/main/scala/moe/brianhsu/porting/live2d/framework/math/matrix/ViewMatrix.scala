@@ -17,14 +17,16 @@ import moe.brianhsu.porting.live2d.framework.math.Rectangle
  */
 class ViewMatrix(screen: Rectangle, max: Rectangle,
                  maxScale: Float, minScale: Float,
-                 override val dataArray: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4[ViewMatrix] {
+                 override val elements: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4 {
+
+  type T = ViewMatrix
 
   private def getXForTranslate(x: Float): Float = {
 
-    if (this.dataArray(0) * this.max.rightX + (this.dataArray(12) + x) < this.screen.rightX)  {
-      this.screen.rightX - this.dataArray(0) * this.max.rightX - this.dataArray(12)
-    } else if (this.dataArray(0) * this.max.leftX + (this.dataArray(12) + x) > this.screen.leftX) {
-      this.screen.leftX - this.dataArray(0) * this.max.leftX - this.dataArray(12)
+    if (this.elements(0) * this.max.rightX + (this.elements(12) + x) < this.screen.rightX)  {
+      this.screen.rightX - this.elements(0) * this.max.rightX - this.elements(12)
+    } else if (this.elements(0) * this.max.leftX + (this.elements(12) + x) > this.screen.leftX) {
+      this.screen.leftX - this.elements(0) * this.max.leftX - this.elements(12)
     } else {
       x
     }
@@ -32,10 +34,10 @@ class ViewMatrix(screen: Rectangle, max: Rectangle,
   }
 
   private def getYForTranslate(y: Float): Float = {
-    if (this.dataArray(5) * this.max.topY + (this.dataArray(13) + y) > this.screen.topY) {
-      this.screen.topY - this.dataArray(5) * this.max.topY - this.dataArray(13)
-    } else if (this.dataArray(5) * this.max.bottomY + (this.dataArray(13) + y) < this.screen.bottomY) {
-      this.screen.bottomY - this.dataArray(5) * this.max.bottomY - this.dataArray(13)
+    if (this.elements(5) * this.max.topY + (this.elements(13) + y) > this.screen.topY) {
+      this.screen.topY - this.elements(5) * this.max.topY - this.elements(13)
+    } else if (this.elements(5) * this.max.bottomY + (this.elements(13) + y) < this.screen.bottomY) {
+      this.screen.bottomY - this.elements(5) * this.max.bottomY - this.elements(13)
     } else {
       y
     }
@@ -100,6 +102,6 @@ class ViewMatrix(screen: Rectangle, max: Rectangle,
    */
 
   override protected def buildFrom(x: Array[Float]): ViewMatrix = {
-    new ViewMatrix(screen, max, maxScale, minScale, dataArray)
+    new ViewMatrix(screen, max, maxScale, minScale, elements)
   }
 }

@@ -2,7 +2,9 @@ package moe.brianhsu.porting.live2d.framework.math.matrix
 
 import moe.brianhsu.live2d.enitiy.math.matrix.Matrix4x4
 
-class ModelMatrix(width: Float, height: Float, override val dataArray: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4[ModelMatrix] {
+class ModelMatrix(width: Float, height: Float, override val elements: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4 {
+
+  type T = ModelMatrix
 
   def setCenterPosition(x: Float, y: Float): Unit = {
     setCenterX(x)
@@ -16,21 +18,21 @@ class ModelMatrix(width: Float, height: Float, override val dataArray: Array[Flo
   def setLeft(x: Float): ModelMatrix = setX(x)
 
   def setRight(x: Float): ModelMatrix = {
-    val w = width * scaleX
+    val w = width * xScalar
     translateX(x - w)
   }
 
   def setTop(y: Float): ModelMatrix = setY(y)
 
-  def setBottom(y: Float): ModelMatrix = translateY(y - height * scaleY)
+  def setBottom(y: Float): ModelMatrix = translateY(y - height * yScalar)
 
   def setCenterY(y: Float): ModelMatrix = {
-    val h = height * scaleY
+    val h = height * yScalar
     translateY(y - (h / 2.0f))
   }
 
   def setCenterX(x: Float): ModelMatrix = {
-    val w = width * scaleX
+    val w = width * xScalar
     translateX(x - (w / 2.0f))
   }
 

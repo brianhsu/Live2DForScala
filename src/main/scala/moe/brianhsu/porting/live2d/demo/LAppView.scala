@@ -101,10 +101,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
 
   def onMouseReleased(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(y.toFloat)
-    val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
-    val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
+    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
+    val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
+    val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
 
     faceDirection.setFaceTargetCoordinate(0.0f, 0.0f)
     for {
@@ -119,10 +119,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
 
   def onMouseDragged(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(y.toFloat)
-    val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
-    val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
+    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
+    val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
+    val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
     faceDirection.setFaceTargetCoordinate(viewX, viewY)
   }
 
