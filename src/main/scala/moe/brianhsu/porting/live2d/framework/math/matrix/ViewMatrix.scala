@@ -101,7 +101,7 @@ class ViewMatrix(screen: Rectangle, max: Rectangle,
 
    */
 
-  override protected def buildFrom(x: Array[Float]): ViewMatrix = {
+  override protected def buildFrom(elements: Array[Float]): ViewMatrix = {
     new ViewMatrix(screen, max, maxScale, minScale, elements)
   }
 }

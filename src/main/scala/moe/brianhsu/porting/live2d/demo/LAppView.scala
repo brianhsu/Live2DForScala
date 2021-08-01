@@ -77,8 +77,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
 
     def updateModelMatrix(model: Live2DModel)(viewOrientation: ViewOrientation): Unit = {
       val updatedMatrix = viewOrientation match {
-        case Horizontal => model.modelMatrix.setHeight(2.0f)
-        case Vertical => model.modelMatrix.setWidth(2.0f)
+        case Horizontal => model.modelMatrix//.height(2.0f)
+        case Vertical => model.modelMatrix//.width(2.0f)
       }
       model.modelMatrix = updatedMatrix
     }

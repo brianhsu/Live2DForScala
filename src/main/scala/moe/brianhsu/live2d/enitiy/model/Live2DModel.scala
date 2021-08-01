@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.enitiy.model
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
+import moe.brianhsu.live2d.enitiy.math.matrix.ModelMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.framework.math.matrix.ModelMatrix
 
 class Live2DModel(modelBackend: ModelBackend) {
   private var savedParameters: Map[String, Float] = Map.empty

@@ -1,7 +1,6 @@
-package moe.brianhsu.live2d.adapter.gateway.model
+package moe.brianhsu.live2d.enitiy.model
 
 import moe.brianhsu.live2d.enitiy.model
-import moe.brianhsu.live2d.enitiy.model.Part
 import moe.brianhsu.porting.live2d.utils.NativeMemoryUtils
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

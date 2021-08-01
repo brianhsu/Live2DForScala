@@ -1,7 +1,6 @@
-package moe.brianhsu.live2d.adapter.gateway.model.drawable
+package moe.brianhsu.live2d.enitiy.model.drawable
 
 import com.sun.jna.Pointer
-import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

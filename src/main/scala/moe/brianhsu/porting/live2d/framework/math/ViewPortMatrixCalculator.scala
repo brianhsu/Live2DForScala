@@ -38,9 +38,7 @@ class ProjectionMatrixCalculator {
       }
 
       this.currentProjection = Some(
-        projection
-          .scale(windowHeight.toFloat / windowWidth.toFloat, 1.0f)
-          .multiply(viewMatrix)
+        viewMatrix * projection.scale(windowHeight.toFloat / windowWidth.toFloat, 1.0f)
       )
 
       this.previousWindowHeight = windowHeight
