@@ -4,23 +4,6 @@ object CubismMath {
   val Epsilon = 0.00001f
 
   /**
-   *  イージング処理されたサインを求める
-   *
-   *  フェードイン・アウト時のイージングに利用できる
-   *
-   *@param    value  ->  イージングを行う値
-   *@return   イージング処理されたサイン値
-   */
-  def getEasingSin(value: Float): Float = {
-
-    value match {
-      case x if x < 0.0f => 0.0f
-      case x if x > 1.0f => 1.0f
-      case x => 0.5f - 0.5f * Math.cos(x * Math.PI).toFloat
-    }
-  }
-
-  /**
    * 第一引数の値を最小値と最大値の範囲に収めた値を返す
    *
    * @param value ->  収められる値

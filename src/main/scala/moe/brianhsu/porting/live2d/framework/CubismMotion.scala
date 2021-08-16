@@ -3,6 +3,7 @@ package moe.brianhsu.porting.live2d.framework
 import ACubismMotion.FinishedMotionCallback
 import CubismMotion.{CubismMotionSegmentType_Bezier, EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
+import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.{CubismMotionCurveTarget_Model, CubismMotionCurveTarget_Parameter, CubismMotionCurveTarget_PartOpacity}
 import moe.brianhsu.porting.live2d.framework.math.CubismMath
@@ -80,13 +81,13 @@ class CubismMotion extends ACubismMotion {
     val tmpFadeIn: Float = if (_fadeInSeconds <= 0.0f) {
      1.0f
     } else {
-      CubismMath.getEasingSin((userTimeSeconds - motionQueueEntry.GetStartTime()) / _fadeInSeconds)
+      Easing.sine((userTimeSeconds - motionQueueEntry.GetStartTime()) / _fadeInSeconds)
     }
 
     val tmpFadeOut: Float = if (_fadeOutSeconds <= 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
       1.0f
     } else {
-      CubismMath.getEasingSin((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
+      Easing.sine((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
     }
 
     var value: Float = 0.0f
@@ -159,7 +160,7 @@ class CubismMotion extends ACubismMotion {
           fin = if (curves(c).FadeInTime == 0.0f) {
             1.0f
           } else {
-            CubismMath.getEasingSin((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / curves(c).FadeInTime)
+            Easing.sine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / curves(c).FadeInTime)
           }
 
         }
@@ -170,7 +171,7 @@ class CubismMotion extends ACubismMotion {
           fout = if (curves(c).FadeOutTime == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
             1.0f
           } else {
-            CubismMath.getEasingSin((motionQueueEntry.GetEndTime() - userTimeSeconds) / curves(c).FadeOutTime)
+            Easing.sine((motionQueueEntry.GetEndTime() - userTimeSeconds) / curves(c).FadeOutTime)
           }
         }
         val paramWeight: Float = _weight * fin * fout

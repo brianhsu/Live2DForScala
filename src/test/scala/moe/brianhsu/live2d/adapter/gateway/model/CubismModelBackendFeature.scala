@@ -10,7 +10,7 @@ import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
 import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Part}
 import moe.brianhsu.porting.live2d.framework.exception._
 import moe.brianhsu.porting.live2d.framework.util.MocFileReader
-import moe.brianhsu.porting.live2d.framework.{Cubism, MocInfo}
+import moe.brianhsu.porting.live2d.framework.MocInfo
 import moe.brianhsu.porting.live2d.utils._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -26,7 +26,6 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
 
   private val modelFile = "src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3"
   private val mockedTextureFiles = List("texture1.png", "texture2.png")
-  private val cubism = new Cubism
 
   Feature("Update the model information") {
     Scenario("Update the model") {
@@ -270,7 +269,7 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
         Given("A Live2D HaruGreeter Model that does not match the information in the model")
         Then("it should throw TextureSizeMismatchException")
         a[TextureSizeMismatchException] should be thrownBy {
-          val model = createModelBackend(modelFile, Nil)
+          val model = createModelBackend(modelFile, textureFiles)
           model.drawables
         }
       }
