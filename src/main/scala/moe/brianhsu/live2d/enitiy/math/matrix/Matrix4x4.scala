@@ -1,10 +1,17 @@
 package moe.brianhsu.live2d.enitiy.math.matrix
 
-import moe.brianhsu.live2d.enitiy.math.matrix.Matrix4x4.NumberOfElements
+import moe.brianhsu.live2d.enitiy.math.matrix.Matrix4x4.{NumberOfColumns, NumberOfRows}
 
 object Matrix4x4 {
-  val NumberOfElements: Int = 4 * 4
-  def createIdentity(): Array[Float] = Array[Float](
+
+  private val NumberOfRows = 4
+  private val NumberOfColumns = 4
+
+  /**
+   * @return The identity matrix.
+   * @todo Refine the package limitation once ViewMatrix is ported.
+   */
+  private[brianhsu] def createIdentity(): Array[Float] = Array[Float](
     1.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f, 0.0f,
     0.0f, 0.0f, 1.0f, 0.0f,
@@ -12,12 +19,32 @@ object Matrix4x4 {
   )
 }
 
+/**
+ * The base matrix trait.
+ *
+ * This trait will handle the most basic matrix computation operation.
+ */
 trait Matrix4x4 {
 
+  /**
+   * The type of matrix, it should have the same type as subclass itselft.
+   */
   type T <: Matrix4x4
 
+  /**
+   * The actual data of this matrix.
+   *
+   * It will represent by a array that contains 16 elements,
+   * 4 consecutive elements represent each row in matrix.
+   */
   val elements: Array[Float]
 
+  /**
+   * The build function to build a Matrix object.
+   *
+   * @param elements  The elements of the target matrix object.
+   * @return The matrix object.
+   */
   protected def buildFrom(elements: Array[Float]): T
 
   /**
@@ -179,7 +206,7 @@ trait Matrix4x4 {
    * @return The result of multiplication in array.
    */
   protected def multiply(a: Array[Float], b: Array[Float]): Array[Float] = {
-    val result = new Array[Float](NumberOfElements)
+    val result = new Array[Float](NumberOfRows * NumberOfColumns)
     val numberOfRows = 4
 
     for (i <- 0 until numberOfRows) {

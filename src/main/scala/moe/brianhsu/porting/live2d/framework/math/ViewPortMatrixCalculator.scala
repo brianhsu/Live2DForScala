@@ -1,10 +1,8 @@
 package moe.brianhsu.porting.live2d.framework.math
 
-import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
+import moe.brianhsu.live2d.enitiy.math.matrix.{GeneralMatrix, ViewMatrix}
 import moe.brianhsu.live2d.enitiy.model.CanvasInfo
-import moe.brianhsu.porting.live2d.framework.math
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
-import moe.brianhsu.porting.live2d.framework.math.matrix.ViewMatrix
 
 object ProjectionMatrixCalculator {
   sealed trait ViewOrientation
@@ -89,15 +87,11 @@ class ViewPortMatrixCalculator {
   }
 
   private def updateViewMatrix(left: Float, right: Float, top: Float, bottom: Float): Unit = {
-    this.viewMatrix = new ViewMatrix(
-      Rectangle(left, right, right - left, bottom - top),
-      Rectangle(
-        ViewLogicalMaxLeft, ViewLogicalMaxRight,
-        ViewLogicalMaxRight - ViewLogicalMaxLeft,
-        ViewLogicalMaxBottom - ViewLogicalMaxTop
-      ),
-      ViewMaxScale, ViewMinScale
-    ).scale(ViewScale, ViewScale)
+    this.viewMatrix = new ViewMatrix(Rectangle(left, right, right - left, bottom - top), Rectangle(
+            ViewLogicalMaxLeft, ViewLogicalMaxRight,
+            ViewLogicalMaxRight - ViewLogicalMaxLeft,
+            ViewLogicalMaxBottom - ViewLogicalMaxTop
+          ), ViewMinScale, ViewMaxScale).scale(ViewScale, ViewScale)
   }
 
   def updateDeviceToScreen(left: Float, right: Float, top: Float, bottom: Float): Unit = {
