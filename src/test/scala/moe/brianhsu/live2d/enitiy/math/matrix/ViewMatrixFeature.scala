@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.math.matrix
 
-import moe.brianhsu.porting.live2d.framework.math.Rectangle
+import moe.brianhsu.live2d.enitiy.math.Rectangle
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.math.matrix
 
-import moe.brianhsu.porting.live2d.framework.math.Rectangle
+import moe.brianhsu.live2d.enitiy.math.Rectangle
 
 /**
  * The 4x4 matrix to change the camera position.

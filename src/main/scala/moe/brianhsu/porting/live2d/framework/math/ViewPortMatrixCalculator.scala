@@ -1,5 +1,6 @@
 package moe.brianhsu.porting.live2d.framework.math
 
+import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.math.matrix.{GeneralMatrix, ViewMatrix}
 import moe.brianhsu.live2d.enitiy.model.CanvasInfo
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
