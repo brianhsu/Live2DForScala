@@ -46,21 +46,21 @@ case class VertexInfo(numberOfVertex: Int, numberOfTriangleIndex: Int,
    *
    * @return This will return a ByteBuffer that represent the array of vertex.
    */
-  def vertexArrayDirectBuffer: ByteBuffer = pointerToArrayOfPositions.getDirectBuffer(numberOfVertex)
+  def vertexArrayDirectBuffer: ByteBuffer = pointerToArrayOfPositions.directBuffer(numberOfVertex)
 
   /**
    * Direct buffer of uv (texture coordinate) array
    *
    * @return This will return a ByteBuffer that represent the array of uv (texture coordinate).
    */
-  def uvArrayDirectBuffer: ByteBuffer = pointerToArrayOfTextureCoordinate.getDirectBuffer(numberOfVertex)
+  def uvArrayDirectBuffer: ByteBuffer = pointerToArrayOfTextureCoordinate.directBuffer(numberOfVertex)
 
   /**
    * Direct buffer of triangle index array
    *
    * @return This will return a ByteBuffer that represent the array of triangle index.
    */
-  def indexArrayDirectBuffer: ByteBuffer = pointerToArrayOfIndex.getDirectBuffer(numberOfTriangleIndex)
+  def indexArrayDirectBuffer: ByteBuffer = pointerToArrayOfIndex.directBuffer(numberOfTriangleIndex)
 
   private def createTupleListFrom(coordinateArray: CArrayOfCsmCoordinate): List[(Float, Float)] = {
     (0 until numberOfVertex).toList.map { i =>

@@ -1,8 +1,9 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.clipping
 
 import ClippingContext.channelColors
+import moe.brianhsu.live2d.enitiy.math.Rectangle
+import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.framework.math.{Matrix4x4, Rectangle}
 import moe.brianhsu.porting.live2d.renderer.opengl.TextureColor
 
 object ClippingContext {
@@ -20,12 +21,12 @@ class ClippingContext(val maskDrawable: List[Drawable], val clippedDrawables: Li
   private var layoutChannelNo: Int = 0                       ///< RGBAのいずれのチャンネルにこのクリップを配置するか(0:R , 1:G , 2:B , 3:A)
   private var layoutBounds: Rectangle = Rectangle()                         ///< マスク用チャンネルのどの領域にマスクを入れるか(View座標-1..1, UVは0..1に直す)
   private var allClippedDrawRect: Rectangle = Rectangle()                   ///< このクリッピングで、クリッピングされる全ての描画オブジェクトの囲み矩形（毎回更新）
-  private val matrixForMask: Matrix4x4 = new Matrix4x4 ///< マスクの位置計算結果を保持する行列
-  private val matrixForDraw: Matrix4x4 = new Matrix4x4 ///< 描画オブジェクトの位置計算結果を保持する行列
+  private var matrixForMask: GeneralMatrix = new GeneralMatrix ///< マスクの位置計算結果を保持する行列
+  private var matrixForDraw: GeneralMatrix = new GeneralMatrix ///< 描画オブジェクトの位置計算結果を保持する行列
 
-  def getMatrixForMask: Matrix4x4 = matrixForMask
+  def getMatrixForMask: GeneralMatrix = matrixForMask
 
-  def getMatrixForDraw: Matrix4x4 = matrixForDraw
+  def getMatrixForDraw: GeneralMatrix = matrixForDraw
 
   def getAllClippedDrawRect: Rectangle = allClippedDrawRect
 
@@ -53,30 +54,27 @@ class ClippingContext(val maskDrawable: List[Drawable], val clippedDrawables: Li
     val scaleX = layoutBoundsOnTex01.width / tmpBoundsOnModel.width
     val scaleY = layoutBoundsOnTex01.height / tmpBoundsOnModel.height
 
-    matrixForMask.setMatrix(calcMaskMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY).getArray())
-    matrixForDraw.setMatrix(calcDrawMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY).getArray())
+    matrixForMask = calcMaskMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY)
+    matrixForDraw = calcDrawMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY)
   }
 
   private def calcDrawMatrix(layoutBoundsOnTex01: Rectangle, tmpBoundsOnModel: Rectangle,
-                             scaleX: Float, scaleY: Float): Matrix4x4 = {
-    val tmpMatrix = new Matrix4x4()
-    tmpMatrix.translateRelative(layoutBoundsOnTex01.leftX, layoutBoundsOnTex01.topY)
-    tmpMatrix.scaleRelative(scaleX, scaleY)
-    tmpMatrix.translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.topY)
-    tmpMatrix
+                             scaleX: Float, scaleY: Float): GeneralMatrix = {
+    new GeneralMatrix()
+      .translateRelative(layoutBoundsOnTex01.leftX, layoutBoundsOnTex01.topY)
+      .scaleRelative(scaleX, scaleY)
+      .translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.topY)
   }
 
   private def calcMaskMatrix(layoutBoundsOnTex01: Rectangle, tmpBoundsOnModel: Rectangle,
-                             scaleX: Float, scaleY: Float): Matrix4x4 = {
+                             scaleX: Float, scaleY: Float): GeneralMatrix = {
 
-    val tmpMatrix = new Matrix4x4()
-    tmpMatrix.translateRelative(-1.0f, -1.0f)
-    tmpMatrix.scaleRelative(2.0f, 2.0f)
-
-    tmpMatrix.translateRelative(layoutBoundsOnTex01.leftX, layoutBoundsOnTex01.topY)
-    tmpMatrix.scaleRelative(scaleX, scaleY)
-    tmpMatrix.translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.topY)
-    tmpMatrix
+    new GeneralMatrix()
+      .translateRelative(-1.0f, -1.0f)
+      .scaleRelative(2.0f, 2.0f)
+      .translateRelative(layoutBoundsOnTex01.leftX, layoutBoundsOnTex01.topY)
+      .scaleRelative(scaleX, scaleY)
+      .translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.topY)
   }
 
   def calcClippedDrawTotalBounds(): Unit = {

@@ -1,6 +1,5 @@
-package moe.brianhsu.live2d.adapter.gateway.model
+package moe.brianhsu.live2d.enitiy.model
 
-import moe.brianhsu.live2d.enitiy.model.CanvasInfo
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

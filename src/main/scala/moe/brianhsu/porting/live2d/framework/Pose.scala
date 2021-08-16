@@ -63,7 +63,7 @@ class Pose {
     for (i <- beginIndex until beginIndex + partGroupCount if !isBreak) {
       val partId = _partGroups(i).PartId
 
-      val v: Float = model.getParameterWithFallback(_partGroups(i).PartId).current
+      val v: Float = model.parameterWithFallback(_partGroups(i).PartId).current
       if (v > Epsilon) {
         if (visiblePartIndex >= 0) {
           isBreak = true
@@ -90,7 +90,7 @@ class Pose {
       val partId = _partGroups(i).PartId
       //  表示パーツの設定
       if (visiblePartIndex == i) {
-        model.parts(partId).setOpacity(newOpacity)// 先に設定
+        model.parts(partId).opacity = newOpacity// 先に設定
       } else {
         var opacity = model.parts(partId).opacity
         var a1: Float = 0          // 計算によって求められる不透明度
@@ -111,7 +111,7 @@ class Pose {
         if (opacity > a1) {
           opacity = a1 // 計算の不透明度よりも大きければ（濃ければ）不透明度を上げる
         }
-        model.parts(partId).setOpacity(opacity)
+        model.parts(partId).opacity = opacity
 
       }
 
@@ -139,7 +139,7 @@ class Pose {
             val linkPart = partData.Link(linkIndex)
             val linkPartId = linkPart.PartId
             if (model.parts.contains(linkPartId)) {
-              model.parts(_partGroups(groupIndex).PartId).setOpacity(opacity)
+              model.parts(_partGroups(groupIndex).PartId).opacity = opacity
             }
           }
         }
@@ -167,8 +167,8 @@ class Pose {
         } else {
 
           val v = if (j == beginIndex) 1.0f else 0.0f
-          model.parts(_partGroups(j).PartId).setOpacity(v)
-          model.getParameterWithFallback(_partGroups(j).PartId).update(v)
+          model.parts(_partGroups(j).PartId).opacity = v
+          model.parameterWithFallback(_partGroups(j).PartId).update(v)
           //model.setParameterValueUsingIndex(_partGroups(j).PartId, paramIndex, v)
           for (k <- _partGroups(j).Link.indices) {
             _partGroups(j).Link(k).Initialize(model)

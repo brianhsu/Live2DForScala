@@ -1,9 +1,8 @@
-package moe.brianhsu.live2d.adapter.gateway.model.drawable
+package moe.brianhsu.live2d.enitiy.model.drawable
 
 import com.sun.jna.{Memory, Native}
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.DynamicDrawableFlagMask._
 import moe.brianhsu.live2d.enitiy.model.drawable
-import moe.brianhsu.live2d.enitiy.model.drawable.DynamicFlags
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

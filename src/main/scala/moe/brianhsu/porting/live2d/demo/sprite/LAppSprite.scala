@@ -1,9 +1,9 @@
 package moe.brianhsu.porting.live2d.demo.sprite
 
 import com.jogamp.common.nio.Buffers
+import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.porting.live2d.renderer.opengl.TextureManager.TextureInfo
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
-import moe.brianhsu.porting.live2d.framework.math.Rectangle
 
 abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureInfo, shader: SpriteShader)
                          (implicit private val gl: OpenGL) {

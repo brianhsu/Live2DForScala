@@ -1,14 +1,14 @@
 package moe.brianhsu.live2d.enitiy.model
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
+import moe.brianhsu.live2d.enitiy.math.matrix.ModelMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.framework.math.ModelMatrix
 
 class Live2DModel(modelBackend: ModelBackend) {
   private var savedParameters: Map[String, Float] = Map.empty
   private var fallbackParameters: Map[String, Parameter] = Map.empty
 
-  lazy val modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
+  var modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
 
   /**
    * The list of texture file path of this model.
@@ -71,7 +71,7 @@ class Live2DModel(modelBackend: ModelBackend) {
   /**
    * Snapshot current value of parameters that is backed by model backend.
    *
-   * @note This will NOT snapshot the fallback parameters created by [[getParameterWithFallback]].
+   * @note This will NOT snapshot the fallback parameters created by [[parameterWithFallback]].
    */
   def snapshotParameters(): Unit = {
 
@@ -84,7 +84,7 @@ class Live2DModel(modelBackend: ModelBackend) {
   /**
    * Restore model backend backed parameters value from previous snapshot.
    *
-   * @note This will NOT restore the fallback parameters created by [[getParameterWithFallback]].
+   * @note This will NOT restore the fallback parameters created by [[parameterWithFallback]].
    */
   def restoreParameters(): Unit = {
     savedParameters.foreach { case (id, value) =>
@@ -126,7 +126,7 @@ class Live2DModel(modelBackend: ModelBackend) {
    *
    * @return The requested parameter, either backed by backend or a in-memory dummy one.
    */
-  def getParameterWithFallback(parameterId: String): Parameter = {
+  def parameterWithFallback(parameterId: String): Parameter = {
     parameters.get(parameterId)
       .orElse(fallbackParameters.get(parameterId))
       .getOrElse {
@@ -153,8 +153,8 @@ class Live2DModel(modelBackend: ModelBackend) {
       val top: Float = yCoordinates.min
       val bottom = yCoordinates.max
 
-      val transformedX = modelMatrix.invertTransformX(pointX)
-      val transformedY = modelMatrix.invertTransformY(pointY)
+      val transformedX = modelMatrix.invertedTransformedX(pointX)
+      val transformedY = modelMatrix.invertedTransformedY(pointY)
 
       (left <= transformedX) &&
         (transformedX <= right) &&

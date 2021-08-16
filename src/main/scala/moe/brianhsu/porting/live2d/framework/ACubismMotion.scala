@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
 import ACubismMotion.FinishedMotionCallback
+import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.math.CubismMath
 
@@ -58,13 +59,13 @@ abstract class ACubismMotion {
     val fadeIn: Float = if (_fadeInSeconds == 0.0f) {
       1.0f
     } else {
-      CubismMath.getEasingSin((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / _fadeInSeconds)
+      Easing.sine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / _fadeInSeconds)
     }
 
     val fadeOut = if (_fadeOutSeconds == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
       1.0f
     } else {
-      CubismMath.getEasingSin((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
+      Easing.sine((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
     }
 
     fadeWeight = fadeWeight * fadeIn * fadeOut

@@ -22,5 +22,5 @@ case class Part(private val opacityPointer: Pointer, id: String, parentIdHolder:
    *
    * @param value New opacity value.
    */
-  def setOpacity(value: Float): Unit = opacityPointer.setFloat(0, value)
+  def opacity_=(value: Float): Unit = opacityPointer.setFloat(0, value)
 }

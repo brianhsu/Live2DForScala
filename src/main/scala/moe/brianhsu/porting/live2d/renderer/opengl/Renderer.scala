@@ -1,10 +1,10 @@
 package moe.brianhsu.porting.live2d.renderer.opengl
 
+import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.enitiy.model.drawable.VertexInfo
 import moe.brianhsu.porting.live2d.adapter.OpenGL
-import moe.brianhsu.porting.live2d.framework.math.Matrix4x4
 import moe.brianhsu.porting.live2d.framework.model.Avatar
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.{ClippingContext, ClippingManager}
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.ShaderRenderer
@@ -13,7 +13,7 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
 
   import gl._
 
-  private var projection: Option[Matrix4x4] = None
+  private var projection: Option[GeneralMatrix] = None
   private val textureManager = new TextureManager
   private val shaderRenderer = new ShaderRenderer
   private val profile = new Profile()
@@ -27,7 +27,7 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
 
   private[renderer] val offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => new OffscreenFrame(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
 
-  def getProjection: Option[Matrix4x4] = projection
+  def getProjection: Option[GeneralMatrix] = projection
   def getClippingContextBufferForDraw: Option[ClippingContext] = clippingContextBufferForDraw
   def getClippingContextBufferForMask: Option[ClippingContext] = clippingContextBufferForMask
   def setClippingContextBufferForMask(clip: Option[ClippingContext]): Unit = {
@@ -42,15 +42,13 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
     this.isCulling = isCulling
   }
 
-  def setProjection(projection: Matrix4x4): Unit = {
+  def setProjection(projection: GeneralMatrix): Unit = {
     this.projection = Some(projection)
   }
 
-  def draw(avatar: Avatar, projection: Matrix4x4): Unit = {
+  def draw(avatar: Avatar, projection: GeneralMatrix): Unit = {
       for(model <- avatar.modelHolder) {
-        projection.multiplyByMatrix(model.modelMatrix)
-        this.setProjection(projection)
-
+        this.setProjection(model.modelMatrix * projection)
         this.profile.save()
         this.drawModel()
         this.profile.restore()
@@ -90,7 +88,7 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
       vertexInfo.uvArrayDirectBuffer,
       colorBlendMode,
       modelColorRGBA,
-      projection.getOrElse(new Matrix4x4),
+      projection.getOrElse(new GeneralMatrix),
       invertedMask
     )
 

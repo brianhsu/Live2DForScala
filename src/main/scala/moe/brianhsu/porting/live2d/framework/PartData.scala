@@ -7,6 +7,6 @@ class PartData {
   var Link: List[PartData] = Nil
 
   def Initialize(model: Live2DModel): Unit = {
-    model.getParameterWithFallback(PartId).update(value = 1)
+    model.parameterWithFallback(PartId).update(value = 1)
   }
 }

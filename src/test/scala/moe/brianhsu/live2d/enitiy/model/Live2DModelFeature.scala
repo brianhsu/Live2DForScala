@@ -12,6 +12,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory
   with TableDrivenPropertyChecks {
 
+  private val mockedCanvasInfo = CanvasInfo(1980, 1020, (0, 0), 1)
   Feature("Use containMaskedDrawables to get whether drawable has mask or not") {
     Scenario("No drawable at all") {
       Given("A model without any drawable")
@@ -175,14 +176,14 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Update model") {
       Given("A Live2DModel backed by mocked model backend")
-      val mockedBackend = stub[MockedBackend]
+      val mockedBackend = new MockedBackend()
       val model = new Live2DModel(mockedBackend)
 
       When("update model")
       model.update()
 
       Then("it should delegate to mocked backend")
-      (mockedBackend.update _).verify().once()
+      mockedBackend.updatedCount shouldBe 1
     }
   }
 
@@ -217,7 +218,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val live2DModel = new Live2DModel(backend)
 
       And("Update a fallback parameter created by getParameterWithFallback")
-      val fallbackParameter = live2DModel.getParameterWithFallback("notExistId")
+      val fallbackParameter = live2DModel.parameterWithFallback("notExistId")
       fallbackParameter.update(0.3f)
 
       And("snapshot the Live 2D model parameters")
@@ -251,10 +252,8 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         "id2" -> new JavaVMParameter("id2", default = 0.7f, value = 0.2f),
         "id3" -> new JavaVMParameter("id3", default = 0.8f, value = 0.3f),
       )
-      val backend = stub[ModelBackend]
+      val backend = new MockedBackend(parameters = parameters)
       val live2DModel = new Live2DModel(backend)
-
-      (() => backend.parameters).when().returning(parameters)
 
       When("reset the model")
       live2DModel.reset()
@@ -266,7 +265,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       }
 
       And("it should call update on backend")
-      (backend.update _).verify().once()
+      backend.updatedCount shouldBe 1
     }
   }
 
@@ -281,7 +280,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val live2DModel = new Live2DModel(backend)
 
       When("get a parameter using getParameterWithFallback")
-      val parameter = live2DModel.getParameterWithFallback("id1")
+      val parameter = live2DModel.parameterWithFallback("id1")
 
       And("update the value of that parameter")
       parameter.update(0.5f)
@@ -296,13 +295,13 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val live2DModel = new Live2DModel(backend)
 
       And("get a parameter using getParameterWithFallback")
-      val parameter = live2DModel.getParameterWithFallback("nonExistId")
+      val parameter = live2DModel.parameterWithFallback("nonExistId")
 
       When("update the value of that parameter")
       parameter.update(0.5f)
 
       Then("we should able to get same value when call getParameterWithFallback again")
-      live2DModel.getParameterWithFallback("nonExistId").current shouldBe 0.5f
+      live2DModel.parameterWithFallback("nonExistId").current shouldBe 0.5f
     }
   }
 
@@ -398,10 +397,13 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     override val parameters: Map[String, Parameter] = Map.empty,
     override val parts: Map[String, Part] = Map.empty,
     override val drawables: Map[String, Drawable] = Map.empty,
-    override val canvasInfo: CanvasInfo = null
+    override val canvasInfo: CanvasInfo = mockedCanvasInfo
   ) extends ModelBackend {
+    var updatedCount: Int = 0
     override def validateAllData(): Unit = {}
-    override def update(): Unit = {}
+    override def update(): Unit = {
+      updatedCount += 1
+    }
   }
 
 
