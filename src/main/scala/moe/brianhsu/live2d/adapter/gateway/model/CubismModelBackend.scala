@@ -8,8 +8,7 @@ import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
-import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Parameter, Part}
-import moe.brianhsu.porting.live2d.framework.MocInfo
+import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, MocInfo, Parameter, Part}
 import moe.brianhsu.porting.live2d.framework.exception._
 
 

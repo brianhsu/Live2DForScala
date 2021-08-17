@@ -7,10 +7,8 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types._
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Part}
+import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, MocInfo, Part}
 import moe.brianhsu.porting.live2d.framework.exception._
-import moe.brianhsu.porting.live2d.framework.util.MocFileReader
-import moe.brianhsu.porting.live2d.framework.MocInfo
 import moe.brianhsu.porting.live2d.utils._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -439,8 +437,8 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
 
   private def createModelBackend(mocFilename: String, textureFiles: List[String] = mockedTextureFiles): ModelBackend = {
     val core = new JnaCubismCore()
-    val fileReader = new MocFileReader(core.memoryAllocator)
-    val mocInfo = fileReader.readFile(mocFilename)
+    val fileReader = new MocInfoFileReader(mocFilename)(core.memoryAllocator)
+    val mocInfo = fileReader.loadMocInfo.get
     new CubismModelBackend(mocInfo, textureFiles)(core)
 
   }

@@ -1,12 +1,11 @@
 package moe.brianhsu.porting.live2d.framework
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
-import moe.brianhsu.live2d.adapter.gateway.model.CubismModelBackend
+import moe.brianhsu.live2d.adapter.gateway.model.{CubismModelBackend, MocInfoFileReader}
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.enitiy.core.types.{CsmVersion, MocVersion}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.model.Avatar
-import moe.brianhsu.porting.live2d.framework.util.MocFileReader
 
 import java.io.FileNotFoundException
 import scala.util.Try
@@ -50,9 +49,9 @@ class Cubism(core: CubismCore) {
    *
    */
   def loadModel(mocFilename: String, textureFiles: List[String]): Try[Live2DModel] = Try {
-    val fileReader = new MocFileReader(core.memoryAllocator)
-    val mocInfo = fileReader.readFile(mocFilename)
-    val backend = new CubismModelBackend(mocInfo, textureFiles)(core)
+    val fileReader = new MocInfoFileReader(mocFilename)(core.memoryAllocator)
+    val mocInfo = fileReader.loadMocInfo
+    val backend = new CubismModelBackend(mocInfo.get, textureFiles)(core)
     new Live2DModel(backend)
   }
 
