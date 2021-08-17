@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.adapter.gateway.model
+package moe.brianhsu.live2d.adapter.gateway.avatar
 
 import com.sun.jna.ptr.FloatByReference
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
@@ -9,7 +9,7 @@ import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, Mo
 import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, MocInfo, Parameter, Part}
-import moe.brianhsu.porting.live2d.framework.exception._
+import moe.brianhsu.live2d.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 
 import scala.util.Try
 
@@ -56,7 +56,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
    *
    * This is a map that key is the parameterId, and value is corresponding Parameter object.
    *
-   * @throws ParameterInitException when could not get valid parameters from Live 2D Cubism Model
+   * @throws moe.brianhsu.live2d.exception.ParameterInitException when could not get valid parameters from Live 2D Cubism Model
    */
   override lazy val parameters: Map[String, Parameter] = createParameters()
 
@@ -65,7 +65,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
    *
    * This is a map that key is the partId, and value is corresponding Part object.
    *
-   * @throws PartInitException when could not get valid parts from Live 2D Cubism Model
+   * @throws moe.brianhsu.live2d.exception.PartInitException when could not get valid parts from Live 2D Cubism Model
    */
   override lazy val parts: Map[String, Part] = createParts()
 
@@ -185,7 +185,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.pointerToFloat(i)
-      val parameter = CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
+      val parameter = model.CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
       parameter
     }
 

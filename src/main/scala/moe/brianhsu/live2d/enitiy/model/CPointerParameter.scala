@@ -1,7 +1,6 @@
-package moe.brianhsu.live2d.adapter.gateway.model
+package moe.brianhsu.live2d.enitiy.model
 
 import com.sun.jna.Pointer
-import moe.brianhsu.live2d.enitiy.model.Parameter
 import moe.brianhsu.live2d.exception.ParameterInvalidException
 
 /**
@@ -14,11 +13,11 @@ import moe.brianhsu.live2d.exception.ParameterInvalidException
  * @param default The default value of this parameter.
  */
 case class CPointerParameter(
-  private val pointer: Pointer,
-  override val id: String,
-  override val min: Float,
-  override val max: Float,
-  override val default: Float) extends Parameter {
+                              private val pointer: Pointer,
+                              override val id: String,
+                              override val min: Float,
+                              override val max: Float,
+                              override val default: Float) extends Parameter {
 
   /**
    * Get the current value of this parameter.

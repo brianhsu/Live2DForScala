@@ -1,7 +1,9 @@
-package moe.brianhsu.live2d.adapter.gateway.model
+package moe.brianhsu.live2d.adapter.gateway.reader
 
 import com.sun.jna.Memory
+import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.boundary.gateway.core.memory.MemoryAllocator
+import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.MocAlignment
 import org.scalamock.scalatest.MockFactory
@@ -25,12 +27,13 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
       val mockedAlignedMemory = mock[MockableMemory]
       val mockedMemoryInfo = MemoryInfo(mockedOriginalMemory, mockedAlignedMemory)
       val mockedMemoryAllocator = mock[MemoryAllocator]
+      implicit val core: CubismCore = createMockedCubismCore(mockedMemoryAllocator)
 
       (mockedMemoryAllocator.allocate _).expects(fileContent.size, MocAlignment).returning(mockedMemoryInfo).once()
       (mockedAlignedMemory.write: (Long, Array[Byte], Int, Int) => Unit).expects(0, *, 0, fileContent.size).once()
 
       When("Read .moc file using MocInfoFileReader")
-      val mocInfoFileReader = new MocInfoFileReader(modelFile)(mockedMemoryAllocator)
+      val mocInfoFileReader = new MocInfoFileReader(modelFile)
 
       Then("it should be a success")
       val mocInfo = mocInfoFileReader.loadMocInfo().success.value
@@ -43,15 +46,23 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
     Scenario("Read non-exist .mocFile into mocInfo") {
       Given("A set of mocked memory")
       val mockedMemoryAllocator = mock[MemoryAllocator]
+      implicit val core: CubismCore = createMockedCubismCore(mockedMemoryAllocator)
 
       When("Read .moc file using MocInfoFileReader")
-      val mocInfoFileReader = new MocInfoFileReader("nonExistFile")(mockedMemoryAllocator)
+      val mocInfoFileReader = new MocInfoFileReader("nonExistFile")
 
       Then("it should be a Failure[NoSuchFileException]")
       val exception = mocInfoFileReader.loadMocInfo().failure.exception
       exception shouldBe a[NoSuchFileException]
     }
 
+  }
+
+  private def createMockedCubismCore(mockedMemoryAllocator: MemoryAllocator) = {
+    new CubismCore {
+      override implicit val memoryAllocator: MemoryAllocator = mockedMemoryAllocator
+      override val cubismAPI: NativeCubismAPI = stub[NativeCubismAPI]
+    }
   }
 
   class MockableMemory extends Memory(1024)

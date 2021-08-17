@@ -2,12 +2,9 @@ package moe.brianhsu.porting.live2d.framework.model
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.porting.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion, CubismMotionManager, Pose}
+import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionManager, Pose}
 import moe.brianhsu.porting.live2d.framework.effect.Effect
-import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-
-import scala.util.Try
 
 /**
  * This class represent a complete Live 2D Cubism Avatar runtime model.
@@ -19,24 +16,14 @@ import scala.util.Try
  *
  * You might obtain sample avatar from https://www.live2d.com/en/download/sample-data/
  *
- * @param   directory   The directory in the filesystem that contains the settings for the avatar
  */
-class Avatar(directory: String)(cubism: Cubism) {
+class Avatar(avatarSettings: Settings, val model: Live2DModel) {
 
-  private val avatarSettings: Settings = new JsonSettingsReader(directory).loadSettings().get
-  private val mocFile: String = avatarSettings.mocFile
   private var effects: List[Effect] = Nil
   private val expressionManager = new CubismMotionManager
   private val motionManager = new CubismMotionManager
   private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
   private val pose = Pose(avatarSettings)
-
-  val modelHolder: Try[Live2DModel] = {
-    val model = cubism
-      .loadModel(mocFile, avatarSettings.textureFiles)
-
-    model
-  }
 
   def setEffects(effects: List[Effect]): Unit = {
     this.effects = effects
@@ -79,18 +66,18 @@ class Avatar(directory: String)(cubism: Cubism) {
    */
   def update(deltaTimeInSeconds: Float): Unit = {
 
-    modelHolder.foreach { model =>
-      model.restoreParameters()
-      if (motionManager.IsFinished()) {
+    model.restoreParameters()
+    if (motionManager.IsFinished()) {
 
-      } else {
-        motionManager.UpdateMotion(model, deltaTimeInSeconds)
-      }
-      model.snapshotParameters()
-      expressionManager.UpdateMotion(model, deltaTimeInSeconds)
-      effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }
-      pose.UpdateParameters(model, deltaTimeInSeconds)
-      model.update()
+    } else {
+      motionManager.UpdateMotion(model, deltaTimeInSeconds)
     }
+    model.snapshotParameters()
+    expressionManager.UpdateMotion(model, deltaTimeInSeconds)
+    effects.foreach {
+      _.updateParameters(model, deltaTimeInSeconds)
+    }
+    pose.UpdateParameters(model, deltaTimeInSeconds)
+    model.update()
   }
 }

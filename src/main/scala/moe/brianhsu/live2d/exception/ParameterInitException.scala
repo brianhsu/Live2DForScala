@@ -1,3 +1,3 @@
-package moe.brianhsu.porting.live2d.framework.exception
+package moe.brianhsu.live2d.exception
 
 class ParameterInitException extends Exception("Cannot get parameters from Live2DModel")

@@ -1,9 +1,10 @@
 package moe.brianhsu.porting.live2d.demo
 
+import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, LAppSprite, PowerSprite, SpriteShader}
-import moe.brianhsu.porting.live2d.framework.Cubism
 import moe.brianhsu.porting.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
 import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
@@ -30,12 +31,15 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator
 
   private val frameTimeCalculator = new FrameTimeCalculator
-  private val avatarHolder: Try[Avatar] = Cubism.loadAvatar("src/main/resources/Haru")
-  private val modelHolder: Try[Live2DModel] = avatarHolder.flatMap(_.modelHolder)
+  private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
+
+  private val avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
+  private val modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
+  private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
+
   private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, backgroundTexture, spriteShader)
   private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, powerTexture, spriteShader)
   private val gearSprite: LAppSprite = new GearSprite(drawCanvasInfo, gearTexture, spriteShader)
-  private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
 
 
   private val faceDirection = new FaceDirection(30)

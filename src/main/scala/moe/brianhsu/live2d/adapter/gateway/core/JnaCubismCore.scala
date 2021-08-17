@@ -19,13 +19,13 @@ import moe.brianhsu.live2d.exception.NativeLibraryNotFoundError
 class JnaCubismCore(override val memoryAllocator: MemoryAllocator, logger: CsmLogFunction) extends CubismCore {
 
   /**
-   * Create an instance with [[DefaultMemoryAllocator]], and log message into
+   * Create an instance with [[moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator]], and log message into
    * the standard output.
    */
   def this() = this(DefaultMemoryAllocator, line => println(line))
 
   /**
-   * Create an instance with [[DefaultMemoryAllocator]], and customize how to
+   * Create an instance with [[moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator]], and customize how to
    * log message.
    *
    * @param logger  The logger that will log message from underlying C Cubism Library.

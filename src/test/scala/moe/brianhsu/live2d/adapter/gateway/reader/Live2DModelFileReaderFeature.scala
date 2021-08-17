@@ -1,9 +1,9 @@
-package moe.brianhsu.live2d.adapter.gateway.model
+package moe.brianhsu.live2d.adapter.gateway.reader
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.framework.exception.TextureSizeMismatchException
+import moe.brianhsu.live2d.exception.TextureSizeMismatchException
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{GivenWhenThen, TryValues}
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -19,7 +19,7 @@ class Live2DModelFileReaderFeature extends AnyFeatureSpec with GivenWhenThen wit
     Scenario("Load a valid model") {
       Given("A mocInfoReader that load .moc3 correctly")
       val modelFile = "src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3"
-      val mocInfoFileReader = new MocInfoFileReader(modelFile)(core.memoryAllocator)
+      val mocInfoFileReader = new MocInfoFileReader(modelFile)
 
       When("load a Live2D model with correct texture file list")
       val mockedTextureFiles = List("texture1.png", "texture2.png")
@@ -49,7 +49,7 @@ class Live2DModelFileReaderFeature extends AnyFeatureSpec with GivenWhenThen wit
     Scenario("The Live2D Model backend does not pass validation") {
       Given("A mocInfoReader that load .moc3 correctly")
       val modelFile = "src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3"
-      val mocInfoFileReader = new MocInfoFileReader(modelFile)(core.memoryAllocator)
+      val mocInfoFileReader = new MocInfoFileReader(modelFile)
 
       When("load a Live2D model with it but contains non-match texture file list")
       val reader = new Live2DModelFileReader(mocInfoFileReader, Nil)

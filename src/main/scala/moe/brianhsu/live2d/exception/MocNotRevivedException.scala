@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.framework.exception
+package moe.brianhsu.live2d.exception
 
 /**
  * Denote exception that when called csmReviveMocInPlace, it returns NULL.

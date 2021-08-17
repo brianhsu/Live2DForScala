@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.adapter.gateway.core
 
-import moe.brianhsu.live2d.enitiy.core.types.CsmLogFunction
+import moe.brianhsu.live2d.enitiy.core.types.{CsmLogFunction, CsmVersion, MocVersion40}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -18,6 +18,30 @@ class JnaCubismCoreFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
       Then("the logger of cLibrary should be the custom logger")
       cubismCore.cubismAPI.csmGetLogFunction() shouldBe logger
+    }
+  }
+
+  Feature("Get version related information") {
+    Scenario("Get core library version") {
+      Given("A JNA cubism core")
+      val cubismCore = new JnaCubismCore()
+
+      When("get core library version")
+      val version = cubismCore.libraryVersion
+
+      Then("it should get the version correctly")
+      version shouldBe CsmVersion(4, 0, 0)
+    }
+
+    Scenario("Get supported .moc file version") {
+      Given("A JNA cubism core")
+      val cubismCore = new JnaCubismCore()
+
+      When("get latest supported .moc file version")
+      val version = cubismCore.latestSupportedMocVersion
+
+      Then("it should get the version correctly")
+      version shouldBe MocVersion40
     }
   }
 }

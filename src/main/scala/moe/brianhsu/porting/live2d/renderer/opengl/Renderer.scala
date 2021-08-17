@@ -47,12 +47,10 @@ class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
   }
 
   def draw(avatar: Avatar, projection: GeneralMatrix): Unit = {
-      for(model <- avatar.modelHolder) {
-        this.setProjection(model.modelMatrix * projection)
-        this.profile.save()
-        this.drawModel()
-        this.profile.restore()
-      }
+    this.setProjection(avatar.model.modelMatrix * projection)
+    this.profile.save()
+    this.drawModel()
+    this.profile.restore()
   }
 
   def preDraw(): Unit = {
