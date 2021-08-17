@@ -11,6 +11,8 @@ import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, Dynam
 import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, MocInfo, Parameter, Part}
 import moe.brianhsu.porting.live2d.framework.exception._
 
+import scala.util.Try
+
 
 /**
  * The Live 2D model that represent an .moc file.
@@ -84,19 +86,19 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
 
   /**
    * This method will access all lazy member fields that load data from the CubismCore C Library,
-   * and throws exceptions if there is any corrupted data.
+   * and return a Failure if there is any corrupted data, otherwise it will return a Success[ModelBackend].
    *
    * @return  The model itself.
-   * @throws  DrawableInitException if it cannot construct drawable objects.
-   * @throws  MocNotRevivedException if there are errors when reading .moc3 file.
-   * @throws  ParameterInitException if it cannot construct parameter objects.
-   * @throws  PartInitException if it cannot construct part objects.
-   * @throws  TextureSizeMismatchException if the the number of provided texture does not match the information in the model.
    */
-  override def validateAllData(): Unit = {
+  override def validatedBackend: Try[ModelBackend] = Try {
+    this.revivedMoc
+    this.modelSize
     this.drawables
+    this.modelMemoryInfo
+    this.cubismModel
     this.parameters
     this.parts
+    this
   }
 
   /**

@@ -9,6 +9,8 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 
+import scala.util.{Success, Try}
+
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory
   with TableDrivenPropertyChecks {
 
@@ -159,7 +161,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         override def parts: Map[String, Part] = mockedParts
         override def drawables: Map[String, Drawable] = mockedDrawables
         override def canvasInfo: CanvasInfo = mockedCanvasInfo
-        override def validateAllData(): Unit = canvasInfo
+        override def validatedBackend: Try[ModelBackend] = Success(this)
         override def update(): Unit = {}
       }
 
@@ -400,7 +402,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     override val canvasInfo: CanvasInfo = mockedCanvasInfo
   ) extends ModelBackend {
     var updatedCount: Int = 0
-    override def validateAllData(): Unit = {}
+    override def validatedBackend: Try[ModelBackend] = Success(this)
     override def update(): Unit = {
       updatedCount += 1
     }

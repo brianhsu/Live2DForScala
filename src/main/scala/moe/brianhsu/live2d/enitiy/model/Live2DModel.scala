@@ -43,9 +43,6 @@ class Live2DModel(modelBackend: ModelBackend) {
    */
   def canvasInfo: CanvasInfo = modelBackend.canvasInfo
 
-  // TODO: Should delete this and has a better way to do this.
-  def validateAllData(): Unit = modelBackend.validateAllData()
-
   /**
    * Drawable sorted by index
    *

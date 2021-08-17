@@ -4,6 +4,6 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 import scala.util.Try
 
-trait ModelReader {
+trait Live2DModelReader {
   def loadModel(): Try[Live2DModel]
 }
