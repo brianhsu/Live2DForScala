@@ -33,7 +33,7 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
       val mocInfoFileReader = new MocInfoFileReader(modelFile)(mockedMemoryAllocator)
 
       Then("it should be a success")
-      val mocInfo = mocInfoFileReader.loadMocInfo.success.value
+      val mocInfo = mocInfoFileReader.loadMocInfo().success.value
 
       And("it should return correct information")
       mocInfo.memory shouldBe mockedMemoryInfo
@@ -48,7 +48,7 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
       val mocInfoFileReader = new MocInfoFileReader("nonExistFile")(mockedMemoryAllocator)
 
       Then("it should be a Failure[NoSuchFileException]")
-      val exception = mocInfoFileReader.loadMocInfo.failure.exception
+      val exception = mocInfoFileReader.loadMocInfo().failure.exception
       exception shouldBe a[NoSuchFileException]
     }
 

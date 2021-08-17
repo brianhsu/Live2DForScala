@@ -11,7 +11,7 @@ trait CubismCore {
   /**
    * The memory allocator used for manual memory allocation.
    */
-  val memoryAllocator: MemoryAllocator
+  implicit val memoryAllocator: MemoryAllocator
 
   /**
    * The underlying core Cubism API.

@@ -438,7 +438,7 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
   private def createModelBackend(mocFilename: String, textureFiles: List[String] = mockedTextureFiles): ModelBackend = {
     val core = new JnaCubismCore()
     val fileReader = new MocInfoFileReader(mocFilename)(core.memoryAllocator)
-    val mocInfo = fileReader.loadMocInfo.get
+    val mocInfo = fileReader.loadMocInfo().get
     new CubismModelBackend(mocInfo, textureFiles)(core)
 
   }

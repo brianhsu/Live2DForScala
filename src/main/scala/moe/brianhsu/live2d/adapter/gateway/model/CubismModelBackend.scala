@@ -21,7 +21,7 @@ import moe.brianhsu.porting.live2d.framework.exception._
  * @param mocInfo   The moc file information
  * @param core      The core library of Cubism
  */
-class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[String])(core: CubismCore) extends ModelBackend {
+class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[String])(implicit core: CubismCore) extends ModelBackend {
 
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.revivedMoc)

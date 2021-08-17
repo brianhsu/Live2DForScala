@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
-import moe.brianhsu.live2d.adapter.gateway.model.{CubismModelBackend, MocInfoFileReader}
+import moe.brianhsu.live2d.adapter.gateway.model.{MocInfoFileReader, ModelFileReader}
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.enitiy.core.types.{CsmVersion, MocVersion}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -13,7 +13,7 @@ import scala.util.Try
 /**
  * The default Cubism singleton object that could be used to load Live 2D Cubism Avatar.
  */
-object Cubism extends Cubism
+object Cubism extends Cubism()
 
 /**
  * The main Cubism class.
@@ -48,11 +48,9 @@ class Cubism(core: CubismCore) {
    * @return                A Success[Live2DModel] if load successfully, otherwise a Failure
    *
    */
-  def loadModel(mocFilename: String, textureFiles: List[String]): Try[Live2DModel] = Try {
-    val fileReader = new MocInfoFileReader(mocFilename)(core.memoryAllocator)
-    val mocInfo = fileReader.loadMocInfo
-    val backend = new CubismModelBackend(mocInfo.get, textureFiles)(core)
-    new Live2DModel(backend)
+  def loadModel(mocFilename: String, textureFiles: List[String]): Try[Live2DModel] = {
+    import core.memoryAllocator
+    new ModelFileReader(new MocInfoFileReader(mocFilename), textureFiles)(core).loadModel()
   }
 
   /**

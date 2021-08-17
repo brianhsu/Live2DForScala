@@ -11,7 +11,7 @@ import scala.util.Try
 
 class MocInfoFileReader(filename: String)(implicit allocator: MemoryAllocator) extends MocInfoReader {
 
-  override def loadMocInfo: Try[MocInfo] = Try {
+  override def loadMocInfo(): Try[MocInfo] = Try {
     val fileContent = Files.readAllBytes(Paths.get(filename))
     val memoryInfo = allocator.allocate(fileContent.size, MocAlignment)
 
