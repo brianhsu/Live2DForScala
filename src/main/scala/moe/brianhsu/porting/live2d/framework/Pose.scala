@@ -2,6 +2,7 @@ package moe.brianhsu.porting.live2d.framework
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.porting.live2d.framework.effect.Effect
 
 object Pose {
   private val DefaultFadeInSeconds = 0.5f
@@ -35,7 +36,7 @@ object Pose {
   }
 }
 
-class Pose {
+class Pose extends Effect {
   private val Epsilon: Float = 0.001f
 
   private var _partGroups: List[PartData] = Nil
@@ -187,7 +188,7 @@ class Pose {
    * @param   model              対象のモデル
    * @param   deltaTimeSeconds   デルタ時間[秒]
    */
-  def UpdateParameters(model: Live2DModel, deltaTimeSeconds: Float): Unit = {
+  def updateParameters(model: Live2DModel, deltaTimeSeconds: Float): Unit = {
     // 前回のモデルと同じではないときは初期化が必要
     if (model != _lastModel) {
       // パラメータインデックスの初期化

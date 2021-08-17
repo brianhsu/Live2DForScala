@@ -5,10 +5,11 @@ import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, LAppSprite, PowerSprite, SpriteShader}
+import moe.brianhsu.porting.live2d.framework.Pose
 import moe.brianhsu.porting.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
 import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
-import moe.brianhsu.porting.live2d.framework.model.Avatar
+import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
 import java.awt.event.KeyEvent
@@ -36,7 +37,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private val avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private val modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
-
+  private val updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {
+    a.updateStrategyHolder = Some(new DefaultStrategy(a.avatarSettings, a.model))
+    a.updateStrategyHolder.get.asInstanceOf[DefaultStrategy]
+  })
   private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, backgroundTexture, spriteShader)
   private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, powerTexture, spriteShader)
   private val gearSprite: LAppSprite = new GearSprite(drawCanvasInfo, gearTexture, spriteShader)
@@ -153,25 +157,28 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
 
   private def setupAvatarEffects(): Unit = {
-    avatarHolder.foreach { avatar =>
-      avatar.setEffects(
+    for {
+      avatar <- avatarHolder
+      updateStrategy <- updateStrategyHolder
+    } {
+      updateStrategy.setEffects(
         new Breath() ::
-        new EyeBlink(avatar.getAvatarSettings) ::
-        faceDirection ::
+        new EyeBlink(avatar.avatarSettings) ::
+        faceDirection :: Pose(avatar.avatarSettings) ::
         Nil
       )
     }
   }
 
   private def startMotion(group: String, i: Int): Unit = {
-    avatarHolder.foreach { avatar =>
-      avatar.startMotion(group, i)
+    updateStrategyHolder.foreach { updateStrategy =>
+      updateStrategy.startMotion(group, i)
     }
 
   }
   private def startExpression(name: String): Unit = {
-    avatarHolder.foreach { avatar =>
-      avatar.setExpression(name)
+    updateStrategyHolder.foreach { updateStrategy =>
+      updateStrategy.setExpression(name)
     }
   }
 
@@ -180,6 +187,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     openGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     openGL.glClearDepth(1.0)
   }
+
   def keyReleased(keyEvent: KeyEvent): Unit = {
     keyEvent.getKeyChar match {
       case '0' => startExpression("f00")
