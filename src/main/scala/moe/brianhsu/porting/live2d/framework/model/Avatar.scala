@@ -6,8 +6,12 @@ import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateStrategy
 import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionManager, Pose}
 import moe.brianhsu.porting.live2d.framework.effect.Effect
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import org.slf4j.LoggerFactory
 
 class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel) extends UpdateStrategy {
+
+  private val defaultLogger = LoggerFactory.getLogger(this.getClass)
+
   private var effects: List[Effect] = Nil
   private val expressionManager = new CubismMotionManager
   private val motionManager = new CubismMotionManager
@@ -25,18 +29,17 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     this.effects = effects.filterNot(_ == effect)
   }
 
-  lazy val motions: Seq[MotionSetting] = avatarSettings.motionGroups.values.toList.flatten
-
-  def startMotion(group: String, i: Int): Unit = {
-    val name = s"Motion(${group}_$i)"
-    val motionSettings = avatarSettings.motionGroups(group)(i)
-    val m = CubismMotion(motionSettings, _ => println(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
-    println(s"Start motionmotion  $name")
-    motionManager.StartMotionPriority(m, autoDelete = false, 2)
+  def startMotion(motionGroup: String, index: Int): Unit = {
+    val name = s"Motion(${motionGroup}_$index)"
+    val motionSettings = avatarSettings.motionGroups(motionGroup)(index)
+    val motion = CubismMotion(motionSettings, _ => defaultLogger.info(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
+    defaultLogger.info(s"Start motion $name")
+    motionManager.StartMotionPriority(motion, autoDelete = false, 2)
   }
+
   def setExpression(name: String): Unit = {
     expressions.get(name).foreach { expression =>
-      println(s"Start $name expression")
+      defaultLogger.info(s"Start $name expression")
       expressionManager.StartMotionPriority(expression, autoDelete = false, 3)
     }
   }
@@ -44,15 +47,13 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   override def update(deltaTimeInSeconds: Float): Unit = {
     model.restoreParameters()
     if (motionManager.IsFinished()) {
-
+      // Start Random Motion
     } else {
       motionManager.UpdateMotion(model, deltaTimeInSeconds)
     }
     model.snapshotParameters()
     expressionManager.UpdateMotion(model, deltaTimeInSeconds)
-    effects.foreach {
-      _.updateParameters(model, deltaTimeInSeconds)
-    }
+    effects.foreach(_.updateParameters(model, deltaTimeInSeconds))
     model.update()
   }
 }

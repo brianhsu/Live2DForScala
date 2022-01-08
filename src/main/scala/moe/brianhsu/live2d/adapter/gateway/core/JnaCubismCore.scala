@@ -7,6 +7,15 @@ import moe.brianhsu.live2d.boundary.gateway.core.memory.MemoryAllocator
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types.CsmLogFunction
 import moe.brianhsu.live2d.exception.NativeLibraryNotFoundError
+import org.slf4j.LoggerFactory
+
+object JnaCubismCoreDefaultLogger extends CsmLogFunction {
+  private val defaultLogger = LoggerFactory.getLogger(this.getClass)
+
+  override def invoke(message: String): Unit = {
+    defaultLogger.info(message)
+  }
+}
 
 /**
  * CubismCore implemented with JNA
@@ -18,11 +27,12 @@ import moe.brianhsu.live2d.exception.NativeLibraryNotFoundError
  */
 class JnaCubismCore(override val memoryAllocator: MemoryAllocator, logger: CsmLogFunction) extends CubismCore {
 
+
   /**
    * Create an instance with [[moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator]], and log message into
    * the standard output.
    */
-  def this() = this(DefaultMemoryAllocator, line => println(line))
+  def this() = this(DefaultMemoryAllocator, JnaCubismCoreDefaultLogger)
 
   /**
    * Create an instance with [[moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator]], and customize how to
