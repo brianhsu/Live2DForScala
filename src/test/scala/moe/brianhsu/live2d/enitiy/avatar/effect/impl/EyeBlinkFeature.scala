@@ -1,13 +1,12 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{AddOperation, UpdateOperation}
+import moe.brianhsu.live2d.enitiy.avatar.effect.UpdateOperation
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.prop.TableDrivenPropertyChecks
 
-class EyeBlinkFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TableDrivenPropertyChecks {
+class EyeBlinkFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   Feature("Calculate the eye blink parameter operations") {
 

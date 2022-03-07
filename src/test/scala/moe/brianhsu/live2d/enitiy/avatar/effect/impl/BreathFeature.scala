@@ -4,9 +4,8 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.AddOperation
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.prop.TableDrivenPropertyChecks
 
-class BreathFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TableDrivenPropertyChecks {
+class BreathFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   Feature("Calculate the breath parameter operations") {
     Scenario("There is no breath parameter passed in") {

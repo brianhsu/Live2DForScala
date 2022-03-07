@@ -6,7 +6,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.io.Source
 
-class FaceDirectionTargetCalculatorFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
+class FaceDirectionByMouseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   case class TimedData(interval: Float, viewX: Float, viewY: Float, expectedTargetX: Float, expectedTargetY: Float)
 
@@ -15,12 +15,14 @@ class FaceDirectionTargetCalculatorFeature extends AnyFeatureSpec with GivenWhen
     val testDataList = loadTestData
 
     Then("it should calculate correct expectedTargetX / expectedTargetY from test data")
-    val targetPointCalculator = new FaceDirection(30).targetPointCalculator
+    val targetPointCalculator = new FaceDirectionByMouse(30)
+    var totalElapsedTimeInSeconds = 0.0f
 
     for (row <- testDataList) {
+      totalElapsedTimeInSeconds += row.interval
       targetPointCalculator.setFaceTargetCoordinate(row.viewX, row.viewY)
-      targetPointCalculator.update(row.interval)
-      val (faceX, faceY) = targetPointCalculator.getFaceCoordinate
+      targetPointCalculator.updateFrameTimeInfo(totalElapsedTimeInSeconds, row.interval)
+      val (faceX, faceY) = targetPointCalculator.currentFaceCoordinate
       faceX shouldBe row.expectedTargetX
       faceY shouldBe row.expectedTargetY
     }

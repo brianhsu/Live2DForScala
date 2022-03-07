@@ -22,7 +22,7 @@ object EyeBlink {
 }
 
 class EyeBlink (avatarSettings: Settings,
-                parameters: EyeBlink.Parameters = EyeBlink.Parameters(4.0f, Random.nextFloat(), 0.1f, 0.05f, 0.15f)) extends FunctionalEffect {
+                parameters: EyeBlink.Parameters = EyeBlink.Parameters(10.0f, Random.nextFloat(), 0.1f, 0.05f, 0.15f)) extends FunctionalEffect {
 
   private var currentBlinkingState: EyeBlink.State = EyeBlink.Init
   private var nextBlinkingTimeInSeconds: Float = 0.0f
