@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.framework.effect.impl
+package moe.brianhsu.live2d.adapter.gateway.avatar.effect
 
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

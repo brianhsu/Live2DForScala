@@ -1,5 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
+import moe.brianhsu.live2d.boundary.gateway.avatar.effect.FaceDirectionCalculator
 import moe.brianhsu.live2d.enitiy.avatar.effect.{AddOperation, UpdateOperation}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
@@ -11,7 +12,7 @@ class FaceDirectionFeature extends AnyFeatureSpec with GivenWhenThen with Matche
   Feature("Calculate the face direction parameter operations") {
     Scenario("Update parameters according to DirectionCalculator") {
       Given("A mocked direction calculator")
-      val directionCalculator = mock[FaceDirection.DirectionCalculator]
+      val directionCalculator = mock[FaceDirectionCalculator]
       (directionCalculator.updateFrameTimeInfo _).expects(1.0f, 33.0f)
       (directionCalculator.currentFaceCoordinate _).expects().returning((0.2f, 0.5f))
 

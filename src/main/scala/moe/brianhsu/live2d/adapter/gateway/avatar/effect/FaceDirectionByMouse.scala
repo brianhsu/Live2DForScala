@@ -1,10 +1,10 @@
-package moe.brianhsu.porting.live2d.framework.effect.impl
+package moe.brianhsu.live2d.adapter.gateway.avatar.effect
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.FaceDirection
+import moe.brianhsu.live2d.boundary.gateway.avatar.effect.FaceDirectionCalculator
 
 import scala.math.{abs, sqrt}
 
-class FaceDirectionByMouse(frameRate: Int) extends FaceDirection.DirectionCalculator {
+class FaceDirectionByMouse(frameRate: Int) extends FaceDirectionCalculator {
 
   /**
    * The minimal offset required to calculate a face direction coordinate
@@ -85,33 +85,18 @@ class FaceDirectionByMouse(frameRate: Int) extends FaceDirection.DirectionCalcul
    */
   private var lastUpdateTimeInSeconds: Float = 0.0f
 
-  /**
-   * The total elapsed time in seconds.
-   *
-   * This is accumulated value from deltaTimeInSeconds of [[update]] method.
-   *
-   * Original Japanese comment in Cubism Live2D SDK:
-   * {{{
-   *   デルタ時間の積算値[秒]
-   * }}}
-   */
-  private var totalTimeElapsedInSeconds: Float = 0.0f
-
   override def updateFrameTimeInfo(totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): Unit = {
-
-    // デルタ時間を加算する
-    totalTimeElapsedInSeconds += deltaTimeInSeconds
 
     val maxVelocity: Float = calculateMaxVelocity
 
     if (lastUpdateTimeInSeconds == 0.0f) {
-      lastUpdateTimeInSeconds = totalTimeElapsedInSeconds
+      lastUpdateTimeInSeconds = totalElapsedTimeInSeconds
       return
     }
 
-    val maxAcceleration: Float = calculateMaxAcceleration(maxVelocity, totalTimeElapsedInSeconds, lastUpdateTimeInSeconds)
+    val maxAcceleration: Float = calculateMaxAcceleration(maxVelocity, totalElapsedTimeInSeconds, lastUpdateTimeInSeconds)
 
-    lastUpdateTimeInSeconds = totalTimeElapsedInSeconds
+    lastUpdateTimeInSeconds = totalElapsedTimeInSeconds
 
     // 目指す向きは、(dx, dy)方向のベクトルとなる
     val dx = faceTargetX - faceX
