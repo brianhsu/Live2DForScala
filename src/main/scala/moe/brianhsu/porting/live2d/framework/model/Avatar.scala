@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework.model
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{AddOperation, FunctionalEffect}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{AddOperation, FunctionalEffect, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
 import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionManager, Pose}
@@ -64,6 +64,8 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
       val operations = effect.calculateOperations(frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
       operations.foreach {
         case AddOperation(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.add(value, weight))
+        case UpdateOperation(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.update(value, weight))
+
         case _ => println("Unknown Operation")
       }
     }

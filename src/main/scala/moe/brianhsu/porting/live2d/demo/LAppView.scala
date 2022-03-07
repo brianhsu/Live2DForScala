@@ -2,12 +2,12 @@ package moe.brianhsu.porting.live2d.demo
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Breath
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, LAppSprite, PowerSprite, SpriteShader}
 import moe.brianhsu.porting.live2d.framework.Pose
-import moe.brianhsu.porting.live2d.framework.effect.impl.{EyeBlink, FaceDirection}
+import moe.brianhsu.porting.live2d.framework.effect.impl.FaceDirection
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
 import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}
@@ -161,11 +161,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       updateStrategy <- updateStrategyHolder
     } {
       updateStrategy.setFunctionalEffects(
-        new Breath() :: Nil
+        new Breath() ::
+          new EyeBlink(avatar.avatarSettings) ::
+          Nil
       )
       updateStrategy.setEffects(
-        //new Breath() ::
-        new EyeBlink(avatar.avatarSettings) ::
         faceDirection :: Pose(avatar.avatarSettings) ::
         Nil
       )
