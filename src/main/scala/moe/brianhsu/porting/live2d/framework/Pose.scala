@@ -15,13 +15,13 @@ object Pose {
         var groupCount = 0
         for (groupIndex  <- groups(poseIndex).indices) {
           val partInfo = groups(poseIndex)(groupIndex)
-          val partData = new PartData
-          partData.PartId = partInfo.id
+          val partData = new PartData(partInfo.id)
+          partData.partId = partInfo.id
           if (partInfo.link.nonEmpty) {
             for (linkIndex <- partInfo.link.indices) {
               val linkPart = new PartData
-              linkPart.PartId = partInfo.link(linkIndex)
-              partData.Link = partData.Link.appended(linkPart)
+              linkPart.partId = partInfo.link(linkIndex)
+              partData.link = partData.link.appended(linkPart)
             }
 
           }
@@ -62,9 +62,9 @@ class Pose extends Effect {
     var isBreak: Boolean = false
 
     for (i <- beginIndex until beginIndex + partGroupCount if !isBreak) {
-      val partId = _partGroups(i).PartId
+      val partId = _partGroups(i).partId
 
-      val v: Float = model.parameterWithFallback(_partGroups(i).PartId).current
+      val v: Float = model.parameterWithFallback(_partGroups(i).partId).current
       if (v > Epsilon) {
         if (visiblePartIndex >= 0) {
           isBreak = true
@@ -88,7 +88,7 @@ class Pose extends Effect {
     }
 
     for (i <- beginIndex until  beginIndex + partGroupCount){
-      val partId = _partGroups(i).PartId
+      val partId = _partGroups(i).partId
       //  表示パーツの設定
       if (visiblePartIndex == i) {
         model.parts(partId).opacity = newOpacity// 先に設定
@@ -130,22 +130,27 @@ class Pose extends Effect {
   def CopyPartOpacities(model: Live2DModel): Unit = {
     for (groupIndex <- _partGroups.indices) {
       val partData = _partGroups(groupIndex)
-      if (partData.Link.isEmpty) {
+      if (partData.link.isEmpty) {
         //continue // 連動するパラメータはない
       } else {
-        val partId = _partGroups(groupIndex).PartId
+        val partId = _partGroups(groupIndex).partId
         if (model.parts.contains(partId)) {
           val opacity: Float = model.parts(partId).opacity
-          for (linkIndex <- partData.Link.indices) {
-            val linkPart = partData.Link(linkIndex)
-            val linkPartId = linkPart.PartId
+          for (linkIndex <- partData.link.indices) {
+            val linkPart = partData.link(linkIndex)
+            val linkPartId = linkPart.partId
             if (model.parts.contains(linkPartId)) {
-              model.parts(_partGroups(groupIndex).PartId).opacity = opacity
+              model.parts(_partGroups(groupIndex).partId).opacity = opacity
             }
           }
         }
       }
     }
+  }
+
+  private def initPartData(model: Live2DModel, partData: PartData): Unit = {
+    model.parameterWithFallback(partData.partId).update(value = 1)
+
   }
   /**
    * 表示を初期化
@@ -161,18 +166,18 @@ class Pose extends Effect {
     for (i <- _partGroupCounts.indices) {
       val groupCount = _partGroupCounts(i)
       for (j <- beginIndex until beginIndex + groupCount) {
-        _partGroups(j).Initialize(model)
-        val partId = _partGroups(j).PartId
+        initPartData(model, _partGroups(j))
+        val partId = _partGroups(j).partId
         if (!model.parts.contains(partId)) {
           // continue
         } else {
 
           val v = if (j == beginIndex) 1.0f else 0.0f
-          model.parts(_partGroups(j).PartId).opacity = v
-          model.parameterWithFallback(_partGroups(j).PartId).update(v)
+          model.parts(_partGroups(j).partId).opacity = v
+          model.parameterWithFallback(_partGroups(j).partId).update(v)
           //model.setParameterValueUsingIndex(_partGroups(j).PartId, paramIndex, v)
-          for (k <- _partGroups(j).Link.indices) {
-            _partGroups(j).Link(k).Initialize(model)
+          for (k <- _partGroups(j).link.indices) {
+            initPartData(model, _partGroups(j).link(k))
           }
         }
       }
