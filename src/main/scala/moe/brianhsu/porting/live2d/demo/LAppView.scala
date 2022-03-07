@@ -2,11 +2,12 @@ package moe.brianhsu.porting.live2d.demo
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Breath
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, LAppSprite, PowerSprite, SpriteShader}
 import moe.brianhsu.porting.live2d.framework.Pose
-import moe.brianhsu.porting.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
+import moe.brianhsu.porting.live2d.framework.effect.impl.{EyeBlink, FaceDirection}
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
 import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}
@@ -14,8 +15,6 @@ import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
 import java.awt.event.KeyEvent
 import scala.util.Try
-
-
 
 class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGL) {
 
@@ -79,7 +78,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
         updateModelMatrix(model)
       )
 
-      avatar.update(this.frameTimeCalculator.getDeltaTimeInSeconds)
+      avatar.update(this.frameTimeCalculator)
       renderer.draw(avatar, projection)
     }
 
@@ -161,8 +160,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       avatar <- avatarHolder
       updateStrategy <- updateStrategyHolder
     } {
+      updateStrategy.setFunctionalEffects(
+        new Breath() :: Nil
+      )
       updateStrategy.setEffects(
-        new Breath() ::
+        //new Breath() ::
         new EyeBlink(avatar.avatarSettings) ::
         faceDirection :: Pose(avatar.avatarSettings) ::
         Nil
