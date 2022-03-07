@@ -16,7 +16,7 @@ class EyeBlinkFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
       val avatarSettings = Settings(null, Nil, None, eyeBlinkParameterIds, Map.empty, Map.empty, Nil)
 
       When("Using parameter without randomness")
-      val eyeBlink = new EyeBlink(avatarSettings, EyeBlink.Parameters(4.0f, 1.0f, 0.1f, 0.05f, 0.15f))
+      val eyeBlink = new EyeBlink(avatarSettings, EyeBlink.Parameters(4.0f, () => 1.0f, 0.1f, 0.05f, 0.15f))
 
       And("Calculate operation of first frame (EyeBlink.Init -> EyeBlink.Interval)")
       val firstFrameOperation = eyeBlink.calculateOperations(0, 0.33f)

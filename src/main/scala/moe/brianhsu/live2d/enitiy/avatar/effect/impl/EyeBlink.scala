@@ -14,7 +14,7 @@ object EyeBlink {
   case object Opening extends State
 
   case class Parameters(
-    blinkingIntervalInSeconds: Float, blinkingIntervalRandomness: Float,
+    blinkingIntervalInSeconds: Float, blinkingIntervalRandomness: () => Float,
     closingInSeconds: Float,
     closedInSeconds: Float, openingInSeconds: Float
   )
@@ -22,7 +22,7 @@ object EyeBlink {
 }
 
 class EyeBlink (avatarSettings: Settings,
-                parameters: EyeBlink.Parameters = EyeBlink.Parameters(10.0f, Random.nextFloat(), 0.1f, 0.05f, 0.15f)) extends FunctionalEffect {
+                parameters: EyeBlink.Parameters = EyeBlink.Parameters(4.0f, () => Random.nextFloat(), 0.1f, 0.05f, 0.15f)) extends FunctionalEffect {
 
   private var currentBlinkingState: EyeBlink.State = EyeBlink.Init
   private var nextBlinkingTimeInSeconds: Float = 0.0f
@@ -30,7 +30,7 @@ class EyeBlink (avatarSettings: Settings,
 
   private def determineNextBlinkingTiming(currentTimeInSeconds: Float): Float = {
     val nextBlinkingAfterSeconds = 2.0f * parameters.blinkingIntervalInSeconds - 1.0f
-    currentTimeInSeconds + parameters.blinkingIntervalRandomness * nextBlinkingAfterSeconds
+    currentTimeInSeconds + parameters.blinkingIntervalRandomness() * nextBlinkingAfterSeconds
   }
 
   override def calculateOperations(currentTimeInSeconds: Float, deltaTimeInSeconds: Float): List[ParameterOperation] = {
