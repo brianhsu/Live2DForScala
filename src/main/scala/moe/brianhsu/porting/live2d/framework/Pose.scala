@@ -1,30 +1,57 @@
 package moe.brianhsu.porting.live2d.framework
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.effect.Effect
 
 object Pose {
   private val DefaultFadeInSeconds = 0.5f
+  private def createPartData(pose: List[Part]): List[PartData] = {
+    pose.map { partInfo =>
+      val linkedPart = partInfo.link.map(id => PartData(id))
+      PartData(partInfo.id, linkedPart)
+    }
+  }
   def apply(avatarSettings: Settings): Pose = {
     val poseHolder = avatarSettings.pose.map { poseSettings =>
       val groups = poseSettings.groups
-      val partGroups = for {
-        pose <- groups
-        partInfo <- pose
-      } yield {
-        val linkedPart = partInfo.link.map(id => PartData(id))
-        PartData(partInfo.id, linkedPart)
-      }
+      val reasonablePartGroup = groups.map(createPartData)
       val partGroupCount = groups.map(_.size)
       val fadeTimeInSeconds = poseSettings.fadeInTime.filterNot(_ < 0).getOrElse(DefaultFadeInSeconds)
-      new Pose(partGroups, partGroupCount, fadeTimeInSeconds)
+      new Pose(reasonablePartGroup, reasonablePartGroup.flatten, partGroupCount, fadeTimeInSeconds)
     }
     poseHolder.getOrElse(new Pose)
   }
+
+  def main(args: Array[String]): Unit = {
+    println("Hello World")
+    val x: List[List[PartData]] = List(
+      List(
+        PartData("level1", List(PartData("level1-1"), PartData("level1-2"))),
+        PartData("level2", List(PartData("level2-1"), PartData("level2-2"))),
+      ),
+      List(
+        PartData("level3", List(PartData("level3-1"), PartData("level3-2"))),
+        PartData("level4", List(PartData("level4-1"), PartData("level4-2"))),
+      ),
+    )
+
+    val y = Map("level2" -> "aa", "level3" -> "bb")
+
+    for {
+      pose: List[PartData] <- x
+      posePart <- pose
+      temp <- y.get(posePart.partId)
+      linkPart <- posePart.link
+    } {
+      println(linkPart)
+    }
+  }
 }
 
-class Pose(val partGroups: List[PartData] = Nil,
+class Pose(val reasonablePartGroups: List[List[PartData]] = Nil,
+           val partGroups: List[PartData] = Nil,
            val partGroupCount: List[Int] = Nil,
            val fadeTimeInSeconds: Float = 0) extends Effect {
 
@@ -114,31 +141,18 @@ class Pose(val partGroups: List[PartData] = Nil,
    *
    * @param   model   対象のモデル
    */
-  def CopyPartOpacities(model: Live2DModel): Unit = {
-    for (groupIndex <- partGroups.indices) {
-      val partData = partGroups(groupIndex)
-      if (partData.link.isEmpty) {
-        //continue // 連動するパラメータはない
-      } else {
-        val partId = partGroups(groupIndex).partId
-        if (model.parts.contains(partId)) {
-          val opacity: Float = model.parts(partId).opacity
-          for (linkIndex <- partData.link.indices) {
-            val linkPart = partData.link(linkIndex)
-            val linkPartId = linkPart.partId
-            if (model.parts.contains(linkPartId)) {
-              model.parts(partGroups(groupIndex).partId).opacity = opacity
-            }
-          }
-        }
-      }
+  def copyPartOpacities(model: Live2DModel): Unit = {
+    for {
+      pose: List[PartData] <- reasonablePartGroups
+      posePartData <- pose
+      posePart <- model.parts.get(posePartData.partId)
+      linkPartData <- posePartData.link
+      linkPart <- model.parts.get(linkPartData.partId)
+    } {
+      linkPart.opacity = posePart.opacity
     }
   }
 
-  private def initPartData(model: Live2DModel, partData: PartData): Unit = {
-    model.parameterWithFallback(partData.partId).update(value = 1)
-
-  }
   /**
    * 表示を初期化
    *
@@ -148,26 +162,20 @@ class Pose(val partGroups: List[PartData] = Nil,
    *
    * @note 不透明度の初期値が0でないパラメータは、不透明度を1に設定する。
    */
-  def Reset(model: Live2DModel): Unit = {
-    var beginIndex: Int = 0
-    for (i <- partGroupCount.indices) {
-      val groupCount = partGroupCount(i)
-      for (j <- beginIndex until beginIndex + groupCount) {
-        initPartData(model, partGroups(j))
-        val partId = partGroups(j).partId
-        if (model.parts.contains(partId)) {
-          val v = if (j == beginIndex) 1.0f else 0.0f
-          model.parts(partGroups(j).partId).opacity = v
-          model.parameterWithFallback(partGroups(j).partId).update(v)
-          //model.setParameterValueUsingIndex(_partGroups(j).PartId, paramIndex, v)
-          for (k <- partGroups(j).link.indices) {
-            initPartData(model, partGroups(j).link(k))
-          }
-        }
+  def resetParts(model: Live2DModel): Unit = {
+    for {
+      poseGroup <- reasonablePartGroups
+      posePartData <- poseGroup
+    } {
+      model.parameterWithFallback(posePartData.partId).update(value = 1)
+      val partId = posePartData.partId
+      model.parts.get(partId).foreach { part =>
+        val initOpacity = if (posePartData == poseGroup.head) 1.0f else 0.0f
+        part.opacity = initOpacity
+        model.parameterWithFallback(partId).update(initOpacity)
+        posePartData.link.foreach(link => model.parameterWithFallback(link.partId).update(value = 1))
       }
-      beginIndex += groupCount
     }
-
   }
   /**
    * モデルのパラメータの更新
@@ -181,7 +189,7 @@ class Pose(val partGroups: List[PartData] = Nil,
     // 前回のモデルと同じではないときは初期化が必要
     if (model != _lastModel) {
       // パラメータインデックスの初期化
-      Reset(model)
+      resetParts(model)
     }
 
     _lastModel = model
@@ -194,7 +202,7 @@ class Pose(val partGroups: List[PartData] = Nil,
       beginIndex += partGroupCount1
     }
 
-    CopyPartOpacities(model)
+    copyPartOpacities(model)
 
   }
 
