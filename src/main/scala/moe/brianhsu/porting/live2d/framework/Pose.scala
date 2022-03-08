@@ -7,41 +7,28 @@ import moe.brianhsu.porting.live2d.framework.effect.Effect
 object Pose {
   private val DefaultFadeInSeconds = 0.5f
   def apply(avatarSettings: Settings): Pose = {
-    val ret = new Pose
-    avatarSettings.pose.foreach { poseSettings =>
-      ret._fadeTimeSeconds = poseSettings.fadeInTime.filterNot(_ < 0).getOrElse(DefaultFadeInSeconds)
+    val poseHolder = avatarSettings.pose.map { poseSettings =>
       val groups = poseSettings.groups
-      for (poseIndex <- groups.indices) {
-        var groupCount = 0
-        for (groupIndex  <- groups(poseIndex).indices) {
-          val partInfo = groups(poseIndex)(groupIndex)
-          val partData = new PartData(partInfo.id)
-          partData.partId = partInfo.id
-          if (partInfo.link.nonEmpty) {
-            for (linkIndex <- partInfo.link.indices) {
-              val linkPart = new PartData
-              linkPart.partId = partInfo.link(linkIndex)
-              partData.link = partData.link.appended(linkPart)
-            }
-
-          }
-          ret._partGroups = ret._partGroups.appended(partData)
-          groupCount += 1
-        }
-        ret._partGroupCounts = ret._partGroupCounts.appended(groupCount)
+      val partGroups = for {
+        pose <- groups
+        partInfo <- pose
+      } yield {
+        val linkedPart = partInfo.link.map(id => PartData(id))
+        PartData(partInfo.id, linkedPart)
       }
-
+      val partGroupCount = groups.map(_.size)
+      val fadeTimeInSeconds = poseSettings.fadeInTime.filterNot(_ < 0).getOrElse(DefaultFadeInSeconds)
+      new Pose(partGroups, partGroupCount, fadeTimeInSeconds)
     }
-    ret
+    poseHolder.getOrElse(new Pose)
   }
 }
 
-class Pose extends Effect {
-  private val Epsilon: Float = 0.001f
+class Pose(val partGroups: List[PartData] = Nil,
+           val partGroupCount: List[Int] = Nil,
+           val fadeTimeInSeconds: Float = 0) extends Effect {
 
-  private var _partGroups: List[PartData] = Nil
-  private var _partGroupCounts: List[Int] = Nil
-  private var _fadeTimeSeconds: Float = 0
+  private val Epsilon: Float = 0.001f
   private var _lastModel: Live2DModel = null
   /**
    * パーツのフェード操作を実行
@@ -62,9 +49,9 @@ class Pose extends Effect {
     var isBreak: Boolean = false
 
     for (i <- beginIndex until beginIndex + partGroupCount if !isBreak) {
-      val partId = _partGroups(i).partId
+      val partId = partGroups(i).partId
 
-      val v: Float = model.parameterWithFallback(_partGroups(i).partId).current
+      val v: Float = model.parameterWithFallback(partGroups(i).partId).current
       if (v > Epsilon) {
         if (visiblePartIndex >= 0) {
           isBreak = true
@@ -74,7 +61,7 @@ class Pose extends Effect {
         newOpacity = model.parts(partId).opacity
 
         // 新しい不透明度を計算
-        newOpacity += (deltaTimeSeconds / _fadeTimeSeconds)
+        newOpacity += (deltaTimeSeconds / fadeTimeInSeconds)
 
         if (newOpacity > 1.0f) {
           newOpacity = 1.0f
@@ -88,7 +75,7 @@ class Pose extends Effect {
     }
 
     for (i <- beginIndex until  beginIndex + partGroupCount){
-      val partId = _partGroups(i).partId
+      val partId = partGroups(i).partId
       //  表示パーツの設定
       if (visiblePartIndex == i) {
         model.parts(partId).opacity = newOpacity// 先に設定
@@ -128,19 +115,19 @@ class Pose extends Effect {
    * @param   model   対象のモデル
    */
   def CopyPartOpacities(model: Live2DModel): Unit = {
-    for (groupIndex <- _partGroups.indices) {
-      val partData = _partGroups(groupIndex)
+    for (groupIndex <- partGroups.indices) {
+      val partData = partGroups(groupIndex)
       if (partData.link.isEmpty) {
         //continue // 連動するパラメータはない
       } else {
-        val partId = _partGroups(groupIndex).partId
+        val partId = partGroups(groupIndex).partId
         if (model.parts.contains(partId)) {
           val opacity: Float = model.parts(partId).opacity
           for (linkIndex <- partData.link.indices) {
             val linkPart = partData.link(linkIndex)
             val linkPartId = linkPart.partId
             if (model.parts.contains(linkPartId)) {
-              model.parts(_partGroups(groupIndex).partId).opacity = opacity
+              model.parts(partGroups(groupIndex).partId).opacity = opacity
             }
           }
         }
@@ -163,21 +150,18 @@ class Pose extends Effect {
    */
   def Reset(model: Live2DModel): Unit = {
     var beginIndex: Int = 0
-    for (i <- _partGroupCounts.indices) {
-      val groupCount = _partGroupCounts(i)
+    for (i <- partGroupCount.indices) {
+      val groupCount = partGroupCount(i)
       for (j <- beginIndex until beginIndex + groupCount) {
-        initPartData(model, _partGroups(j))
-        val partId = _partGroups(j).partId
-        if (!model.parts.contains(partId)) {
-          // continue
-        } else {
-
+        initPartData(model, partGroups(j))
+        val partId = partGroups(j).partId
+        if (model.parts.contains(partId)) {
           val v = if (j == beginIndex) 1.0f else 0.0f
-          model.parts(_partGroups(j).partId).opacity = v
-          model.parameterWithFallback(_partGroups(j).partId).update(v)
+          model.parts(partGroups(j).partId).opacity = v
+          model.parameterWithFallback(partGroups(j).partId).update(v)
           //model.setParameterValueUsingIndex(_partGroups(j).PartId, paramIndex, v)
-          for (k <- _partGroups(j).link.indices) {
-            initPartData(model, _partGroups(j).link(k))
+          for (k <- partGroups(j).link.indices) {
+            initPartData(model, partGroups(j).link(k))
           }
         }
       }
@@ -202,16 +186,12 @@ class Pose extends Effect {
 
     _lastModel = model
 
-    var actualDeltaTimeSeconds = deltaTimeSeconds
-    // 設定から時間を変更すると、経過時間がマイナスになることがあるので、経過時間0として対応。
-    if (actualDeltaTimeSeconds < 0.0f) {
-      actualDeltaTimeSeconds = 0.0f
-    }
+    val actualDeltaTimeSeconds = if (deltaTimeSeconds < 0.0f) 0 else deltaTimeSeconds
     var beginIndex = 0
-    for (i <- _partGroupCounts.indices) {
-      val partGroupCount = _partGroupCounts(i)
-      DoFade(model, actualDeltaTimeSeconds, beginIndex, partGroupCount)
-      beginIndex += partGroupCount
+    for (i <- partGroupCount.indices) {
+      val partGroupCount1 = partGroupCount(i)
+      DoFade(model, actualDeltaTimeSeconds, beginIndex, partGroupCount1)
+      beginIndex += partGroupCount1
     }
 
     CopyPartOpacities(model)
