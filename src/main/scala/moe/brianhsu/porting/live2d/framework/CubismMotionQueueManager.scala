@@ -23,11 +23,9 @@ class CubismMotionQueueManager {
    * 指定したモーションを開始する。同じタイプのモーションが既にある場合は、既存のモーションに終了フラグを立て、フェードアウトを開始させる。
    *
    * @param   motion          開始するモーション
-   * @param   autoDelete      再生が終了したモーションのインスタンスを削除するなら true
-   * @param   userTimeSeconds デルタ時間の積算値[秒]
    * @return                      開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するIsFinished()の引数で使用する。開始できない時は「-1」
    */
-  def StartMotion(motion: ACubismMotion, autoDelete: Boolean, @unused userTimeSeconds: Float): CubismMotionQueueEntry = {
+  def StartMotion(motion: ACubismMotion): CubismMotionQueueEntry = {
 
     if (motion == null) {
       return null
@@ -35,7 +33,6 @@ class CubismMotionQueueManager {
 
     this._motions.foreach(e => e.SetFadeout(e._motion.GetFadeOutTime()))
     val entry = new CubismMotionQueueEntry
-    entry._autoDelete = autoDelete
     entry._motion = motion
     this._motions = this._motions.appended(entry)
     entry
