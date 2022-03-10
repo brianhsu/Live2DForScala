@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose.{BackOpacityThreshold, Epsilon, Phi}
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, FunctionalEffect, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, Effect, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -30,7 +30,7 @@ object Pose {
 }
 
 class Pose(val posePartGroups: List[List[PartData]] = Nil,
-           val fadeTimeInSeconds: Float = 0) extends FunctionalEffect {
+           val fadeTimeInSeconds: Float = 0) extends Effect {
 
 
   private var isAlreadyInit = false
@@ -141,7 +141,7 @@ class Pose(val posePartGroups: List[List[PartData]] = Nil,
 
     operationsForEachPose.flatten
   }
-  var count = 0
+
   /**
    * モデルのパラメータの更新
    *

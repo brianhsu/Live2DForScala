@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FunctionalEffect, ParameterValueUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, Effect, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
@@ -23,7 +23,7 @@ object EyeBlink {
 }
 
 class EyeBlink (avatarSettings: Settings,
-                parameters: EyeBlink.Parameters = EyeBlink.Parameters(4.0f, () => Random.nextFloat(), 0.1f, 0.05f, 0.15f)) extends FunctionalEffect {
+                parameters: EyeBlink.Parameters = EyeBlink.Parameters(4.0f, () => Random.nextFloat(), 0.1f, 0.05f, 0.15f)) extends Effect {
 
   private var currentBlinkingState: EyeBlink.State = EyeBlink.Init
   private var nextBlinkingTimeInSeconds: Float = 0.0f

@@ -1,10 +1,10 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.effect.FaceDirectionCalculator
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FunctionalEffect, ParameterValueAdd, ParameterValueUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, Effect, ParameterValueAdd, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-class FaceDirection(directionCalculator: FaceDirectionCalculator) extends FunctionalEffect {
+class FaceDirection(directionCalculator: FaceDirectionCalculator) extends Effect {
 
   def calculateOperations(model: Live2DModel, currentTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
     directionCalculator.updateFrameTimeInfo(currentTimeInSeconds, deltaTimeInSeconds)

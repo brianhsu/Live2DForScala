@@ -1,10 +1,9 @@
 package moe.brianhsu.porting.live2d.framework.model
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{FallbackParameterValueAdd, FallbackParameterValueUpdate, FunctionalEffect, ParameterValueAdd, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{FallbackParameterValueAdd, FallbackParameterValueUpdate, Effect, ParameterValueAdd, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
 import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionManager}
-import moe.brianhsu.porting.live2d.framework.effect.Effect
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import org.slf4j.LoggerFactory
 
@@ -12,18 +11,13 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
 
   private val defaultLogger = LoggerFactory.getLogger(this.getClass)
 
-  private var effects: List[Effect] = Nil
   private val expressionManager = new CubismMotionManager
   private val motionManager = new CubismMotionManager
   private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
 
-  private var functionalEffects: List[FunctionalEffect] = Nil
+  private var effects: List[Effect] = Nil
 
-  def setFunctionalEffects(effects: List[FunctionalEffect]): Unit = {
-    this.functionalEffects = effects
-  }
-
-  def setEffects(effects: List[Effect]): Unit = {
+  def setFunctionalEffects(effects: List[Effect]): Unit = {
     this.effects = effects
   }
 
@@ -59,8 +53,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     }
     model.snapshotParameters()
     expressionManager.UpdateMotion(model, frameTimeInfo.deltaTimeInSeconds)
-    effects.foreach(_.updateParameters(model, frameTimeInfo.deltaTimeInSeconds))
-    functionalEffects.foreach { effect =>
+    effects.foreach { effect =>
       val operations = effect.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
       operations.foreach {
         case ParameterValueAdd(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.add(value, weight))
