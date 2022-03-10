@@ -7,8 +7,18 @@ import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
 class Live2DModel(modelBackend: ModelBackend) {
   private var savedParameters: Map[String, Float] = Map.empty
   private var fallbackParameters: Map[String, Parameter] = Map.empty
+  private var modelMatrixHolder: Option[ModelMatrix] = None
 
-  var modelMatrix: ModelMatrix = new ModelMatrix(canvasInfo.width, canvasInfo.height)
+  def modelMatrix: ModelMatrix = {
+    if (modelMatrixHolder.isEmpty) {
+      modelMatrixHolder = Some(new ModelMatrix(canvasInfo.width, canvasInfo.height))
+    }
+    modelMatrixHolder.get
+  }
+
+  def modelMatrix_=(matrix: ModelMatrix): Unit = {
+    modelMatrixHolder = Some(matrix)
+  }
 
   /**
    * The list of texture file path of this model.

@@ -1,10 +1,9 @@
 package moe.brianhsu.porting.live2d.framework.model
 
+import moe.brianhsu.live2d.enitiy.avatar.effect.{FallbackParameterValueAdd, FallbackParameterValueUpdate, Effect, ParameterValueAdd, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateStrategy
-import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionManager, Pose}
-import moe.brianhsu.porting.live2d.framework.effect.Effect
+import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
+import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionManager}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import org.slf4j.LoggerFactory
 
@@ -12,12 +11,13 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
 
   private val defaultLogger = LoggerFactory.getLogger(this.getClass)
 
-  private var effects: List[Effect] = Nil
   private val expressionManager = new CubismMotionManager
   private val motionManager = new CubismMotionManager
   private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
 
-  def setEffects(effects: List[Effect]): Unit = {
+  private var effects: List[Effect] = Nil
+
+  def setFunctionalEffects(effects: List[Effect]): Unit = {
     this.effects = effects
   }
 
@@ -44,16 +44,26 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     }
   }
 
-  override def update(deltaTimeInSeconds: Float): Unit = {
+  override def update(frameTimeInfo: FrameTimeInfo): Unit = {
     model.restoreParameters()
     if (motionManager.IsFinished()) {
       // Start Random Motion
     } else {
-      motionManager.UpdateMotion(model, deltaTimeInSeconds)
+      motionManager.UpdateMotion(model, frameTimeInfo.deltaTimeInSeconds)
     }
     model.snapshotParameters()
-    expressionManager.UpdateMotion(model, deltaTimeInSeconds)
-    effects.foreach(_.updateParameters(model, deltaTimeInSeconds))
+    expressionManager.UpdateMotion(model, frameTimeInfo.deltaTimeInSeconds)
+    effects.foreach { effect =>
+      val operations = effect.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
+      operations.foreach {
+        case ParameterValueAdd(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.add(value, weight))
+        case ParameterValueUpdate(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.update(value, weight))
+        case FallbackParameterValueAdd(parameterId, value, weight) => model.parameterWithFallback(parameterId).update(value, weight)
+        case FallbackParameterValueUpdate(parameterId, value, weight) => model.parameterWithFallback(parameterId).update(value, weight)
+        case PartOpacityUpdate(partId, value) => model.parts.get(partId).foreach(_.opacity = value)
+      }
+    }
+
     model.update()
   }
 }
@@ -72,9 +82,9 @@ class Avatar(val avatarSettings: Settings, val model: Live2DModel) {
    *
    * The actually update implementation will be controlled by [[UpdateStrategy]] inside [[updateStrategyHolder]].
    *
-   * @param deltaTimeInSeconds How long has elapsed since last update, in seconds.
+   * @param frameTimeInfo The FrameTimeInfo object tells us how about frame time information.
    */
-  def update(deltaTimeInSeconds: Float): Unit = {
-    updateStrategyHolder.foreach(_.update(deltaTimeInSeconds))
+  def update(frameTimeInfo: FrameTimeInfo): Unit = {
+    updateStrategyHolder.foreach(_.update(frameTimeInfo))
   }
 }

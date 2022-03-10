@@ -1,19 +1,35 @@
 package moe.brianhsu.porting.live2d.demo
 
-class FrameTimeCalculator {
-  private var isFirst = true
-  private var currentFrame = 0L
-  private var lastFrame = 0L
-  private var deltaTime = 0L
+import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
 
-  def getDeltaTimeInSeconds: Float = deltaTime / 1000000000.0f
-  def updateFrameTime(): Unit = {
-    this.currentFrame = System.nanoTime()
-    if (isFirst) {
-      this.lastFrame = this.currentFrame
-      this.isFirst = false
+class FrameTimeCalculator extends FrameTimeInfo {
+  private var isFirstFrame: Boolean = true
+  private var lastFrame: Long = 0L
+  private var deltaTime: Long = 0L
+  private var currentTimeInSeconds: Float = 0.0f
+
+  def updateFrameTime(currentSystemTimeInNano: Long = System.nanoTime()): Unit = {
+    val currentFrame = currentSystemTimeInNano
+    if (isFirstFrame) {
+      this.lastFrame = currentFrame
+      this.isFirstFrame = false
     }
     this.deltaTime = currentFrame - this.lastFrame
     this.lastFrame = currentFrame
+    this.currentTimeInSeconds = this.currentTimeInSeconds + deltaTimeInSeconds
   }
+
+  /**
+   * How long has passed since last frame.
+   *
+   * @return The seconds indicate how long has been passed since last frame.
+   */
+  override def deltaTimeInSeconds: Float = deltaTime / 1000000000.0f
+
+  /**
+   * How much longer has passed since first frame.
+   *
+   * @return The seconds indicate how long has been passed since first frame.
+   */
+  override def totalElapsedTimeInSeconds: Float = currentTimeInSeconds
 }

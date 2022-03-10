@@ -1,12 +1,12 @@
 package moe.brianhsu.porting.live2d.demo
 
+import moe.brianhsu.live2d.adapter.gateway.avatar.effect.FaceDirectionByMouse
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, Pose}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, LAppSprite, PowerSprite, SpriteShader}
-import moe.brianhsu.porting.live2d.framework.Pose
-import moe.brianhsu.porting.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
 import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}
@@ -14,8 +14,6 @@ import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
 import java.awt.event.KeyEvent
 import scala.util.Try
-
-
 
 class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGL) {
 
@@ -45,8 +43,9 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, powerTexture, spriteShader)
   private val gearSprite: LAppSprite = new GearSprite(drawCanvasInfo, gearTexture, spriteShader)
 
+  private val targetPointCalculator = new FaceDirectionByMouse(30)
 
-  private val faceDirection = new FaceDirection(30)
+  private val faceDirection = new FaceDirection(targetPointCalculator)
 
   {
     setupAvatarEffects()
@@ -79,7 +78,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
         updateModelMatrix(model)
       )
 
-      avatar.update(this.frameTimeCalculator.getDeltaTimeInSeconds)
+      avatar.update(this.frameTimeCalculator)
       renderer.draw(avatar, projection)
     }
 
@@ -114,7 +113,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
     val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
 
-    faceDirection.setFaceTargetCoordinate(0.0f, 0.0f)
+    targetPointCalculator.setFaceTargetCoordinate(0.0f, 0.0f)
     for {
       _ <- avatarHolder
       model <- modelHolder
@@ -131,7 +130,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
     val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
     val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
-    faceDirection.setFaceTargetCoordinate(viewX, viewY)
+    targetPointCalculator.setFaceTargetCoordinate(viewX, viewY)
   }
 
   private def initOpenGL(): Unit = {
@@ -161,10 +160,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       avatar <- avatarHolder
       updateStrategy <- updateStrategyHolder
     } {
-      updateStrategy.setEffects(
+      updateStrategy.setFunctionalEffects(
         new Breath() ::
         new EyeBlink(avatar.avatarSettings) ::
-        faceDirection :: Pose(avatar.avatarSettings) ::
+        faceDirection ::
+        Pose(avatar.avatarSettings) ::
         Nil
       )
     }
