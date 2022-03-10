@@ -9,7 +9,7 @@ import org.scalatest.matchers.should.Matchers
 
 class BreathFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory {
 
-  private val model: Live2DModel = null
+  private val model: Live2DModel = mock[Live2DModel]
 
   Feature("Calculate the breath parameter operations") {
     Scenario("There is no breath parameter passed in") {

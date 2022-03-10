@@ -3,14 +3,14 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 import moe.brianhsu.live2d.enitiy.avatar.effect.ParameterValueUpdate
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import org.scalamock.scalatest.proxy.MockFactory
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
 class EyeBlinkFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory {
 
-  private val model: Live2DModel = null
+  private val model: Live2DModel = mock[Live2DModel]
 
   Feature("Calculate the eye blink parameter operations") {
 

@@ -10,7 +10,7 @@ import org.scalatest.matchers.should.Matchers
 
 class FaceDirectionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory {
 
-  private val model: Live2DModel = null
+  private val model: Live2DModel = mock[Live2DModel]
 
   Feature("Calculate the face direction parameter operations") {
     Scenario("Update parameters according to DirectionCalculator") {
