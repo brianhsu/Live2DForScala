@@ -1,7 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{FunctionalEffect, ParameterOperation, UpdateOperation}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FunctionalEffect, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 import scala.util.Random
 
@@ -33,7 +34,7 @@ class EyeBlink (avatarSettings: Settings,
     currentTimeInSeconds + parameters.blinkingIntervalRandomness() * nextBlinkingAfterSeconds
   }
 
-  override def calculateOperations(currentTimeInSeconds: Float, deltaTimeInSeconds: Float): List[ParameterOperation] = {
+  override def calculateOperations(model: Live2DModel, currentTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
 
     /*
      * This value indicate the openness of the eye of a Live 2D avatar.
@@ -49,7 +50,7 @@ class EyeBlink (avatarSettings: Settings,
     }
 
     avatarSettings.eyeBlinkParameterIds.map { id =>
-      UpdateOperation(id, eyeOpenness)
+      ParameterValueUpdate(id, eyeOpenness)
     }
   }
 

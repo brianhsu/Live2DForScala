@@ -1,9 +1,9 @@
 package moe.brianhsu.porting.live2d.framework.model
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{AddOperation, FunctionalEffect, UpdateOperation}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{FallbackParameterValueAdd, FallbackParameterValueUpdate, FunctionalEffect, ParameterValueAdd, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
-import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionManager, Pose}
+import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionManager}
 import moe.brianhsu.porting.live2d.framework.effect.Effect
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import org.slf4j.LoggerFactory
@@ -61,12 +61,13 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     expressionManager.UpdateMotion(model, frameTimeInfo.deltaTimeInSeconds)
     effects.foreach(_.updateParameters(model, frameTimeInfo.deltaTimeInSeconds))
     functionalEffects.foreach { effect =>
-      val operations = effect.calculateOperations(frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
+      val operations = effect.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
       operations.foreach {
-        case AddOperation(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.add(value, weight))
-        case UpdateOperation(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.update(value, weight))
-
-        case _ => println("Unknown Operation")
+        case ParameterValueAdd(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.add(value, weight))
+        case ParameterValueUpdate(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.update(value, weight))
+        case FallbackParameterValueAdd(parameterId, value, weight) => model.parameterWithFallback(parameterId).update(value, weight)
+        case FallbackParameterValueUpdate(parameterId, value, weight) => model.parameterWithFallback(parameterId).update(value, weight)
+        case PartOpacityUpdate(partId, value) => model.parts.get(partId).foreach(_.opacity = value)
       }
     }
 
