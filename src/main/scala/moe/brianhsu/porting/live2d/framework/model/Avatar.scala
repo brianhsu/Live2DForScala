@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.{Effect, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.motion.{Expression, Motion}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
 import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionQueueManager}
@@ -13,9 +14,10 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
 
   private val expressionManager = new CubismMotionQueueManager
   private val motionManager = new CubismMotionQueueManager
-  private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
+  private val expressions = Expression.createExpressions(avatarSettings)
 
   private var effects: List[Effect] = Nil
+  private var newExpression: Motion = null
 
   def setFunctionalEffects(effects: List[Effect]): Unit = {
     this.effects = effects
@@ -40,7 +42,8 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   def setExpression(name: String): Unit = {
     expressions.get(name).foreach { expression =>
       defaultLogger.info(s"Start $name expression")
-      expressionManager.StartMotion(expression)
+      //expressionManager.StartMotion(expression)
+      this.newExpression = expression
     }
   }
 
@@ -52,10 +55,11 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
       motionManager.DoUpdateMotion(model, frameTimeInfo.totalElapsedTimeInSeconds)
     }
     model.snapshotParameters()
-    expressionManager.DoUpdateMotion(model, frameTimeInfo.totalElapsedTimeInSeconds)
+    //expressionManager.DoUpdateMotion(model, frameTimeInfo.totalElapsedTimeInSeconds)
+    val expressionOperations = if (newExpression == null) Nil else newExpression.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
     val operations = effects.flatMap(_.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds))
 
-    executeOperations(model, operations)
+    executeOperations(model, expressionOperations ++ operations)
 
     model.update()
   }

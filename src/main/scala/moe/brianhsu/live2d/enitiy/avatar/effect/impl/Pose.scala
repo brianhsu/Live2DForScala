@@ -150,7 +150,7 @@ class Pose(val posePartGroups: List[List[PartData]] = Nil,
    * @param   model                対象のモデル
    * @param   deltaTimeInSeconds   デルタ時間[秒]
    */
-  def calculateOperations(model: Live2DModel, currentTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
+  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
     val resetModelOperation: List[EffectOperation] = if (!isAlreadyInit) { resetParts(model) } else Nil
     val actualDeltaTimeSeconds = if (deltaTimeInSeconds < 0.0f) 0 else deltaTimeInSeconds
     val fadeOperation: List[EffectOperation] = posePartGroups.flatMap(poseParts => doFade(model, actualDeltaTimeSeconds, poseParts))

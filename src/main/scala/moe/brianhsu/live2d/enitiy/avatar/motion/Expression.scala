@@ -45,7 +45,7 @@ class Expression(val fadeInTimeInSeconds: Float,
                  parameters: List[Expression.Parameter]) extends Motion {
 
   override def calculateOperations(model: Live2DModel,
-                                   currentTimeInSeconds: Float,
+                                   totalElapsedTimeInSeconds: Float,
                                    deltaTimeInSeconds: Float,
                                    weight: Float): List[EffectOperation] = {
 

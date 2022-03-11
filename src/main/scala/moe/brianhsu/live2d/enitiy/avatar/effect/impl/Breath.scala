@@ -19,8 +19,8 @@ object Breath {
 
 class Breath (parameters: List[Breath.Parameter] = Breath.defaultEffect) extends Effect {
 
-  override def calculateOperations(model: Live2DModel, currentTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
-    val perimeter = currentTimeInSeconds * 2.0f * Math.PI.toFloat
+  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
+    val perimeter = totalElapsedTimeInSeconds * 2.0f * Math.PI.toFloat
     parameters.map { parameter =>
       val value = parameter.offset + (parameter.peak * sin(perimeter / parameter.cycle).toFloat)
       ParameterValueAdd(parameter.parameterId, value, parameter.weight)

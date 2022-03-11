@@ -7,7 +7,7 @@ trait Motion {
   def fadeInTimeInSeconds: Float
   def fadeOutTimeInSeconds: Float
   def calculateOperations(model: Live2DModel,
-                          currentTimeInSeconds: Float,
+                          totalElapsedTimeInSeconds: Float,
                           deltaTimeInSeconds: Float,
                           weight: Float): List[EffectOperation]
 }
