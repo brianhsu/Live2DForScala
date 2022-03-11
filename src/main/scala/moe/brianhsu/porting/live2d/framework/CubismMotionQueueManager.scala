@@ -31,6 +31,7 @@ class CubismMotionQueueManager {
       return null
     }
 
+    println("motions.size:" + _motions.size)
     this._motions.foreach(e => e.SetFadeout(e._motion.GetFadeOutTime()))
     val entry = new CubismMotionQueueEntry
     entry._motion = motion

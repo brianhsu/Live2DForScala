@@ -16,7 +16,6 @@ abstract class ACubismMotion {
   protected var _fadeOutSeconds: Float = -1.0f       ///< フェードアウトにかかる時間[秒]
   protected var _weight: Float = 1.0f             ///< モーションの重み
   protected var _offsetSeconds: Float = -1.0f        ///< モーション再生の開始時刻[秒]
-
   protected var _firedEventValues: List[String] = Nil
 
   // モーション再生終了コールバック関数
@@ -33,8 +32,8 @@ abstract class ACubismMotion {
    */
   def UpdateParameters(model: Live2DModel, motionQueueEntry: CubismMotionQueueEntry, userTimeSeconds: Float): Unit = {
 
-    if (!motionQueueEntry.IsAvailable() || motionQueueEntry.IsFinished()) {
-      println("Motion not available or finished.")
+    if (motionQueueEntry.IsFinished()) {
+      println("Motion finished.")
       return
     }
 
@@ -70,9 +69,7 @@ abstract class ACubismMotion {
 
     fadeWeight = fadeWeight * fadeIn * fadeOut
 
-    motionQueueEntry.SetState(userTimeSeconds, fadeWeight)
-
-    assert(0.0f <= fadeWeight && fadeWeight <= 1.0f, "fadeWeight is invalid")
+    assert(fadeWeight >= 0.0f && fadeWeight <= 1.0f, "fadeWeight is invalid")
 
     //---- 全てのパラメータIDをループする ----
     DoUpdateParameters(model, userTimeSeconds, fadeWeight, motionQueueEntry)
@@ -80,6 +77,7 @@ abstract class ACubismMotion {
     //後処理
     //終了時刻を過ぎたら終了フラグを立てる（CubismMotionQueueManager）
     if ((motionQueueEntry.GetEndTime() > 0) && (motionQueueEntry.GetEndTime() < userTimeSeconds)) {
+      println("Motion ended.")
       motionQueueEntry.IsFinished(true) //終了
     }
   }

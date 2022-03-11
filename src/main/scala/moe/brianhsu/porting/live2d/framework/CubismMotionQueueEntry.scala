@@ -3,14 +3,11 @@ package moe.brianhsu.porting.live2d.framework
 class CubismMotionQueueEntry {
   private[framework] var _motion: ACubismMotion = null                        ///< モーション
 
-  private var _available: Boolean = true                    ///< 有効化フラグ
   private var _finished: Boolean = false                     ///< 終了フラグ
   private var _started: Boolean = false                      ///< 開始フラグ（0.9.00以降）
   private var _startTimeSeconds: Float = -1.0f             ///<  モーション再生開始時刻[秒]
   private var _fadeInStartTimeSeconds: Float = 0.0f      ///<  フェードイン開始時刻（ループの時は初回のみ）[秒]
   private var _endTimeSeconds: Float = -1.0f               ///< 終了予定時刻[秒]
-  private var _stateTimeSeconds: Float = 0.0f             ///<  時刻の状態[秒]
-  private var _stateWeight: Float = 0.0f                  ///<  重みの状態
   private var _lastEventCheckSeconds: Float = 0.0f         ///<   最終のMotion側のチェックした時間
   private var _fadeOutSeconds: Float = 0.0f
   private var _IsTriggeredFadeOut: Boolean = false
@@ -143,57 +140,6 @@ class CubismMotionQueueEntry {
   def IsStarted(f: Boolean): Unit = {
     this._started = f
   }
-
-  /**
-   *  モーションの有効性の確認
-   *
-   * モーションの有効・無効を取得する。
-   *
-   * @return  true    モーションは有効 / false   モーションは無効
-   */
-  def IsAvailable(): Boolean = _available
-
-  /**
-   *  モーションの有効性の設定
-   *
-   * モーションの有効・無効を設定する。
-   *
-   * @param   v   trueならモーションは有効
-   */
-  def IsAvailable(v: Boolean): Unit = {
-    this._available = v
-  }
-
-  /**
-   *  モーションの状態の設定
-   *
-   * モーションの状態を設定する。
-   *
-   * @param   timeSeconds    現在時刻[秒]
-   * @param   weight  モーションの重み
-   */
-  def SetState(timeSeconds: Float, weight: Float): Unit = {
-    this._stateTimeSeconds = timeSeconds
-    this._stateWeight = weight
-  }
-
-  /**
-   *  モーションの現在時刻の取得
-   *
-   * モーションの現在時刻を取得する。
-   *
-   * @return  モーションの現在時刻[秒]
-   */
-  def GetStateTime(): Float = _stateTimeSeconds
-
-  /**
-   *  モーションの重みの取得
-   *
-   * モーションの重みを取得する。
-   *
-   * @return  モーションの重み
-   */
-  def GetStateWeight(): Float = _stateWeight
 
   /**
    *  最後にイベントの発火をチェックした時間を取得

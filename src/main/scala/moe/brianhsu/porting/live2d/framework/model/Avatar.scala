@@ -53,16 +53,9 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     }
     model.snapshotParameters()
     expressionManager.DoUpdateMotion(model, frameTimeInfo.totalElapsedTimeInSeconds)
-    effects.foreach { effect =>
-      val operations = effect.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
-      operations.foreach {
-        case ParameterValueAdd(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.add(value, weight))
-        case ParameterValueUpdate(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.update(value, weight))
-        case FallbackParameterValueAdd(parameterId, value, weight) => model.parameterWithFallback(parameterId).update(value, weight)
-        case FallbackParameterValueUpdate(parameterId, value, weight) => model.parameterWithFallback(parameterId).update(value, weight)
-        case PartOpacityUpdate(partId, value) => model.parts.get(partId).foreach(_.opacity = value)
-      }
-    }
+    val operations = effects.flatMap(_.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds))
+
+    executeOperations(model, operations)
 
     model.update()
   }
