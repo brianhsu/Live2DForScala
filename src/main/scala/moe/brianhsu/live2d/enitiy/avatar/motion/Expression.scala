@@ -14,7 +14,7 @@ object Expression {
 
   case class Parameter(parameterId: String, blendType: BlendType, value: Float)
 
-  def createExpression(expressionSettings: ExpressionSetting): Expression = {
+  def apply(expressionSettings: ExpressionSetting): Expression = {
     val parameters = expressionSettings.parameters.map { p =>
       val blendType = p.blend match {
         case Some("Add") => Add
@@ -35,7 +35,7 @@ object Expression {
   def createExpressions(avatarSettings: Settings): Map[String, Expression] = {
     avatarSettings.expressions
       .view
-      .mapValues(createExpression)
+      .mapValues(apply)
       .toMap
   }
 }
@@ -43,6 +43,8 @@ object Expression {
 class Expression(val fadeInTimeInSeconds: Float,
                  val fadeOutTimeInSeconds: Float,
                  parameters: List[Expression.Parameter]) extends Motion {
+
+  override val durationInSeconds: Option[Float] = None
 
   override def calculateOperations(model: Live2DModel,
                                    totalElapsedTimeInSeconds: Float,

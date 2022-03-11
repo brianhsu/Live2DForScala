@@ -15,7 +15,6 @@ abstract class ACubismMotion {
   protected var _fadeInSeconds: Float = -1.0f        ///< フェードインにかかる時間[秒]
   protected var _fadeOutSeconds: Float = -1.0f       ///< フェードアウトにかかる時間[秒]
   protected var _weight: Float = 1.0f             ///< モーションの重み
-  protected var _offsetSeconds: Float = -1.0f        ///< モーション再生の開始時刻[秒]
   protected var _firedEventValues: List[String] = Nil
 
   // モーション再生終了コールバック関数
@@ -39,7 +38,7 @@ abstract class ACubismMotion {
 
     if (!motionQueueEntry.IsStarted()) {
       motionQueueEntry.IsStarted(true)
-      motionQueueEntry.SetStartTime(userTimeSeconds - _offsetSeconds) //モーションの開始時刻を記録
+      motionQueueEntry.SetStartTime(userTimeSeconds) //モーションの開始時刻を記録
       motionQueueEntry.SetFadeInStartTime(userTimeSeconds) //フェードインの開始時刻
 
       val duration = GetDuration()
@@ -167,18 +166,6 @@ abstract class ACubismMotion {
    *       ループ一回分の長さが定義できない場合（プログラム的に動き続けるサブクラスなど）の場合は「-1」を返す
    */
   def GetLoopDuration(): Float = -1.0f
-
-
-  /**
-   * モーション再生の開始時刻の設定
-   *
-   * モーション再生の開始時刻を設定する。
-   *
-   * @param   offsetSeconds    モーション再生の開始時刻[秒]
-   */
-  def SetOffsetTime(offsetSeconds: Float): Unit = {
-    this._offsetSeconds = offsetSeconds
-  }
 
   /**
    * モデルのパラメータ更新
