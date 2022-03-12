@@ -11,11 +11,9 @@ object CubismMotionData {
     val curveCount = meta.curveCount
     val segmentsTotalCount = meta.totalSegmentCount
     val pointCount = meta.totalPointCount
-    val eventCount = meta.userDataCount
     val curves: Array[CubismMotionCurve] = Array.fill(curveCount)(CubismMotionCurve(null, null))
     val segments: Array[CubismMotionSegment] = Array.fill(segmentsTotalCount)(CubismMotionSegment(null))
     val points: Array[CubismMotionPoint] = Array.fill(pointCount)(CubismMotionPoint(0, 0))
-    val events: Array[MotionEvent] = Array.fill(eventCount)(null)
 
     var totalPointCount = 0
     var totalSegmentCount = 0
@@ -98,33 +96,28 @@ object CubismMotionData {
       }
     }
 
-    for (i <- events.indices) {
-      events(i) = MotionEvent(motion.userData(i).value, motion.userData(i).time)
-    }
+    val events = motion.userData.map(userData => MotionEvent(userData.value, userData.time))
 
     new CubismMotionData(
       curves.toList, segments.toList,
-      points.toList, events.toList,
+      points.toList, events,
       meta.duration, meta.loop,
-      curveCount, meta.userDataCount,
-      meta.fps
+      curveCount, meta.fps
     )
   }
 }
 
-case class CubismMotionData(
-                             CurvesList: List[CubismMotionCurve],
-                             SegmentsList: List[CubismMotionSegment],
-                             PointsList: List[CubismMotionPoint],
-                             EventsList: List[MotionEvent],
-                             Duration: Float = 0.0f,
-                             Loop: Boolean = false,
-                             CurveCount: Int = 0,
-                             EventCount: Int = 0,
-                             Fps: Float = 0.0f
+case class CubismMotionData(curvesList: List[CubismMotionCurve],
+                             segmentsList: List[CubismMotionSegment],
+                             pointsList: List[CubismMotionPoint],
+                             eventsList: List[MotionEvent],
+                             duration: Float = 0.0f,
+                             isLoop: Boolean = false,
+                             curveCount: Int = 0,
+                             fps: Float = 0.0f
 ) {
-  lazy val Curves = CurvesList.toArray
-  lazy val Segments = SegmentsList.toArray
-  lazy val Points = PointsList.toArray
-  lazy val Events = EventsList.toArray
+  lazy val curves = curvesList.toArray
+  lazy val segments = segmentsList.toArray
+  lazy val points = pointsList.toArray
+  lazy val events = eventsList.toArray
 }

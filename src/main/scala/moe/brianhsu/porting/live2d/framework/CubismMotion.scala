@@ -96,14 +96,14 @@ class CubismMotion extends ACubismMotion {
     var time: Float = timeOffsetSeconds
 
     if (_isLoop) {
-      while (time > _motionData.Duration) {
-        time -= _motionData.Duration
+      while (time > _motionData.duration) {
+        time -= _motionData.duration
       }
     }
     // Evaluate model curves.
     var c: Int = 0
-    val curves = _motionData.Curves
-    while(c < _motionData.CurveCount && curves(c).Type == CubismMotionCurveTarget_Model) {
+    val curves = _motionData.curves
+    while(c < _motionData.curveCount && curves(c).Type == CubismMotionCurveTarget_Model) {
       // Evaluate curve and call handler.
       value = EvaluateCurve(_motionData, curves(c), time)
 
@@ -116,7 +116,7 @@ class CubismMotion extends ACubismMotion {
     }
     var parameterMotionCurveCount = 0
 
-    while(c < _motionData.CurveCount && curves(c).Type == CubismMotionCurveTarget_Parameter) {
+    while(c < _motionData.curveCount && curves(c).Type == CubismMotionCurveTarget_Parameter) {
       parameterMotionCurveCount += 1
       val sourceValue: Float = model.parameters(curves(c).Id).current
 
@@ -216,7 +216,7 @@ class CubismMotion extends ACubismMotion {
       }
     }
 
-    while (c < _motionData.CurveCount && curves(c).Type == CubismMotionCurveTarget_PartOpacity) {
+    while (c < _motionData.curveCount && curves(c).Type == CubismMotionCurveTarget_PartOpacity) {
       // Evaluate curve and apply value.
       value = EvaluateCurve(_motionData, curves(c), time)
       model.parameterWithFallback(curves(c).Id).update(value)
@@ -225,7 +225,7 @@ class CubismMotion extends ACubismMotion {
       c += 1
     }
 
-    if (timeOffsetSeconds >= _motionData.Duration) {
+    if (timeOffsetSeconds >= _motionData.duration) {
       if (_isLoop) {
         motionQueueEntry.SetStartTime(userTimeSeconds) //最初の状態へ
         if (_isLoopFadeIn) {
@@ -256,21 +256,21 @@ class CubismMotion extends ACubismMotion {
 
     for (i <- curve.BaseSegmentIndex until totalSegmentCount if !isBreak) {
       // Get first point of next segment.
-      pointPosition = motionData.Segments(i).BasePointIndex + ( if (motionData.Segments(i).SegmentType == CubismMotionSegmentType_Bezier)  3 else 1)
+      pointPosition = motionData.segments(i).BasePointIndex + ( if (motionData.segments(i).SegmentType == CubismMotionSegmentType_Bezier)  3 else 1)
 
       // Break if time lies within current segment.
-      if (motionData.Points(pointPosition).Time > time) {
+      if (motionData.points(pointPosition).Time > time) {
         target = i
         isBreak = true
       }
     }
 
     if (target == -1) {
-      return motionData.Points(pointPosition).Value
+      return motionData.points(pointPosition).Value
     }
 
-    val segment = motionData.Segments(target)
-    segment.Evaluate(motionData.Points.drop(segment.BasePointIndex), time)
+    val segment = motionData.segments(target)
+    segment.Evaluate(motionData.points.drop(segment.BasePointIndex), time)
   }
 
   /**
@@ -340,7 +340,7 @@ class CubismMotion extends ACubismMotion {
    * @param   value           フェードインにかかる時間[秒]
    */
   def SetParameterFadeInTime(parameterId: String, value: Float): Unit = {
-    this._motionData.Curves
+    this._motionData.curves
       .find(_.Id == parameterId)
       .foreach(_.FadeInTime = value)
   }
@@ -354,7 +354,7 @@ class CubismMotion extends ACubismMotion {
    * @param   value           フェードアウトにかかる時間[秒]
    */
   def SetParameterFadeOutTime(parameterId: String, value: Float): Unit = {
-    this._motionData.Curves
+    this._motionData.curves
       .find(_.Id == parameterId)
       .foreach(_.FadeOutTime = value)
   }
@@ -368,7 +368,7 @@ class CubismMotion extends ACubismMotion {
    * @return   フェードインにかかる時間[秒]
    */
   def GetParameterFadeInTime(parameterId: String): Float = {
-    this._motionData.Curves
+    this._motionData.curves
       .find(_.Id == parameterId)
       .map(_.FadeInTime)
       .getOrElse(-1.0f)
@@ -383,7 +383,7 @@ class CubismMotion extends ACubismMotion {
    * @return   フェードアウトにかかる時間[秒]
    */
   def GetParameterFadeOutTime(parameterId: String): Float = {
-    this._motionData.Curves
+    this._motionData.curves
       .find(_.Id == parameterId)
       .map(_.FadeOutTime)
       .getOrElse(-1.0f)
@@ -413,7 +413,7 @@ class CubismMotion extends ACubismMotion {
    */
   override def GetFiredEvent(beforeCheckTimeSeconds: Float, motionTimeSeconds: Float): List[String] = {
 
-    this._firedEventValues = this._motionData.Events
+    this._firedEventValues = this._motionData.events
       .filter(e => e.shouldBeFired(beforeCheckTimeSeconds, motionTimeSeconds))
       .map(_.value).toList
 
