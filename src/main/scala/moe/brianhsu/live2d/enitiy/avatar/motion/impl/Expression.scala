@@ -14,9 +14,9 @@ object Expression {
   case class Parameter(parameterId: String, blendType: BlendType, value: Float)
 }
 
-class Expression(val fadeInTimeInSeconds: Float,
-                 val fadeOutTimeInSeconds: Float,
-                 parameters: List[Expression.Parameter]) extends Motion {
+case class Expression(fadeInTimeInSeconds: Float,
+                      fadeOutTimeInSeconds: Float,
+                      parameters: List[Expression.Parameter]) extends Motion {
 
   override val events: List[MotionEvent] = Nil
   override val durationInSeconds: Option[Float] = None

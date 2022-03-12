@@ -12,21 +12,6 @@ object Pose {
   private val Epsilon: Float = 0.001f
   private val Phi: Float = 0.5f
   private val BackOpacityThreshold: Float = 0.15f
-
-  private def createPartData(pose: List[Part]): List[PartData] = {
-    pose.map { partInfo =>
-      val linkedPart = partInfo.link.map(id => PartData(id))
-      PartData(partInfo.id, linkedPart)
-    }
-  }
-  def apply(avatarSettings: Settings): Pose = {
-    val poseHolder = avatarSettings.pose.map { poseSettings =>
-      val posePartGroups = poseSettings.groups.map(createPartData)
-      val fadeTimeInSeconds = poseSettings.fadeInTime.filterNot(_ < 0).getOrElse(DefaultFadeInSeconds)
-      Pose(posePartGroups, fadeTimeInSeconds)
-    }
-    poseHolder.getOrElse(new Pose)
-  }
 }
 
 case class Pose(posePartGroups: List[List[PartData]] = Nil,

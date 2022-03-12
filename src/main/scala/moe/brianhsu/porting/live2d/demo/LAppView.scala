@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.demo
 
-import moe.brianhsu.live2d.adapter.gateway.avatar.effect.FaceDirectionByMouse
+import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPoseReader, FaceDirectionByMouse}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, Pose}
@@ -160,11 +160,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       avatar <- avatarHolder
       updateStrategy <- updateStrategyHolder
     } {
+      val pose = new AvatarPoseReader(avatar.avatarSettings).loadPose.getOrElse(new Pose)
       updateStrategy.setFunctionalEffects(
         new Breath() ::
         new EyeBlink(avatar.avatarSettings) ::
-        faceDirection ::
-        Pose(avatar.avatarSettings) ::
+        faceDirection :: pose ::
         Nil
       )
     }

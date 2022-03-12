@@ -1,13 +1,13 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.motion
 
-import moe.brianhsu.live2d.boundary.gateway.avatar.motion.ExpressionLoader
+import moe.brianhsu.live2d.boundary.gateway.avatar.motion.ExpressionReader
 import moe.brianhsu.live2d.enitiy.avatar.motion.Motion
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.Expression
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.Expression.{Add, Multiply, Overwrite, Parameter}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting
 
-class AvatarExpressionLoader(avatarSettings: Settings) extends ExpressionLoader {
+class AvatarExpressionReader(avatarSettings: Settings) extends ExpressionReader {
 
   def createExpression(expressionSettings: ExpressionSetting): Expression = {
     val parameters = expressionSettings.parameters.map { p =>

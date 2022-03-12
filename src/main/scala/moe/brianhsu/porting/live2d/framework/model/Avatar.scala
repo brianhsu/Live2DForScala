@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework.model
 
-import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionLoader
+import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionManager
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
@@ -15,7 +15,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   private val defaultLogger = LoggerFactory.getLogger(this.getClass)
 
   private val motionManager = new CubismMotionQueueManager
-  private val expressions = new AvatarExpressionLoader(avatarSettings).loadExpressions
+  private val expressions = new AvatarExpressionReader(avatarSettings).loadExpressions
 
   private var effects: List[Effect] = Nil
   private val expressionManager = new MotionManager
