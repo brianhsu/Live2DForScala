@@ -1,12 +1,11 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionLoader
-import moe.brianhsu.live2d.enitiy.avatar.effect.{Effect, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueUpdate, PartOpacityUpdate}
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{Expression, MotionManager}
-import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionUpdater}
+import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionManager
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
-import moe.brianhsu.porting.live2d.framework.{CubismExpressionMotion, CubismMotion, CubismMotionQueueManager}
+import moe.brianhsu.porting.live2d.framework.{CubismMotion, CubismMotionQueueManager}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.CubismMotionQueueManager.CubismMotionEventFunction
 import org.slf4j.LoggerFactory
@@ -15,13 +14,11 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
 
   private val defaultLogger = LoggerFactory.getLogger(this.getClass)
 
-  private val expressionManager = new CubismMotionQueueManager
   private val motionManager = new CubismMotionQueueManager
-  private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
-  private val newExpressions = new AvatarExpressionLoader(avatarSettings).loadExpressions
+  private val expressions = new AvatarExpressionLoader(avatarSettings).loadExpressions
 
   private var effects: List[Effect] = Nil
-  private val newExpressionManager = new MotionManager
+  private val expressionManager = new MotionManager
 
   motionManager.SetEventCallback(new CubismMotionEventFunction {
     override def apply(caller: CubismMotionQueueManager, eventValue: String, customData: AnyRef): Unit = {
@@ -52,13 +49,9 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   }
 
   def setExpression(name: String): Unit = {
-    expressions.get(name).foreach { expression =>
+    expressions.get(name).foreach { expressions =>
       defaultLogger.info(s"Start $name expression")
-      expressionManager.StartMotion(expression)
-    }
-    newExpressions.get(name).foreach { expressions =>
-      this.newExpressionManager.startMotion(expressions)
-      //this.newExpression = new MotionWithTransition(expressions)
+      this.expressionManager.startMotion(expressions)
     }
   }
 
@@ -70,8 +63,8 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
       motionManager.DoUpdateMotion(model, frameTimeInfo.totalElapsedTimeInSeconds)
     }
     model.snapshotParameters()
-    //expressionManager.DoUpdateMotion(model, frameTimeInfo.totalElapsedTimeInSeconds)
-    val expressionsOperations = newExpressionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
+
+    val expressionsOperations = expressionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
     val operations = effects.flatMap(_.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds))
 
     executeOperations(model, expressionsOperations ++ operations)
