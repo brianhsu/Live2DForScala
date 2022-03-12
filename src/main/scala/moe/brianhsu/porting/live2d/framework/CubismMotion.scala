@@ -5,7 +5,7 @@ import CubismMotion.{CubismMotionSegmentType_Bezier, EffectNameEyeBlink, EffectN
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.{CubismMotionCurveTarget_Model, CubismMotionCurveTarget_Parameter, CubismMotionCurveTarget_PartOpacity}
+import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.{Model, Parameter, PartOpacity}
 import moe.brianhsu.porting.live2d.framework.math.CubismMath
 
 object CubismMotion {
@@ -103,29 +103,29 @@ class CubismMotion extends ACubismMotion {
     // Evaluate model curves.
     var c: Int = 0
     val curves = _motionData.curves
-    while(c < _motionData.curveCount && curves(c).Type == CubismMotionCurveTarget_Model) {
+    while(c < _motionData.curveCount && curves(c).targetType == Model) {
       // Evaluate curve and call handler.
       value = EvaluateCurve(_motionData, curves(c), time)
 
-      if (curves(c).Id == _modelCurveIdEyeBlink) {
+      if (curves(c).id == _modelCurveIdEyeBlink) {
         eyeBlinkValue = value
-      } else if (curves(c).Id == _modelCurveIdLipSync) {
+      } else if (curves(c).id == _modelCurveIdLipSync) {
         lipSyncValue = value
       }
       c += 1
     }
     var parameterMotionCurveCount = 0
 
-    while(c < _motionData.curveCount && curves(c).Type == CubismMotionCurveTarget_Parameter) {
+    while(c < _motionData.curveCount && curves(c).targetType == Parameter) {
       parameterMotionCurveCount += 1
-      val sourceValue: Float = model.parameters(curves(c).Id).current
+      val sourceValue: Float = model.parameters(curves(c).id).current
 
       // Evaluate curve and apply value.
       value = EvaluateCurve(_motionData, curves(c), time)
       if (eyeBlinkValue != Float.MaxValue) {
         var isBreak: Boolean = false
         for (i <- _eyeBlinkParameterIds.indices if i < MaxTargetSize && !isBreak) {
-          if (_eyeBlinkParameterIds(i) == curves(c).Id) {
+          if (_eyeBlinkParameterIds(i) == curves(c).id) {
             value *= eyeBlinkValue
             eyeBlinkFlags |= (1 << i)
             isBreak = true
@@ -135,7 +135,7 @@ class CubismMotion extends ACubismMotion {
       if (lipSyncValue != Float.MaxValue) {
         var isBreak: Boolean = false
         for (i <- _lipSyncParameterIds.indices if i < MaxTargetSize && !isBreak) {
-          if (_lipSyncParameterIds(i) == curves(c).Id)
+          if (_lipSyncParameterIds(i) == curves(c).id)
           {
             value += lipSyncValue
             lipSyncFlags |= (1 << i)
@@ -146,7 +146,7 @@ class CubismMotion extends ACubismMotion {
 
       var v: Float = 0
       // パラメータごとのフェード
-      if (curves(c).FadeInTime < 0.0f && curves(c).FadeOutTime < 0.0f)
+      if (curves(c).fadeInTime < 0.0f && curves(c).fadeOutTime < 0.0f)
       {
         //モーションのフェードを適用
         v = sourceValue + (value - sourceValue) * fadeWeight
@@ -154,24 +154,24 @@ class CubismMotion extends ACubismMotion {
         // パラメータに対してフェードインかフェードアウトが設定してある場合はそちらを適用
         var fin: Float = 0
         var fout: Float = 0
-        if (curves(c).FadeInTime < 0.0f) {
+        if (curves(c).fadeInTime < 0.0f) {
           fin = tmpFadeIn
         } else {
-          fin = if (curves(c).FadeInTime == 0.0f) {
+          fin = if (curves(c).fadeInTime == 0.0f) {
             1.0f
           } else {
-            Easing.sine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / curves(c).FadeInTime)
+            Easing.sine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / curves(c).fadeInTime)
           }
 
         }
 
-        if (curves(c).FadeOutTime < 0.0f) {
+        if (curves(c).fadeOutTime < 0.0f) {
           fout = tmpFadeOut
         } else {
-          fout = if (curves(c).FadeOutTime == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
+          fout = if (curves(c).fadeOutTime == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
             1.0f
           } else {
-            Easing.sine((motionQueueEntry.GetEndTime() - userTimeSeconds) / curves(c).FadeOutTime)
+            Easing.sine((motionQueueEntry.GetEndTime() - userTimeSeconds) / curves(c).fadeOutTime)
           }
         }
         val paramWeight: Float = _weight * fin * fout
@@ -180,7 +180,7 @@ class CubismMotion extends ACubismMotion {
         v = sourceValue + (value - sourceValue) * paramWeight
       }
       //model.setParameterValueUsingIndex(curves(c).Id, model.getParameterIndex(curves(c).Id), v)
-      model.parameterWithFallback(curves(c).Id).update(v)
+      model.parameterWithFallback(curves(c).id).update(v)
       //model.setParameterValue(curves(c).Id, v)
       c += 1
     }
@@ -216,10 +216,10 @@ class CubismMotion extends ACubismMotion {
       }
     }
 
-    while (c < _motionData.curveCount && curves(c).Type == CubismMotionCurveTarget_PartOpacity) {
+    while (c < _motionData.curveCount && curves(c).targetType == PartOpacity) {
       // Evaluate curve and apply value.
       value = EvaluateCurve(_motionData, curves(c), time)
-      model.parameterWithFallback(curves(c).Id).update(value)
+      model.parameterWithFallback(curves(c).id).update(value)
       //model.setParameterValueUsingIndex(curves(c).Id, model.getParameterIndex(curves(c).Id), value)
       //model.setParameterValue(curves(c).Id, value)
       c += 1
@@ -250,11 +250,11 @@ class CubismMotion extends ACubismMotion {
   private def EvaluateCurve(motionData: CubismMotionData, curve: CubismMotionCurve, time: Float): Float = {
 
     var target: Int = -1
-    val totalSegmentCount: Int = curve.BaseSegmentIndex + curve.SegmentCount
+    val totalSegmentCount: Int = curve.baseSegmentIndex + curve.segmentCount
     var pointPosition: Int = 0
     var isBreak: Boolean = false
 
-    for (i <- curve.BaseSegmentIndex until totalSegmentCount if !isBreak) {
+    for (i <- curve.baseSegmentIndex until totalSegmentCount if !isBreak) {
       // Get first point of next segment.
       pointPosition = motionData.segments(i).BasePointIndex + ( if (motionData.segments(i).SegmentType == CubismMotionSegmentType_Bezier)  3 else 1)
 
@@ -341,8 +341,8 @@ class CubismMotion extends ACubismMotion {
    */
   def SetParameterFadeInTime(parameterId: String, value: Float): Unit = {
     this._motionData.curves
-      .find(_.Id == parameterId)
-      .foreach(_.FadeInTime = value)
+      .find(_.id == parameterId)
+      .foreach(_.fadeInTime = value)
   }
 
   /**
@@ -355,8 +355,8 @@ class CubismMotion extends ACubismMotion {
    */
   def SetParameterFadeOutTime(parameterId: String, value: Float): Unit = {
     this._motionData.curves
-      .find(_.Id == parameterId)
-      .foreach(_.FadeOutTime = value)
+      .find(_.id == parameterId)
+      .foreach(_.fadeOutTime = value)
   }
 
   /**
@@ -369,8 +369,8 @@ class CubismMotion extends ACubismMotion {
    */
   def GetParameterFadeInTime(parameterId: String): Float = {
     this._motionData.curves
-      .find(_.Id == parameterId)
-      .map(_.FadeInTime)
+      .find(_.id == parameterId)
+      .map(_.fadeInTime)
       .getOrElse(-1.0f)
   }
 
@@ -384,8 +384,8 @@ class CubismMotion extends ACubismMotion {
    */
   def GetParameterFadeOutTime(parameterId: String): Float = {
     this._motionData.curves
-      .find(_.Id == parameterId)
-      .map(_.FadeOutTime)
+      .find(_.id == parameterId)
+      .map(_.fadeOutTime)
       .getOrElse(-1.0f)
   }
 

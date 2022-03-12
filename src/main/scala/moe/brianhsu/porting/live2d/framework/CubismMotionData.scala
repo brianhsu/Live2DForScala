@@ -20,11 +20,11 @@ object CubismMotionData {
 
     for (i <- curves.indices) {
       val curveJson = motion.curves(i)
-      curves(i).Type = CubismMotionCurveTarget.TargetType(curveJson.target)
-      curves(i).Id = curveJson.id
-      curves(i).BaseSegmentIndex = totalSegmentCount
-      curves(i).FadeInTime = curveJson.fadeInTime.getOrElse(-1.0f)
-      curves(i).FadeOutTime = curveJson.fadeOutTime.getOrElse(-1.0f)
+      curves(i).targetType = CubismMotionCurveTarget.TargetType(curveJson.target)
+      curves(i).id = curveJson.id
+      curves(i).baseSegmentIndex = totalSegmentCount
+      curves(i).fadeInTime = curveJson.fadeInTime.getOrElse(-1.0f)
+      curves(i).fadeOutTime = curveJson.fadeOutTime.getOrElse(-1.0f)
 
       // Segments
       var segmentPosition = 0
@@ -91,7 +91,7 @@ object CubismMotionData {
 
           case _ =>
         }
-        curves(i).SegmentCount += 1
+        curves(i).segmentCount += 1
         totalSegmentCount += 1
       }
     }
@@ -108,14 +108,14 @@ object CubismMotionData {
 }
 
 case class CubismMotionData(curvesList: List[CubismMotionCurve],
-                             segmentsList: List[CubismMotionSegment],
-                             pointsList: List[CubismMotionPoint],
-                             eventsList: List[MotionEvent],
-                             duration: Float = 0.0f,
-                             isLoop: Boolean = false,
-                             curveCount: Int = 0,
-                             fps: Float = 0.0f
-) {
+                            segmentsList: List[CubismMotionSegment],
+                            pointsList: List[CubismMotionPoint],
+                            eventsList: List[MotionEvent],
+                            duration: Float = 0.0f,
+                            isLoop: Boolean = false,
+                            curveCount: Int = 0,
+                            fps: Float = 0.0f) {
+
   lazy val curves = curvesList.toArray
   lazy val segments = segmentsList.toArray
   lazy val points = pointsList.toArray

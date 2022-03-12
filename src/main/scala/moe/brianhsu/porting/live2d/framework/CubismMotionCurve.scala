@@ -1,12 +1,12 @@
 package moe.brianhsu.porting.live2d.framework
 
-import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.CubismMotionCurveTarget_Model
+import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.Model
 
 case class CubismMotionCurve(
-  var Id: String,
-  var Type: CubismMotionCurveTarget.TargetType = CubismMotionCurveTarget_Model,
-  var SegmentCount: Int = 0,
-  var BaseSegmentIndex: Int = 0,
-  var FadeInTime: Float = 0.0f,
-  var FadeOutTime: Float = 0.0f
+                              var id: String,
+                              var targetType: CubismMotionCurveTarget.TargetType = Model,
+                              var segmentCount: Int = 0,
+                              var baseSegmentIndex: Int = 0,
+                              var fadeInTime: Float = 0.0f,
+                              var fadeOutTime: Float = 0.0f
 )
