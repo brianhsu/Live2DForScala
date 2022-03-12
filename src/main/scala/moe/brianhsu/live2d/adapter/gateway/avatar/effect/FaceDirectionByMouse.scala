@@ -74,66 +74,67 @@ class FaceDirectionByMouse(frameRate: Int) extends FaceDirectionCalculator {
    * }}}
    */
   private var faceVY: Float = 0.0f
-
-  /**
-   * The last timestamp in seconds that update() method has been called.
-   *
-   * Original Japanese comment in Cubism Live2D SDK:
-   * {{{
-   *   最後の実行時間[秒]
-   * }}}
-   */
-  private var lastUpdateTimeInSeconds: Float = 0.0f
+  private var isFirstFrame: Boolean = true
 
   override def updateFrameTimeInfo(totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): Unit = {
 
-    val maxVelocity: Float = calculateMaxVelocity
 
-    if (lastUpdateTimeInSeconds == 0.0f) {
-      lastUpdateTimeInSeconds = totalElapsedTimeInSeconds
-      return
+    if (this.isFirstFrame) {
+      this.isFirstFrame = false
+    } else {
+      updateFaceCoordinates(deltaTimeInSeconds)
     }
 
-    val maxAcceleration: Float = calculateMaxAcceleration(maxVelocity, totalElapsedTimeInSeconds, lastUpdateTimeInSeconds)
+  }
 
-    lastUpdateTimeInSeconds = totalElapsedTimeInSeconds
 
-    // 目指す向きは、(dx, dy)方向のベクトルとなる
-    val dx = faceTargetX - faceX
-    val dy = faceTargetY - faceY
+  private def updateFaceCoordinates(deltaTimeInSeconds: Float): Unit = {
+    val (dx: Float, dy: Float) = calculateTargetDirectionVector()
 
     // There is no change.
-    if (abs(dx) <= Epsilon && abs(dy) <= Epsilon) {
-      return
+    if (abs(dx) >= Epsilon || abs(dy) >= Epsilon) {
+      val maxVelocity: Float = calculateMaxVelocity()
+      val maxAcceleration: Float = calculateMaxAcceleration(maxVelocity, deltaTimeInSeconds)
+      // 速度の最大よりも大きい場合は、速度を落とす
+      val d: Float = sqrt((dx * dx) + (dy * dy)).toFloat
+      var (ax: Float, ay: Float) = calculateNewAcceleration(maxVelocity, maxAcceleration, dx, dy, d)
+
+      // 加速度を元の速度に足して、新速度とする
+      this.faceVX += ax
+      this.faceVY += ay
+
+      val slowDownScalar = decelerateWhenApproaching(maxAcceleration, d, faceVX, faceVY)
+
+      this.faceVX *= slowDownScalar
+      this.faceVY *= slowDownScalar
+
+      this.faceX += faceVX
+      this.faceY += faceVY
     }
+  }
 
-    // 速度の最大よりも大きい場合は、速度を落とす
-    val d: Float = sqrt((dx * dx) + (dy * dy)).toFloat
-
-    // 進行方向の最大速度ベクトル
-    val vx: Float = maxVelocity * dx / d
-    val vy: Float = maxVelocity * dy / d
-
-    // 現在の速度から、新規速度への変化（加速度）を求める
-    var ax = vx - faceVX
-    var ay = vy - faceVY
-
-    val a: Float = sqrt((ax * ax) + (ay * ay)).toFloat
-
-    // 加速のとき
-    if (a < -maxAcceleration || a > maxAcceleration) {
-      ax *= maxAcceleration / a
-      ay *= maxAcceleration / a
-    }
-
-    // 加速度を元の速度に足して、新速度とする
-    faceVX += ax
-    faceVY += ay
-
-    // 目的の方向に近づいたとき、滑らかに減速するための処理
-    // 設定された加速度で止まることのできる距離と速度の関係から
-    // 現在とりうる最高速度を計算し、それ以上のときは速度を落とす
-    // ※本来、人間は筋力で力（加速度）を調整できるため、より自由度が高いが、簡単な処理ですませている
+  /**
+   * Decelerate smoothly when approaching the desired direction
+   *
+   * Calculate the maximum speed that can be taken at present from the relationship between
+   * the distance that can be stopped at the set acceleration and the speed,
+   * and if it is higher than that, slow down
+   *
+   * Originally, humans can adjust the force (acceleration) with muscle strength,
+   * so it has a higher degree of freedom, but this is a simplified process.
+   *
+   * Original Japanese comment:
+   * {{{
+   *   目的の方向に近づいたとき、滑らかに減速するための処理
+   *   設定された加速度で止まることのできる距離と速度の関係から
+   *   現在とりうる最高速度を計算し、それ以上のときは速度を落とす
+   *
+   *   ※本来、人間は筋力で力（加速度）を調整できるため、より自由度が高いが、簡単な処理ですませている
+   * }}}
+   *
+   * @return The scalar to slow down.
+   */
+  private def decelerateWhenApproaching(maxAcceleration: Float, d: Float, faceVX: Float, faceVY: Float): Float = {
     {
       // 加速度、速度、距離の関係式。
       //            2  6           2               3
@@ -144,35 +145,62 @@ class FaceDirectionByMouse(frameRate: Int) extends FaceDirectionCalculator {
       // (t=1)
       //  時刻tは、あらかじめ加速度、速度を1/60(フレームレート、単位なし)で
       //  考えているので、t＝１として消してよい（※未検証）
+      val maxVelocity: Float = 0.5f * (sqrt((maxAcceleration * maxAcceleration) + 16.0f * maxAcceleration * d - 8.0f * maxAcceleration * d) - maxAcceleration).toFloat
+      val currentVelocity: Float = sqrt((faceVX * faceVX) + (faceVY * faceVY)).toFloat
 
-      val maxV: Float = 0.5f * (sqrt((maxAcceleration * maxAcceleration) + 16.0f * maxAcceleration * d - 8.0f * maxAcceleration * d) - maxAcceleration).toFloat
-      val curV: Float = sqrt((faceVX * faceVX) + (faceVY * faceVY)).toFloat
-
-      if (curV > maxV) {
+      if (currentVelocity > maxVelocity) {
         // 現在の速度 > 最高速度のとき、最高速度まで減速
-        faceVX *= maxV / curV
-        faceVY *= maxV / curV
+        maxVelocity / currentVelocity
+      } else {
+        1
       }
     }
-
-    faceX += faceVX
-    faceY += faceVY
   }
 
+  private def calculateNewAcceleration(maxVelocity: Float, maxAcceleration: Float, dx: Float, dy: Float, d: Float) = {
+    // 進行方向の最大速度ベクトル
+    val vx: Float = maxVelocity * dx / d
+    val vy: Float = maxVelocity * dy / d
+
+    // 現在の速度から、新規速度への変化（加速度）を求める
+    val ax = vx - faceVX
+    val ay = vy - faceVY
+    val a: Float = sqrt((ax * ax) + (ay * ay)).toFloat
+
+    // 加速のとき
+    if (a < -maxAcceleration || a > maxAcceleration) {
+      val scalar = maxAcceleration / a
+      (scalar * ax, scalar * ay)
+    } else {
+      (ax, ay)
+    }
+  }
+
+  /**
+   * Calculate target direction vector.
+   *
+   * The target direction is a vector in the (dx, dy) direction.
+   *
+   * @return A (dx, dy) vector indicates the target direction.
+   */
+  private def calculateTargetDirectionVector(): (Float, Float) = {
+    (faceTargetX - faceX, faceTargetY - faceY)
+  }
 
   /**
    * Calculate the max acceleration per frame.
    *
-   * @param maxVelocity               The max velocity calculate from [[calculateMaxVelocity]].
-   * @param totalTimeElapsedInSeconds How long the time has elapsed.
-   * @param lastUpdateTimeInSeconds   The last timestamp the drawing has been updated.
+   * @param maxVelocity          The max velocity calculate from [[calculateMaxVelocity]].
+   * @param deltaTimeInSeconds   How long the time has elapsed after last update.
+   *
    * @return The acceleration per frame.
    */
-  private def calculateMaxAcceleration(maxVelocity: Float, totalTimeElapsedInSeconds: Float, lastUpdateTimeInSeconds: Float): Float = {
+  private def calculateMaxAcceleration(maxVelocity: Float, deltaTimeInSeconds: Float): Float = {
     // 最高速度になるまでの時間を
-    val deltaTimeWeight: Float = (totalTimeElapsedInSeconds - lastUpdateTimeInSeconds) * frameRate
+    val deltaTimeWeight: Float = deltaTimeInSeconds * frameRate
     val timeToMaxSpeed: Float = 0.15f
     val frameToMaxSpeed: Float = timeToMaxSpeed * frameRate // sec * frame/sec
+
     deltaTimeWeight * maxVelocity / frameToMaxSpeed // 1frameあたりの加速度
   }
 
@@ -194,7 +222,7 @@ class FaceDirectionByMouse(frameRate: Int) extends FaceDirectionCalculator {
    *
    * @return Upper limit of speed that can be changed per frame.
    */
-  private def calculateMaxVelocity: Float = {
+  private def calculateMaxVelocity(): Float = {
     // Original comment from Cubism Live2D SDK:
     //     7.5 秒間に 40 分移動（5.3/sc)
     // Translation using Google Translator:
