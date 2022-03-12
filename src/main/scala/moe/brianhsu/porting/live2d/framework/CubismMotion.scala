@@ -414,8 +414,8 @@ class CubismMotion extends ACubismMotion {
   override def GetFiredEvent(beforeCheckTimeSeconds: Float, motionTimeSeconds: Float): List[String] = {
 
     this._firedEventValues = this._motionData.Events
-      .filter(e => e.FireTime >= beforeCheckTimeSeconds && e.FireTime <= motionTimeSeconds)
-      .map(_.Value).toList
+      .filter(e => e.shouldBeFired(beforeCheckTimeSeconds, motionTimeSeconds))
+      .map(_.value).toList
 
     this._firedEventValues
   }

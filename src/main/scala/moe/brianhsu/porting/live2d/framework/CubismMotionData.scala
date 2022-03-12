@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
 import CubismMotion.{CubismMotionSegmentType_Bezier, CubismMotionSegmentType_InverseStepped, CubismMotionSegmentType_Linear, CubismMotionSegmentType_Stepped}
+import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.porting.live2d.framework.CubismMotionSegment.{BezierEvaluate, BezierEvaluateCardanoInterpretation, InverseSteppedEvaluate, LinearEvaluate, SteppedEvaluate}
 
@@ -14,7 +15,7 @@ object CubismMotionData {
     val curves: Array[CubismMotionCurve] = Array.fill(curveCount)(CubismMotionCurve(null, null))
     val segments: Array[CubismMotionSegment] = Array.fill(segmentsTotalCount)(CubismMotionSegment(null))
     val points: Array[CubismMotionPoint] = Array.fill(pointCount)(CubismMotionPoint(0, 0))
-    val events: Array[CubismMotionEvent] = Array.fill(eventCount)(CubismMotionEvent(null))
+    val events: Array[MotionEvent] = Array.fill(eventCount)(null)
 
     var totalPointCount = 0
     var totalSegmentCount = 0
@@ -98,8 +99,7 @@ object CubismMotionData {
     }
 
     for (i <- events.indices) {
-      events(i).FireTime = motion.userData(i).time
-      events(i).Value = motion.userData(i).value
+      events(i) = MotionEvent(motion.userData(i).value, motion.userData(i).time)
     }
 
     new CubismMotionData(
@@ -113,15 +113,15 @@ object CubismMotionData {
 }
 
 case class CubismMotionData(
-  CurvesList: List[CubismMotionCurve],
-  SegmentsList: List[CubismMotionSegment],
-  PointsList: List[CubismMotionPoint],
-  EventsList: List[CubismMotionEvent],
-  Duration: Float = 0.0f,
-  Loop: Boolean = false,
-  CurveCount: Int = 0,
-  EventCount: Int = 0,
-  Fps: Float = 0.0f
+                             CurvesList: List[CubismMotionCurve],
+                             SegmentsList: List[CubismMotionSegment],
+                             PointsList: List[CubismMotionPoint],
+                             EventsList: List[MotionEvent],
+                             Duration: Float = 0.0f,
+                             Loop: Boolean = false,
+                             CurveCount: Int = 0,
+                             EventCount: Int = 0,
+                             Fps: Float = 0.0f
 ) {
   lazy val Curves = CurvesList.toArray
   lazy val Segments = SegmentsList.toArray

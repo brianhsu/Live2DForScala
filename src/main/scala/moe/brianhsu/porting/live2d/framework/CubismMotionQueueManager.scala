@@ -93,7 +93,11 @@ class CubismMotionQueueManager {
            userTimeSeconds - queueEntry.GetStartTime()
          )
 
-         firedList.foreach(event => this._eventCallback(this, event, _eventCustomData))
+         firedList.foreach { event =>
+           if (this._eventCallback != null) {
+             this._eventCallback(this, event, _eventCustomData)
+           }
+         }
          queueEntry.SetLastCheckEventTime(userTimeSeconds)
          if (!queueEntry.IsFinished() && queueEntry.IsTriggeredFadeOut()) {
            queueEntry.StartFadeout(queueEntry.GetFadeOutSeconds(), userTimeSeconds)

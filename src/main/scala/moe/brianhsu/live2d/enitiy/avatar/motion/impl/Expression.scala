@@ -1,9 +1,8 @@
-package moe.brianhsu.live2d.enitiy.avatar.motion
+package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
-import moe.brianhsu.live2d.enitiy.avatar.motion.Expression.{Add, Multiply, Overwrite}
-import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.Expression.{Add, Multiply, Overwrite}
+import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 object Expression {
@@ -13,37 +12,13 @@ object Expression {
   case object Overwrite extends BlendType
 
   case class Parameter(parameterId: String, blendType: BlendType, value: Float)
-
-  def apply(expressionSettings: ExpressionSetting): Expression = {
-    val parameters = expressionSettings.parameters.map { p =>
-      val blendType = p.blend match {
-        case Some("Add") => Add
-        case Some("Multiply") => Multiply
-        case Some("Overwrite") => Overwrite
-        case _ => Add
-      }
-      Parameter(p.id, blendType, p.value)
-    }
-
-    new Expression(
-      expressionSettings.fadeInTime.getOrElse(1.0f),
-      expressionSettings.fadeOutTime.getOrElse(1.0f),
-      parameters
-    )
-  }
-
-  def createExpressions(avatarSettings: Settings): Map[String, Expression] = {
-    avatarSettings.expressions
-      .view
-      .mapValues(apply)
-      .toMap
-  }
 }
 
 class Expression(val fadeInTimeInSeconds: Float,
                  val fadeOutTimeInSeconds: Float,
                  parameters: List[Expression.Parameter]) extends Motion {
 
+  override val events: List[MotionEvent] = Nil
   override val durationInSeconds: Option[Float] = None
 
   override def calculateOperations(model: Live2DModel,
