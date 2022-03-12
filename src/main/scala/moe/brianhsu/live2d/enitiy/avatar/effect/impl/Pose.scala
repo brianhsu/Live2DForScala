@@ -23,14 +23,14 @@ object Pose {
     val poseHolder = avatarSettings.pose.map { poseSettings =>
       val posePartGroups = poseSettings.groups.map(createPartData)
       val fadeTimeInSeconds = poseSettings.fadeInTime.filterNot(_ < 0).getOrElse(DefaultFadeInSeconds)
-      new Pose(posePartGroups, fadeTimeInSeconds)
+      Pose(posePartGroups, fadeTimeInSeconds)
     }
     poseHolder.getOrElse(new Pose)
   }
 }
 
-class Pose(val posePartGroups: List[List[PartData]] = Nil,
-           val fadeTimeInSeconds: Float = 0) extends Effect {
+case class Pose(posePartGroups: List[List[PartData]] = Nil,
+                fadeTimeInSeconds: Float = 0) extends Effect {
 
 
   private var isAlreadyInit = false

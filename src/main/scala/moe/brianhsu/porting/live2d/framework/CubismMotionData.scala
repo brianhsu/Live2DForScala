@@ -70,6 +70,14 @@ object CubismMotionData {
             totalPointCount += 3
             segmentPosition += 7
           case CubismMotionSegmentType_Stepped =>
+
+            println("========== CubismMotionSegmentType_Stepped ==========")
+            println("TargetType:" + curves(i).targetType)
+            println("TargetId:" + curves(i).id)
+            println("segmentPosition:" + segmentPosition)
+            println("totalPointCount:" + totalPointCount)
+            println("====================")
+
             segments(totalSegmentCount).SegmentType = CubismMotionSegmentType_Stepped
             segments(totalSegmentCount).Evaluate = SteppedEvaluate
 
@@ -80,6 +88,13 @@ object CubismMotionData {
             segmentPosition += 3
 
           case CubismMotionSegmentType_InverseStepped =>
+            println("========== CubismMotionSegmentType_InverseStepped ==========")
+            println("TargetType:" + curves(i).targetType)
+            println("TargetId:" + curves(i).id)
+            println("segmentPosition:" + segmentPosition)
+            println("totalPointCount:" + totalPointCount)
+            println("====================")
+
             segments(totalSegmentCount).SegmentType = CubismMotionSegmentType_InverseStepped
             segments(totalSegmentCount).Evaluate = InverseSteppedEvaluate
 
