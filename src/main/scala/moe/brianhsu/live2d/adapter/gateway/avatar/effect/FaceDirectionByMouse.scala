@@ -190,7 +190,7 @@ class FaceDirectionByMouse(frameRate: Int) extends FaceDirectionCalculator {
   /**
    * Calculate the max acceleration per frame.
    *
-   * @param maxVelocity          The max velocity calculate from [[calculateMaxVelocity]].
+   * @param maxVelocity          The max velocity calculate from [[FaceDirectionByMouse.calculateMaxVelocity]].
    * @param deltaTimeInSeconds   How long the time has elapsed after last update.
    *
    * @return The acceleration per frame.

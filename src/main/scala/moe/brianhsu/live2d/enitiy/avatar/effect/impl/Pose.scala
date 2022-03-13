@@ -1,34 +1,79 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose.{BackOpacityThreshold, Epsilon, Phi}
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, Effect, PartOpacityUpdate}
-import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
+import moe.brianhsu.live2d.enitiy.avatar.effect.{Effect, EffectOperation, FallbackParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.PartData
 
 object Pose {
-  private val DefaultFadeInSeconds = 0.5f
+  /**
+   * The limit of value in fallback parameters
+   *
+   * If a fallback parameter of a partID has a value less than this constant,
+   * The part will not be considered as a first visible part when fading.
+   */
   private val Epsilon: Float = 0.001f
   private val Phi: Float = 0.5f
   private val BackOpacityThreshold: Float = 0.15f
 }
 
+/**
+ * The Pose effect
+ *
+ * This effect controls the opacity of parts in Live 2D mode, to achieve
+ * different pose.
+ *
+ * For example, when not apply this effect, you will see four arms when
+ * using the default Haru avatar Live 2D module come with the Cubism Live
+ * 2D SDK.
+ *
+ * This is because there are actually four arm parts in that model, and we
+ * must make two arms invisible by change opacity using this Pose effect.
+ *
+ * Each element in `posePartGroups` represents a pose, which contains a
+ * list of a PartData indicates what parts' opacity should be updated
+ * during change pose.
+ *
+ * @param posePartGroups      The pose part groups.
+ * @param fadeTimeInSeconds   The default fade in time when change pose.
+ */
 case class Pose(posePartGroups: List[List[PartData]] = Nil,
                 fadeTimeInSeconds: Float = 0) extends Effect {
 
 
+  /**
+   * Is the parts in this model already be initialized
+   */
   private var isAlreadyInit = false
 
   /**
-   * パーツのフェード操作を実行
+   * Create operations to update model.
    *
-   * パーツのフェード操作を行う。
-   *
-   * @param   model               対象のモデル
-   * @param   deltaTimeSeconds    デルタ時間[秒]
+   * @param model                       The Live2D model.
+   * @param totalElapsedTimeInSeconds   The total elapsed time since first frame in seconds
+   * @param deltaTimeInSeconds          The elapsed time since last frame in seconds.
    */
-  def doFade(model: Live2DModel, deltaTimeSeconds: Float, poseParts: List[PartData]): List[EffectOperation] = {
+  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
+
+    val actualDeltaTimeSeconds = if (deltaTimeInSeconds < 0.0f) 0 else deltaTimeInSeconds
+    val resetModelOperation: List[EffectOperation] = if (!isAlreadyInit) { resetParts(model) } else Nil
+    val fadeOperation: List[EffectOperation] = posePartGroups.flatMap(poseParts => doFade(model, actualDeltaTimeSeconds, poseParts))
+    val resetAndFade = resetModelOperation ++ fadeOperation
+    val copyPartOpacityOperations: List[EffectOperation] = copyPartOpacitiesToLinkedParts(model, resetAndFade)
+
+    isAlreadyInit = true
+
+    resetAndFade ++ copyPartOpacityOperations
+  }
+
+  /**
+   * Create operations to actually fade parts.
+   *
+   * @param   model               The Live2D model.
+   * @param   deltaTimeSeconds    How many time in seconds has been passed since last update.
+   * @param   poseParts           The parts that should be updated.
+   */
+  private def doFade(model: Live2DModel, deltaTimeSeconds: Float, poseParts: List[PartData]): List[EffectOperation] = {
     val visiblePartHolder = poseParts
       .find(partData => model.parameterWithFallback(partData.partId).current > Epsilon)
       .orElse(poseParts.headOption)
@@ -41,10 +86,6 @@ case class Pose(posePartGroups: List[List[PartData]] = Nil,
       PartOpacityUpdate(partData.partId, newOpacity)
     }
 
-    visiblePartHolder.foreach { case (partData, newOpacity) =>
-      model.parts(partData.partId).opacity = newOpacity
-    }
-
     val otherOperations = for {
       (firstVisiblePart, targetedOpacity) <- visiblePartHolder.toList
       partData <- poseParts if partData != firstVisiblePart
@@ -52,14 +93,19 @@ case class Pose(posePartGroups: List[List[PartData]] = Nil,
     } yield {
       val originalOpacity = model.parts(partId).opacity
       val adjustedOpacity = calculateAdjustedOpacity(targetedOpacity)
-      model.parts(partId).opacity = originalOpacity.min(adjustedOpacity)
       PartOpacityUpdate(partId, originalOpacity.min(adjustedOpacity))
     }
 
     initOperation.toList ++ otherOperations
   }
 
-  def calculateAdjustedOpacity(targetedOpacity: Float): Float = {
+  /**
+   * Adjust calculated opacity according to thresholds.
+   *
+   * @param targetedOpacity The targeted opacity of a part.
+   * @return                The adjusted opacity.
+   */
+  private def calculateAdjustedOpacity(targetedOpacity: Float): Float = {
     val adjustedOpacity: Float = if (targetedOpacity < Phi) {
       targetedOpacity * (Phi - 1) / Phi + 1.0f // (0,1),(phi,phi)を通る直線式
     } else {
@@ -78,72 +124,70 @@ case class Pose(posePartGroups: List[List[PartData]] = Nil,
   }
 
   /**
-   * パーツの不透明度をコピー
+   * Create operations to copy opacities to linked parts.
    *
-   * パーツの不透明度をコピーし、リンクしているパーツへ設定する。
+   * The linked parts must have same opacity, so this method will
+   * retrieve the new opacity from previous calculated operations.
    *
-   * @param   model   対象のモデル
+   * @param model         The Live2D model.
+   * @param resetAndFade  The reset and fade operations.
    */
-  def copyPartOpacities(model: Live2DModel): List[PartOpacityUpdate] = {
+  private def copyPartOpacitiesToLinkedParts(model: Live2DModel, resetAndFade: List[EffectOperation]): List[PartOpacityUpdate] = {
     for {
       pose: List[PartData] <- posePartGroups
       posePartData <- pose
       posePart <- model.parts.get(posePartData.partId).toList
+      updateOpacity <- resetAndFade if isPartOpacityUpdateForSamePart(updateOpacity, posePart.id)
+      updatedOpacityValue = updateOpacity.asInstanceOf[PartOpacityUpdate].value
       linkPartData <- posePartData.link
       linkPart <- model.parts.get(linkPartData.partId)
     } yield {
-      linkPart.opacity = posePart.opacity
-      PartOpacityUpdate(linkPart.id, posePart.opacity)
+      PartOpacityUpdate(linkPart.id, updatedOpacityValue)
     }
   }
 
   /**
-   * 表示を初期化
-   *
-   * 表示を初期化する。
-   *
-   * model   対象のモデル
-   *
-   * @note 不透明度の初期値が0でないパラメータは、不透明度を1に設定する。
+   * Check if a operation is for update opacity of a specified partId
+   * @param operation The operation.
+   * @param partId    The specified partId.
+   * @return          A boolean indicates if it's an update opacity operation for `partId`.
    */
-  def resetParts(model: Live2DModel): List[EffectOperation] = {
+  private def isPartOpacityUpdateForSamePart(operation: EffectOperation, partId: String): Boolean = {
+    operation.isInstanceOf[PartOpacityUpdate] &&
+      operation.asInstanceOf[PartOpacityUpdate].partId == partId
+  }
+
+  /**
+   * Create initialization operations.
+   *
+   * @param model The Live 2D model.
+   * @note It will set the opacity to 1 for parameters with a non-zero initial opacity.
+   */
+  private def resetParts(model: Live2DModel): List[EffectOperation] = {
     val operationsForEachPose: List[List[EffectOperation]] = for {
       poseGroup <- posePartGroups
       posePartData <- poseGroup
       partId = posePartData.partId
-      part <- model.parts.get(partId)
     } yield {
       val initOpacity = if (posePartData == poseGroup.head) 1.0f else 0.0f
-      part.opacity = initOpacity
-      model.parameterWithFallback(partId).update(initOpacity)
-      posePartData.link.foreach(link => model.parameterWithFallback(link.partId).update(1))
-
       val partOperation = FallbackParameterValueUpdate(partId, initOpacity)
       val linkOperation = posePartData.link.map(link => FallbackParameterValueUpdate(link.partId, 1))
-
       partOperation :: linkOperation
     }
 
     operationsForEachPose.flatten
   }
 
+
   /**
-   * モデルのパラメータの更新
+   * Set the status of initialization
    *
-   * モデルのパラメータを更新する。
+   * The should be only used in unit test.
    *
-   * @param   model                対象のモデル
-   * @param   deltaTimeInSeconds   デルタ時間[秒]
+   * @param isAlreadyInit The init status from unit test data point.
    */
-  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
-    val resetModelOperation: List[EffectOperation] = if (!isAlreadyInit) { resetParts(model) } else Nil
-    val actualDeltaTimeSeconds = if (deltaTimeInSeconds < 0.0f) 0 else deltaTimeInSeconds
-    val fadeOperation: List[EffectOperation] = posePartGroups.flatMap(poseParts => doFade(model, actualDeltaTimeSeconds, poseParts))
-    val copyPartOpacityOperations: List[EffectOperation] = copyPartOpacities(model)
-
-    isAlreadyInit = true
-
-    resetModelOperation ++ fadeOperation ++ copyPartOpacityOperations
+  private[impl] def setInitStatusForTest(isAlreadyInit: Boolean): Unit = {
+    this.isAlreadyInit = isAlreadyInit
   }
 
 }

@@ -7,7 +7,7 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}
 
-class AvatarPoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
+class AvatarPoseReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   Feature("Read pose parts data from Live2D avatar settings") {
     Scenario("Load pose with fade in time specific inside json file") {
       Given("A folder path contains json files for Haru Live2D avatar model")
@@ -26,7 +26,7 @@ class AvatarPoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
           PartData("Part01ArmRA001", Nil)
         ),
         List(
-          PartData("Part01ArmRB001", Nil),
+          PartData("Part01ArmRB001", List(PartData("Part01ArmRA001", Nil))),
           PartData("Part01ArmLA001", List(PartData("link3", Nil), PartData("link4", Nil)))
         )
       )

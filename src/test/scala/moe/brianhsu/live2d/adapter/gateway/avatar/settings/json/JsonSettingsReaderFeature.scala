@@ -141,7 +141,7 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
           Part("Part01ArmRA001", Nil)
         ),
         List(
-          Part("Part01ArmRB001", Nil),
+          Part("Part01ArmRB001", List("Part01ArmRA001")),
           Part("Part01ArmLA001", List("link3", "link4"))
         ),
       )

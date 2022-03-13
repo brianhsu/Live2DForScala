@@ -85,7 +85,7 @@ class Avatar(val avatarSettings: Settings, val model: Live2DModel) {
    * Update Live2D model parameters of this avatar according to time in seconds elapsed
    * from last update.
    *
-   * The actually update implementation will be controlled by [[UpdateStrategy]] inside [[updateStrategyHolder]].
+   * The actually update implementation will be controlled by [[moe.brianhsu.live2d.enitiy.avatar.updater.UpdateStrategy]] inside [[updateStrategyHolder]].
    *
    * @param frameTimeInfo The FrameTimeInfo object tells us how about frame time information.
    */
