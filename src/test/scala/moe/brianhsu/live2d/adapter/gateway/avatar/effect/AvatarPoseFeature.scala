@@ -1,6 +1,5 @@
-package moe.brianhsu.live2d.enitiy.avatar.effect.impl
+package moe.brianhsu.live2d.adapter.gateway.avatar.effect
 
-import moe.brianhsu.live2d.adapter.gateway.avatar.effect.AvatarPoseReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.porting.live2d.framework.PartData
@@ -8,7 +7,7 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}
 
-class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
+class AvatarPoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   Feature("Read pose parts data from Live2D avatar settings") {
     Scenario("Load pose with fade in time specific inside json file") {
       Given("A folder path contains json files for Haru Live2D avatar model")
