@@ -126,8 +126,8 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
         Parameters("ParamEyeLOpen", 0.8f, Some("Multiply")),
         Parameters("ParamEyeROpen", 0.8f, Some("Multiply")),
         Parameters("ParamBrowLForm", -0.33f, Some("Add")),
-        Parameters("ParamBrowRForm", -0.33f, Some("Add")),
-        Parameters("ParamMouthForm", -1.76f, Some("Add")),
+        Parameters("ParamBrowRForm", -0.33f, None),
+        Parameters("ParamMouthForm", -1.76f, Some("Overwrite")),
       )
     }
   }
