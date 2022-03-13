@@ -12,8 +12,10 @@ class AvatarPoseReader(avatarSettings: Settings) extends PoseReader {
 
   private def createPartData(pose: List[Part]): List[PartData] = {
     pose.map { partInfo =>
-      val linkedPart = partInfo.link.map(id => PartData(id))
-      PartData(partInfo.id, linkedPart)
+      PartData(
+        partInfo.id,
+        partInfo.link.map(id => PartData(id))
+      )
     }
   }
 

@@ -182,9 +182,6 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       When("update it to a matrix scale relative x = 5.5, y = 6.6")
       val updatedMatrix = matrix.scaleRelative(5.5f, 6.6f)
 
-      println(matrix.elements.toList)
-      println(updatedMatrix.elements.toList)
-
       Then("the X scalar should be 6.05")
       updatedMatrix.xScalar shouldBe 6.05f
 
