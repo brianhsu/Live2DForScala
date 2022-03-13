@@ -9,6 +9,7 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 object MotionWithTransition {
   type Callback= (MotionWithTransition, MotionEvent) => Unit
 }
+
 class MotionWithTransition(motion: Motion) extends Motion {
 
   private var mIsFinished: Boolean = false
@@ -20,29 +21,12 @@ class MotionWithTransition(motion: Motion) extends Motion {
   private var eventCallbackHolder: Option[Callback] = None
   private var lastEventCheckTimeInSeconds: Float = 0
 
-  def setEventCallback(callback: Callback): Unit = {
-    this.eventCallbackHolder = Some(callback)
-  }
-
   def isFinished: Boolean = mIsFinished
-  def isTriggeredFadeOut: Boolean = {
-    shouldFadeOut && endTimeInSeconds.forall(_ < 0.0f)
-  }
-
-  def startFadeOut(userTimeSeconds: Float): Unit = {
-    this.shouldFadeOut = true
-    val newEndTimeSeconds = userTimeSeconds + fadeOutTimeInSeconds
-    val newEndTimeLessThanOriginal = endTimeInSeconds.forall(endTime => endTime < 0.0f || newEndTimeSeconds < endTime)
-    if (newEndTimeLessThanOriginal) {
-      this.endTimeInSeconds = Some(newEndTimeSeconds)
-    }
-  }
 
   override def fadeInTimeInSeconds: Float = motion.fadeInTimeInSeconds
   override def fadeOutTimeInSeconds: Float = motion.fadeOutTimeInSeconds
   override def durationInSeconds: Option[Float] = motion.durationInSeconds
-  override def events: List[MotionEvent] = Nil
-
+  override def events: List[MotionEvent] = motion.events
   override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
     if (mIsFinished) {
       Nil
@@ -63,12 +47,29 @@ class MotionWithTransition(motion: Motion) extends Motion {
     }
   }
 
+  def setEventCallback(callback: Callback): Unit = {
+    this.eventCallbackHolder = Some(callback)
+  }
+
+  def isTriggeredFadeOut: Boolean = {
+    shouldFadeOut && endTimeInSeconds.forall(_ < 0.0f)
+  }
+
+  def startFadeOut(userTimeSeconds: Float): Unit = {
+    this.shouldFadeOut = true
+    val newEndTimeSeconds = userTimeSeconds + fadeOutTimeInSeconds
+    val newEndTimeLessThanOriginal = endTimeInSeconds.forall(endTime => endTime < 0.0f || newEndTimeSeconds < endTime)
+    if (newEndTimeLessThanOriginal) {
+      this.endTimeInSeconds = Some(newEndTimeSeconds)
+    }
+  }
+
   private def fireTriggeredEvents(totalElapsedTimeInSeconds: Float) = {
     for {
+      _ <- durationInSeconds
       eventCallback <- eventCallbackHolder
-      duration <- durationInSeconds
-      triggeredEvent <- events.filter(_.shouldBeFired(this.lastEventCheckTimeInSeconds - totalElapsedTimeInSeconds,
-        totalElapsedTimeInSeconds - duration))
+      triggeredEvent <- events.filter(_.shouldBeFired(this.lastEventCheckTimeInSeconds - startTimeInSeconds,
+                                                      totalElapsedTimeInSeconds - startTimeInSeconds))
     } {
       eventCallback(this, triggeredEvent)
     }
@@ -80,8 +81,6 @@ class MotionWithTransition(motion: Motion) extends Motion {
     val fadeIn: Float = calculateFadeIn(totalElapsedTimeInSeconds)
     val fadeOut: Float = calculateFadeOut(totalElapsedTimeInSeconds)
     val fadeWeight = weight * fadeIn * fadeOut
-
-    assert(fadeWeight >= 0.0f && fadeWeight <= 1.0f, "fadeWeight inside MotionWithTransition is invalid")
 
     motion.calculateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, fadeWeight)
   }
