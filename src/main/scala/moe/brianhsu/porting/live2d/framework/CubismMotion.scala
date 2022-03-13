@@ -6,7 +6,6 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.{Model, Parameter, PartOpacity}
-import moe.brianhsu.porting.live2d.framework.math.CubismMath
 
 object CubismMotion {
   private val EffectNameEyeBlink = "EyeBlink"

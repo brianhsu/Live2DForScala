@@ -56,7 +56,7 @@ case class Pose(posePartGroups: List[List[PartData]] = Nil,
   def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
 
     val actualDeltaTimeSeconds = if (deltaTimeInSeconds < 0.0f) 0 else deltaTimeInSeconds
-    val resetModelOperation: List[EffectOperation] = if (!isAlreadyInit) { resetParts(model) } else Nil
+    val resetModelOperation: List[EffectOperation] = if (!isAlreadyInit) { resetParts() } else Nil
     val fadeOperation: List[EffectOperation] = posePartGroups.flatMap(poseParts => doFade(model, actualDeltaTimeSeconds, poseParts))
     val resetAndFade = resetModelOperation ++ fadeOperation
     val copyPartOpacityOperations: List[EffectOperation] = copyPartOpacitiesToLinkedParts(model, resetAndFade)
@@ -160,10 +160,9 @@ case class Pose(posePartGroups: List[List[PartData]] = Nil,
   /**
    * Create initialization operations.
    *
-   * @param model The Live 2D model.
    * @note It will set the opacity to 1 for parameters with a non-zero initial opacity.
    */
-  private def resetParts(model: Live2DModel): List[EffectOperation] = {
+  private def resetParts(): List[EffectOperation] = {
     val operationsForEachPose: List[List[EffectOperation]] = for {
       poseGroup <- posePartGroups
       posePartData <- poseGroup

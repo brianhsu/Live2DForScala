@@ -16,7 +16,7 @@ import org.json4s._
 import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization
 
-import scala.util.{Try, Using}
+import scala.util.Using
 
 class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues with MockFactory {
   private implicit val formats: Formats = Serialization.formats(ShortTypeHints(

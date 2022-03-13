@@ -1,7 +1,6 @@
 package moe.brianhsu.live2d.adapter.gateway.reader
 
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
-import moe.brianhsu.live2d.boundary.gateway.core.memory.MemoryAllocator
 import moe.brianhsu.live2d.boundary.gateway.reader.MocInfoReader
 import moe.brianhsu.live2d.enitiy.core.types.MocAlignment
 import moe.brianhsu.live2d.enitiy.model

@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.temp
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.porting.live2d.framework.{CubismMotionData, PartData}
+import moe.brianhsu.porting.live2d.framework.CubismMotionData
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}

@@ -3,7 +3,6 @@ package moe.brianhsu.porting.live2d.framework
 import ACubismMotion.FinishedMotionCallback
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.framework.math.CubismMath
 
 import scala.annotation.unused
 

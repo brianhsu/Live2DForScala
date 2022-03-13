@@ -1,6 +1,5 @@
 package moe.brianhsu.live2d.adapter.gateway.reader
 
-import moe.brianhsu.live2d.adapter.gateway.reader
 import moe.brianhsu.live2d.enitiy
 import moe.brianhsu.live2d.enitiy.model.CPointerParameter
 import moe.brianhsu.live2d.exception.ParameterInvalidException
