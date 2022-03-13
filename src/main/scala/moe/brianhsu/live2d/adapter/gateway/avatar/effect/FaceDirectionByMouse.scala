@@ -88,6 +88,11 @@ class FaceDirectionByMouse(frameRate: Int) extends FaceDirectionCalculator {
   }
 
 
+  /**
+   * Update face coordinates.
+   *
+   * @param deltaTimeInSeconds  The elapsed time since last update.
+   */
   private def updateFaceCoordinates(deltaTimeInSeconds: Float): Unit = {
     val (dx: Float, dy: Float) = calculateTargetDirectionVector()
 
@@ -254,14 +259,5 @@ class FaceDirectionByMouse(frameRate: Int) extends FaceDirectionCalculator {
     this.faceTargetY = y
   }
 
-  /**
-   * Get the face direction coordinate.
-   *
-   * User could use this value to adjust the parameter of Live2D model.
-   *
-   * Both x / y will between -1.0 to 1.0
-   *
-   * @return The (x, y) coordinate of face direction.
-   */
   def currentFaceCoordinate: (Float, Float) = (faceX, faceY)
 }

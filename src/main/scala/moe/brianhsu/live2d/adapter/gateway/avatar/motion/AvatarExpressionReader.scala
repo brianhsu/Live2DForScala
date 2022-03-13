@@ -6,9 +6,20 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.impl.Expression.{Add, Multiply, 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting
 
+/**
+ * Reader to read expression from Live2D avatar settings.
+ *
+ * @param avatarSettings The settings from Live2D json model.
+ */
 class AvatarExpressionReader(avatarSettings: Settings) extends ExpressionReader {
 
-  def createExpression(expressionSettings: ExpressionSetting): Expression = {
+  /**
+   * Create expression from ExpressionSetting
+   *
+   * @param expressionSettings ExpressionSetting from settings extract from Live 2D json files.
+   * @return                   The Expression motion could be used to update parameters in model.
+   */
+  private def createExpression(expressionSettings: ExpressionSetting): Expression = {
     val parameters = expressionSettings.parameters.map { p =>
       val blendType = p.blend match {
         case Some("Add") => Add
