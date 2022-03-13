@@ -12,8 +12,6 @@ Compile / doc / scalacOptions ++= Seq("-private")
 
 autoAPIMappings := true
 
-val lwjglVersion = "3.2.3"
-
 libraryDependencies ++= Seq(
     "net.java.dev.jna" % "jna" % "5.10.0",
     "org.json4s" %% "json4s-native" % "4.0.3",
