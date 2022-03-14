@@ -5,13 +5,14 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting.Param
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.{Curve, Meta}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PoseSetting}
+import moe.brianhsu.testUtil.FilePathMatcher
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
 import java.io.FileNotFoundException
 
-class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues with TryValues {
+class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues with TryValues with FilePathMatcher {
   Feature("Read Live2D avatar settings") {
     Scenario("Load from Live 2D json setting folder") {
       Given("A folder path contains json files for a Live2D avatar model")
@@ -23,11 +24,11 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
 
       Then("the success loaded setting should have correct data")
       inside(settings) { case Settings(mocFile, textureFiles, pose, eyeBlinkParameterIds, expressions, motionGroups, hitArea) =>
-        mocFile should endWith("/src/test/resources/models/Haru/Haru.moc3")
+        mocFile should endWithPath("/src/test/resources/models/Haru/Haru.moc3")
 
         textureFiles.size shouldBe 2
-        textureFiles(0) should endWith("src/test/resources/models/Haru/Haru.2048/texture_00.png")
-        textureFiles(1) should endWith("src/test/resources/models/Haru/Haru.2048/texture_01.png")
+        textureFiles(0) should endWithPath("src/test/resources/models/Haru/Haru.2048/texture_00.png")
+        textureFiles(1) should endWithPath("src/test/resources/models/Haru/Haru.2048/texture_01.png")
 
         eyeBlinkParameterIds shouldBe List("ParamEyeLOpen", "ParamEyeROpen")
         shouldHaveCorrectPoseSettings(pose.value)
