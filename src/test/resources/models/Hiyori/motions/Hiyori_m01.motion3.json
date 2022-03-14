@@ -15,6 +15,7 @@
 		{
 			"Target": "Parameter",
 			"Id": "ParamAngleX",
+                        "FadeInTime": 0.2,
 			"Segments": [
 				0,
 				-8,
@@ -89,6 +90,7 @@
 		{
 			"Target": "Parameter",
 			"Id": "ParamAngleY",
+                        "FadeOutTime": 0.3,
 			"Segments": [
 				0,
 				-5,
@@ -177,6 +179,8 @@
 		{
 			"Target": "Parameter",
 			"Id": "ParamAngleZ",
+                        "FadeInTime": 0.4,
+                        "FadeOutTime": 0.5,
 			"Segments": [
 				0,
 				0,

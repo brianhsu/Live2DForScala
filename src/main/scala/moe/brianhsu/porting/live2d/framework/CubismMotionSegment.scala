@@ -40,6 +40,8 @@ object CubismMotionSegment {
 
       points.head.Value + ((points(1).Value - points.head.Value) * t)
     }
+
+    override def toString: String = "LinearEvaluate"
   }
 
   object BezierEvaluate extends CsmMotionSegmentEvaluationFunction {
@@ -67,6 +69,8 @@ object CubismMotionSegment {
 
       LerpPoints(p012, p123, t).Value
     }
+    override def toString: String = "BezierEvaluate"
+
   }
 
   object BezierEvaluateCardanoInterpretation extends CsmMotionSegmentEvaluationFunction {
@@ -101,6 +105,8 @@ object CubismMotionSegment {
 
       LerpPoints(p012, p123, t).Value
     }
+    override def toString: String = "BezierEvaluateCardanoInterpretation"
+
   }
 
   object SteppedEvaluate extends CsmMotionSegmentEvaluationFunction {
@@ -129,6 +135,9 @@ object CubismMotionSegment {
     override def apply(points: Array[CubismMotionPoint], time: Float): Float = {
       points(1).Value
     }
+
+    override def toString: String = "InverseSteppedEvaluate"
+
   }
 
 }
