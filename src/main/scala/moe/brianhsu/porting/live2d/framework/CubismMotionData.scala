@@ -12,19 +12,18 @@ object CubismMotionData {
     val meta = motion.meta
     val curveCount = meta.curveCount
     val curves: Array[CubismMotionCurve] = Array.fill(curveCount)(CubismMotionCurve(null, null))
-    var reversedPoints: List[CubismMotionPoint] = Nil
-    var reversedSegments: List[CubismMotionSegment] = Nil
+    var points: List[CubismMotionPoint] = Nil
+    var segments: List[CubismMotionSegment] = Nil
     var totalPointCount = 0
     var totalSegmentCount = 0
 
     for (i <- curves.indices) {
+      var segmentsInCurve: List[CubismMotionSegment] = Nil
+      var pointsInCurve: List[CubismMotionPoint] = Nil
       val curveJson = motion.curves(i)
-      curves(i).targetType = CubismMotionCurveTarget.TargetType(curveJson.target)
-      curves(i).id = curveJson.id
-      curves(i).baseSegmentIndex = totalSegmentCount
-      curves(i).fadeInTime = curveJson.fadeInTime.getOrElse(-1.0f)
-      curves(i).fadeOutTime = curveJson.fadeOutTime.getOrElse(-1.0f)
+      val baseSegmentIndex = totalSegmentCount
       println(s"====${curves(i).id}===========")
+
 
       // Segments
       var segmentPosition = 0
@@ -34,7 +33,7 @@ object CubismMotionData {
 
         val basePointIndex = if (segmentPosition == 0) totalPointCount else totalPointCount -1
         if (segmentPosition == 0) {
-          reversedPoints ::= CubismMotionPoint(
+          pointsInCurve ::= CubismMotionPoint(
             curveJson.segments(segmentPosition),
             curveJson.segments(segmentPosition + 1)
           )
@@ -46,10 +45,10 @@ object CubismMotionData {
 
         segmentType match {
           case CubismMotionSegmentType_Linear =>
-            reversedSegments ::= new CubismMotionSegment(LinearEvaluate, basePointIndex, CubismMotionSegmentType_Linear)
+            segmentsInCurve ::= new CubismMotionSegment(LinearEvaluate, basePointIndex, CubismMotionSegmentType_Linear)
 
             //println("CubismMotionSegmentType_Linear.segmentPosition:" + segmentPosition)
-            reversedPoints ::= CubismMotionPoint(
+            pointsInCurve ::= CubismMotionPoint(
               curveJson.segments(segmentPosition + 1),
               curveJson.segments(segmentPosition + 2)
             )
@@ -59,29 +58,29 @@ object CubismMotionData {
 
           case CubismMotionSegmentType_Bezier =>
             val evaluate = if (meta.areBeziersRestricted) BezierEvaluate else BezierEvaluateCardanoInterpretation
-            reversedSegments ::= new CubismMotionSegment(evaluate, basePointIndex, CubismMotionSegmentType_Bezier)
+            segmentsInCurve ::= new CubismMotionSegment(evaluate, basePointIndex, CubismMotionSegmentType_Bezier)
             //println("CubismMotionSegmentType_Bezier.segmentPosition:" + segmentPosition)
 
-            reversedPoints ::= CubismMotionPoint(
+            pointsInCurve ::= CubismMotionPoint(
               curveJson.segments(segmentPosition + 1),
               curveJson.segments(segmentPosition + 2)
             )
-            reversedPoints ::= CubismMotionPoint(
+            pointsInCurve ::= CubismMotionPoint(
               curveJson.segments(segmentPosition + 3),
               curveJson.segments(segmentPosition + 4)
             )
-            reversedPoints ::= CubismMotionPoint(
+            pointsInCurve ::= CubismMotionPoint(
               curveJson.segments(segmentPosition + 5),
               curveJson.segments(segmentPosition + 6)
             )
             totalPointCount += 3
             segmentPosition += 7
           case CubismMotionSegmentType_Stepped =>
-            reversedSegments ::= new CubismMotionSegment(SteppedEvaluate, basePointIndex, CubismMotionSegmentType_Stepped)
+            segmentsInCurve ::= new CubismMotionSegment(SteppedEvaluate, basePointIndex, CubismMotionSegmentType_Stepped)
 
             //println("CubismMotionSegmentType_Stepped.segmentPosition:" + segmentPosition)
 
-            reversedPoints ::= CubismMotionPoint(
+            pointsInCurve ::= CubismMotionPoint(
               curveJson.segments(segmentPosition + 1),
               curveJson.segments(segmentPosition + 2)
             )
@@ -90,10 +89,10 @@ object CubismMotionData {
             segmentPosition += 3
 
           case CubismMotionSegmentType_InverseStepped =>
-            reversedSegments ::= new CubismMotionSegment(InverseSteppedEvaluate, basePointIndex, CubismMotionSegmentType_InverseStepped)
+            segmentsInCurve ::= new CubismMotionSegment(InverseSteppedEvaluate, basePointIndex, CubismMotionSegmentType_InverseStepped)
             //println("CubismMotionSegmentType_InverseStepped.segmentPosition:" + segmentPosition)
 
-            reversedPoints ::= CubismMotionPoint(
+            pointsInCurve ::= CubismMotionPoint(
               curveJson.segments(segmentPosition + 1),
               curveJson.segments(segmentPosition + 2)
             )
@@ -103,24 +102,29 @@ object CubismMotionData {
 
           case _ => println("Do nothing")
         }
-        //println("  ==> segmentPosition.new:" + segmentPosition)
-
-        //println("segmentCount++")
-        curves(i).segmentCount += 1
         totalSegmentCount += 1
       }
 
-      println(curves(i).segmentCount)
-      println(curveJson.segments.size)
 
+
+      segments = segments ++ segmentsInCurve.reverse
+      points = points ++ pointsInCurve.reverse
+      println(curves(i).segmentCount)
+      println(segmentsInCurve.size)
+      curves(i) = CubismMotionCurve(
+        curveJson.id, CubismMotionCurveTarget.TargetType(curveJson.target),
+        segmentsInCurve.size, baseSegmentIndex,
+        curveJson.fadeInTime.getOrElse(-1.0f),
+        curveJson.fadeOutTime.getOrElse(-1.0f)
+      )
       println("===============")
     }
 
     val events = motion.userData.map(userData => MotionEvent(userData.value, userData.time))
 
     new CubismMotionData(
-      curves.toList, reversedSegments.reverse,
-      reversedPoints.reverse, events,
+      curves.toList, segments,
+      points, events,
       meta.duration, meta.loop,
       curveCount, meta.fps
     )
