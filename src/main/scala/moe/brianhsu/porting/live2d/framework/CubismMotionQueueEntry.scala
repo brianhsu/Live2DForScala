@@ -37,6 +37,7 @@ class CubismMotionQueueEntry {
     _IsTriggeredFadeOut = true
 
     if (_endTimeSeconds < 0.0f || newEndTimeSeconds < _endTimeSeconds) {
+      println("Assign new endTimeSeconds:" + newEndTimeSeconds)
       _endTimeSeconds = newEndTimeSeconds
     }
   }
@@ -169,7 +170,7 @@ class CubismMotionQueueEntry {
    * @return    フェードアウトが開始しているか
    */
   def IsTriggeredFadeOut(): Boolean = {
-    _IsTriggeredFadeOut && _endTimeSeconds < 0.0f
+    _IsTriggeredFadeOut
   }
 
   /**

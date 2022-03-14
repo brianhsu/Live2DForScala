@@ -13,7 +13,7 @@ class MotionManager extends MotionUpdater {
   }
 
   def startMotion(motion: Motion): MotionWithTransition = {
-    this.motions.foreach(e => e.prepareToFadeOut())
+    this.motions.foreach(e => e.markAsForceFadeOut())
     this.motions ::= new MotionWithTransition(motion)
     this.motions.head
   }
@@ -21,7 +21,7 @@ class MotionManager extends MotionUpdater {
   override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
     val operations = this.motions.flatMap { _.calculateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, weight) }
     this.motions.foreach { motion =>
-      if (!motion.isFinished && motion.isTriggeredFadeOut) {
+      if (!motion.isFinished && motion.isForceToFadeOut) {
         motion.startFadeOut(totalElapsedTimeInSeconds)
       }
     }

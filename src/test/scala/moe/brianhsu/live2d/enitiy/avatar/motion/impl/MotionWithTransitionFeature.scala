@@ -5,11 +5,11 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.GivenWhenThen
+import org.scalatest.{GivenWhenThen, OptionValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory {
+class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory with OptionValues {
 
   private val model: Live2DModel = mock[Live2DModel]
 
@@ -129,12 +129,12 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
   Feature("Motion event and event callback handling") {
     Scenario("Not fire any events yet") {
       Given("A base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
-      val a = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
+      val eventList = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
       (() => baseMotion.fadeInTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.0f)
-      (() => baseMotion.events).when().returning(a)
+      (() => baseMotion.events).when().returning(eventList)
 
       println(baseMotion.events)
 
@@ -155,12 +155,12 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
     Scenario("Fire only first events") {
       Given("A base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
-      val a = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
+      val eventList = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
       (() => baseMotion.fadeInTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.0f)
-      (() => baseMotion.events).when().returning(a)
+      (() => baseMotion.events).when().returning(eventList)
 
       println(baseMotion.events)
 
@@ -182,12 +182,12 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
     Scenario("Fire all events") {
       Given("A base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
-      val a = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
+      val eventList = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
       (() => baseMotion.fadeInTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.0f)
-      (() => baseMotion.events).when().returning(a)
+      (() => baseMotion.events).when().returning(eventList)
 
       println(baseMotion.events)
 
@@ -208,6 +208,72 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (mockedCallback.apply _).verify(transitionMotion, MotionEvent("event1", 0.34f)).once()
       (mockedCallback.apply _).verify(transitionMotion, MotionEvent("event2", 0.67f)).once()
 
+    }
+
+  }
+
+  Feature("Force fade out before planned fade out") {
+    Scenario("Set force fade out flag") {
+      Given("A MotionWithTransition")
+      val motionWithTransition = new MotionWithTransition(mock[Motion])
+
+      And("the default force fade out flag is false")
+      motionWithTransition.isForceToFadeOut shouldBe false
+
+      When("mark it as force fade out")
+      motionWithTransition.markAsForceFadeOut()
+
+      Then("the force fade out flag should be enabled")
+      motionWithTransition.isForceToFadeOut shouldBe true
+    }
+
+    Scenario("Force fade out take place after the base motion is already fading out") {
+      Given("a base motion with duration 2 seconds and fade out time 0.5 second")
+      val baseMotion = stub[Motion]
+      (() => baseMotion.durationInSeconds).when().returning(Some(2))
+      (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.5f)
+
+      And("a MotionWithTransition based on that motion")
+      val motionWithTransition = new MotionWithTransition(baseMotion)
+
+      And("start the motion at first frame")
+      motionWithTransition.calculateOperations(model, 0, 0, 1.0f)
+
+      And("the original end time should be 2.0")
+      val originalEndTime = motionWithTransition.getEndTimeInSecondsForUnitTest()
+      originalEndTime.value shouldBe 2.0
+
+      When("force fade out at 1.6 second, which is after original fade out time (2.0 - 0.5 = 1.5)")
+      motionWithTransition.startFadeOut(1.6f)
+
+      Then("the end time should not be touched")
+      motionWithTransition.getEndTimeInSecondsForUnitTest() shouldBe originalEndTime
+
+    }
+
+    Scenario("Force fade out take place before the base motion is already fading out") {
+      Given("a base motion with duration 2 seconds and fade out time 0.5 second")
+      val baseMotion = stub[Motion]
+      (() => baseMotion.durationInSeconds).when().returning(Some(2))
+      (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.5f)
+
+      And("a MotionWithTransition based on that motion")
+      val motionWithTransition = new MotionWithTransition(baseMotion)
+
+      And("start the motion at first frame")
+      motionWithTransition.calculateOperations(model, 0, 0, 1.0f)
+
+      And("the original end time should be 2.0")
+      val originalEndTime = motionWithTransition.getEndTimeInSecondsForUnitTest()
+      originalEndTime.value shouldBe 2.0
+
+      When("force fade out at 0.5 second, which is before original fade out time (2.0 - 0.5 = 1.5)")
+      val currentTotalElapsedTime = 0.6f
+      motionWithTransition.startFadeOut(currentTotalElapsedTime)
+
+      Then("the new end time should be current elapsed time + fade out time")
+      val expectedNewEndTime = currentTotalElapsedTime + baseMotion.fadeOutTimeInSeconds
+      motionWithTransition.getEndTimeInSecondsForUnitTest().value shouldBe expectedNewEndTime
     }
 
   }

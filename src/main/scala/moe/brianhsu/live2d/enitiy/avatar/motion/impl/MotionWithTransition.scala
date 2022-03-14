@@ -17,11 +17,12 @@ class MotionWithTransition(motion: Motion) extends Motion {
   private var startTimeInSeconds: Float = -1.0f
   private var fadeInStartTimeInSeconds: Float = 0.0f
   private var endTimeInSeconds: Option[Float] = None
-  private var shouldFadeOut: Boolean = false
+  private var mIsForceToFadeOut: Boolean = false
   private var eventCallbackHolder: Option[Callback] = None
   private var lastEventCheckTimeInSeconds: Float = 0
 
   def isFinished: Boolean = mIsFinished
+  def isForceToFadeOut: Boolean = mIsForceToFadeOut
 
   override def fadeInTimeInSeconds: Float = motion.fadeInTimeInSeconds
   override def fadeOutTimeInSeconds: Float = motion.fadeOutTimeInSeconds
@@ -51,20 +52,20 @@ class MotionWithTransition(motion: Motion) extends Motion {
     this.eventCallbackHolder = Some(callback)
   }
 
-  def isTriggeredFadeOut: Boolean = {
-    shouldFadeOut && endTimeInSeconds.forall(_ < 0.0f)
-  }
-
-  def startFadeOut(userTimeSeconds: Float): Unit = {
-    this.shouldFadeOut = true
-    val newEndTimeSeconds = userTimeSeconds + fadeOutTimeInSeconds
-    val newEndTimeLessThanOriginal = endTimeInSeconds.forall(endTime => endTime < 0.0f || newEndTimeSeconds < endTime)
+  def startFadeOut(totalElapsedTimeInSeconds: Float): Unit = {
+    this.mIsForceToFadeOut = true
+    val newEndTimeSeconds = totalElapsedTimeInSeconds + fadeOutTimeInSeconds
+    val newEndTimeLessThanOriginal = endTimeInSeconds.forall(newEndTimeSeconds < _)
     if (newEndTimeLessThanOriginal) {
       this.endTimeInSeconds = Some(newEndTimeSeconds)
     }
   }
 
-  private def fireTriggeredEvents(totalElapsedTimeInSeconds: Float) = {
+  def markAsForceFadeOut(): Unit = {
+    this.mIsForceToFadeOut = true
+  }
+
+  private def fireTriggeredEvents(totalElapsedTimeInSeconds: Float): Unit = {
     for {
       _ <- durationInSeconds
       eventCallback <- eventCallbackHolder
@@ -101,7 +102,11 @@ class MotionWithTransition(motion: Motion) extends Motion {
     }
   }
 
-  def prepareToFadeOut(): Unit = {
-    this.shouldFadeOut = true
-  }
+  /**
+   * Get the value of endTimeInSeconds
+   *
+   * For unit test only.
+   */
+  private[impl] def getEndTimeInSecondsForUnitTest(): Option[Float] = endTimeInSeconds
+
 }

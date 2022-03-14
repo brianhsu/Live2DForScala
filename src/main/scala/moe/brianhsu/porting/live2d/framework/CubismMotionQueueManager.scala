@@ -98,6 +98,7 @@ class CubismMotionQueueManager {
          }
          queueEntry.SetLastCheckEventTime(userTimeSeconds)
          if (!queueEntry.IsFinished() && queueEntry.IsTriggeredFadeOut()) {
+           println("Fade out Trigged for queueEntry:" + queueEntry)
            queueEntry.StartFadeout(queueEntry.GetFadeOutSeconds(), userTimeSeconds)
          }
 
