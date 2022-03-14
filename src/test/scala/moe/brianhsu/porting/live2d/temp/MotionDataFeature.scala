@@ -16,6 +16,16 @@ import scala.util.Using
 
 class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   Feature("Read pose parts data from Live2D avatar settings") {
+    Scenario("aa") {
+      Given("A folder path contains json files for a Live2D avatar model")
+      val folderPath = "src/test/resources/models/Mark"
+
+      When("Create a MotionData from this Live2D avatar settings")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val settings: Settings = jsonSettingsReader.loadSettings().success.value
+      val motionData = CubismMotionData.apply(settings.motionGroups("idle")(0))
+
+    }
 
     Scenario("Load motion idle[0] from avatar Mark") {
       Given("A folder path contains json files for a Live2D avatar model")

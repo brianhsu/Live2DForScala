@@ -255,7 +255,7 @@ class CubismMotion extends ACubismMotion {
 
     for (i <- curve.baseSegmentIndex until totalSegmentCount if !isBreak) {
       // Get first point of next segment.
-      pointPosition = motionData.segments(i).BasePointIndex + ( if (motionData.segments(i).SegmentType == CubismMotionSegmentType_Bezier)  3 else 1)
+      pointPosition = motionData.segments(i).basePointIndex + ( if (motionData.segments(i).segmentType == CubismMotionSegmentType_Bezier)  3 else 1)
 
       // Break if time lies within current segment.
       if (motionData.points(pointPosition).time > time) {
@@ -269,7 +269,7 @@ class CubismMotion extends ACubismMotion {
     }
 
     val segment = motionData.segments(target)
-    segment.Evaluate(motionData.points.drop(segment.BasePointIndex), time)
+    segment.evaluate(motionData.points.drop(segment.basePointIndex), time)
   }
 
   /**
