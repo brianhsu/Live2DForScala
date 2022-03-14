@@ -10,7 +10,7 @@ object MotionWithTransition {
   type Callback= (MotionWithTransition, MotionEvent) => Unit
 }
 
-class MotionWithTransition(motion: Motion) extends Motion {
+class MotionWithTransition(val baseMotion: Motion) extends Motion {
 
   private var mIsFinished: Boolean = false
   private var isStarted: Boolean = false
@@ -24,10 +24,10 @@ class MotionWithTransition(motion: Motion) extends Motion {
   def isFinished: Boolean = mIsFinished
   def isForceToFadeOut: Boolean = mIsForceToFadeOut
 
-  override def fadeInTimeInSeconds: Float = motion.fadeInTimeInSeconds
-  override def fadeOutTimeInSeconds: Float = motion.fadeOutTimeInSeconds
-  override def durationInSeconds: Option[Float] = motion.durationInSeconds
-  override def events: List[MotionEvent] = motion.events
+  override def fadeInTimeInSeconds: Float = baseMotion.fadeInTimeInSeconds
+  override def fadeOutTimeInSeconds: Float = baseMotion.fadeOutTimeInSeconds
+  override def durationInSeconds: Option[Float] = baseMotion.durationInSeconds
+  override def events: List[MotionEvent] = baseMotion.events
   override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
     if (mIsFinished) {
       Nil
@@ -83,7 +83,7 @@ class MotionWithTransition(motion: Motion) extends Motion {
     val fadeOut: Float = calculateFadeOut(totalElapsedTimeInSeconds)
     val fadeWeight = weight * fadeIn * fadeOut
 
-    motion.calculateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, fadeWeight)
+    baseMotion.calculateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, fadeWeight)
   }
 
   private def calculateFadeIn(totalElapsedTimeInSeconds: Float): Float = {
