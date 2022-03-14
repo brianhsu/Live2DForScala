@@ -258,14 +258,14 @@ class CubismMotion extends ACubismMotion {
       pointPosition = motionData.segments(i).BasePointIndex + ( if (motionData.segments(i).SegmentType == CubismMotionSegmentType_Bezier)  3 else 1)
 
       // Break if time lies within current segment.
-      if (motionData.points(pointPosition).Time > time) {
+      if (motionData.points(pointPosition).time > time) {
         target = i
         isBreak = true
       }
     }
 
     if (target == -1) {
-      return motionData.points(pointPosition).Value
+      return motionData.points(pointPosition).value
     }
 
     val segment = motionData.segments(target)

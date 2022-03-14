@@ -32,8 +32,10 @@ object CubismMotionData {
         if (segmentPosition == 0) {
           segments(totalSegmentCount).BasePointIndex = totalPointCount
 
-          points(totalPointCount).Time = curveJson.segments(segmentPosition)
-          points(totalPointCount).Value = curveJson.segments(segmentPosition + 1)
+          points(totalPointCount) = CubismMotionPoint(
+            curveJson.segments(segmentPosition),
+            curveJson.segments(segmentPosition + 1)
+          )
 
           totalPointCount += 1
           segmentPosition += 2
@@ -48,8 +50,10 @@ object CubismMotionData {
             segments(totalSegmentCount).SegmentType = CubismMotionSegmentType_Linear
             segments(totalSegmentCount).Evaluate = LinearEvaluate
 
-            points(totalPointCount).Time = curveJson.segments(segmentPosition + 1)
-            points(totalPointCount).Value = curveJson.segments(segmentPosition + 2)
+            points(totalPointCount) = CubismMotionPoint(
+              curveJson.segments(segmentPosition + 1),
+              curveJson.segments(segmentPosition + 2)
+            )
 
             totalPointCount += 1
             segmentPosition += 3
@@ -58,14 +62,18 @@ object CubismMotionData {
             segments(totalSegmentCount).SegmentType = CubismMotionSegmentType_Bezier
             segments(totalSegmentCount).Evaluate = if (meta.areBeziersRestricted) BezierEvaluate else BezierEvaluateCardanoInterpretation
 
-            points(totalPointCount).Time = curveJson.segments(segmentPosition + 1)
-            points(totalPointCount).Value = curveJson.segments(segmentPosition + 2)
-
-            points(totalPointCount + 1).Time = curveJson.segments(segmentPosition + 3)
-            points(totalPointCount + 1).Value = curveJson.segments(segmentPosition + 4)
-
-            points(totalPointCount + 2).Time = curveJson.segments(segmentPosition + 5)
-            points(totalPointCount + 2).Value = curveJson.segments(segmentPosition + 6)
+            points(totalPointCount) = CubismMotionPoint(
+              curveJson.segments(segmentPosition + 1),
+              curveJson.segments(segmentPosition + 2)
+            )
+            points(totalPointCount + 1) = CubismMotionPoint(
+              curveJson.segments(segmentPosition + 3),
+              curveJson.segments(segmentPosition + 4)
+            )
+            points(totalPointCount + 2) = CubismMotionPoint(
+              curveJson.segments(segmentPosition + 5),
+              curveJson.segments(segmentPosition + 6)
+            )
 
             totalPointCount += 3
             segmentPosition += 7
@@ -73,8 +81,10 @@ object CubismMotionData {
             segments(totalSegmentCount).SegmentType = CubismMotionSegmentType_Stepped
             segments(totalSegmentCount).Evaluate = SteppedEvaluate
 
-            points(totalPointCount).Time = curveJson.segments(segmentPosition + 1)
-            points(totalPointCount).Value = curveJson.segments(segmentPosition + 2)
+            points(totalPointCount) = CubismMotionPoint(
+              curveJson.segments(segmentPosition + 1),
+              curveJson.segments(segmentPosition + 2)
+            )
 
             totalPointCount += 1
             segmentPosition += 3
@@ -83,8 +93,10 @@ object CubismMotionData {
             segments(totalSegmentCount).SegmentType = CubismMotionSegmentType_InverseStepped
             segments(totalSegmentCount).Evaluate = InverseSteppedEvaluate
 
-            points(totalPointCount).Time = curveJson.segments(segmentPosition + 1)
-            points(totalPointCount).Value = curveJson.segments(segmentPosition + 2)
+            points(totalPointCount) = CubismMotionPoint(
+              curveJson.segments(segmentPosition + 1),
+              curveJson.segments(segmentPosition + 2)
+            )
 
             totalPointCount += 1
             segmentPosition += 3
