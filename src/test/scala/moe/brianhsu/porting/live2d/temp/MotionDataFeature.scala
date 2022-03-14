@@ -4,11 +4,15 @@ import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsRead
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.{Model, Parameter, PartOpacity}
 import moe.brianhsu.porting.live2d.framework.CubismMotionSegment.{BezierEvaluate, BezierEvaluateCardanoInterpretation, LinearEvaluate}
-import moe.brianhsu.porting.live2d.framework.{CubismMotionCurve, CubismMotionCurveTarget, CubismMotionData, CubismMotionSegment}
+import moe.brianhsu.porting.live2d.framework.{CubismMotionCurve, CubismMotionCurveTarget, CubismMotionData, CubismMotionPoint, CubismMotionSegment}
 import org.json4s.{DefaultFormats, Formats, ShortTypeHints}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}
+
+import java.io.PrintWriter
+import scala.io.Source
+import scala.util.Using
 
 class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   Feature("Read pose parts data from Live2D avatar settings") {
@@ -26,45 +30,45 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       motionData.isLoop shouldBe true
       motionData.curveCount shouldBe 37
       motionData.duration shouldBe 10.4f
-      motionData.curvesList should contain theSameElementsInOrderAs List(
-        CubismMotionCurve("Opacity", Model, 1, 0, -1.0f, -1.0f),
-        CubismMotionCurve("EyeBlink", Model, 9, 1, -1.0f, -1.0f),
-        CubismMotionCurve("ParamAngleX", Parameter, 16, 10, -1.0f, -1.0f),
-        CubismMotionCurve("ParamAngleY", Parameter, 32, 26, -1.0f, -1.0f),
-        CubismMotionCurve("ParamAngleZ", Parameter, 17, 58, -1.0f, -1.0f),
-        CubismMotionCurve("ParamEyeBallX", Parameter, 21, 75, -1.0f, -1.0f),
-        CubismMotionCurve("ParamEyeBallY", Parameter, 21, 96, -1.0f, -1.0f),
-        CubismMotionCurve("ParamBrowLY", Parameter, 16, 117, -1.0f, -1.0f),
-        CubismMotionCurve("ParamBrowRY", Parameter, 16, 133, -1.0f, -1.0f),
-        CubismMotionCurve("ParamMouthOpenY", Parameter, 16, 149, -1.0f, -1.0f),
-        CubismMotionCurve("ParamArmL", Parameter, 32, 165, -1.0f, -1.0f),
-        CubismMotionCurve("ParamArmR", Parameter, 32, 197, -1.0f, -1.0f),
-        CubismMotionCurve("ParamLeftLeg", Parameter, 16, 229, -1.0f, -1.0f),
-        CubismMotionCurve("ParamRightLeg", Parameter, 16, 245, -1.0f, -1.0f),
-        CubismMotionCurve("ParamBodyAngleX", Parameter, 16, 261, -1.0f, -1.0f),
-        CubismMotionCurve("ParamBodyAngleY", Parameter, 32, 277, -1.0f, -1.0f),
-        CubismMotionCurve("ParamBodyAngleZ", Parameter, 16, 309, -1.0f, -1.0f),
-        CubismMotionCurve("ParamBreath", Parameter, 16, 325, -1.0f, -1.0f),
-        CubismMotionCurve("ParamHairFront", Parameter, 16, 341, -1.0f, -1.0f),
-        CubismMotionCurve("ParamHairSide", Parameter, 16, 357, -1.0f, -1.0f),
-        CubismMotionCurve("ParamHairBack", Parameter, 16, 373, -1.0f, -1.0f),
-        CubismMotionCurve("PartHead", PartOpacity, 1, 389, -1.0f, -1.0f),
-        CubismMotionCurve("PartHairFront", PartOpacity, 1, 390, -1.0f, -1.0f),
-        CubismMotionCurve("PartEyeL", PartOpacity, 1, 391, -1.0f, -1.0f),
-        CubismMotionCurve("PartEyeBallL", PartOpacity, 1, 392, -1.0f, -1.0f),
-        CubismMotionCurve("PartEyeWhiteL", PartOpacity, 1, 393, -1.0f, -1.0f),
-        CubismMotionCurve("PartEyeR", PartOpacity, 1, 394, -1.0f, -1.0f),
-        CubismMotionCurve("PartEyeBallR", PartOpacity, 1, 395, -1.0f, -1.0f),
-        CubismMotionCurve("PartEyeWhiteR", PartOpacity, 1, 396, -1.0f, -1.0f),
-        CubismMotionCurve("PartHairSide", PartOpacity, 1, 397, -1.0f, -1.0f),
-        CubismMotionCurve("PartMouth", PartOpacity, 1, 398, -1.0f, -1.0f),
-        CubismMotionCurve("PartOral", PartOpacity, 1, 399, -1.0f, -1.0f),
-        CubismMotionCurve("PartFace", PartOpacity, 1, 400, -1.0f, -1.0f),
-        CubismMotionCurve("PartBody", PartOpacity, 1, 401, -1.0f, -1.0f),
-        CubismMotionCurve("PartArmL", PartOpacity, 1, 402, -1.0f, -1.0f),
-        CubismMotionCurve("PartArmR", PartOpacity, 1, 403, -1.0f, -1.0f),
-        CubismMotionCurve("PartHairBack", PartOpacity, 1, 404, -1.0f, -1.0f)
-      )
+      val curves = motionData.curvesList
+      curves(0) shouldBe CubismMotionCurve("Opacity", Model, 1, 0, -1.0f, -1.0f)
+      curves(1) shouldBe CubismMotionCurve("EyeBlink", Model, 9, 1, -1.0f, -1.0f)
+      curves(2) shouldBe CubismMotionCurve("ParamAngleX", Parameter, 16, 10, -1.0f, -1.0f)
+      curves(3) shouldBe CubismMotionCurve("ParamAngleY", Parameter, 32, 26, -1.0f, -1.0f)
+      curves(4) shouldBe CubismMotionCurve("ParamAngleZ", Parameter, 17, 58, -1.0f, -1.0f)
+      curves(5) shouldBe CubismMotionCurve("ParamEyeBallX", Parameter, 21, 75, -1.0f, -1.0f)
+      curves(6) shouldBe CubismMotionCurve("ParamEyeBallY", Parameter, 21, 96, -1.0f, -1.0f)
+      curves(7) shouldBe CubismMotionCurve("ParamBrowLY", Parameter, 16, 117, -1.0f, -1.0f)
+      curves(8) shouldBe CubismMotionCurve("ParamBrowRY", Parameter, 16, 133, -1.0f, -1.0f)
+      curves(9) shouldBe CubismMotionCurve("ParamMouthOpenY", Parameter, 16, 149, -1.0f, -1.0f)
+      curves(10) shouldBe CubismMotionCurve("ParamArmL", Parameter, 32, 165, -1.0f, -1.0f)
+      curves(11) shouldBe CubismMotionCurve("ParamArmR", Parameter, 32, 197, -1.0f, -1.0f)
+      curves(12) shouldBe CubismMotionCurve("ParamLeftLeg", Parameter, 16, 229, -1.0f, -1.0f)
+      curves(13) shouldBe CubismMotionCurve("ParamRightLeg", Parameter, 16, 245, -1.0f, -1.0f)
+      curves(14) shouldBe CubismMotionCurve("ParamBodyAngleX", Parameter, 16, 261, -1.0f, -1.0f)
+      curves(15) shouldBe CubismMotionCurve("ParamBodyAngleY", Parameter, 32, 277, -1.0f, -1.0f)
+      curves(16) shouldBe CubismMotionCurve("ParamBodyAngleZ", Parameter, 16, 309, -1.0f, -1.0f)
+      curves(17) shouldBe CubismMotionCurve("ParamBreath", Parameter, 16, 325, -1.0f, -1.0f)
+      curves(18) shouldBe CubismMotionCurve("ParamHairFront", Parameter, 16, 341, -1.0f, -1.0f)
+      curves(19) shouldBe CubismMotionCurve("ParamHairSide", Parameter, 16, 357, -1.0f, -1.0f)
+      curves(20) shouldBe CubismMotionCurve("ParamHairBack", Parameter, 16, 373, -1.0f, -1.0f)
+      curves(21) shouldBe CubismMotionCurve("PartHead", PartOpacity, 1, 389, -1.0f, -1.0f)
+      curves(22) shouldBe CubismMotionCurve("PartHairFront", PartOpacity, 1, 390, -1.0f, -1.0f)
+      curves(23) shouldBe CubismMotionCurve("PartEyeL", PartOpacity, 1, 391, -1.0f, -1.0f)
+      curves(24) shouldBe CubismMotionCurve("PartEyeBallL", PartOpacity, 1, 392, -1.0f, -1.0f)
+      curves(25) shouldBe CubismMotionCurve("PartEyeWhiteL", PartOpacity, 1, 393, -1.0f, -1.0f)
+      curves(26) shouldBe CubismMotionCurve("PartEyeR", PartOpacity, 1, 394, -1.0f, -1.0f)
+      curves(27) shouldBe CubismMotionCurve("PartEyeBallR", PartOpacity, 1, 395, -1.0f, -1.0f)
+      curves(28) shouldBe CubismMotionCurve("PartEyeWhiteR", PartOpacity, 1, 396, -1.0f, -1.0f)
+      curves(29) shouldBe CubismMotionCurve("PartHairSide", PartOpacity, 1, 397, -1.0f, -1.0f)
+      curves(30) shouldBe CubismMotionCurve("PartMouth", PartOpacity, 1, 398, -1.0f, -1.0f)
+      curves(31) shouldBe CubismMotionCurve("PartOral", PartOpacity, 1, 399, -1.0f, -1.0f)
+      curves(32) shouldBe CubismMotionCurve("PartFace", PartOpacity, 1, 400, -1.0f, -1.0f)
+      curves(33) shouldBe CubismMotionCurve("PartBody", PartOpacity, 1, 401, -1.0f, -1.0f)
+      curves(34) shouldBe CubismMotionCurve("PartArmL", PartOpacity, 1, 402, -1.0f, -1.0f)
+      curves(35) shouldBe CubismMotionCurve("PartArmR", PartOpacity, 1, 403, -1.0f, -1.0f)
+      curves(36) shouldBe CubismMotionCurve("PartHairBack", PartOpacity, 1, 404, -1.0f, -1.0f)
+
       val seg = motionData.segmentsList
       seg(0) shouldBe CubismMotionSegment(LinearEvaluate,0,0)
       seg(1) shouldBe CubismMotionSegment(BezierEvaluate,2,1)
@@ -472,7 +476,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       seg(403) shouldBe CubismMotionSegment(LinearEvaluate,1212,0)
       seg(404) shouldBe CubismMotionSegment(LinearEvaluate,1214,0)
 
-      CubismMotionData.apply(settings.motionGroups("idle")(3))
+      assertPointList("src/test/resources/expectation/markMotionIdle0Points.csv", motionData.pointsList)
     }
 
     Scenario("Load motion idle[1] from avatar Mark") {
@@ -790,6 +794,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       segments(258) shouldBe CubismMotionSegment(LinearEvaluate, 777, 0)
       segments(259) shouldBe CubismMotionSegment(LinearEvaluate, 779, 0)
 
+      assertPointList("src/test/resources/expectation/markMotionIdle1Points.csv", motionData.pointsList)
     }
 
     Scenario("Load motion from avatar Hiyori") {
@@ -975,7 +980,20 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       segments(132) shouldBe CubismMotionSegment(LinearEvaluate, 368, 0)
       segments(133) shouldBe CubismMotionSegment(LinearEvaluate, 370, 0)
       segments(134) shouldBe CubismMotionSegment(LinearEvaluate, 372, 0)
+
+      assertPointList("src/test/resources/expectation/hiyoriMotionIdle0Points.csv", motionData.pointsList)
     }
   }
 
+  private def assertPointList(expectationFile: String, points: List[CubismMotionPoint]): Unit = {
+    val source = Source.fromFile(expectationFile)
+    val testData = Using.resource(source) { source => source.getLines().toList.drop(1) }
+    points.size shouldBe testData.size
+    testData.zipWithIndex.foreach { case (line, index) =>
+      val Array(time, value) = line.split("\\s+")
+      withClue(s"$expectationFile[$index]") {
+        points(index) shouldBe CubismMotionPoint(time.toFloat, value.toFloat)
+      }
+    }
+  }
 }

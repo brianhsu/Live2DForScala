@@ -105,6 +105,7 @@ object CubismMotionData {
       curveCount, meta.fps
     )
   }
+
 }
 
 case class CubismMotionData(curvesList: List[CubismMotionCurve],
