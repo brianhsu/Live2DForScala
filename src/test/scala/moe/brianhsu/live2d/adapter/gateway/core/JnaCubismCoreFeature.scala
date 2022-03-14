@@ -30,7 +30,7 @@ class JnaCubismCoreFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       val version = cubismCore.libraryVersion
 
       Then("it should get the version correctly")
-      version shouldBe CsmVersion(4, 0, 0)
+      version shouldBe CsmVersion(4, 1, 0)
     }
 
     Scenario("Get supported .moc file version") {
