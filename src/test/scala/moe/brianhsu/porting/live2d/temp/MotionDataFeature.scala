@@ -41,6 +41,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       motionData.curveCount shouldBe 37
       motionData.duration shouldBe 10.4f
       val curves = motionData.curvesList
+      curves.size shouldBe 37
       curves(0) shouldBe CubismMotionCurve("Opacity", Model, 1, 0, -1.0f, -1.0f)
       curves(1) shouldBe CubismMotionCurve("EyeBlink", Model, 9, 1, -1.0f, -1.0f)
       curves(2) shouldBe CubismMotionCurve("ParamAngleX", Parameter, 16, 10, -1.0f, -1.0f)
@@ -80,6 +81,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       curves(36) shouldBe CubismMotionCurve("PartHairBack", PartOpacity, 1, 404, -1.0f, -1.0f)
 
       val seg = motionData.segmentsList
+      seg.size shouldBe 405
       seg(0) shouldBe CubismMotionSegment(LinearEvaluate,0,0)
       seg(1) shouldBe CubismMotionSegment(BezierEvaluate,2,1)
       seg(2) shouldBe CubismMotionSegment(BezierEvaluate,5,1)
@@ -504,6 +506,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       motionData.duration shouldBe 4.8f
 
       val curves = motionData.curvesList
+      curves.size shouldBe 37
       curves(0) shouldBe CubismMotionCurve("Opacity", Model, 1, 0, -1.0f, -1.0f)
       curves(1) shouldBe CubismMotionCurve("EyeBlink", Model, 1, 1, -1.0f, -1.0f)
       curves(2) shouldBe CubismMotionCurve("ParamAngleX", Parameter, 16, 2, -1.0f, -1.0f)
@@ -543,6 +546,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       curves(36) shouldBe CubismMotionCurve("PartHairBack", PartOpacity, 1, 259, -1.0f, -1.0f)
 
       val segments = motionData.segmentsList
+      segments.size shouldBe 260
       segments(0) shouldBe CubismMotionSegment(LinearEvaluate, 0, 0)
       segments(1) shouldBe CubismMotionSegment(LinearEvaluate, 2, 0)
       segments(2) shouldBe CubismMotionSegment(BezierEvaluate, 4, 1)
@@ -822,6 +826,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       motionData.duration shouldBe 4.833f
 
       val curves = motionData.curvesList
+      curves.size shouldBe 37
       curves(0) shouldBe CubismMotionCurve("Opacity",Model,2,0,-1.0f,-1.0f)
       curves(1) shouldBe CubismMotionCurve("EyeBlink",Model,5,2,-1.0f,-1.0f)
       curves(2) shouldBe CubismMotionCurve("ParamAngleX",Parameter,11,7,-1.0f,-1.0f)
@@ -861,6 +866,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       curves(36) shouldBe CubismMotionCurve("PartHairBack",PartOpacity,2,222,-1.0f,-1.0f)
 
       val segments = motionData.segmentsList
+      segments.size shouldBe 224
       segments(0) shouldBe CubismMotionSegment(BezierEvaluate,0,1)
       segments(1) shouldBe CubismMotionSegment(LinearEvaluate,3,0)
       segments(2) shouldBe CubismMotionSegment(BezierEvaluate,5,1)
@@ -1104,6 +1110,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       motionData.duration shouldBe 4.7f
 
       val curves = motionData.curvesList
+      curves.size shouldBe 31
       curves(0) shouldBe CubismMotionCurve("ParamAngleX", Parameter, 10, 0, 0.2f, -1.0f)
       curves(1) shouldBe CubismMotionCurve("ParamAngleY", Parameter, 12, 10, -1.0f, 0.3f)
       curves(2) shouldBe CubismMotionCurve("ParamAngleZ", Parameter, 9, 22, 0.4f, 0.5f)
@@ -1134,9 +1141,10 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       curves(27) shouldBe CubismMotionCurve("ParamArmRA", Parameter, 8, 113, -1.0f, -1.0f)
       curves(28) shouldBe CubismMotionCurve("ParamHairAhoge", Parameter, 12, 121, -1.0f, -1.0f)
       curves(29) shouldBe CubismMotionCurve("PartArmA", PartOpacity, 1, 133, -1.0f, -1.0f)
-      curves(30) shouldBe CubismMotionCurve("PartArmB", PartOpacity, 1, 134, -1.0f, -1.0f)
+      curves(30) shouldBe CubismMotionCurve("PartArmB", PartOpacity, 0, 134, -1.0f, -1.0f)
 
       val segments = motionData.segmentsList
+      segments.size shouldBe 134
       segments(0) shouldBe CubismMotionSegment(BezierEvaluateCardanoInterpretation, 0, 1)
       segments(1) shouldBe CubismMotionSegment(BezierEvaluateCardanoInterpretation, 3, 1)
       segments(2) shouldBe CubismMotionSegment(BezierEvaluateCardanoInterpretation, 6, 1)
@@ -1271,7 +1279,6 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       segments(131) shouldBe CubismMotionSegment(BezierEvaluateCardanoInterpretation, 365, 1)
       segments(132) shouldBe CubismMotionSegment(LinearEvaluate, 368, 0)
       segments(133) shouldBe CubismMotionSegment(LinearEvaluate, 370, 0)
-      segments(134) shouldBe CubismMotionSegment(LinearEvaluate, 372, 0)
 
       assertPointList("src/test/resources/expectation/hiyoriMotionIdle0Points.csv", motionData.pointsList)
     }
