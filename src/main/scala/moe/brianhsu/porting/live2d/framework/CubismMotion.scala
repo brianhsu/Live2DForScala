@@ -265,7 +265,7 @@ class CubismMotion extends ACubismMotion {
     }
 
     val segment = motionData.segments(target)
-    segment.evaluate(motionData.points.drop(segment.basePointIndex), time)
+    segment.segmentType.evaluate(motionData.points.drop(segment.basePointIndex), time)
   }
 
   /**
