@@ -2,19 +2,18 @@ package moe.brianhsu.live2d.adapter.gateway.avatar.motion
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.motion.MotionDataReader
 import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionPoint, MotionSegment, SegmentType}
+import moe.brianhsu.live2d.enitiy.avatar.motion.data.{CurveTarget, MotionCurve, MotionData, MotionPoint, MotionSegment, SegmentType}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.SegmentType.{Bezier, BezierCardanoInterpretation, InverseStepped, Linear, Stepped}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.porting.live2d.framework.{CubismMotionCurve, CubismMotionCurveTarget, CubismMotionData}
 
 class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
 
   case class ParsedSegmentInfo(segment: MotionSegment, points: List[MotionPoint], offset: Int)
 
-  override def loadMotionData(): CubismMotionData = {
+  override def loadMotionData(): MotionData = {
     val meta = motion.meta
     val events = motion.userData.map(userData => MotionEvent(userData.value, userData.time))
-    var reversedCurve: List[CubismMotionCurve] = Nil
+    var reversedCurve: List[MotionCurve] = Nil
     var points: List[MotionPoint] = Nil
     var segments: List[MotionSegment] = Nil
 
@@ -26,9 +25,9 @@ class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
         points.size
       )
 
-      reversedCurve ::= CubismMotionCurve(
+      reversedCurve ::= MotionCurve(
         curveJson.id,
-        CubismMotionCurveTarget.TargetType(curveJson.target),
+        CurveTarget(curveJson.target),
         segmentsInCurve.size, baseSegmentIndex,
         curveJson.fadeInTime.getOrElse(-1.0f),
         curveJson.fadeOutTime.getOrElse(-1.0f)
@@ -38,7 +37,7 @@ class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
       segments = segments ++ segmentsInCurve
     }
 
-    CubismMotionData(
+    MotionData(
       reversedCurve.reverse, segments,
       points, events,
       meta.duration, meta.loop,

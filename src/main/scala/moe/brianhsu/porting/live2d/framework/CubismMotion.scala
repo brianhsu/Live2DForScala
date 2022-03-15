@@ -3,10 +3,11 @@ package moe.brianhsu.porting.live2d.framework
 import ACubismMotion.FinishedMotionCallback
 import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
+import moe.brianhsu.live2d.enitiy.avatar.motion.data.CurveTarget.{Model, Parameter, PartOpacity}
+import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.{Model, Parameter, PartOpacity}
 
 object CubismMotion {
   private val EffectNameEyeBlink = "EyeBlink"
@@ -35,7 +36,7 @@ class CubismMotion extends ACubismMotion {
   var _isLoopFadeIn: Boolean = true                      ///< ループ時にフェードインが有効かどうかのフラグ。初期値では有効。
   var _lastWeight: Float = 0.0f                        ///< 最後に設定された重み
 
-  var _motionData: CubismMotionData = null                   ///< 実際のモーションデータ本体
+  var _motionData: MotionData = null                   ///< 実際のモーションデータ本体
 
   var _eyeBlinkParameterIds: List[String] = Nil   ///< 自動まばたきを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
   var _lipSyncParameterIds: List[String] = Nil    ///< リップシンクを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
@@ -243,7 +244,7 @@ class CubismMotion extends ACubismMotion {
 
   }
 
-  private def EvaluateCurve(motionData: CubismMotionData, curve: CubismMotionCurve, time: Float): Float = {
+  private def EvaluateCurve(motionData: MotionData, curve: MotionCurve, time: Float): Float = {
 
     var target: Int = -1
     val totalSegmentCount: Int = curve.baseSegmentIndex + curve.segmentCount
