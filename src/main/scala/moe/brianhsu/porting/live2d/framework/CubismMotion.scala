@@ -2,6 +2,7 @@ package moe.brianhsu.porting.live2d.framework
 
 import ACubismMotion.FinishedMotionCallback
 import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
+import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -14,7 +15,7 @@ object CubismMotion {
   def apply(motionInfo: MotionSetting, onFinishHandler: FinishedMotionCallback,
             eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
     val cubismMotion = new CubismMotion
-    val motionData = CubismMotionData(motionInfo)
+    val motionData = new AvatarMotionDataReader(motionInfo).loadMotionData()
     cubismMotion._sourceFrameRate = motionInfo.meta.fps
     cubismMotion._loopDurationSeconds = motionInfo.meta.duration
     cubismMotion._onFinishedMotion = onFinishHandler

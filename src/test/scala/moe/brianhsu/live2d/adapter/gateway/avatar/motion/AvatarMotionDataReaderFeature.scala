@@ -1,11 +1,11 @@
-package moe.brianhsu.porting.live2d.temp
+package moe.brianhsu.live2d.adapter.gateway.avatar.motion
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
+import moe.brianhsu.live2d.enitiy.avatar.motion.data.SegmentType._
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionPoint, MotionSegment}
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.SegmentType.{Bezier, BezierCardanoInterpretation, InverseStepped, Linear, Stepped}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.porting.live2d.framework.CubismMotionCurve
 import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.{Model, Parameter, PartOpacity}
-import moe.brianhsu.porting.live2d.framework.{CubismMotionCurve, CubismMotionData}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}
@@ -13,7 +13,7 @@ import org.scalatest.{GivenWhenThen, TryValues}
 import scala.io.Source
 import scala.util.Using
 
-class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
+class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   Feature("Read pose parts data from Live2D avatar settings") {
 
     Scenario("Load motion idle[0] from avatar Mark") {
@@ -23,7 +23,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       When("Create a MotionData from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
-      val motionData = CubismMotionData.apply(settings.motionGroups("idle")(0))
+      val motionData = new AvatarMotionDataReader(settings.motionGroups("idle")(0)).loadMotionData()
 
       motionData.fps shouldBe 30.0
       motionData.isLoop shouldBe true
@@ -487,7 +487,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       When("Create a MotionData from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
-      val motionData = CubismMotionData.apply(settings.motionGroups("idle")(1))
+      val motionData = new AvatarMotionDataReader(settings.motionGroups("idle")(1)).loadMotionData()
 
       motionData.fps shouldBe 30.0
       motionData.isLoop shouldBe true
@@ -807,7 +807,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       When("Create a MotionData from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
-      val motionData = CubismMotionData.apply(settings.motionGroups("idle")(3))
+      val motionData = new AvatarMotionDataReader(settings.motionGroups("idle")(3)).loadMotionData()
 
       motionData.fps shouldBe 30.0
       motionData.isLoop shouldBe true
@@ -1091,7 +1091,7 @@ class MotionDataFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       When("Create a MotionData from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
-      val motionData = CubismMotionData.apply(settings.motionGroups("idle")(0))
+      val motionData = new AvatarMotionDataReader(settings.motionGroups("idle")(0)).loadMotionData()
 
       motionData.fps shouldBe 30.0
       motionData.isLoop shouldBe true
