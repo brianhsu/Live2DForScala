@@ -85,7 +85,7 @@ class CubismMotionQueueManager {
 
          motion.UpdateParameters(model, queueEntry, userTimeSeconds)
 
-         val firedList = motion.GetFiredEvent(
+         val firedList = motion.getFiredEvent(
            queueEntry.GetLastCheckEventTime() - queueEntry.GetStartTime(),
            userTimeSeconds - queueEntry.GetStartTime()
          )

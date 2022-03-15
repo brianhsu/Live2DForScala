@@ -40,7 +40,7 @@ abstract class ACubismMotion {
       motionQueueEntry.SetStartTime(userTimeSeconds) //モーションの開始時刻を記録
       motionQueueEntry.SetFadeInStartTime(userTimeSeconds) //フェードインの開始時刻
 
-      val duration = GetDuration()
+      val duration = getDuration()
 
       if (motionQueueEntry.GetEndTime() < 0) {
         //開始していないうちに終了設定している場合がある。
@@ -70,7 +70,7 @@ abstract class ACubismMotion {
     assert(fadeWeight >= 0.0f && fadeWeight <= 1.0f, "fadeWeight is invalid")
 
     //---- 全てのパラメータIDをループする ----
-    DoUpdateParameters(model, userTimeSeconds, fadeWeight, motionQueueEntry)
+    doUpdateParameters(model, userTimeSeconds, fadeWeight, motionQueueEntry)
 
     //後処理
     //終了時刻を過ぎたら終了フラグを立てる（CubismMotionQueueManager）
@@ -152,7 +152,7 @@ abstract class ACubismMotion {
    *       正の値の時は取得される時間で終了する。
    *       「-1」のときは外部から停止命令が無い限り終わらない処理となる。
    */
-  def GetDuration(): Float = -1.0f
+  def getDuration(): Float = -1.0f
 
   /**
    * モーションのループ1回分の長さの取得
@@ -164,7 +164,7 @@ abstract class ACubismMotion {
    * @note ループしない場合は GetDuration()と同じ値を返す。
    *       ループ一回分の長さが定義できない場合（プログラム的に動き続けるサブクラスなど）の場合は「-1」を返す
    */
-  def GetLoopDuration(): Float = -1.0f
+  def getLoopDuration(): Float = -1.0f
 
   /**
    * モデルのパラメータ更新
@@ -175,7 +175,7 @@ abstract class ACubismMotion {
    * @param   beforeCheckTimeSeconds   前回のイベントチェック時間[秒]
    * @param   motionTimeSeconds        今回の再生時間[秒]
    */
-  def GetFiredEvent(@unused beforeCheckTimeSeconds: Float, @unused motionTimeSeconds: Float): List[String] = _firedEventValues
+  def getFiredEvent(@unused beforeCheckTimeSeconds: Float, @unused motionTimeSeconds: Float): List[String] = _firedEventValues
 
 
   /**
@@ -202,7 +202,7 @@ abstract class ACubismMotion {
    */
   def GetFinishedMotionHandler(): FinishedMotionCallback = this._onFinishedMotion
 
-  protected def DoUpdateParameters(model: Live2DModel, userTimeSeconds: Float, weight: Float,
+  protected def doUpdateParameters(model: Live2DModel, userTimeSeconds: Float, weight: Float,
                                    motionQueueEntry: CubismMotionQueueEntry): Unit
 
 }

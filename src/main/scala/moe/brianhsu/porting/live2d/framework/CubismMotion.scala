@@ -23,7 +23,7 @@ object CubismMotion {
     cubismMotion._fadeInSeconds = motionInfo.fadeInTime.filter(_ >= 0).getOrElse(1.0f)
     cubismMotion._fadeOutSeconds = motionInfo.fadeOutTime.filter(_ >= 0).getOrElse(1.0f)
     cubismMotion._motionData = motionData
-    cubismMotion.SetEffectIds(eyeBlinkParameterIds, lipSyncParameterIds)
+    cubismMotion.setEffectIds(eyeBlinkParameterIds, lipSyncParameterIds)
     cubismMotion
   }
 
@@ -45,7 +45,7 @@ class CubismMotion extends ACubismMotion {
   var _modelCurveIdLipSync: String = null                ///< モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
 
 
-  override protected def DoUpdateParameters(model: Live2DModel, userTimeSeconds: Float, fadeWeight: Float, motionQueueEntry: CubismMotionQueueEntry): Unit = {
+  override protected def doUpdateParameters(model: Live2DModel, userTimeSeconds: Float, fadeWeight: Float, motionQueueEntry: CubismMotionQueueEntry): Unit = {
     if (_modelCurveIdEyeBlink == null) {
       _modelCurveIdEyeBlink = EffectNameEyeBlink
     }
@@ -102,7 +102,7 @@ class CubismMotion extends ACubismMotion {
     val curves = _motionData.curves
     while(c < _motionData.curveCount && curves(c).targetType == Model) {
       // Evaluate curve and call handler.
-      value = EvaluateCurve(_motionData, curves(c), time)
+      value = evaluateCurve(_motionData, curves(c), time)
 
       if (curves(c).id == _modelCurveIdEyeBlink) {
         eyeBlinkValue = value
@@ -118,7 +118,7 @@ class CubismMotion extends ACubismMotion {
       val sourceValue: Float = model.parameters(curves(c).id).current
 
       // Evaluate curve and apply value.
-      value = EvaluateCurve(_motionData, curves(c), time)
+      value = evaluateCurve(_motionData, curves(c), time)
       if (eyeBlinkValue != Float.MaxValue) {
         var isBreak: Boolean = false
         for (i <- _eyeBlinkParameterIds.indices if i < MaxTargetSize && !isBreak) {
@@ -215,7 +215,7 @@ class CubismMotion extends ACubismMotion {
 
     while (c < _motionData.curveCount && curves(c).targetType == PartOpacity) {
       // Evaluate curve and apply value.
-      value = EvaluateCurve(_motionData, curves(c), time)
+      value = evaluateCurve(_motionData, curves(c), time)
       model.parameterWithFallback(curves(c).id).update(value)
       //model.setParameterValueUsingIndex(curves(c).Id, model.getParameterIndex(curves(c).Id), value)
       //model.setParameterValue(curves(c).Id, value)
@@ -244,7 +244,7 @@ class CubismMotion extends ACubismMotion {
 
   }
 
-  private def EvaluateCurve(motionData: MotionData, curve: MotionCurve, time: Float): Float = {
+  private def evaluateCurve(motionData: MotionData, curve: MotionCurve, time: Float): Float = {
 
     var target: Int = -1
     val totalSegmentCount: Int = curve.baseSegmentIndex + curve.segmentCount
@@ -277,7 +277,7 @@ class CubismMotion extends ACubismMotion {
    *
    * @param   loop    ループ情報
    */
-  def IsLoop(loop: Boolean): Unit = {
+  def isLoo(loop: Boolean): Unit = {
     this._isLoop = loop
   }
 
@@ -288,7 +288,7 @@ class CubismMotion extends ACubismMotion {
    *
    * @return  true    ループする / false   ループしない
    */
-  def IsLoop(): Boolean = this._isLoop
+  def isLoop(): Boolean = this._isLoop
 
   /**
    * ループ時のフェードイン情報の設定
@@ -297,7 +297,7 @@ class CubismMotion extends ACubismMotion {
    *
    * @param   loopFadeIn  ループ時のフェードイン情報
    */
-  def IsLoopFadeIn(loopFadeIn: Boolean): Unit = {
+  def isLoopFadeIn(loopFadeIn: Boolean): Unit = {
     this._isLoopFadeIn = loopFadeIn
   }
 
@@ -308,7 +308,7 @@ class CubismMotion extends ACubismMotion {
    *
    * @return  true    する / false   しない
    */
-  def IsLoopFadeIn(): Boolean = this._isLoopFadeIn
+  def isLoopFadeIn(): Boolean = this._isLoopFadeIn
 
   /**
    * モーションの長さの取得
@@ -317,7 +317,7 @@ class CubismMotion extends ACubismMotion {
    *
    * @return  モーションの長さ[秒]
    */
-  override def GetDuration(): Float = if (_isLoop) -1.0f else _loopDurationSeconds
+  override def getDuration(): Float = if (_isLoop) -1.0f else _loopDurationSeconds
 
   /**
    * モーションのループ時の長さの取得
@@ -326,7 +326,7 @@ class CubismMotion extends ACubismMotion {
    *
    * @return  モーションのループ時の長さ[秒]
    */
-  override def GetLoopDuration(): Float = this._loopDurationSeconds
+  override def getLoopDuration(): Float = this._loopDurationSeconds
 
   /**
    * パラメータに対するフェードインの時間の設定
@@ -336,7 +336,7 @@ class CubismMotion extends ACubismMotion {
    * @param   parameterId     パラメータID
    * @param   value           フェードインにかかる時間[秒]
    */
-  def SetParameterFadeInTime(parameterId: String, value: Float): Unit = {
+  def setParameterFadeInTime(parameterId: String, value: Float): Unit = {
     this._motionData.curves
       .find(_.id == parameterId)
       .foreach(_.fadeInTime = value)
@@ -350,7 +350,7 @@ class CubismMotion extends ACubismMotion {
    * @param   parameterId     パラメータID
    * @param   value           フェードアウトにかかる時間[秒]
    */
-  def SetParameterFadeOutTime(parameterId: String, value: Float): Unit = {
+  def setParameterFadeOutTime(parameterId: String, value: Float): Unit = {
     this._motionData.curves
       .find(_.id == parameterId)
       .foreach(_.fadeOutTime = value)
@@ -364,7 +364,7 @@ class CubismMotion extends ACubismMotion {
    * @param   parameterId     パラメータID
    * @return   フェードインにかかる時間[秒]
    */
-  def GetParameterFadeInTime(parameterId: String): Float = {
+  def getParameterFadeInTime(parameterId: String): Float = {
     this._motionData.curves
       .find(_.id == parameterId)
       .map(_.fadeInTime)
@@ -379,7 +379,7 @@ class CubismMotion extends ACubismMotion {
    * @param   parameterId     パラメータID
    * @return   フェードアウトにかかる時間[秒]
    */
-  def GetParameterFadeOutTime(parameterId: String): Float = {
+  def getParameterFadeOutTime(parameterId: String): Float = {
     this._motionData.curves
       .find(_.id == parameterId)
       .map(_.fadeOutTime)
@@ -394,7 +394,7 @@ class CubismMotion extends ACubismMotion {
    * @param   eyeBlinkParameterIds    自動まばたきがかかっているパラメータIDのリスト
    * @param   lipSyncParameterIds     リップシンクがかかっているパラメータIDのリスト
    */
-  def SetEffectIds(eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): Unit = {
+  def setEffectIds(eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): Unit = {
     this._eyeBlinkParameterIds = eyeBlinkParameterIds
     this._lipSyncParameterIds = lipSyncParameterIds
   }
@@ -408,7 +408,7 @@ class CubismMotion extends ACubismMotion {
    * @param   beforeCheckTimeSeconds   前回のイベントチェック時間[秒]
    * @param   motionTimeSeconds        今回の再生時間[秒]
    */
-  override def GetFiredEvent(beforeCheckTimeSeconds: Float, motionTimeSeconds: Float): List[String] = {
+  override def getFiredEvent(beforeCheckTimeSeconds: Float, motionTimeSeconds: Float): List[String] = {
 
     this._firedEventValues = this._motionData.events
       .filter(e => e.shouldBeFired(beforeCheckTimeSeconds, motionTimeSeconds))
