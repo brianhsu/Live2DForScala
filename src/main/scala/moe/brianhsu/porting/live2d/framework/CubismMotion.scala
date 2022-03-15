@@ -3,6 +3,7 @@ package moe.brianhsu.porting.live2d.framework
 import ACubismMotion.FinishedMotionCallback
 import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
+import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.CurveTarget.{Model, Parameter, PartOpacity}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
@@ -46,6 +47,8 @@ class CubismMotion extends ACubismMotion {
 
 
   override protected def doUpdateParameters(model: Live2DModel, userTimeSeconds: Float, fadeWeight: Float, motionQueueEntry: CubismMotionQueueEntry): Unit = {
+    var operations: List[EffectOperation] = Nil
+
     if (_modelCurveIdEyeBlink == null) {
       _modelCurveIdEyeBlink = EffectNameEyeBlink
     }
@@ -176,9 +179,7 @@ class CubismMotion extends ACubismMotion {
         // パラメータごとのフェードを適用
         v = sourceValue + (value - sourceValue) * paramWeight
       }
-      //model.setParameterValueUsingIndex(curves(c).Id, model.getParameterIndex(curves(c).Id), v)
-      model.parameterWithFallback(curves(c).id).update(v)
-      //model.setParameterValue(curves(c).Id, v)
+      operations ::= FallbackParameterValueUpdate(curves(c).id, v)
       c += 1
     }
 
@@ -192,8 +193,9 @@ class CubismMotion extends ACubismMotion {
           } else {
 
             val v = sourceValue + (eyeBlinkValue - sourceValue) * fadeWeight
-            model.parameters.get(_eyeBlinkParameterIds(i)).foreach(_.update(v))
-            //model.setParameterValue(_eyeBlinkParameterIds(i), v)
+            model.parameters.get(_eyeBlinkParameterIds(i)).foreach { p =>
+              operations ::= ParameterValueUpdate(p.id, v)
+            }
           }
         }
       }
@@ -206,8 +208,9 @@ class CubismMotion extends ACubismMotion {
             //continue;
           } else {
             val v = sourceValue + (lipSyncValue - sourceValue) * fadeWeight
-            model.parameters.get(_lipSyncParameterIds(i)).foreach(_.update(v))
-            //model.setParameterValue(_lipSyncParameterIds(i), v)
+            model.parameters.get(_lipSyncParameterIds(i)).foreach { p =>
+              operations ::= ParameterValueUpdate(p.id, v)
+            }
           }
         }
       }
@@ -216,9 +219,7 @@ class CubismMotion extends ACubismMotion {
     while (c < _motionData.curveCount && curves(c).targetType == PartOpacity) {
       // Evaluate curve and apply value.
       value = evaluateCurve(_motionData, curves(c), time)
-      model.parameterWithFallback(curves(c).id).update(value)
-      //model.setParameterValueUsingIndex(curves(c).Id, model.getParameterIndex(curves(c).Id), value)
-      //model.setParameterValue(curves(c).Id, value)
+      operations ::= FallbackParameterValueUpdate(curves(c).id, value)
       c += 1
     }
 
@@ -238,6 +239,14 @@ class CubismMotion extends ACubismMotion {
 
         motionQueueEntry.IsFinished(true)
       }
+    }
+    operations.foreach {
+      case ParameterValueAdd(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.add(value, weight))
+      case ParameterValueUpdate(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.update(value, weight))
+      case ParameterValueMultiply(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.multiply(value, weight))
+      case FallbackParameterValueAdd(parameterId, value, weight) => model.parameterWithFallback(parameterId).add(value, weight)
+      case FallbackParameterValueUpdate(parameterId, value, weight) => model.parameterWithFallback(parameterId).update(value, weight)
+      case PartOpacityUpdate(partId, value) => model.parts.get(partId).foreach(_.opacity = value)
     }
 
     _lastWeight = fadeWeight
