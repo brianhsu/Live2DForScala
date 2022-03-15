@@ -22,11 +22,11 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0f)
 
       And("it will return Nil when first time it's operation being calculated")
-      (baseMotion.calculateOperations _).when(model, 0f, 0f, *).returning(Nil)
+      (baseMotion.calculateOperations _).when(model, 0f, 0f, *, *, *, *).returning(Nil)
 
       And("it will return a mocked list of operations at second frame")
       val mockedOperations = List(ParameterValueAdd("id1", 0.1f), ParameterValueUpdate("id2", 0.2f))
-      (baseMotion.calculateOperations _).when(model, 0.33f, 0.33f, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 0.33f, 0.33f, *, *, *, *).returning(mockedOperations)
 
       When("create a MotionWithTransition based on this motion")
       val transitionMotion = new MotionWithTransition(baseMotion)
@@ -38,8 +38,8 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       And("it should calculate correct new weight")
       val expectedWeightFor1stFrame = 1.0f
       val expectedWeightFor2ndFrame = 1.0f
-      (baseMotion.calculateOperations _).verify(model, 0f, 0f, expectedWeightFor1stFrame).once().returning(Nil)
-      (baseMotion.calculateOperations _).verify(model, 0.33f, 0.33f, expectedWeightFor2ndFrame).once().returning(Nil)
+      (baseMotion.calculateOperations _).verify(model, 0f, 0f, expectedWeightFor1stFrame, 0f, 0f, None).once().returning(Nil)
+      (baseMotion.calculateOperations _).verify(model, 0.33f, 0.33f, expectedWeightFor2ndFrame, 0f, 0f, None).once().returning(Nil)
     }
 
     Scenario("Base motion does not have duration but has fading time") {
@@ -50,11 +50,11 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(2.0f)
 
       And("it will return Nil when first time it's operation being calculated")
-      (baseMotion.calculateOperations _).when(model, 0f, 0f, *).returning(Nil)
+      (baseMotion.calculateOperations _).when(model, 0f, 0f, *, *, *, *).returning(Nil)
 
       And("it will return a mocked list of operations at second frame")
       val mockedOperations = List(ParameterValueAdd("id1", 0.1f), ParameterValueUpdate("id2", 0.2f))
-      (baseMotion.calculateOperations _).when(model, 0.33f, 0.33f, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 0.33f, 0.33f, *, *, *, *).returning(mockedOperations)
 
       When("create a MotionWithTransition based on this motion")
       val transitionMotion = new MotionWithTransition(baseMotion)
@@ -66,8 +66,8 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       And("it should calculate correct new weight")
       val expectedWeightFor1stFrame = 0.0f
       val expectedWeightFor2ndFrame = 0.11474338f
-      (baseMotion.calculateOperations _).verify(model, 0f, 0f, expectedWeightFor1stFrame).once().returning(Nil)
-      (baseMotion.calculateOperations _).verify(model, 0.33f, 0.33f, expectedWeightFor2ndFrame).once().returning(Nil)
+      (baseMotion.calculateOperations _).verify(model, 0f, 0f, expectedWeightFor1stFrame, 0f, 0f, None).once().returning(Nil)
+      (baseMotion.calculateOperations _).verify(model, 0.33f, 0.33f, expectedWeightFor2ndFrame, 0f, 0f, None).once().returning(Nil)
     }
 
     Scenario("Base motion have duration 1 seconds and has fading time") {
@@ -78,14 +78,14 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(2.0f)
 
       And("it will return Nil when first time it's operation being calculated")
-      (baseMotion.calculateOperations _).when(model, 0f, 0f, *).returning(Nil)
+      (baseMotion.calculateOperations _).when(model, 0f, 0f, *, *, *, *).returning(Nil)
 
       And("it will return a mocked list of operations at following frame")
       val mockedOperations = List(ParameterValueAdd("id1", 0.1f), ParameterValueUpdate("id2", 0.2f))
-      (baseMotion.calculateOperations _).when(model, 0.33f, 0.33f, *).returning(mockedOperations)
-      (baseMotion.calculateOperations _).when(model, 0.66f, 0.33f, *).returning(mockedOperations)
-      (baseMotion.calculateOperations _).when(model, 0.99f, 0.33f, *).returning(mockedOperations)
-      (baseMotion.calculateOperations _).when(model, 1.32f, 0.33f, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 0.33f, 0.33f, *, *, *, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 0.66f, 0.33f, *, *, *, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 0.99f, 0.33f, *, *, *, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 1.32f, 0.33f, *, *, *, *).returning(mockedOperations)
 
       When("create a MotionWithTransition based on this motion")
       val transitionMotion = new MotionWithTransition(baseMotion)
@@ -117,12 +117,12 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       val expectedWeightFor4thFrame = 0.00004570529199554585f
       val expectedWeightFor5thFrame = 0.0f
 
-      (baseMotion.calculateOperations _).verify(model, 0f, 0f, expectedWeightFor1stFrame).once().returning(Nil)
-      (baseMotion.calculateOperations _).verify(model, 0.33f, 0.33f, expectedWeightFor2ndFrame).once().returning(Nil)
-      (baseMotion.calculateOperations _).verify(model, 0.66f, 0.33f, expectedWeightFor3rdFrame).once().returning(Nil)
-      (baseMotion.calculateOperations _).verify(model, 0.99f, 0.33f, expectedWeightFor4thFrame).once().returning(Nil)
-      (baseMotion.calculateOperations _).verify(model, 1.32f, 0.33f, expectedWeightFor5thFrame).once().returning(Nil)
-      (baseMotion.calculateOperations _).verify(model, 1.65f, 0.33f, *).never()
+      (baseMotion.calculateOperations _).verify(model, 0f, 0f, expectedWeightFor1stFrame, 0f, 0f, Some(1.0f)).once().returning(Nil)
+      (baseMotion.calculateOperations _).verify(model, 0.33f, 0.33f, expectedWeightFor2ndFrame, 0f, 0f, Some(1.0f)).once().returning(Nil)
+      (baseMotion.calculateOperations _).verify(model, 0.66f, 0.33f, expectedWeightFor3rdFrame, 0f, 0f, Some(1.0f)).once().returning(Nil)
+      (baseMotion.calculateOperations _).verify(model, 0.99f, 0.33f, expectedWeightFor4thFrame, 0f, 0f, Some(1.0f)).once().returning(Nil)
+      (baseMotion.calculateOperations _).verify(model, 1.32f, 0.33f, expectedWeightFor5thFrame, 0f, 0f, Some(1.0f)).once().returning(Nil)
+      (baseMotion.calculateOperations _).verify(model, 1.65f, 0.33f, *, 0f, 0f, Some(1.0f)).never()
     }
   }
 

@@ -4,6 +4,7 @@ import ACubismMotion.FinishedMotionCallback
 import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.CurveTarget.{Model, Parameter, PartOpacity}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
@@ -30,7 +31,7 @@ object CubismMotion {
 
 }
 
-class CubismMotion extends ACubismMotion {
+class CubismMotion extends ACubismMotion with Motion {
   var _sourceFrameRate: Float = 30.0f                   ///< ロードしたファイルのFPS。記述が無ければデフォルト値15fpsとなる
   var _loopDurationSeconds: Float = -1.0f               ///< mtnファイルで定義される一連のモーションの長さ
   var _isLoop: Boolean = false                            ///< ループするか?
@@ -223,6 +224,9 @@ class CubismMotion extends ACubismMotion {
       c += 1
     }
 
+
+    println("isLoop:" + _isLoop)
+
     if (timeOffsetSeconds >= _motionData.duration) {
       if (_isLoop) {
         motionQueueEntry.SetStartTime(userTimeSeconds) //最初の状態へ
@@ -240,6 +244,7 @@ class CubismMotion extends ACubismMotion {
         motionQueueEntry.IsFinished(true)
       }
     }
+
     operations.foreach {
       case ParameterValueAdd(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.add(value, weight))
       case ParameterValueUpdate(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.update(value, weight))
@@ -286,7 +291,7 @@ class CubismMotion extends ACubismMotion {
    *
    * @param   loop    ループ情報
    */
-  def isLoo(loop: Boolean): Unit = {
+  def isLoop(loop: Boolean): Unit = {
     this._isLoop = loop
   }
 
@@ -297,7 +302,7 @@ class CubismMotion extends ACubismMotion {
    *
    * @return  true    ループする / false   ループしない
    */
-  def isLoop(): Boolean = this._isLoop
+  def isLoop: Boolean = this._isLoop
 
   /**
    * ループ時のフェードイン情報の設定
@@ -317,7 +322,7 @@ class CubismMotion extends ACubismMotion {
    *
    * @return  true    する / false   しない
    */
-  def isLoopFadeIn(): Boolean = this._isLoopFadeIn
+  def isLoopFadeIn: Boolean = this._isLoopFadeIn
 
   /**
    * モーションの長さの取得
@@ -426,5 +431,193 @@ class CubismMotion extends ACubismMotion {
     this._firedEventValues
   }
 
+  override def fadeInTimeInSeconds: Float = _fadeInSeconds
 
+  override def fadeOutTimeInSeconds: Float = _fadeOutSeconds
+
+  override def durationInSeconds: Option[Float] = Option(getDuration()).filter(_ > -1.0f)
+
+  override def events: List[MotionEvent] = this._motionData.events.toList
+
+  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float,
+                                   weight: Float,
+                                   startTimeInSeconds: Float,
+                                   fadeInStartTimeInSeconds: Float,
+                                   endTimeInSeconds: Option[Float]): List[EffectOperation] = {
+
+    var operations: List[EffectOperation] = Nil
+
+    if (_modelCurveIdEyeBlink == null) {
+      _modelCurveIdEyeBlink = EffectNameEyeBlink
+    }
+
+    if (_modelCurveIdLipSync == null) {
+      _modelCurveIdLipSync = EffectNameLipSync
+    }
+
+    var timeOffsetSeconds: Float = totalElapsedTimeInSeconds - startTimeInSeconds
+    var lipSyncValue: Float = Float.MaxValue
+    var eyeBlinkValue = Float.MaxValue
+
+    //まばたき、リップシンクのうちモーションの適用を検出するためのビット（maxFlagCount個まで
+    val MaxTargetSize: Int = 64
+    var lipSyncFlags: Int = 0
+    var eyeBlinkFlags: Int = 0
+
+    //瞬き、リップシンクのターゲット数が上限を超えている場合
+    if (_eyeBlinkParameterIds.size > MaxTargetSize) {
+      println(s"too many eye blink targets : ${_eyeBlinkParameterIds.size}")
+    }
+    if (_lipSyncParameterIds.size > MaxTargetSize) {
+      println(s"too many lip sync targets : ${_lipSyncParameterIds.size}")
+    }
+
+    val tmpFadeIn: Float = if (_fadeInSeconds <= 0.0f) {
+      1.0f
+    } else {
+      Easing.sine((totalElapsedTimeInSeconds - startTimeInSeconds) / _fadeInSeconds)
+    }
+
+    val tmpFadeOut: Float = if (_fadeOutSeconds <= 0.0f || endTimeInSeconds.isEmpty) {
+      1.0f
+    } else {
+      Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / _fadeOutSeconds)
+    }
+
+    var value: Float = 0.0f
+
+    // 'Repeat' time as necessary.
+    var time: Float = timeOffsetSeconds
+
+    if (_isLoop) {
+      while (time > _motionData.duration) {
+        time -= _motionData.duration
+      }
+    }
+    // Evaluate model curves.
+    var c: Int = 0
+    val curves = _motionData.curves
+    while(c < _motionData.curveCount && curves(c).targetType == Model) {
+      // Evaluate curve and call handler.
+      value = evaluateCurve(_motionData, curves(c), time)
+
+      if (curves(c).id == _modelCurveIdEyeBlink) {
+        eyeBlinkValue = value
+      } else if (curves(c).id == _modelCurveIdLipSync) {
+        lipSyncValue = value
+      }
+      c += 1
+    }
+    var parameterMotionCurveCount = 0
+
+    while(c < _motionData.curveCount && curves(c).targetType == Parameter) {
+      parameterMotionCurveCount += 1
+      val sourceValue: Float = model.parameters(curves(c).id).current
+
+      // Evaluate curve and apply value.
+      value = evaluateCurve(_motionData, curves(c), time)
+      if (eyeBlinkValue != Float.MaxValue) {
+        var isBreak: Boolean = false
+        for (i <- _eyeBlinkParameterIds.indices if i < MaxTargetSize && !isBreak) {
+          if (_eyeBlinkParameterIds(i) == curves(c).id) {
+            value *= eyeBlinkValue
+            eyeBlinkFlags |= (1 << i)
+            isBreak = true
+          }
+        }
+      }
+      if (lipSyncValue != Float.MaxValue) {
+        var isBreak: Boolean = false
+        for (i <- _lipSyncParameterIds.indices if i < MaxTargetSize && !isBreak) {
+          if (_lipSyncParameterIds(i) == curves(c).id)
+          {
+            value += lipSyncValue
+            lipSyncFlags |= (1 << i)
+            isBreak = true
+          }
+        }
+      }
+
+      var v: Float = 0
+      // パラメータごとのフェード
+      if (curves(c).fadeInTime < 0.0f && curves(c).fadeOutTime < 0.0f)
+      {
+        //モーションのフェードを適用
+        v = sourceValue + (value - sourceValue) * weight
+      } else {
+        // パラメータに対してフェードインかフェードアウトが設定してある場合はそちらを適用
+        var fin: Float = 0
+        var fout: Float = 0
+        if (curves(c).fadeInTime < 0.0f) {
+          fin = tmpFadeIn
+        } else {
+          fin = if (curves(c).fadeInTime == 0.0f) {
+            1.0f
+          } else {
+            Easing.sine((totalElapsedTimeInSeconds - fadeInStartTimeInSeconds) / curves(c).fadeInTime)
+          }
+
+        }
+
+        if (curves(c).fadeOutTime < 0.0f) {
+          fout = tmpFadeOut
+        } else {
+          fout = if (curves(c).fadeOutTime == 0.0f || endTimeInSeconds.isEmpty) {
+            1.0f
+          } else {
+            Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / curves(c).fadeOutTime)
+          }
+        }
+        val paramWeight: Float = _weight * fin * fout
+
+        // パラメータごとのフェードを適用
+        v = sourceValue + (value - sourceValue) * paramWeight
+      }
+      operations ::= FallbackParameterValueUpdate(curves(c).id, v)
+      c += 1
+    }
+
+    {
+      if (eyeBlinkValue != Float.MaxValue) {
+        for (i <- _eyeBlinkParameterIds.indices if i < MaxTargetSize) {
+          val sourceValue = model.parameters(_eyeBlinkParameterIds(i)).current
+          //モーションでの上書きがあった時にはまばたきは適用しない
+          if (((eyeBlinkFlags >> i) & 0x01) != 0) {
+            //continue;
+          } else {
+
+            val v = sourceValue + (eyeBlinkValue - sourceValue) * weight
+            model.parameters.get(_eyeBlinkParameterIds(i)).foreach { p =>
+              operations ::= ParameterValueUpdate(p.id, v)
+            }
+          }
+        }
+      }
+
+      if (lipSyncValue != Float.MaxValue) {
+        for (i <- _lipSyncParameterIds.indices if i < MaxTargetSize) {
+          val sourceValue = model.parameters(_lipSyncParameterIds(i)).current
+          //モーションでの上書きがあった時にはリップシンクは適用しない
+          if (((lipSyncFlags >> i) & 0x01) != 0) {
+            //continue;
+          } else {
+            val v = sourceValue + (lipSyncValue - sourceValue) * weight
+            model.parameters.get(_lipSyncParameterIds(i)).foreach { p =>
+              operations ::= ParameterValueUpdate(p.id, v)
+            }
+          }
+        }
+      }
+    }
+
+    while (c < _motionData.curveCount && curves(c).targetType == PartOpacity) {
+      // Evaluate curve and apply value.
+      value = evaluateCurve(_motionData, curves(c), time)
+      operations ::= FallbackParameterValueUpdate(curves(c).id, value)
+      c += 1
+    }
+
+    _lastWeight = weight
+    operations
+  }
 }

@@ -2,34 +2,31 @@ package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.EffectOperation
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
-import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionUpdater}
+import moe.brianhsu.live2d.enitiy.avatar.motion.Motion
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-class MotionManager extends MotionUpdater {
+class MotionManager {
   private var motionQueue: List[MotionWithTransition] = Nil
 
   def currentMotions: List[MotionWithTransition] = motionQueue
+  def iaAllFinished: Boolean = this.motionQueue.forall(_.isFinished)
 
   def setEventCallbackForAllMotions(callback: Callback): Unit = {
     motionQueue.foreach(_.setEventCallback(callback))
   }
 
   def startMotion(motion: Motion): MotionWithTransition = {
-    val wrappedMotion = wrapToTransitionalIfNotAlreadyTransitional(motion)
+    startMotion(new MotionWithTransition(motion))
+  }
+
+  def startMotion(motion: MotionWithTransition): MotionWithTransition = {
     this.motionQueue.foreach(e => e.markAsForceFadeOut())
-    this.motionQueue = this.motionQueue.appended(wrappedMotion)
-    wrappedMotion
+    this.motionQueue = this.motionQueue.appended(motion)
+    motion
   }
 
-  private def wrapToTransitionalIfNotAlreadyTransitional(motion: Motion): MotionWithTransition = {
-    if (motion.isInstanceOf[MotionWithTransition]) {
-      motion.asInstanceOf[MotionWithTransition]
-    } else {
-      new MotionWithTransition(motion)
-    }
-  }
+  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
 
-  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
     val operations = this.motionQueue.flatMap { _.calculateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, weight) }
 
     for {

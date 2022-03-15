@@ -18,10 +18,10 @@ class ExpressionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       val expression = Expression(0, 0, Nil)
 
       Then("it should return an empty list at any given time")
-      expression.calculateOperations(model, 0, 0, 1f) shouldBe Nil
-      expression.calculateOperations(model, 0.33f, 0.33f, 1) shouldBe Nil
-      expression.calculateOperations(model, 0.66f, 0.33f, 1) shouldBe Nil
-      expression.calculateOperations(model, 0.99f, 0.33f, 1) shouldBe Nil
+      expression.calculateOperations(model, 0, 0, 1f, -1.0f, 0, None) shouldBe Nil
+      expression.calculateOperations(model, 0.33f, 0.33f, 1, -1.0f, 0, None) shouldBe Nil
+      expression.calculateOperations(model, 0.66f, 0.33f, 1, -1.0f, 0, None) shouldBe Nil
+      expression.calculateOperations(model, 0.99f, 0.33f, 1, -1.0f, 0, None) shouldBe Nil
     }
     Scenario("There are expression parameters") {
       When("The passed in expression contains different blend type")
@@ -36,7 +36,7 @@ class ExpressionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       val expression = Expression(0, 0, parameters)
 
       Then("it should return corresponding operation list at any given time but respect weight")
-      expression.calculateOperations(model, 0, 0, 0.1f) should contain theSameElementsInOrderAs List(
+      expression.calculateOperations(model, 0, 0, 0.1f, -1.0f, 0, None) should contain theSameElementsInOrderAs List(
         ParameterValueAdd("id1", 0.5f, 0.1f),
         ParameterValueMultiply("id2", 0.6f, 0.1f),
         ParameterValueUpdate("id3", 0.7f, 0.1f),
@@ -44,7 +44,7 @@ class ExpressionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
         ParameterValueMultiply("id5", 0.9f, 0.1f),
         ParameterValueUpdate("id6", 1.0f, 0.1f),
       )
-      expression.calculateOperations(model, 0.33f, 0.33f, 0.2f) should contain theSameElementsInOrderAs List(
+      expression.calculateOperations(model, 0.33f, 0.33f, 0.2f, -1.0f, 0, None) should contain theSameElementsInOrderAs List(
         ParameterValueAdd("id1", 0.5f, 0.2f),
         ParameterValueMultiply("id2", 0.6f, 0.2f),
         ParameterValueUpdate("id3", 0.7f, 0.2f),
@@ -52,7 +52,7 @@ class ExpressionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
         ParameterValueMultiply("id5", 0.9f, 0.2f),
         ParameterValueUpdate("id6", 1.0f, 0.2f),
       )
-      expression.calculateOperations(model, 0.66f, 0.33f, 0.3f) should contain theSameElementsInOrderAs List(
+      expression.calculateOperations(model, 0.66f, 0.33f, 0.3f, -1.0f, 0, None) should contain theSameElementsInOrderAs List(
         ParameterValueAdd("id1", 0.5f, 0.3f),
         ParameterValueMultiply("id2", 0.6f, 0.3f),
         ParameterValueUpdate("id3", 0.7f, 0.3f),

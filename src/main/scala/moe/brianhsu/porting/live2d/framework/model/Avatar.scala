@@ -19,6 +19,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
 
   private var effects: List[Effect] = Nil
   private val expressionManager = new MotionManager
+  private val newMotionManager = new MotionManager
 
   motionManager.SetEventCallback(new CubismMotionEventFunction {
     override def apply(caller: CubismMotionQueueManager, eventValue: String, customData: AnyRef): Unit = {
@@ -44,7 +45,9 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     val name = s"Motion(${motionGroup}_$index)"
     val motionSettings = avatarSettings.motionGroups(motionGroup)(index)
     val motion = CubismMotion(motionSettings, _ => defaultLogger.info(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
+    motion.isLoop(true)
     defaultLogger.info(s"Start motion $name")
+    newMotionManager.startMotion(motion)
     motionManager.StartMotion(motion)
   }
 
@@ -57,11 +60,22 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
 
   override def update(frameTimeInfo: FrameTimeInfo): Unit = {
     model.restoreParameters()
-    if (motionManager.IsFinished()) {
+    /*
+
+    if (newMotionManager.iaAllFinished) {
       // Start Random Motion
+    } else {
+      val operations = newMotionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
+      executeOperations(model, operations)
+    }
+     */
+
+    if (motionManager.IsFinished()) {
+
     } else {
       motionManager.DoUpdateMotion(model, frameTimeInfo.totalElapsedTimeInSeconds)
     }
+
     model.snapshotParameters()
 
     val expressionsOperations = expressionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)

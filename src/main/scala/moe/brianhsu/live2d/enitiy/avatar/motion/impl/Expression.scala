@@ -18,13 +18,18 @@ case class Expression(fadeInTimeInSeconds: Float,
                       fadeOutTimeInSeconds: Float,
                       parameters: List[Expression.Parameter]) extends Motion {
 
+  override val isLoop: Boolean = false
+  override val isLoopFadeIn: Boolean = false
   override val events: List[MotionEvent] = Nil
   override val durationInSeconds: Option[Float] = None
 
   override def calculateOperations(model: Live2DModel,
                                    totalElapsedTimeInSeconds: Float,
                                    deltaTimeInSeconds: Float,
-                                   weight: Float): List[EffectOperation] = {
+                                   weight: Float,
+                                   startTimeInSeconds: Float,
+                                   fadeInStartTimeInSeconds: Float,
+                                   endTimeInSeconds: Option[Float]): List[EffectOperation] = {
 
     parameters.map { parameter =>
       parameter.blendType match {

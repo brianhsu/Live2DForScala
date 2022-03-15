@@ -10,7 +10,7 @@ object MotionWithTransition {
   type Callback= (MotionWithTransition, MotionEvent) => Unit
 }
 
-class MotionWithTransition(val baseMotion: Motion) extends Motion {
+class MotionWithTransition(val baseMotion: Motion) {
 
   private var mIsFinished: Boolean = false
   private var isStarted: Boolean = false
@@ -24,11 +24,13 @@ class MotionWithTransition(val baseMotion: Motion) extends Motion {
   def isFinished: Boolean = mIsFinished
   def isForceToFadeOut: Boolean = mIsForceToFadeOut
 
-  override def fadeInTimeInSeconds: Float = baseMotion.fadeInTimeInSeconds
-  override def fadeOutTimeInSeconds: Float = baseMotion.fadeOutTimeInSeconds
-  override def durationInSeconds: Option[Float] = baseMotion.durationInSeconds
-  override def events: List[MotionEvent] = baseMotion.events
-  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
+  def isLoop: Boolean = baseMotion.isLoop
+  def isLoopFadeIn: Boolean = baseMotion.isLoopFadeIn
+  def fadeInTimeInSeconds: Float = baseMotion.fadeInTimeInSeconds
+  def fadeOutTimeInSeconds: Float = baseMotion.fadeOutTimeInSeconds
+  def durationInSeconds: Option[Float] = baseMotion.durationInSeconds
+  def events: List[MotionEvent] = baseMotion.events
+  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
     if (mIsFinished) {
       Nil
     } else {
@@ -44,7 +46,9 @@ class MotionWithTransition(val baseMotion: Motion) extends Motion {
       this.mIsFinished = this.endTimeInSeconds.exists(_ < totalElapsedTimeInSeconds)
 
       fireTriggeredEvents(totalElapsedTimeInSeconds)
-      createUpdateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, weight)
+      val operations = createUpdateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, weight, this.startTimeInSeconds, this.fadeInStartTimeInSeconds, this.endTimeInSeconds)
+
+      operations
     }
   }
 
@@ -78,12 +82,14 @@ class MotionWithTransition(val baseMotion: Motion) extends Motion {
     this.lastEventCheckTimeInSeconds = totalElapsedTimeInSeconds
   }
 
-  private def createUpdateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float) = {
+  private def createUpdateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float,
+                                     startTimeInSeconds: Float, fadeInStartTimeInSeconds: Float,
+                                     endTimeInSeconds: Option[Float]): List[EffectOperation] = {
     val fadeIn: Float = calculateFadeIn(totalElapsedTimeInSeconds)
     val fadeOut: Float = calculateFadeOut(totalElapsedTimeInSeconds)
     val fadeWeight = weight * fadeIn * fadeOut
 
-    baseMotion.calculateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, fadeWeight)
+    baseMotion.calculateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, fadeWeight, startTimeInSeconds, fadeInStartTimeInSeconds, endTimeInSeconds)
   }
 
   private def calculateFadeIn(totalElapsedTimeInSeconds: Float): Float = {
