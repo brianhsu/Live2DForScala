@@ -5,10 +5,12 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionPoint, MotionSegment, SegmentType}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.SegmentType.{Bezier, BezierCardanoInterpretation, InverseStepped, Linear, Stepped}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.Meta
 import moe.brianhsu.porting.live2d.framework.{CubismMotionCurve, CubismMotionCurveTarget, CubismMotionData}
 
 class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
+
+  case class ParsedSegmentInfo(segment: MotionSegment, points: List[MotionPoint], offset: Int)
+
   override def loadMotionData(): CubismMotionData = {
     val meta = motion.meta
     val events = motion.userData.map(userData => MotionEvent(userData.value, userData.time))
@@ -18,7 +20,11 @@ class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
 
     for (curveJson <- motion.curves) {
       val baseSegmentIndex = segments.size
-      val (segmentsInCurve, pointsInCurve) = parseSegmentsAndPoints(meta, curveJson.segments, points.size)
+      val (segmentsInCurve, pointsInCurve) = parseSegmentsAndPoints(
+        meta.areBeziersRestricted,
+        curveJson.segments,
+        points.size
+      )
 
       reversedCurve ::= CubismMotionCurve(
         curveJson.id,
@@ -32,7 +38,7 @@ class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
       segments = segments ++ segmentsInCurve
     }
 
-    new CubismMotionData(
+    CubismMotionData(
       reversedCurve.reverse, segments,
       points, events,
       meta.duration, meta.loop,
@@ -40,7 +46,7 @@ class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
     )
   }
 
-  def parseSegmentsAndPoints(meta: Meta, segments: List[Float],
+  private def parseSegmentsAndPoints(areBeziersRestricted: Boolean, segments: List[Float],
                              currentPointSize: Int): (List[MotionSegment], List[MotionPoint]) = {
 
     var remainingSegments = segments
@@ -55,14 +61,14 @@ class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
     while (remainingSegments.nonEmpty) {
       val basePointIndex = currentPointSize + allPoints.size - 1
 
-      val segmentType = SegmentType(remainingSegments.head.toInt, meta.areBeziersRestricted)
+      val segmentType = SegmentType(remainingSegments.head.toInt, areBeziersRestricted)
 
-      val ParsedResult(segment, remainPoints, offset) = segmentType match {
-        case Linear => parseLinear(remainingSegments, basePointIndex)
-        case Bezier => parseBezier(remainingSegments, basePointIndex)
-        case BezierCardanoInterpretation => parseBezierCardanoInterpretation(remainingSegments, basePointIndex)
-        case Stepped => parseStepped(remainingSegments, basePointIndex)
-        case InverseStepped => parseInverseStepped(remainingSegments, basePointIndex)
+      val ParsedSegmentInfo(segment, remainPoints, offset) = segmentType match {
+        case Linear => parse2Points(remainingSegments, Linear, basePointIndex)
+        case Bezier => parse3Points(remainingSegments, Bezier, basePointIndex)
+        case BezierCardanoInterpretation => parse3Points(remainingSegments, BezierCardanoInterpretation, basePointIndex)
+        case Stepped => parse2Points(remainingSegments, Stepped, basePointIndex)
+        case InverseStepped => parse2Points(remainingSegments, InverseStepped, basePointIndex)
       }
 
       allPoints = allPoints ++ remainPoints
@@ -75,44 +81,19 @@ class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
 
   }
 
-  case class ParsedResult(segment: MotionSegment, points: List[MotionPoint], offset: Int)
-
-  private def parseLinear(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = MotionSegment(Linear, basePointIndex)
+  private def parse2Points(remainSegments: List[Float], segmentType: SegmentType, basePointIndex: Int) = {
+    val segment = MotionSegment(segmentType, basePointIndex)
     val points = List(MotionPoint(remainSegments(1), remainSegments(2)))
-    ParsedResult(segment, points, 3)
+    ParsedSegmentInfo(segment, points, 3)
   }
 
-  private def parseBezier(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = MotionSegment(Bezier, basePointIndex)
+  private def parse3Points(remainSegments: List[Float], segmentType: SegmentType, basePointIndex: Int): ParsedSegmentInfo = {
+    val segment = MotionSegment(segmentType, basePointIndex)
     val points = List(
       MotionPoint(remainSegments(1), remainSegments(2)),
       MotionPoint(remainSegments(3), remainSegments(4)),
       MotionPoint(remainSegments(5), remainSegments(6))
     )
-    ParsedResult(segment, points, 7)
+    ParsedSegmentInfo(segment, points, 7)
   }
-
-  private def parseBezierCardanoInterpretation(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = MotionSegment(BezierCardanoInterpretation, basePointIndex)
-    val points = List(
-      MotionPoint(remainSegments(1), remainSegments(2)),
-      MotionPoint(remainSegments(3), remainSegments(4)),
-      MotionPoint(remainSegments(5), remainSegments(6))
-    )
-    ParsedResult(segment, points, 7)
-  }
-
-  private def parseStepped(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = MotionSegment(Stepped, basePointIndex)
-    val points = List(MotionPoint(remainSegments(1), remainSegments(2)))
-    ParsedResult(segment, points, 3)
-  }
-
-  private def parseInverseStepped(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = MotionSegment(InverseStepped, basePointIndex)
-    val points = List(MotionPoint(remainSegments(1), remainSegments(2)))
-    ParsedResult(segment, points, 3)
-  }
-
 }
