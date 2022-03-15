@@ -136,8 +136,6 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.events).when().returning(eventList)
 
-      println(baseMotion.events)
-
       And("a stubbed event callback")
       val mockedCallback: Callback = stub[Callback]
 
@@ -161,8 +159,6 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (() => baseMotion.fadeInTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.events).when().returning(eventList)
-
-      println(baseMotion.events)
 
       And("a stubbed event callback")
       val mockedCallback: Callback = stub[Callback]
@@ -188,8 +184,6 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (() => baseMotion.fadeInTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.events).when().returning(eventList)
-
-      println(baseMotion.events)
 
       And("a stubbed event callback")
       val mockedCallback: Callback = stub[Callback]

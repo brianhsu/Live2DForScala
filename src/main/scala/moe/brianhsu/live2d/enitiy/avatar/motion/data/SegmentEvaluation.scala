@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.data
 
-import moe.brianhsu.porting.live2d.framework.math.CubismMath
+import moe.brianhsu.live2d.enitiy.math.CardanoAlgorithm
 
 trait SegmentEvaluation {
   /**
@@ -18,32 +18,25 @@ object SegmentEvaluation {
 
   object LinearEvaluate extends SegmentEvaluation {
     override def apply(points: Array[MotionPoint], time: Float): Float = {
-      var t: Float = (time - points(0).time) / (points(1).time - points(0).time)
-
-      if (t < 0.0f) {
-        t = 0.0f
-      }
-
-      points(0).value + ((points(1).value - points(0).value) * t)
+      val scalar = (time - points(0).time) / (points(1).time - points(0).time)
+      val normalizedScalar = if (scalar < 0.0) 0 else scalar
+      points(0).value + ((points(1).value - points(0).value) * normalizedScalar)
     }
   }
 
   object BezierEvaluate extends SegmentEvaluation {
     override def apply(points: Array[MotionPoint], time: Float): Float = {
-      var t: Float = (time - points(0).time) / (points(3).time - points(0).time)
+      val scalar: Float = (time - points(0).time) / (points(3).time - points(0).time)
+      val normalizedScalar = if (scalar < 0.0) 0 else scalar
 
-      if (t < 0.0f) {
-        t = 0.0f
-      }
+      val p01 = lerpPoints(points(0), points(1), normalizedScalar)
+      val p12 = lerpPoints(points(1), points(2), normalizedScalar)
+      val p23 = lerpPoints(points(2), points(3), normalizedScalar)
 
-      val p01 = lerpPoints(points(0), points(1), t)
-      val p12 = lerpPoints(points(1), points(2), t)
-      val p23 = lerpPoints(points(2), points(3), t)
+      val p012 = lerpPoints(p01, p12, normalizedScalar)
+      val p123 = lerpPoints(p12, p23, normalizedScalar)
 
-      val p012 = lerpPoints(p01, p12, t)
-      val p123 = lerpPoints(p12, p23, t)
-
-      lerpPoints(p012, p123, t).value
+      lerpPoints(p012, p123, normalizedScalar).value
     }
   }
 
@@ -60,7 +53,7 @@ object SegmentEvaluation {
       val c: Float = 3.0f * cx1 - 3.0f * x1
       val d: Float = x1 - x
 
-      val t = CubismMath.CardanoAlgorithmForBezier(a, b, c, d)
+      val t = CardanoAlgorithm.forBezier(a, b, c, d)
 
       val p01 = lerpPoints(points(0), points(1), t)
       val p12 = lerpPoints(points(1), points(2), t)

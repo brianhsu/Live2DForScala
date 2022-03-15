@@ -37,7 +37,6 @@ class CubismMotionQueueEntry {
     _IsTriggeredFadeOut = true
 
     if (_endTimeSeconds < 0.0f || newEndTimeSeconds < _endTimeSeconds) {
-      println("Assign new endTimeSeconds:" + newEndTimeSeconds)
       _endTimeSeconds = newEndTimeSeconds
     }
   }
