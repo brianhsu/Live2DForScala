@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
 import CubismMotionSegment.CsmMotionSegmentEvaluationFunction
+import moe.brianhsu.live2d.enitiy.avatar.motion.data.SegmentType
 import moe.brianhsu.porting.live2d.framework.math.CubismMath
 
 object CubismMotionSegment {
@@ -147,7 +148,7 @@ object CubismMotionSegment {
 
 case class CubismMotionSegment(
                                 evaluate: CsmMotionSegmentEvaluationFunction,
-                                basePointIndex: Int = 0,
-                                segmentType: Int = 0
+                                basePointIndex: Int,
+                                segmentType: SegmentType
 )
 

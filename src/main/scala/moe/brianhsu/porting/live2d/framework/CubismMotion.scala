@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
 import ACubismMotion.FinishedMotionCallback
-import CubismMotion.{CubismMotionSegmentType_Bezier, EffectNameEyeBlink, EffectNameLipSync}
+import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -10,10 +10,6 @@ import moe.brianhsu.porting.live2d.framework.CubismMotionCurveTarget.{Model, Par
 object CubismMotion {
   private val EffectNameEyeBlink = "EyeBlink"
   private val EffectNameLipSync  = "LipSync"
-  val CubismMotionSegmentType_Linear = 0         ///< リニア
-  val CubismMotionSegmentType_Bezier = 1         ///< ベジェ曲線
-  val CubismMotionSegmentType_Stepped = 2        ///< ステップ
-  val CubismMotionSegmentType_InverseStepped = 3  ///< インバースステップ
 
   def apply(motionInfo: MotionSetting, onFinishHandler: FinishedMotionCallback,
             eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
@@ -255,7 +251,7 @@ class CubismMotion extends ACubismMotion {
 
     for (i <- curve.baseSegmentIndex until totalSegmentCount if !isBreak) {
       // Get first point of next segment.
-      pointPosition = motionData.segments(i).basePointIndex + ( if (motionData.segments(i).segmentType == CubismMotionSegmentType_Bezier)  3 else 1)
+      pointPosition = motionData.segments(i).basePointIndex + motionData.segments(i).segmentType.pointCount
 
       // Break if time lies within current segment.
       if (motionData.points(pointPosition).time > time) {
