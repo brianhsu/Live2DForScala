@@ -1,12 +1,9 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.data
 
-import moe.brianhsu.porting.live2d.framework.CubismMotionSegment
-import moe.brianhsu.porting.live2d.framework.CubismMotionSegment.CsmMotionSegmentEvaluationFunction
-
 sealed trait SegmentType {
   def typeId: Int
   def pointCount: Int
-  def evaluate: CsmMotionSegmentEvaluationFunction
+  def evaluate: SegmentEvaluation
 }
 
 object SegmentType {
@@ -23,31 +20,31 @@ object SegmentType {
   case object Linear extends SegmentType {
     override val typeId = 0
     override val pointCount = 1
-    override val evaluate = CubismMotionSegment.LinearEvaluate
+    override val evaluate = SegmentEvaluation.LinearEvaluate
   }
 
   case object Bezier extends SegmentType {
     override val typeId = 1
     override val pointCount = 3
-    override val evaluate = CubismMotionSegment.BezierEvaluate
+    override val evaluate = SegmentEvaluation.BezierEvaluate
   }
 
   case object BezierCardanoInterpretation extends SegmentType {
     override val typeId = 1
     override val pointCount = 3
-    override val evaluate = CubismMotionSegment.BezierEvaluateCardanoInterpretation
+    override val evaluate = SegmentEvaluation.BezierEvaluateCardanoInterpretation
   }
 
   case object Stepped extends SegmentType {
     override val typeId = 2
     override val pointCount = 1
-    override val evaluate = CubismMotionSegment.SteppedEvaluate
+    override val evaluate = SegmentEvaluation.SteppedEvaluate
   }
 
   case object InverseStepped extends SegmentType {
     override val typeId = 3
     override val pointCount = 1
-    override val evaluate = CubismMotionSegment.InverseSteppedEvaluate
+    override val evaluate = SegmentEvaluation.InverseSteppedEvaluate
   }
 }
 

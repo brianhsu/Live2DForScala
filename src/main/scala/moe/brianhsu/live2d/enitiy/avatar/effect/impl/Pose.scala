@@ -1,9 +1,9 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.PosePart
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose.{BackOpacityThreshold, Epsilon, Phi}
 import moe.brianhsu.live2d.enitiy.avatar.effect.{Effect, EffectOperation, FallbackParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.framework.PartData
 
 object Pose {
   /**
@@ -37,7 +37,7 @@ object Pose {
  * @param posePartGroups      The pose part groups.
  * @param fadeTimeInSeconds   The default fade in time when change pose.
  */
-case class Pose(posePartGroups: List[List[PartData]] = Nil,
+case class Pose(posePartGroups: List[List[PosePart]] = Nil,
                 fadeTimeInSeconds: Float = 0) extends Effect {
 
 
@@ -73,7 +73,7 @@ case class Pose(posePartGroups: List[List[PartData]] = Nil,
    * @param   deltaTimeSeconds    How many time in seconds has been passed since last update.
    * @param   poseParts           The parts that should be updated.
    */
-  private def doFade(model: Live2DModel, deltaTimeSeconds: Float, poseParts: List[PartData]): List[EffectOperation] = {
+  private def doFade(model: Live2DModel, deltaTimeSeconds: Float, poseParts: List[PosePart]): List[EffectOperation] = {
     val visiblePartHolder = poseParts
       .find(partData => model.parameterWithFallback(partData.partId).current > Epsilon)
       .orElse(poseParts.headOption)
@@ -134,7 +134,7 @@ case class Pose(posePartGroups: List[List[PartData]] = Nil,
    */
   private def copyPartOpacitiesToLinkedParts(model: Live2DModel, resetAndFade: List[EffectOperation]): List[PartOpacityUpdate] = {
     for {
-      pose: List[PartData] <- posePartGroups
+      pose: List[PosePart] <- posePartGroups
       posePartData <- pose
       posePart <- model.parts.get(posePartData.partId).toList
       updateOpacity <- resetAndFade if isPartOpacityUpdateForSamePart(updateOpacity, posePart.id)

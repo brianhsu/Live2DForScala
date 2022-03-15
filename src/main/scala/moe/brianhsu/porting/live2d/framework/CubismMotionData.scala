@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework
 
 import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.SegmentType
+import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionPoint, MotionSegment, SegmentType}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.SegmentType.{Bezier, BezierCardanoInterpretation, InverseStepped, Linear, Stepped}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.Meta
@@ -11,8 +11,8 @@ object CubismMotionData {
     val meta = motion.meta
     val events = motion.userData.map(userData => MotionEvent(userData.value, userData.time))
     var reversedCurve: List[CubismMotionCurve] = Nil
-    var points: List[CubismMotionPoint] = Nil
-    var segments: List[CubismMotionSegment] = Nil
+    var points: List[MotionPoint] = Nil
+    var segments: List[MotionSegment] = Nil
 
     for (curveJson <- motion.curves) {
       val baseSegmentIndex = segments.size
@@ -40,14 +40,14 @@ object CubismMotionData {
   }
 
   def parseSegmentsAndPoints(meta: Meta, segments: List[Float],
-                             currentPointSize: Int): (List[CubismMotionSegment], List[CubismMotionPoint]) = {
+                             currentPointSize: Int): (List[MotionSegment], List[MotionPoint]) = {
 
     var remainingSegments = segments
-    var segmentsInCurve: List[CubismMotionSegment] = Nil
-    var allPoints: List[CubismMotionPoint] = Nil
+    var segmentsInCurve: List[MotionSegment] = Nil
+    var allPoints: List[MotionPoint] = Nil
 
     if (remainingSegments.nonEmpty) {
-      allPoints = allPoints.appended(CubismMotionPoint(remainingSegments(0), remainingSegments(1)))
+      allPoints = allPoints.appended(MotionPoint(remainingSegments(0), remainingSegments(1)))
       remainingSegments = remainingSegments.drop(2)
     }
 
@@ -74,56 +74,51 @@ object CubismMotionData {
 
   }
 
-  case class ParsedResult(segment: CubismMotionSegment, points: List[CubismMotionPoint], offset: Int)
+  case class ParsedResult(segment: MotionSegment, points: List[MotionPoint], offset: Int)
 
   private def parseLinear(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = new CubismMotionSegment(basePointIndex, Linear)
-    val points = List(
-      CubismMotionPoint(
-        remainSegments(1),
-        remainSegments(2)
-      )
-    )
+    val segment = MotionSegment(Linear, basePointIndex)
+    val points = List(MotionPoint(remainSegments(1), remainSegments(2)))
     ParsedResult(segment, points, 3)
   }
 
   private def parseBezier(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = new CubismMotionSegment(basePointIndex, Bezier)
+    val segment = MotionSegment(Bezier, basePointIndex)
     val points = List(
-      CubismMotionPoint(remainSegments(1), remainSegments(2)),
-      CubismMotionPoint(remainSegments(3), remainSegments(4)),
-      CubismMotionPoint(remainSegments(5), remainSegments(6))
+      MotionPoint(remainSegments(1), remainSegments(2)),
+      MotionPoint(remainSegments(3), remainSegments(4)),
+      MotionPoint(remainSegments(5), remainSegments(6))
     )
     ParsedResult(segment, points, 7)
   }
 
   private def parseBezierCardanoInterpretation(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = new CubismMotionSegment(basePointIndex, BezierCardanoInterpretation)
+    val segment = MotionSegment(BezierCardanoInterpretation, basePointIndex)
     val points = List(
-      CubismMotionPoint(remainSegments(1), remainSegments(2)),
-      CubismMotionPoint(remainSegments(3), remainSegments(4)),
-      CubismMotionPoint(remainSegments(5), remainSegments(6))
+      MotionPoint(remainSegments(1), remainSegments(2)),
+      MotionPoint(remainSegments(3), remainSegments(4)),
+      MotionPoint(remainSegments(5), remainSegments(6))
     )
     ParsedResult(segment, points, 7)
   }
 
   private def parseStepped(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = new CubismMotionSegment(basePointIndex, Stepped)
-    val points = List(CubismMotionPoint(remainSegments(1), remainSegments(2)))
+    val segment = MotionSegment(Stepped, basePointIndex)
+    val points = List(MotionPoint(remainSegments(1), remainSegments(2)))
     ParsedResult(segment, points, 3)
   }
 
   private def parseInverseStepped(remainSegments: List[Float], basePointIndex: Int): ParsedResult = {
-    val segment = new CubismMotionSegment(basePointIndex, InverseStepped)
-    val points = List(CubismMotionPoint(remainSegments(1), remainSegments(2)))
+    val segment = MotionSegment(InverseStepped, basePointIndex)
+    val points = List(MotionPoint(remainSegments(1), remainSegments(2)))
     ParsedResult(segment, points, 3)
   }
 
 }
 
 case class CubismMotionData(curvesList: List[CubismMotionCurve],
-                            segmentsList: List[CubismMotionSegment],
-                            pointsList: List[CubismMotionPoint],
+                            segmentsList: List[MotionSegment],
+                            pointsList: List[MotionPoint],
                             eventsList: List[MotionEvent],
                             duration: Float = 0.0f,
                             isLoop: Boolean = false,

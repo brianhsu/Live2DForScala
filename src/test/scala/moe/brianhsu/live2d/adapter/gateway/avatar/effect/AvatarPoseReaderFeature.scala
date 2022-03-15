@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.effect
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.PosePart
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.porting.live2d.framework.PartData
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}
@@ -22,12 +22,12 @@ class AvatarPoseReaderFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       Then("it should have correct pose part data")
       pose.posePartGroups should contain theSameElementsInOrderAs List(
         List(
-          PartData("Part01ArmLB001", List(PartData("link1", Nil), PartData("link2", Nil))),
-          PartData("Part01ArmRA001", Nil)
+          PosePart("Part01ArmLB001", List(PosePart("link1", Nil), PosePart("link2", Nil))),
+          PosePart("Part01ArmRA001", Nil)
         ),
         List(
-          PartData("Part01ArmRB001", List(PartData("Part01ArmRA001", Nil))),
-          PartData("Part01ArmLA001", List(PartData("link3", Nil), PartData("link4", Nil)))
+          PosePart("Part01ArmRB001", List(PosePart("Part01ArmRA001", Nil))),
+          PosePart("Part01ArmLA001", List(PosePart("link3", Nil), PosePart("link4", Nil)))
         )
       )
 
@@ -48,12 +48,12 @@ class AvatarPoseReaderFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       Then("it should have correct pose part data")
       pose.posePartGroups should contain theSameElementsInOrderAs List(
         List(
-          PartData("Part01ArmRA001", Nil),
-          PartData("Part01ArmRB001", Nil)
+          PosePart("Part01ArmRA001", Nil),
+          PosePart("Part01ArmRB001", Nil)
         ),
         List(
-          PartData("Part01ArmLA001", Nil),
-          PartData("Part01ArmLB001", Nil)
+          PosePart("Part01ArmLA001", Nil),
+          PosePart("Part01ArmLB001", Nil)
         )
       )
 

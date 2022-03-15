@@ -1,10 +1,10 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.effect
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.effect.PoseReader
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.PosePart
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
-import moe.brianhsu.porting.live2d.framework.PartData
 
 /**
  * Reader to read Pose effect from [[moe.brianhsu.live2d.enitiy.avatar.settings.Settings]]
@@ -21,11 +21,11 @@ class AvatarPoseReader(avatarSettings: Settings) extends PoseReader {
    * @param   pose  The Part setting from avatar settings.
    * @return        The transformed PartData will be used to create Pose effect.
    */
-  private def createPartData(pose: List[Part]): List[PartData] = {
+  private def createPartData(pose: List[Part]): List[PosePart] = {
     pose.map { partInfo =>
-      PartData(
+      PosePart(
         partInfo.id,
-        partInfo.link.map(id => PartData(id))
+        partInfo.link.map(id => PosePart(id))
       )
     }
   }
