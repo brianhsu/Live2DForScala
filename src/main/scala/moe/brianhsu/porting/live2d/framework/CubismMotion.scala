@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework
 
-import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync, MaxEffectTargetSize}
+import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
@@ -13,13 +13,12 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 object CubismMotion {
   private val EffectNameEyeBlink = "EyeBlink"
   private val EffectNameLipSync  = "LipSync"
-  private val MaxEffectTargetSize: Int = 64
 
   def apply(motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
     new CubismMotion(
       new AvatarMotionDataReader(motionInfo).loadMotionData(),
       eyeBlinkParameterIds, lipSyncParameterIds,
-      isLoop = false, isLoopFadeIn = false,
+      isLoop = true, isLoopFadeIn = false,
       Option(motionInfo.meta.duration).filter(_ > 0.0f),
       motionInfo.fadeInTime.filter(_ >= 0),
       motionInfo.fadeOutTime.filter(_ >= 0).orElse(Some(1.0f))
@@ -46,8 +45,6 @@ class CubismMotion(motionData: MotionData,
                                    endTimeInSeconds: Option[Float]): List[EffectOperation] = {
 
     var operations: List[EffectOperation] = Nil
-    var lipSyncValue: Float = Float.MaxValue
-    var eyeBlinkValue = Float.MaxValue
     var occupiedLipSyncParameterId: Set[String] = Set.empty
     var occupiedEyeBlinkParameterId: Set[String] = Set.empty
 
@@ -55,43 +52,40 @@ class CubismMotion(motionData: MotionData,
     val tmpFadeOut = calculateTempFadeOut(totalElapsedTimeInSeconds, endTimeInSeconds)
     val elapsedTimeSinceLastLoop = calculateElapsedTimeSinceLastLoop(totalElapsedTimeInSeconds, startTimeInSeconds)
 
-    // Evaluate model curves.
-    var c: Int = 0
-    val curves = motionData.curves
-    while(c < motionData.curveCount && curves(c).targetType == Model) {
-      // Evaluate curve and call handler.
-      val value = evaluateCurve(motionData, curves(c), elapsedTimeSinceLastLoop)
+    val eyeBlinkValueHolder = motionData.modelCurves
+      .filter(_.id == EffectNameEyeBlink)
+      .map(curve => evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop))
+      .headOption
 
-      if (curves(c).id == EffectNameEyeBlink) {
-        eyeBlinkValue = value
-      } else if (curves(c).id == EffectNameLipSync) {
-        lipSyncValue = value
-      }
-      c += 1
-    }
-    var parameterMotionCurveCount = 0
+    val lipSyncValueHolder = motionData.modelCurves
+      .filter(_.id == EffectNameLipSync)
+      .map(curve => evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop))
+      .headOption
 
-    while(c < motionData.curveCount && curves(c).targetType == Parameter) {
-      parameterMotionCurveCount += 1
-      val sourceValue: Float = model.parameters(curves(c).id).current
+    for(curve <- motionData.parameterCurves) {
+      val sourceValue: Float = model.parameters(curve.id).current
 
       // Evaluate curve and apply value.
-      var value = evaluateCurve(motionData, curves(c), elapsedTimeSinceLastLoop)
-      if (eyeBlinkValue != Float.MaxValue) {
+      var value = evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop)
+      if (eyeBlinkValueHolder.isDefined && eyeBlinkParameterIds.contains(curve.id)) {
+        value = value * eyeBlinkValueHolder.get
+        occupiedEyeBlinkParameterId += curve.id
+      }
+      if (eyeBlinkValueHolder.isDefined) {
         var isBreak: Boolean = false
         for (id <- eyeBlinkParameterIds if !isBreak) {
-          if (id == curves(c).id) {
-            value *= eyeBlinkValue
+          if (id == curve.id) {
+            value *= eyeBlinkValueHolder.get
             occupiedEyeBlinkParameterId += id
             isBreak = true
           }
         }
       }
-      if (lipSyncValue != Float.MaxValue) {
+      if (lipSyncValueHolder.isDefined) {
         var isBreak: Boolean = false
         for (id <- lipSyncParameterIds if !isBreak) {
-          if (id == curves(c).id) {
-            value += lipSyncValue
+          if (id == curve.id) {
+            value += lipSyncValueHolder.get
             occupiedLipSyncParameterId += id
             isBreak = true
           }
@@ -100,7 +94,7 @@ class CubismMotion(motionData: MotionData,
 
       var v: Float = 0
       // パラメータごとのフェード
-      if (curves(c).fadeInTime < 0.0f && curves(c).fadeOutTime < 0.0f)
+      if (curve.fadeInTime < 0.0f && curve.fadeOutTime < 0.0f)
       {
         //モーションのフェードを適用
         v = sourceValue + (value - sourceValue) * weight
@@ -108,24 +102,24 @@ class CubismMotion(motionData: MotionData,
         // パラメータに対してフェードインかフェードアウトが設定してある場合はそちらを適用
         var fin: Float = 0
         var fout: Float = 0
-        if (curves(c).fadeInTime < 0.0f) {
+        if (curve.fadeInTime < 0.0f) {
           fin = tmpFadeIn
         } else {
-          fin = if (curves(c).fadeInTime == 0.0f) {
+          fin = if (curve.fadeInTime == 0.0f) {
             1.0f
           } else {
-            Easing.sine((totalElapsedTimeInSeconds - fadeInStartTimeInSeconds) / curves(c).fadeInTime)
+            Easing.sine((totalElapsedTimeInSeconds - fadeInStartTimeInSeconds) / curve.fadeInTime)
           }
 
         }
 
-        if (curves(c).fadeOutTime < 0.0f) {
+        if (curve.fadeOutTime < 0.0f) {
           fout = tmpFadeOut
         } else {
-          fout = if (curves(c).fadeOutTime == 0.0f || endTimeInSeconds.isEmpty) {
+          fout = if (curve.fadeOutTime == 0.0f || endTimeInSeconds.isEmpty) {
             1.0f
           } else {
-            Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / curves(c).fadeOutTime)
+            Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / curve.fadeOutTime)
           }
         }
         val paramWeight: Float = fin * fout
@@ -133,54 +127,46 @@ class CubismMotion(motionData: MotionData,
         // パラメータごとのフェードを適用
         v = sourceValue + (value - sourceValue) * paramWeight
       }
-      operations = operations.appended(FallbackParameterValueUpdate(curves(c).id, v))
-      c += 1
+      operations = operations.appended(FallbackParameterValueUpdate(curve.id, v))
     }
 
 
     operations = operations ++
-      createEyeBlinkOperations(model, weight, eyeBlinkValue, occupiedEyeBlinkParameterId) ++
-      createLipSyncOperations(model, weight, lipSyncValue, occupiedLipSyncParameterId)
-
-    while (c < motionData.curveCount && curves(c).targetType == PartOpacity) {
-      // Evaluate curve and apply value.
-      val value = evaluateCurve(motionData, curves(c), elapsedTimeSinceLastLoop)
-      operations = operations.appended(FallbackParameterValueUpdate(curves(c).id, value))
-      c += 1
-    }
+      createEyeBlinkOperations(model, weight, eyeBlinkValueHolder, occupiedEyeBlinkParameterId) ++
+      createLipSyncOperations(model, weight, lipSyncValueHolder, occupiedLipSyncParameterId) ++
+      createPartOperations(elapsedTimeSinceLastLoop)
 
     operations
   }
 
-  private def createEyeBlinkOperations(model: Live2DModel, weight: Float, eyeBlinkValue: Float, eyeBlinkFlags: Set[String]) = {
-    if (eyeBlinkValue != Float.MaxValue) {
-      for {
-        parameterId <- eyeBlinkParameterIds if !eyeBlinkFlags.contains(parameterId)
-        parameter <- model.parameters.get(parameterId)
-        sourceValue = parameter.current
-        newValue = sourceValue + (eyeBlinkValue - sourceValue) * weight
-      } yield {
-        ParameterValueUpdate(parameter.id, newValue)
+  private def createPartOperations(elapsedTimeSinceLastLoop: Float) = {
+    motionData.partOpacityCurves
+      .map { curve =>
+        val value = evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop)
+        FallbackParameterValueUpdate(curve.id, value)
       }
-    } else {
-      Nil
-    }
-
   }
-  private def createLipSyncOperations(model: Live2DModel, weight: Float, lipSyncValue: Float, lipSyncFlags: Set[String]) = {
-    if (lipSyncValue != Float.MaxValue) {
-      for {
-        parameterId <- lipSyncParameterIds if !lipSyncFlags.contains(parameterId)
-        parameter <- model.parameters.get(parameterId)
-        sourceValue = parameter.current
-        newValue = sourceValue + (lipSyncValue - sourceValue) * weight
-      } yield {
-        ParameterValueUpdate(parameter.id, newValue)
-      }
-    } else {
-      Nil
-    }
 
+  private def createEyeBlinkOperations(model: Live2DModel, weight: Float, eyeBlinkValueHolder: Option[Float], eyeBlinkFlags: Set[String]) = {
+    for {
+      parameterId <- eyeBlinkParameterIds if !eyeBlinkFlags.contains(parameterId)
+      parameter <- model.parameters.get(parameterId)
+      eyeBlinkValue <- eyeBlinkValueHolder
+      newValue = parameter.current + (eyeBlinkValue - parameter.current) * weight
+    } yield {
+      ParameterValueUpdate(parameter.id, newValue)
+    }
+  }
+
+  private def createLipSyncOperations(model: Live2DModel, weight: Float, lipSyncValueHolder: Option[Float], lipSyncFlags: Set[String]) = {
+    for {
+      parameterId <- lipSyncParameterIds if !lipSyncFlags.contains(parameterId)
+      parameter <- model.parameters.get(parameterId)
+      lipSyncValue <- lipSyncValueHolder
+      newValue = parameter.current + (lipSyncValue - parameter.current) * weight
+    } yield {
+      ParameterValueUpdate(parameter.id, newValue)
+    }
   }
 
   private def calculateElapsedTimeSinceLastLoop(totalElapsedTimeInSeconds: Float, startTimeInSeconds: Float) = {
