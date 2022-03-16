@@ -29,18 +29,33 @@ class MotionWithTransition(val baseMotion: Motion) {
       Nil
     } else {
       if (!isStarted) {
+        println("Only started once.")
         this.isStarted = true
         this.startTimeInSeconds = totalElapsedTimeInSeconds
         this.fadeInStartTimeInSeconds = totalElapsedTimeInSeconds
-        if (this.endTimeInSeconds.isEmpty && baseMotion.durationInSeconds.isDefined) {
+        if (this.endTimeInSeconds.isEmpty && !baseMotion.isLoop && baseMotion.durationInSeconds.isDefined) {
           this.endTimeInSeconds = Some(this.startTimeInSeconds + baseMotion.durationInSeconds.get)
         }
+        println("endTimeInSeconds:" + endTimeInSeconds)
       }
 
-      this.mIsFinished = this.endTimeInSeconds.exists(_ < totalElapsedTimeInSeconds)
+      val timeOffsetSeconds: Float = Math.max(totalElapsedTimeInSeconds - startTimeInSeconds, 0.0f)
 
       fireTriggeredEvents(totalElapsedTimeInSeconds)
+
       val operations = createUpdateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, weight, this.startTimeInSeconds, this.fadeInStartTimeInSeconds, this.endTimeInSeconds)
+      if (baseMotion.durationInSeconds.nonEmpty && timeOffsetSeconds >= baseMotion.durationInSeconds.get) {
+        if (baseMotion.isLoop) {
+          this.startTimeInSeconds = totalElapsedTimeInSeconds
+          if (baseMotion.isLoopFadeIn) {
+            this.fadeInStartTimeInSeconds = totalElapsedTimeInSeconds
+          }
+        } else {
+          // TODO: Motion Finished callback
+          println(s"Motion $this finished")
+        }
+      }
+      this.mIsFinished = this.endTimeInSeconds.exists(_ < totalElapsedTimeInSeconds)
 
       operations
     }
@@ -51,6 +66,7 @@ class MotionWithTransition(val baseMotion: Motion) {
   }
 
   def startFadeOut(totalElapsedTimeInSeconds: Float): Unit = {
+    println("Enter start to fade out")
     this.mIsForceToFadeOut = true
     val newEndTimeSeconds = totalElapsedTimeInSeconds + baseMotion.fadeOutTimeInSeconds
     val newEndTimeLessThanOriginal = endTimeInSeconds.forall(newEndTimeSeconds < _)

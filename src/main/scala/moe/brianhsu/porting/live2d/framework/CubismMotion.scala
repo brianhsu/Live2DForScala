@@ -224,7 +224,6 @@ class CubismMotion extends ACubismMotion with Motion {
       c += 1
     }
 
-
     if (timeOffsetSeconds >= _motionData.duration) {
       if (_isLoop) {
         motionQueueEntry.SetStartTime(userTimeSeconds) //最初の状態へ
@@ -433,7 +432,7 @@ class CubismMotion extends ACubismMotion with Motion {
 
   override def fadeOutTimeInSeconds: Float = _fadeOutSeconds
 
-  override def durationInSeconds: Option[Float] = Option(getDuration()).filter(_ > -1.0f)
+  override def durationInSeconds: Option[Float] = Option(_loopDurationSeconds).filter(_ > -1.0f)
 
   override def events: List[MotionEvent] = this._motionData.events.toList
 

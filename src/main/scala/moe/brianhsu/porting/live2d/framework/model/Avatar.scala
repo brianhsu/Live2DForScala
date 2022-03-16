@@ -14,10 +14,7 @@ import org.slf4j.LoggerFactory
 class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel) extends UpdateStrategy {
 
   private val defaultLogger = LoggerFactory.getLogger(this.getClass)
-
-  private val motionManager = new CubismMotionQueueManager
   private val expressions = new AvatarExpressionReader(avatarSettings).loadExpressions
-
   private var effects: List[Effect] = Nil
   private val expressionManager = new MotionManager
   private val newMotionManager = new MotionManager
@@ -26,13 +23,6 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     println("motion:" + m)
     println("motionEvent:" + e)
   })
-  motionManager.SetEventCallback(new CubismMotionEventFunction {
-    override def apply(caller: CubismMotionQueueManager, eventValue: String, customData: AnyRef): Unit = {
-      println("caller:" + caller)
-      println("eventValue:" + eventValue)
-      println("customData:" + customData)
-    }
-  }, "HelloWorld")
 
   def setFunctionalEffects(effects: List[Effect]): Unit = {
     this.effects = effects
@@ -53,7 +43,6 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     motion.isLoop(true)
     defaultLogger.info(s"Start motion $name")
     newMotionManager.startMotion(motion)
-    //motionManager.StartMotion(motion)
   }
 
   def setExpression(name: String): Unit = {
@@ -73,19 +62,9 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
 
   }
 
-  private def startMotion(frameTimeInfo: FrameTimeInfo): Unit = {
-    if (motionManager.IsFinished()) {
-
-    } else {
-      motionManager.DoUpdateMotion(model, frameTimeInfo.totalElapsedTimeInSeconds)
-    }
-
-  }
-
   override def update(frameTimeInfo: FrameTimeInfo): Unit = {
     model.restoreParameters()
     startMotionWithNew(frameTimeInfo)
-    //startMotion(frameTimeInfo)
     model.snapshotParameters()
 
     val expressionsOperations = expressionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
