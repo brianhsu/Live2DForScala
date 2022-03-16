@@ -68,7 +68,7 @@ class MotionWithTransition(val baseMotion: Motion) {
   def startFadeOut(totalElapsedTimeInSeconds: Float): Unit = {
     println("Enter start to fade out")
     this.mIsForceToFadeOut = true
-    val newEndTimeSeconds = totalElapsedTimeInSeconds + baseMotion.fadeOutTimeInSeconds
+    val newEndTimeSeconds = totalElapsedTimeInSeconds + baseMotion.fadeOutTimeInSeconds.getOrElse(0.0f)
     val newEndTimeLessThanOriginal = endTimeInSeconds.forall(newEndTimeSeconds < _)
     if (newEndTimeLessThanOriginal) {
       this.endTimeInSeconds = Some(newEndTimeSeconds)
@@ -110,10 +110,13 @@ class MotionWithTransition(val baseMotion: Motion) {
   }
 
   private def calculateFadeOut(totalElapsedTimeInSeconds: Float): Float = {
-    if (baseMotion.fadeOutTimeInSeconds == 0.0f || endTimeInSeconds.isEmpty) {
+
+    if (baseMotion.fadeOutTimeInSeconds.isEmpty ||
+        baseMotion.fadeOutTimeInSeconds.get == 0.0f ||
+        endTimeInSeconds.isEmpty) {
       1.0f
     } else {
-      Easing.sine((this.endTimeInSeconds.get - totalElapsedTimeInSeconds) / baseMotion.fadeOutTimeInSeconds)
+      Easing.sine((this.endTimeInSeconds.get - totalElapsedTimeInSeconds) / baseMotion.fadeOutTimeInSeconds.get)
     }
   }
 

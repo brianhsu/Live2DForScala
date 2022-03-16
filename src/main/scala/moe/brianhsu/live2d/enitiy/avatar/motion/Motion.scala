@@ -7,7 +7,7 @@ trait Motion {
   def isLoop: Boolean
   def isLoopFadeIn: Boolean
   def fadeInTimeInSeconds: Option[Float]
-  def fadeOutTimeInSeconds: Float
+  def fadeOutTimeInSeconds: Option[Float]
   def durationInSeconds: Option[Float]
   def events: List[MotionEvent]
   def calculateOperations(model: Live2DModel,

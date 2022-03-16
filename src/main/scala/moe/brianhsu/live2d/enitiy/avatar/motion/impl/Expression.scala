@@ -15,7 +15,7 @@ object Expression {
 }
 
 case class Expression(fadeInTimeInSeconds: Option[Float],
-                      fadeOutTimeInSeconds: Float,
+                      fadeOutTimeInSeconds: Option[Float],
                       parameters: List[Expression.Parameter]) extends Motion {
 
   override val isLoop: Boolean = false

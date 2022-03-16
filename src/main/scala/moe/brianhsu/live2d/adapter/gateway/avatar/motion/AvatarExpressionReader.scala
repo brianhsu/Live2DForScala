@@ -31,8 +31,8 @@ class AvatarExpressionReader(avatarSettings: Settings) extends ExpressionReader 
     }
 
     new Expression(
-      expressionSettings.fadeInTime.orElse(Option(1.0f)),
-      expressionSettings.fadeOutTime.getOrElse(1.0f),
+      expressionSettings.fadeInTime.orElse(Some(1.0f)),
+      expressionSettings.fadeOutTime.orElse(Some(1.0f)),
       parameters
     )
   }
