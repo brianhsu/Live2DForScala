@@ -15,11 +15,12 @@ object CubismMotion {
   private val EffectNameLipSync  = "LipSync"
 
   def apply(motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
-    val cubismMotion = new CubismMotion(motionInfo.fadeInTime.filter(_ >= 0))
+    val cubismMotion = new CubismMotion(
+      motionInfo.fadeInTime.filter(_ >= 0),
+      motionInfo.fadeOutTime.filter(_ >= 0).orElse(Some(1.0f))
+    )
     val motionData = new AvatarMotionDataReader(motionInfo).loadMotionData()
-    cubismMotion._sourceFrameRate = motionInfo.meta.fps
     cubismMotion._loopDurationSeconds = motionInfo.meta.duration
-    cubismMotion._fadeOutSeconds = motionInfo.fadeOutTime.filter(_ >= 0).orElse(Some(1.0f))
     cubismMotion._motionData = motionData
     cubismMotion.setEffectIds(eyeBlinkParameterIds, lipSyncParameterIds)
     cubismMotion
@@ -27,10 +28,9 @@ object CubismMotion {
 
 }
 
-class CubismMotion(override val fadeInTimeInSeconds: Option[Float]) extends Motion {
+class CubismMotion(override val fadeInTimeInSeconds: Option[Float],
+                   override val fadeOutTimeInSeconds: Option[Float]) extends Motion {
   var _weight: Float = 1.0f
-  var _fadeOutSeconds: Option[Float] = None       ///< フェードアウトにかかる時間[秒]
-  var _sourceFrameRate: Float = 30.0f                   ///< ロードしたファイルのFPS。記述が無ければデフォルト値15fpsとなる
   var _loopDurationSeconds: Float = -1.0f               ///< mtnファイルで定義される一連のモーションの長さ
   var _isLoop: Boolean = false                            ///< ループするか?
   var _isLoopFadeIn: Boolean = true                      ///< ループ時にフェードインが有効かどうかのフラグ。初期値では有効。
@@ -75,8 +75,6 @@ class CubismMotion(override val fadeInTimeInSeconds: Option[Float]) extends Moti
     this._eyeBlinkParameterIds = eyeBlinkParameterIds
     this._lipSyncParameterIds = lipSyncParameterIds
   }
-
-  override def fadeOutTimeInSeconds: Option[Float] = _fadeOutSeconds
 
   override def durationInSeconds: Option[Float] = Option(_loopDurationSeconds).filter(_ > -1.0f)
 
