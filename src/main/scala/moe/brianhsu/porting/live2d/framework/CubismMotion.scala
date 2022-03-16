@@ -16,27 +16,28 @@ object CubismMotion {
 
   def apply(motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
     val cubismMotion = new CubismMotion(
+      new AvatarMotionDataReader(motionInfo).loadMotionData(),
+      isLoop = false, isLoopFadeIn = false,
+      Option(motionInfo.meta.duration).filter(_ > 0.0f),
       motionInfo.fadeInTime.filter(_ >= 0),
       motionInfo.fadeOutTime.filter(_ >= 0).orElse(Some(1.0f))
     )
-    val motionData = new AvatarMotionDataReader(motionInfo).loadMotionData()
-    cubismMotion._loopDurationSeconds = motionInfo.meta.duration
-    cubismMotion._motionData = motionData
     cubismMotion.setEffectIds(eyeBlinkParameterIds, lipSyncParameterIds)
     cubismMotion
   }
 
 }
 
-class CubismMotion(override val fadeInTimeInSeconds: Option[Float],
+class CubismMotion(motionData: MotionData,
+                   override val isLoop: Boolean = false,
+                   override val isLoopFadeIn: Boolean = false,
+                   override val durationInSeconds: Option[Float],
+                   override val fadeInTimeInSeconds: Option[Float],
                    override val fadeOutTimeInSeconds: Option[Float]) extends Motion {
   var _weight: Float = 1.0f
-  var _loopDurationSeconds: Float = -1.0f               ///< mtnファイルで定義される一連のモーションの長さ
   var _isLoop: Boolean = false                            ///< ループするか?
   var _isLoopFadeIn: Boolean = true                      ///< ループ時にフェードインが有効かどうかのフラグ。初期値では有効。
   var _lastWeight: Float = 0.0f                        ///< 最後に設定された重み
-
-  var _motionData: MotionData = null                   ///< 実際のモーションデータ本体
 
   var _eyeBlinkParameterIds: List[String] = Nil   ///< 自動まばたきを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
   var _lipSyncParameterIds: List[String] = Nil    ///< リップシンクを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
@@ -44,24 +45,6 @@ class CubismMotion(override val fadeInTimeInSeconds: Option[Float],
   var _modelCurveIdEyeBlink: String = null               ///< モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
   var _modelCurveIdLipSync: String = null                ///< モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
 
-
-  /**
-   * ループ情報の取得
-   *
-   * モーションがループするかどうか？
-   *
-   * @return  true    ループする / false   ループしない
-   */
-  def isLoop: Boolean = this._isLoop
-
-  /**
-   * ループ時のフェードイン情報の取得
-   *
-   * ループ時にフェードインするかどうか？
-   *
-   * @return  true    する / false   しない
-   */
-  def isLoopFadeIn: Boolean = this._isLoopFadeIn
 
   /**
    * 自動エフェクトがかかっているパラメータIDリストの設定
@@ -76,9 +59,7 @@ class CubismMotion(override val fadeInTimeInSeconds: Option[Float],
     this._lipSyncParameterIds = lipSyncParameterIds
   }
 
-  override def durationInSeconds: Option[Float] = Option(_loopDurationSeconds).filter(_ > -1.0f)
-
-  override def events: List[MotionEvent] = this._motionData.events.toList
+  override def events: List[MotionEvent] = this.motionData.events.toList
 
   override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float,
                                    weight: Float,
@@ -132,16 +113,16 @@ class CubismMotion(override val fadeInTimeInSeconds: Option[Float],
     var time: Float = timeOffsetSeconds
 
     if (_isLoop) {
-      while (time > _motionData.duration) {
-        time -= _motionData.duration
+      while (time > motionData.duration) {
+        time -= motionData.duration
       }
     }
     // Evaluate model curves.
     var c: Int = 0
-    val curves = _motionData.curves
-    while(c < _motionData.curveCount && curves(c).targetType == Model) {
+    val curves = motionData.curves
+    while(c < motionData.curveCount && curves(c).targetType == Model) {
       // Evaluate curve and call handler.
-      value = evaluateCurve(_motionData, curves(c), time)
+      value = evaluateCurve(motionData, curves(c), time)
 
       if (curves(c).id == _modelCurveIdEyeBlink) {
         eyeBlinkValue = value
@@ -152,12 +133,12 @@ class CubismMotion(override val fadeInTimeInSeconds: Option[Float],
     }
     var parameterMotionCurveCount = 0
 
-    while(c < _motionData.curveCount && curves(c).targetType == Parameter) {
+    while(c < motionData.curveCount && curves(c).targetType == Parameter) {
       parameterMotionCurveCount += 1
       val sourceValue: Float = model.parameters(curves(c).id).current
 
       // Evaluate curve and apply value.
-      value = evaluateCurve(_motionData, curves(c), time)
+      value = evaluateCurve(motionData, curves(c), time)
       if (eyeBlinkValue != Float.MaxValue) {
         var isBreak: Boolean = false
         for (i <- _eyeBlinkParameterIds.indices if i < MaxTargetSize && !isBreak) {
@@ -252,9 +233,9 @@ class CubismMotion(override val fadeInTimeInSeconds: Option[Float],
       }
     }
 
-    while (c < _motionData.curveCount && curves(c).targetType == PartOpacity) {
+    while (c < motionData.curveCount && curves(c).targetType == PartOpacity) {
       // Evaluate curve and apply value.
-      value = evaluateCurve(_motionData, curves(c), time)
+      value = evaluateCurve(motionData, curves(c), time)
       operations ::= FallbackParameterValueUpdate(curves(c).id, value)
       c += 1
     }
