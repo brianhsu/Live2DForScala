@@ -6,9 +6,8 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
-import moe.brianhsu.porting.live2d.framework.{CubismMotion, CubismMotionQueueManager}
+import moe.brianhsu.porting.live2d.framework.CubismMotion
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.framework.CubismMotionQueueManager.CubismMotionEventFunction
 import org.slf4j.LoggerFactory
 
 class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel) extends UpdateStrategy {
@@ -40,7 +39,6 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     val name = s"Motion(${motionGroup}_$index)"
     val motionSettings = avatarSettings.motionGroups(motionGroup)(index)
     val motion = CubismMotion(motionSettings, _ => defaultLogger.info(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
-    motion.isLoop(true)
     defaultLogger.info(s"Start motion $name")
     newMotionManager.startMotion(motion)
   }

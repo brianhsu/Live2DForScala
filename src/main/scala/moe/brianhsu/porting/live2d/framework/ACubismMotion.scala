@@ -20,67 +20,6 @@ abstract class ACubismMotion {
   protected var _onFinishedMotion: FinishedMotionCallback = null
 
   /**
-   * モデルのパラメータ更新
-   *
-   * モデルのパラメータを更新する。
-   *
-   * @param   model               対象のモデル
-   * @param   motionQueueEntry    CubismMotionQueueManagerで管理されているモーション
-   * @param   userTimeSeconds     デルタ時間の積算値[秒]
-   */
-  def UpdateParameters(model: Live2DModel, motionQueueEntry: CubismMotionQueueEntry, userTimeSeconds: Float): Unit = {
-
-    if (motionQueueEntry.IsFinished()) {
-      println("Motion finished.")
-      return
-    }
-
-    if (!motionQueueEntry.IsStarted()) {
-      motionQueueEntry.IsStarted(true)
-      motionQueueEntry.SetStartTime(userTimeSeconds) //モーションの開始時刻を記録
-      motionQueueEntry.SetFadeInStartTime(userTimeSeconds) //フェードインの開始時刻
-
-      val duration = getDuration()
-
-      if (motionQueueEntry.GetEndTime() < 0) {
-        //開始していないうちに終了設定している場合がある。
-        motionQueueEntry.SetEndTime( if (duration <= 0)  -1 else motionQueueEntry.GetStartTime() + duration)
-        //duration == -1 の場合はループする
-      }
-    }
-
-    var fadeWeight: Float = _weight //現在の値と掛け合わせる割合
-
-    //---- フェードイン・アウトの処理 ----
-    //単純なサイン関数でイージングする
-    val fadeIn: Float = if (_fadeInSeconds == 0.0f) {
-      1.0f
-    } else {
-      Easing.sine((userTimeSeconds - motionQueueEntry.GetFadeInStartTime()) / _fadeInSeconds)
-    }
-
-    val fadeOut = if (_fadeOutSeconds == 0.0f || motionQueueEntry.GetEndTime() < 0.0f) {
-      1.0f
-    } else {
-      Easing.sine((motionQueueEntry.GetEndTime() - userTimeSeconds) / _fadeOutSeconds)
-    }
-
-    fadeWeight = fadeWeight * fadeIn * fadeOut
-
-    assert(fadeWeight >= 0.0f && fadeWeight <= 1.0f, "fadeWeight is invalid")
-
-    //---- 全てのパラメータIDをループする ----
-    doUpdateParameters(model, userTimeSeconds, fadeWeight, motionQueueEntry)
-
-    //後処理
-    //終了時刻を過ぎたら終了フラグを立てる（CubismMotionQueueManager）
-    if ((motionQueueEntry.GetEndTime() > 0) && (motionQueueEntry.GetEndTime() < userTimeSeconds)) {
-      println("Motion ended.")
-      motionQueueEntry.IsFinished(true) //終了
-    }
-  }
-
-  /**
    * フェードイン
    *
    * フェードインの時間を設定する。
@@ -201,8 +140,5 @@ abstract class ACubismMotion {
    * @return  登録されているモーション再生終了コールバック関数。NULLのとき、関数は何も登録されていない。
    */
   def GetFinishedMotionHandler(): FinishedMotionCallback = this._onFinishedMotion
-
-  protected def doUpdateParameters(model: Live2DModel, userTimeSeconds: Float, weight: Float,
-                                   motionQueueEntry: CubismMotionQueueEntry): Unit
 
 }
