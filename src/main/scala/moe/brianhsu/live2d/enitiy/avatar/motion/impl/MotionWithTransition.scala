@@ -29,14 +29,12 @@ class MotionWithTransition(val baseMotion: Motion) {
       Nil
     } else {
       if (!isStarted) {
-        println("Only started once.")
         this.isStarted = true
         this.startTimeInSeconds = totalElapsedTimeInSeconds
         this.fadeInStartTimeInSeconds = totalElapsedTimeInSeconds
         if (this.endTimeInSeconds.isEmpty && !baseMotion.isLoop && baseMotion.durationInSeconds.isDefined) {
           this.endTimeInSeconds = Some(this.startTimeInSeconds + baseMotion.durationInSeconds.get)
         }
-        println("endTimeInSeconds:" + endTimeInSeconds)
       }
 
       val timeOffsetSeconds: Float = Math.max(totalElapsedTimeInSeconds - startTimeInSeconds, 0.0f)
@@ -66,7 +64,6 @@ class MotionWithTransition(val baseMotion: Motion) {
   }
 
   def startFadeOut(totalElapsedTimeInSeconds: Float): Unit = {
-    println("Enter start to fade out")
     this.mIsForceToFadeOut = true
     val newEndTimeSeconds = totalElapsedTimeInSeconds + baseMotion.fadeOutTimeInSeconds.getOrElse(0.0f)
     val newEndTimeLessThanOriginal = endTimeInSeconds.forall(newEndTimeSeconds < _)
