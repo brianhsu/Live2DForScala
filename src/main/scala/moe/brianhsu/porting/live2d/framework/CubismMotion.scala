@@ -148,8 +148,10 @@ class CubismMotion(motionData: MotionData,
       c += 1
     }
 
-    val eyeBlinkOperations = createEyeBlinkOperations(model, weight, eyeBlinkValue, eyeBlinkFlags)
-    operations = operations ++ eyeBlinkOperations
+
+    operations = operations ++
+      createEyeBlinkOperations(model, weight, eyeBlinkValue, eyeBlinkFlags) ++
+      createLipSyncOperations(model, weight, lipSyncValue, lipSyncFlags)
 
     {
       if (lipSyncValue != Float.MaxValue) {
@@ -181,14 +183,27 @@ class CubismMotion(motionData: MotionData,
   private def createEyeBlinkOperations(model: Live2DModel, weight: Float, eyeBlinkValue: Float, eyeBlinkFlags: Int) = {
     if (eyeBlinkValue != Float.MaxValue) {
       for {
-        (id, i) <- eyeBlinkParameterIds.zipWithIndex if ((eyeBlinkFlags >> i) & 0x01) == 0
-        parameter <- model.parameters.get(id)
+        (parameterId, i) <- eyeBlinkParameterIds.zipWithIndex if ((eyeBlinkFlags >> i) & 0x01) == 0
+        parameter <- model.parameters.get(parameterId)
         sourceValue = parameter.current
         newValue = sourceValue + (eyeBlinkValue - sourceValue) * weight
       } yield {
-        val q = ParameterValueUpdate(parameter.id, newValue)
-        println("Create eye blink operations:" + q)
-        q
+        ParameterValueUpdate(parameter.id, newValue)
+      }
+    } else {
+      Nil
+    }
+
+  }
+  private def createLipSyncOperations(model: Live2DModel, weight: Float, lipSyncValue: Float, lipSyncFlags: Int) = {
+    if (lipSyncValue != Float.MaxValue) {
+      for {
+        (parameterId, i) <- lipSyncParameterIds.zipWithIndex if ((lipSyncFlags >> i) & 0x01) == 0
+        parameter <- model.parameters.get(parameterId)
+        sourceValue = parameter.current
+        newValue = sourceValue + (lipSyncValue - sourceValue) * weight
+      } yield {
+        ParameterValueUpdate(parameter.id, newValue)
       }
     } else {
       Nil
