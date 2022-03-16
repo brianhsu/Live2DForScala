@@ -32,8 +32,8 @@ class FaceDirectionFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         ParameterValueAdd("ParamAngleY", 15.0f),
         ParameterValueAdd("ParamAngleY", -3.0f),
         ParameterValueAdd("ParamBodyAngleX", 2.0f),
-        ParameterValueUpdate("ParamEyeBallX", 0.2f),
-        ParameterValueUpdate("ParamEyeBallY", 0.5f)
+        ParameterValueAdd("ParamEyeBallX", 0.2f),
+        ParameterValueAdd("ParamEyeBallY", 0.5f)
       )
     }
 

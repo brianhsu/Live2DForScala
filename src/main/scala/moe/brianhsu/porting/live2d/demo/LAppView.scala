@@ -32,7 +32,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private val frameTimeCalculator = new FrameTimeCalculator
   private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
 
-  private val avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
+  private val avatarHolder: Try[Avatar] = new AvatarFileReader("/home/brianhsu/WorkRoom/CubismSdkForNative-4-r.4/Samples/Resources/Mark").loadAvatar()
   private val modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
   private val updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {
@@ -162,8 +162,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     } {
       val pose = new AvatarPoseReader(avatar.avatarSettings).loadPose.getOrElse(new Pose)
       updateStrategy.setFunctionalEffects(
-        new Breath() ::
-        new EyeBlink(avatar.avatarSettings) ::
+        // new Breath() ::
+        //new EyeBlink(avatar.avatarSettings) ::
         faceDirection :: pose ::
         Nil
       )

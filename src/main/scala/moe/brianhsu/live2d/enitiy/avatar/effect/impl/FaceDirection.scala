@@ -16,8 +16,8 @@ class FaceDirection(directionCalculator: FaceDirectionCalculator) extends Effect
       ParameterValueAdd("ParamAngleY", dragY * 30),
       ParameterValueAdd("ParamAngleY", dragX * dragY * -30),
       ParameterValueAdd("ParamBodyAngleX", dragX * 10),
-      ParameterValueUpdate("ParamEyeBallX", dragX),
-      ParameterValueUpdate("ParamEyeBallY", dragY),
+      ParameterValueAdd("ParamEyeBallX", dragX),
+      ParameterValueAdd("ParamEyeBallY", dragY),
     )
   }
 }
