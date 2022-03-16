@@ -102,10 +102,10 @@ class MotionWithTransition(val baseMotion: Motion) {
   }
 
   private def calculateFadeIn(totalElapsedTimeInSeconds: Float): Float = {
-    if (baseMotion.fadeInTimeInSeconds == 0.0f) {
+    if (baseMotion.fadeInTimeInSeconds.isEmpty || baseMotion.fadeInTimeInSeconds.get == 0.0f) {
       1.0f
     } else {
-      Easing.sine((totalElapsedTimeInSeconds - this.fadeInStartTimeInSeconds) / baseMotion.fadeInTimeInSeconds)
+      Easing.sine((totalElapsedTimeInSeconds - this.fadeInStartTimeInSeconds) / baseMotion.fadeInTimeInSeconds.get)
     }
   }
 

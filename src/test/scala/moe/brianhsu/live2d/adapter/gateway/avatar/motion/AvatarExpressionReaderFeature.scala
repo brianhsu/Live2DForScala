@@ -26,7 +26,7 @@ class AvatarExpressionReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
 
       And("the f00 expression should have correct value")
       val f00 = expressions.get("f00").value
-      f00.fadeInTimeInSeconds shouldBe 1.0f
+      f00.fadeInTimeInSeconds shouldBe Some(1.0f)
       f00.fadeOutTimeInSeconds shouldBe 1.0f
       f00.events shouldBe Nil
       f00.parameters should contain theSameElementsInOrderAs List(
@@ -35,7 +35,7 @@ class AvatarExpressionReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
 
       And("the f07 expression should have correct value")
       val f07 = expressions.get("f07").value
-      f07.fadeInTimeInSeconds shouldBe 0.5f
+      f07.fadeInTimeInSeconds shouldBe Some(0.5f)
       f07.fadeOutTimeInSeconds shouldBe 0.7f
       f07.events shouldBe Nil
       f07.parameters should contain theSameElementsInOrderAs List(

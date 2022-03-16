@@ -15,11 +15,10 @@ object CubismMotion {
   private val EffectNameLipSync  = "LipSync"
 
   def apply(motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
-    val cubismMotion = new CubismMotion
+    val cubismMotion = new CubismMotion(motionInfo.fadeInTime.filter(_ >= 0))
     val motionData = new AvatarMotionDataReader(motionInfo).loadMotionData()
     cubismMotion._sourceFrameRate = motionInfo.meta.fps
     cubismMotion._loopDurationSeconds = motionInfo.meta.duration
-    cubismMotion._fadeInSeconds = motionInfo.fadeInTime.filter(_ >= 0).getOrElse(1.0f)
     cubismMotion._fadeOutSeconds = motionInfo.fadeOutTime.filter(_ >= 0).getOrElse(1.0f)
     cubismMotion._motionData = motionData
     cubismMotion.setEffectIds(eyeBlinkParameterIds, lipSyncParameterIds)
@@ -28,9 +27,8 @@ object CubismMotion {
 
 }
 
-class CubismMotion extends Motion {
+class CubismMotion(override val fadeInTimeInSeconds: Option[Float]) extends Motion {
   var _weight: Float = 1.0f
-  var _fadeInSeconds: Float = -1.0f
   var _fadeOutSeconds: Float = -1.0f       ///< フェードアウトにかかる時間[秒]
   var _sourceFrameRate: Float = 30.0f                   ///< ロードしたファイルのFPS。記述が無ければデフォルト値15fpsとなる
   var _loopDurationSeconds: Float = -1.0f               ///< mtnファイルで定義される一連のモーションの長さ
@@ -78,8 +76,6 @@ class CubismMotion extends Motion {
     this._lipSyncParameterIds = lipSyncParameterIds
   }
 
-  override def fadeInTimeInSeconds: Float = _fadeInSeconds
-
   override def fadeOutTimeInSeconds: Float = _fadeOutSeconds
 
   override def durationInSeconds: Option[Float] = Option(_loopDurationSeconds).filter(_ > -1.0f)
@@ -119,10 +115,10 @@ class CubismMotion extends Motion {
       println(s"too many lip sync targets : ${_lipSyncParameterIds.size}")
     }
 
-    val tmpFadeIn: Float = if (_fadeInSeconds <= 0.0f) {
-      1.0f
-    } else {
-      Easing.sine((totalElapsedTimeInSeconds - startTimeInSeconds) / _fadeInSeconds)
+    val tmpFadeIn: Float = {
+      fadeInTimeInSeconds.filter(_ >= 0.0f)
+        .map(fadeInTime => Easing.sine((totalElapsedTimeInSeconds - startTimeInSeconds) / fadeInTime))
+        .getOrElse(1.0f)
     }
 
     val tmpFadeOut: Float = if (_fadeOutSeconds <= 0.0f || endTimeInSeconds.isEmpty) {

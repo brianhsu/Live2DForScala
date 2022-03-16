@@ -6,7 +6,7 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 trait Motion {
   def isLoop: Boolean
   def isLoopFadeIn: Boolean
-  def fadeInTimeInSeconds: Float
+  def fadeInTimeInSeconds: Option[Float]
   def fadeOutTimeInSeconds: Float
   def durationInSeconds: Option[Float]
   def events: List[MotionEvent]

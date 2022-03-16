@@ -14,7 +14,7 @@ object Expression {
   case class Parameter(parameterId: String, blendType: BlendType, value: Float)
 }
 
-case class Expression(fadeInTimeInSeconds: Float,
+case class Expression(fadeInTimeInSeconds: Option[Float],
                       fadeOutTimeInSeconds: Float,
                       parameters: List[Expression.Parameter]) extends Motion {
 

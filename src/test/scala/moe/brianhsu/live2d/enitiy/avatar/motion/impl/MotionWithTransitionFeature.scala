@@ -18,7 +18,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       Given("A base Motion without duration and has not fade in / fade out")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(None)
-      (() => baseMotion.fadeInTimeInSeconds).when().returning(0f)
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(0f))
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0f)
 
       And("it will return Nil when first time it's operation being calculated")
@@ -46,7 +46,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       Given("A base Motion without duration and has fade in / fade out time as 1.5 / 2.0 second")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(None)
-      (() => baseMotion.fadeInTimeInSeconds).when().returning(1.5f)
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(1.5f))
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(2.0f)
 
       And("it will return Nil when first time it's operation being calculated")
@@ -74,7 +74,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       Given("A base Motion with 1 second duration and has fade in / fade out time as 1.5 / 2.0 second")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
-      (() => baseMotion.fadeInTimeInSeconds).when().returning(1.5f)
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(1.5f))
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(2.0f)
 
       And("it will return Nil when first time it's operation being calculated")
@@ -132,7 +132,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       val eventList = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
-      (() => baseMotion.fadeInTimeInSeconds).when().returning(0.0f)
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(0.0f))
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.events).when().returning(eventList)
 
@@ -156,7 +156,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       val eventList = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
-      (() => baseMotion.fadeInTimeInSeconds).when().returning(0.0f)
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(0.0f))
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.events).when().returning(eventList)
 
@@ -181,7 +181,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       val eventList = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
-      (() => baseMotion.fadeInTimeInSeconds).when().returning(0.0f)
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(0.0f))
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.0f)
       (() => baseMotion.events).when().returning(eventList)
 
@@ -225,6 +225,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       Given("a base motion with duration 2 seconds and fade out time 0.5 second")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(2))
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(None)
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.5f)
 
       And("a MotionWithTransition based on that motion")
@@ -249,6 +250,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       Given("a base motion with duration 2 seconds and fade out time 0.5 second")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(2))
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(None)
       (() => baseMotion.fadeOutTimeInSeconds).when().returning(0.5f)
 
       And("a MotionWithTransition based on that motion")
