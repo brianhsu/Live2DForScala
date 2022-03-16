@@ -1,9 +1,8 @@
 package moe.brianhsu.porting.live2d.framework
 
-import ACubismMotion.FinishedMotionCallback
 import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.CurveTarget.{Model, Parameter, PartOpacity}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
@@ -15,13 +14,11 @@ object CubismMotion {
   private val EffectNameEyeBlink = "EyeBlink"
   private val EffectNameLipSync  = "LipSync"
 
-  def apply(motionInfo: MotionSetting, onFinishHandler: FinishedMotionCallback,
-            eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
+  def apply(motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
     val cubismMotion = new CubismMotion
     val motionData = new AvatarMotionDataReader(motionInfo).loadMotionData()
     cubismMotion._sourceFrameRate = motionInfo.meta.fps
     cubismMotion._loopDurationSeconds = motionInfo.meta.duration
-    cubismMotion._onFinishedMotion = onFinishHandler
     cubismMotion._fadeInSeconds = motionInfo.fadeInTime.filter(_ >= 0).getOrElse(1.0f)
     cubismMotion._fadeOutSeconds = motionInfo.fadeOutTime.filter(_ >= 0).getOrElse(1.0f)
     cubismMotion._motionData = motionData
@@ -31,7 +28,10 @@ object CubismMotion {
 
 }
 
-class CubismMotion extends ACubismMotion with Motion {
+class CubismMotion extends Motion {
+  var _weight: Float = 1.0f
+  var _fadeInSeconds: Float = -1.0f
+  var _fadeOutSeconds: Float = -1.0f       ///< フェードアウトにかかる時間[秒]
   var _sourceFrameRate: Float = 30.0f                   ///< ロードしたファイルのFPS。記述が無ければデフォルト値15fpsとなる
   var _loopDurationSeconds: Float = -1.0f               ///< mtnファイルで定義される一連のモーションの長さ
   var _isLoop: Boolean = false                            ///< ループするか?
@@ -46,31 +46,6 @@ class CubismMotion extends ACubismMotion with Motion {
   var _modelCurveIdEyeBlink: String = null               ///< モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
   var _modelCurveIdLipSync: String = null                ///< モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
 
-  private def evaluateCurve(motionData: MotionData, curve: MotionCurve, time: Float): Float = {
-
-    var target: Int = -1
-    val totalSegmentCount: Int = curve.baseSegmentIndex + curve.segmentCount
-    var pointPosition: Int = 0
-    var isBreak: Boolean = false
-
-    for (i <- curve.baseSegmentIndex until totalSegmentCount if !isBreak) {
-      // Get first point of next segment.
-      pointPosition = motionData.segments(i).basePointIndex + motionData.segments(i).segmentType.pointCount
-
-      // Break if time lies within current segment.
-      if (motionData.points(pointPosition).time > time) {
-        target = i
-        isBreak = true
-      }
-    }
-
-    if (target == -1) {
-      return motionData.points(pointPosition).value
-    }
-
-    val segment = motionData.segments(target)
-    segment.segmentType.evaluate(motionData.points.drop(segment.basePointIndex), time)
-  }
 
   /**
    * ループ情報の取得
@@ -82,17 +57,6 @@ class CubismMotion extends ACubismMotion with Motion {
   def isLoop: Boolean = this._isLoop
 
   /**
-   * ループ時のフェードイン情報の設定
-   *
-   * ループ時のフェードイン情報を設定する。
-   *
-   * @param   loopFadeIn  ループ時のフェードイン情報
-   */
-  def isLoopFadeIn(loopFadeIn: Boolean): Unit = {
-    this._isLoopFadeIn = loopFadeIn
-  }
-
-  /**
    * ループ時のフェードイン情報の取得
    *
    * ループ時にフェードインするかどうか？
@@ -100,24 +64,6 @@ class CubismMotion extends ACubismMotion with Motion {
    * @return  true    する / false   しない
    */
   def isLoopFadeIn: Boolean = this._isLoopFadeIn
-
-  /**
-   * モーションの長さの取得
-   *
-   * モーションの長さを取得する。
-   *
-   * @return  モーションの長さ[秒]
-   */
-  override def getDuration(): Float = if (_isLoop) -1.0f else _loopDurationSeconds
-
-  /**
-   * モーションのループ時の長さの取得
-   *
-   * モーションのループ時の長さを取得する。
-   *
-   * @return  モーションのループ時の長さ[秒]
-   */
-  override def getLoopDuration(): Float = this._loopDurationSeconds
 
   /**
    * 自動エフェクトがかかっているパラメータIDリストの設定
@@ -156,7 +102,7 @@ class CubismMotion extends ACubismMotion with Motion {
       _modelCurveIdLipSync = EffectNameLipSync
     }
 
-    var timeOffsetSeconds: Float = totalElapsedTimeInSeconds - startTimeInSeconds
+    val timeOffsetSeconds: Float = totalElapsedTimeInSeconds - startTimeInSeconds
     var lipSyncValue: Float = Float.MaxValue
     var eyeBlinkValue = Float.MaxValue
 
@@ -321,4 +267,31 @@ class CubismMotion extends ACubismMotion with Motion {
     _lastWeight = weight
     operations
   }
+
+  private def evaluateCurve(motionData: MotionData, curve: MotionCurve, time: Float): Float = {
+
+    var target: Int = -1
+    val totalSegmentCount: Int = curve.baseSegmentIndex + curve.segmentCount
+    var pointPosition: Int = 0
+    var isBreak: Boolean = false
+
+    for (i <- curve.baseSegmentIndex until totalSegmentCount if !isBreak) {
+      // Get first point of next segment.
+      pointPosition = motionData.segments(i).basePointIndex + motionData.segments(i).segmentType.pointCount
+
+      // Break if time lies within current segment.
+      if (motionData.points(pointPosition).time > time) {
+        target = i
+        isBreak = true
+      }
+    }
+
+    if (target == -1) {
+      return motionData.points(pointPosition).value
+    }
+
+    val segment = motionData.segments(target)
+    segment.segmentType.evaluate(motionData.points.drop(segment.basePointIndex), time)
+  }
+
 }
