@@ -102,22 +102,20 @@ class MotionWithTransition(val baseMotion: Motion) {
   }
 
   private def calculateFadeIn(totalElapsedTimeInSeconds: Float): Float = {
-    if (baseMotion.fadeInTimeInSeconds.isEmpty || baseMotion.fadeInTimeInSeconds.get == 0.0f) {
-      1.0f
-    } else {
-      Easing.sine((totalElapsedTimeInSeconds - this.fadeInStartTimeInSeconds) / baseMotion.fadeInTimeInSeconds.get)
-    }
+    baseMotion.fadeInTimeInSeconds
+      .filter(_ > 0.0f)
+      .map(fadeInTime => Easing.sine((totalElapsedTimeInSeconds - this.fadeInStartTimeInSeconds) / fadeInTime))
+      .getOrElse(1.0f)
   }
 
   private def calculateFadeOut(totalElapsedTimeInSeconds: Float): Float = {
-
-    if (baseMotion.fadeOutTimeInSeconds.isEmpty ||
-        baseMotion.fadeOutTimeInSeconds.get == 0.0f ||
-        endTimeInSeconds.isEmpty) {
-      1.0f
-    } else {
+    val fadeOutHolder = for {
+      _ <- endTimeInSeconds
+      fadeOutTime <- baseMotion.fadeOutTimeInSeconds if fadeOutTime > 0.0f
+    } yield {
       Easing.sine((this.endTimeInSeconds.get - totalElapsedTimeInSeconds) / baseMotion.fadeOutTimeInSeconds.get)
     }
+    fadeOutHolder.getOrElse(1.0f)
   }
 
   /**

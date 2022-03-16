@@ -122,8 +122,8 @@ class CubismMotion(override val fadeInTimeInSeconds: Option[Float]) extends Moti
     }
 
     val tmpFadeOut = (for {
-      fadeOutTime <- fadeOutTimeInSeconds if fadeOutTime > 0.0f
       _ <- endTimeInSeconds
+      fadeOutTime <- fadeOutTimeInSeconds if fadeOutTime > 0.0f
     } yield {
       Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / fadeOutTime)
     }).getOrElse(1.0f)
