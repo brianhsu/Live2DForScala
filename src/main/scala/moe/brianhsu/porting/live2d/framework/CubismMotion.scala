@@ -48,18 +48,8 @@ class CubismMotion(motionData: MotionData,
     var operations: List[EffectOperation] = Nil
     var lipSyncValue: Float = Float.MaxValue
     var eyeBlinkValue = Float.MaxValue
-
-    //まばたき、リップシンクのうちモーションの適用を検出するためのビット（maxFlagCount個まで
-    var lipSyncFlags: Int = 0
-    var eyeBlinkFlags: Int = 0
-
-    //瞬き、リップシンクのターゲット数が上限を超えている場合
-    if (eyeBlinkParameterIds.size > MaxEffectTargetSize) {
-      println(s"too many eye blink targets : ${eyeBlinkParameterIds.size}")
-    }
-    if (lipSyncParameterIds.size > MaxEffectTargetSize) {
-      println(s"too many lip sync targets : ${lipSyncParameterIds.size}")
-    }
+    var occupiedLipSyncParameterId: Set[String] = Set.empty
+    var occupiedEyeBlinkParameterId: Set[String] = Set.empty
 
     val tmpFadeIn = calculateTempFadeIn(totalElapsedTimeInSeconds, startTimeInSeconds)
     val tmpFadeOut = calculateTempFadeOut(totalElapsedTimeInSeconds, endTimeInSeconds)
@@ -89,21 +79,20 @@ class CubismMotion(motionData: MotionData,
       var value = evaluateCurve(motionData, curves(c), elapsedTimeSinceLastLoop)
       if (eyeBlinkValue != Float.MaxValue) {
         var isBreak: Boolean = false
-        for (i <- eyeBlinkParameterIds.indices if i < MaxEffectTargetSize && !isBreak) {
-          if (eyeBlinkParameterIds(i) == curves(c).id) {
+        for (id <- eyeBlinkParameterIds if !isBreak) {
+          if (id == curves(c).id) {
             value *= eyeBlinkValue
-            eyeBlinkFlags |= (1 << i)
+            occupiedEyeBlinkParameterId += id
             isBreak = true
           }
         }
       }
       if (lipSyncValue != Float.MaxValue) {
         var isBreak: Boolean = false
-        for (i <- lipSyncParameterIds.indices if i < MaxEffectTargetSize && !isBreak) {
-          if (lipSyncParameterIds(i) == curves(c).id)
-          {
+        for (id <- lipSyncParameterIds if !isBreak) {
+          if (id == curves(c).id) {
             value += lipSyncValue
-            lipSyncFlags |= (1 << i)
+            occupiedLipSyncParameterId += id
             isBreak = true
           }
         }
@@ -150,25 +139,8 @@ class CubismMotion(motionData: MotionData,
 
 
     operations = operations ++
-      createEyeBlinkOperations(model, weight, eyeBlinkValue, eyeBlinkFlags) ++
-      createLipSyncOperations(model, weight, lipSyncValue, lipSyncFlags)
-
-    {
-      if (lipSyncValue != Float.MaxValue) {
-        for (i <- lipSyncParameterIds.indices if i < MaxEffectTargetSize) {
-          val sourceValue = model.parameters(lipSyncParameterIds(i)).current
-          //モーションでの上書きがあった時にはリップシンクは適用しない
-          if (((lipSyncFlags >> i) & 0x01) != 0) {
-            //continue;
-          } else {
-            val v = sourceValue + (lipSyncValue - sourceValue) * weight
-            model.parameters.get(lipSyncParameterIds(i)).foreach { p =>
-              operations = operations.appended(ParameterValueUpdate(p.id, v))
-            }
-          }
-        }
-      }
-    }
+      createEyeBlinkOperations(model, weight, eyeBlinkValue, occupiedEyeBlinkParameterId) ++
+      createLipSyncOperations(model, weight, lipSyncValue, occupiedLipSyncParameterId)
 
     while (c < motionData.curveCount && curves(c).targetType == PartOpacity) {
       // Evaluate curve and apply value.
@@ -180,10 +152,10 @@ class CubismMotion(motionData: MotionData,
     operations
   }
 
-  private def createEyeBlinkOperations(model: Live2DModel, weight: Float, eyeBlinkValue: Float, eyeBlinkFlags: Int) = {
+  private def createEyeBlinkOperations(model: Live2DModel, weight: Float, eyeBlinkValue: Float, eyeBlinkFlags: Set[String]) = {
     if (eyeBlinkValue != Float.MaxValue) {
       for {
-        (parameterId, i) <- eyeBlinkParameterIds.zipWithIndex if ((eyeBlinkFlags >> i) & 0x01) == 0
+        parameterId <- eyeBlinkParameterIds if !eyeBlinkFlags.contains(parameterId)
         parameter <- model.parameters.get(parameterId)
         sourceValue = parameter.current
         newValue = sourceValue + (eyeBlinkValue - sourceValue) * weight
@@ -195,10 +167,10 @@ class CubismMotion(motionData: MotionData,
     }
 
   }
-  private def createLipSyncOperations(model: Live2DModel, weight: Float, lipSyncValue: Float, lipSyncFlags: Int) = {
+  private def createLipSyncOperations(model: Live2DModel, weight: Float, lipSyncValue: Float, lipSyncFlags: Set[String]) = {
     if (lipSyncValue != Float.MaxValue) {
       for {
-        (parameterId, i) <- lipSyncParameterIds.zipWithIndex if ((lipSyncFlags >> i) & 0x01) == 0
+        parameterId <- lipSyncParameterIds if !lipSyncFlags.contains(parameterId)
         parameter <- model.parameters.get(parameterId)
         sourceValue = parameter.current
         newValue = sourceValue + (lipSyncValue - sourceValue) * weight
