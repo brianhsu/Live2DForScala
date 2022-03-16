@@ -38,7 +38,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   def startMotion(motionGroup: String, index: Int): Unit = {
     val name = s"Motion(${motionGroup}_$index)"
     val motionSettings = avatarSettings.motionGroups(motionGroup)(index)
-    val motion = CubismMotion(motionSettings, avatarSettings.eyeBlinkParameterIds, Nil)
+    val motion = CubismMotion(motionSettings, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds)
     defaultLogger.info(s"Start motion $name")
     newMotionManager.startMotion(motion)
   }

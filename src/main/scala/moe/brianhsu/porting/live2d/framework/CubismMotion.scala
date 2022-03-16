@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.framework
 
-import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
+import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync, MaxEffectTargetSize}
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
@@ -13,51 +13,29 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 object CubismMotion {
   private val EffectNameEyeBlink = "EyeBlink"
   private val EffectNameLipSync  = "LipSync"
+  private val MaxEffectTargetSize: Int = 64
 
   def apply(motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): CubismMotion = {
-    val cubismMotion = new CubismMotion(
+    new CubismMotion(
       new AvatarMotionDataReader(motionInfo).loadMotionData(),
+      eyeBlinkParameterIds, lipSyncParameterIds,
       isLoop = false, isLoopFadeIn = false,
       Option(motionInfo.meta.duration).filter(_ > 0.0f),
       motionInfo.fadeInTime.filter(_ >= 0),
       motionInfo.fadeOutTime.filter(_ >= 0).orElse(Some(1.0f))
     )
-    cubismMotion.setEffectIds(eyeBlinkParameterIds, lipSyncParameterIds)
-    cubismMotion
   }
 
 }
 
 class CubismMotion(motionData: MotionData,
+                   val eyeBlinkParameterIds: List[String] = Nil,
+                   val lipSyncParameterIds: List[String] = Nil,
                    override val isLoop: Boolean = false,
                    override val isLoopFadeIn: Boolean = false,
                    override val durationInSeconds: Option[Float],
                    override val fadeInTimeInSeconds: Option[Float],
                    override val fadeOutTimeInSeconds: Option[Float]) extends Motion {
-  var _weight: Float = 1.0f
-  var _isLoop: Boolean = false                            ///< ループするか?
-  var _isLoopFadeIn: Boolean = true                      ///< ループ時にフェードインが有効かどうかのフラグ。初期値では有効。
-  var _lastWeight: Float = 0.0f                        ///< 最後に設定された重み
-
-  var _eyeBlinkParameterIds: List[String] = Nil   ///< 自動まばたきを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
-  var _lipSyncParameterIds: List[String] = Nil    ///< リップシンクを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
-
-  var _modelCurveIdEyeBlink: String = null               ///< モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
-  var _modelCurveIdLipSync: String = null                ///< モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
-
-
-  /**
-   * 自動エフェクトがかかっているパラメータIDリストの設定
-   *
-   * 自動エフェクトがかかっているパラメータIDリストを設定する。
-   *
-   * @param   eyeBlinkParameterIds    自動まばたきがかかっているパラメータIDのリスト
-   * @param   lipSyncParameterIds     リップシンクがかかっているパラメータIDのリスト
-   */
-  def setEffectIds(eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String]): Unit = {
-    this._eyeBlinkParameterIds = eyeBlinkParameterIds
-    this._lipSyncParameterIds = lipSyncParameterIds
-  }
 
   override def events: List[MotionEvent] = this.motionData.events.toList
 
@@ -68,65 +46,35 @@ class CubismMotion(motionData: MotionData,
                                    endTimeInSeconds: Option[Float]): List[EffectOperation] = {
 
     var operations: List[EffectOperation] = Nil
-
-    if (_modelCurveIdEyeBlink == null) {
-      _modelCurveIdEyeBlink = EffectNameEyeBlink
-    }
-
-    if (_modelCurveIdLipSync == null) {
-      _modelCurveIdLipSync = EffectNameLipSync
-    }
-
-    val timeOffsetSeconds: Float = totalElapsedTimeInSeconds - startTimeInSeconds
     var lipSyncValue: Float = Float.MaxValue
     var eyeBlinkValue = Float.MaxValue
 
     //まばたき、リップシンクのうちモーションの適用を検出するためのビット（maxFlagCount個まで
-    val MaxTargetSize: Int = 64
     var lipSyncFlags: Int = 0
     var eyeBlinkFlags: Int = 0
 
     //瞬き、リップシンクのターゲット数が上限を超えている場合
-    if (_eyeBlinkParameterIds.size > MaxTargetSize) {
-      println(s"too many eye blink targets : ${_eyeBlinkParameterIds.size}")
+    if (eyeBlinkParameterIds.size > MaxEffectTargetSize) {
+      println(s"too many eye blink targets : ${eyeBlinkParameterIds.size}")
     }
-    if (_lipSyncParameterIds.size > MaxTargetSize) {
-      println(s"too many lip sync targets : ${_lipSyncParameterIds.size}")
-    }
-
-    val tmpFadeIn: Float = {
-      fadeInTimeInSeconds.filter(_ > 0.0f)
-        .map(fadeInTime => Easing.sine((totalElapsedTimeInSeconds - startTimeInSeconds) / fadeInTime))
-        .getOrElse(1.0f)
+    if (lipSyncParameterIds.size > MaxEffectTargetSize) {
+      println(s"too many lip sync targets : ${lipSyncParameterIds.size}")
     }
 
-    val tmpFadeOut = (for {
-      _ <- endTimeInSeconds
-      fadeOutTime <- fadeOutTimeInSeconds if fadeOutTime > 0.0f
-    } yield {
-      Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / fadeOutTime)
-    }).getOrElse(1.0f)
+    val tmpFadeIn = calculateTempFadeIn(totalElapsedTimeInSeconds, startTimeInSeconds)
+    val tmpFadeOut = calculateTempFadeOut(totalElapsedTimeInSeconds, endTimeInSeconds)
+    val elapsedTimeSinceLastLoop = calculateElapsedTimeSinceLastLoop(totalElapsedTimeInSeconds, startTimeInSeconds)
 
-    var value: Float = 0.0f
-
-    // 'Repeat' time as necessary.
-    var time: Float = timeOffsetSeconds
-
-    if (_isLoop) {
-      while (time > motionData.duration) {
-        time -= motionData.duration
-      }
-    }
     // Evaluate model curves.
     var c: Int = 0
     val curves = motionData.curves
     while(c < motionData.curveCount && curves(c).targetType == Model) {
       // Evaluate curve and call handler.
-      value = evaluateCurve(motionData, curves(c), time)
+      val value = evaluateCurve(motionData, curves(c), elapsedTimeSinceLastLoop)
 
-      if (curves(c).id == _modelCurveIdEyeBlink) {
+      if (curves(c).id == EffectNameEyeBlink) {
         eyeBlinkValue = value
-      } else if (curves(c).id == _modelCurveIdLipSync) {
+      } else if (curves(c).id == EffectNameLipSync) {
         lipSyncValue = value
       }
       c += 1
@@ -138,11 +86,11 @@ class CubismMotion(motionData: MotionData,
       val sourceValue: Float = model.parameters(curves(c).id).current
 
       // Evaluate curve and apply value.
-      value = evaluateCurve(motionData, curves(c), time)
+      var value = evaluateCurve(motionData, curves(c), elapsedTimeSinceLastLoop)
       if (eyeBlinkValue != Float.MaxValue) {
         var isBreak: Boolean = false
-        for (i <- _eyeBlinkParameterIds.indices if i < MaxTargetSize && !isBreak) {
-          if (_eyeBlinkParameterIds(i) == curves(c).id) {
+        for (i <- eyeBlinkParameterIds.indices if i < MaxEffectTargetSize && !isBreak) {
+          if (eyeBlinkParameterIds(i) == curves(c).id) {
             value *= eyeBlinkValue
             eyeBlinkFlags |= (1 << i)
             isBreak = true
@@ -151,8 +99,8 @@ class CubismMotion(motionData: MotionData,
       }
       if (lipSyncValue != Float.MaxValue) {
         var isBreak: Boolean = false
-        for (i <- _lipSyncParameterIds.indices if i < MaxTargetSize && !isBreak) {
-          if (_lipSyncParameterIds(i) == curves(c).id)
+        for (i <- lipSyncParameterIds.indices if i < MaxEffectTargetSize && !isBreak) {
+          if (lipSyncParameterIds(i) == curves(c).id)
           {
             value += lipSyncValue
             lipSyncFlags |= (1 << i)
@@ -191,42 +139,42 @@ class CubismMotion(motionData: MotionData,
             Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / curves(c).fadeOutTime)
           }
         }
-        val paramWeight: Float = _weight * fin * fout
+        val paramWeight: Float = fin * fout
 
         // パラメータごとのフェードを適用
         v = sourceValue + (value - sourceValue) * paramWeight
       }
-      operations ::= FallbackParameterValueUpdate(curves(c).id, v)
+      operations = operations.appended(FallbackParameterValueUpdate(curves(c).id, v))
       c += 1
     }
 
     {
       if (eyeBlinkValue != Float.MaxValue) {
-        for (i <- _eyeBlinkParameterIds.indices if i < MaxTargetSize) {
-          val sourceValue = model.parameters(_eyeBlinkParameterIds(i)).current
+        for (i <- eyeBlinkParameterIds.indices if i < MaxEffectTargetSize) {
+          val sourceValue = model.parameters(eyeBlinkParameterIds(i)).current
           //モーションでの上書きがあった時にはまばたきは適用しない
           if (((eyeBlinkFlags >> i) & 0x01) != 0) {
             //continue;
           } else {
 
             val v = sourceValue + (eyeBlinkValue - sourceValue) * weight
-            model.parameters.get(_eyeBlinkParameterIds(i)).foreach { p =>
-              operations ::= ParameterValueUpdate(p.id, v)
+            model.parameters.get(eyeBlinkParameterIds(i)).foreach { p =>
+              operations = operations.appended(ParameterValueUpdate(p.id, v))
             }
           }
         }
       }
 
       if (lipSyncValue != Float.MaxValue) {
-        for (i <- _lipSyncParameterIds.indices if i < MaxTargetSize) {
-          val sourceValue = model.parameters(_lipSyncParameterIds(i)).current
+        for (i <- lipSyncParameterIds.indices if i < MaxEffectTargetSize) {
+          val sourceValue = model.parameters(lipSyncParameterIds(i)).current
           //モーションでの上書きがあった時にはリップシンクは適用しない
           if (((lipSyncFlags >> i) & 0x01) != 0) {
             //continue;
           } else {
             val v = sourceValue + (lipSyncValue - sourceValue) * weight
-            model.parameters.get(_lipSyncParameterIds(i)).foreach { p =>
-              operations ::= ParameterValueUpdate(p.id, v)
+            model.parameters.get(lipSyncParameterIds(i)).foreach { p =>
+              operations = operations.appended(ParameterValueUpdate(p.id, v))
             }
           }
         }
@@ -235,13 +183,39 @@ class CubismMotion(motionData: MotionData,
 
     while (c < motionData.curveCount && curves(c).targetType == PartOpacity) {
       // Evaluate curve and apply value.
-      value = evaluateCurve(motionData, curves(c), time)
-      operations ::= FallbackParameterValueUpdate(curves(c).id, value)
+      val value = evaluateCurve(motionData, curves(c), elapsedTimeSinceLastLoop)
+      operations = operations.appended(FallbackParameterValueUpdate(curves(c).id, value))
       c += 1
     }
 
-    _lastWeight = weight
     operations
+  }
+
+  private def calculateElapsedTimeSinceLastLoop(totalElapsedTimeInSeconds: Float, startTimeInSeconds: Float) = {
+    // 'Repeat' time as necessary.
+    var timeSinceLastLoop: Float = totalElapsedTimeInSeconds - startTimeInSeconds
+    if (this.isLoop) {
+      while (timeSinceLastLoop > motionData.duration) {
+        timeSinceLastLoop -= motionData.duration
+      }
+    }
+    timeSinceLastLoop
+  }
+
+  private def calculateTempFadeOut(totalElapsedTimeInSeconds: Float, endTimeInSeconds: Option[Float]) = {
+    val fadeOutHolder = for {
+      _ <- endTimeInSeconds
+      fadeOutTime <- fadeOutTimeInSeconds if fadeOutTime > 0.0f
+    } yield {
+      Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / fadeOutTime)
+    }
+    fadeOutHolder.getOrElse(1.0f)
+  }
+
+  private def calculateTempFadeIn(totalElapsedTimeInSeconds: Float, startTimeInSeconds: Float) = {
+    fadeInTimeInSeconds.filter(_ > 0.0f)
+      .map(fadeInTime => Easing.sine((totalElapsedTimeInSeconds - startTimeInSeconds) / fadeInTime))
+      .getOrElse(1.0f)
   }
 
   private def evaluateCurve(motionData: MotionData, curve: MotionCurve, time: Float): Float = {
