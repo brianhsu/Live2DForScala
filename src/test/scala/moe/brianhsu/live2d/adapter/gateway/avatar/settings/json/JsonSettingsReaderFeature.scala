@@ -23,7 +23,7 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       val settings = jsonSettingsReader.loadSettings().success.value
 
       Then("the success loaded setting should have correct data")
-      inside(settings) { case Settings(mocFile, textureFiles, pose, eyeBlinkParameterIds, expressions, motionGroups, hitArea) =>
+      inside(settings) { case Settings(mocFile, textureFiles, pose, eyeBlinkParameterIds, lipSyncParameterIds, expressions, motionGroups, hitArea) =>
         mocFile should endWithPath("/src/test/resources/models/Haru/Haru.moc3")
 
         textureFiles.size shouldBe 2
@@ -31,6 +31,8 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
         textureFiles(1) should endWithPath("src/test/resources/models/Haru/Haru.2048/texture_01.png")
 
         eyeBlinkParameterIds shouldBe List("ParamEyeLOpen", "ParamEyeROpen")
+        lipSyncParameterIds shouldBe List("ParamMouthOpenY")
+
         shouldHaveCorrectPoseSettings(pose.value)
         shouldHaveCorrectExpressions(expressions)
         shouldHaveCorrectMotionGroup(motionGroups)

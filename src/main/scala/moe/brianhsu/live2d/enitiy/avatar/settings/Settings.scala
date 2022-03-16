@@ -23,6 +23,7 @@ case class Settings(
   textureFiles: List[String],
   pose: Option[PoseSetting],
   eyeBlinkParameterIds: List[String],
+  lipSyncParameterIds: List[String],
   expressions: Map[String, ExpressionSetting],
   motionGroups: Map[String, List[MotionSetting]],
   hitArea: List[HitAreaSetting]
