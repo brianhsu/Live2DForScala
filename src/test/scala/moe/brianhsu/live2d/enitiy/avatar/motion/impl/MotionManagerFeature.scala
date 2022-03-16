@@ -77,14 +77,14 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       val motion4 = stub[MotionWithTransition]
       val motionManger = new MotionManager
 
+      When("set callback on manager")
+      val mockedCallback = stub[Callback]
+      motionManger.setEventCallbackForAllMotions(mockedCallback)
+
       And("start three motions")
       motionManger.startMotion(motion1)
       motionManger.startMotion(motion2)
       motionManger.startMotion(motion3)
-
-      When("set callback on manager")
-      val mockedCallback = stub[Callback]
-      motionManger.setEventCallbackForAllMotions(mockedCallback)
 
       Then("First three motion should all have a callback set")
       (motion1.setEventCallback _).verify(mockedCallback).once()

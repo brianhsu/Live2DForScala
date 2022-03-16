@@ -7,12 +7,13 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 class MotionManager {
   private var motionQueue: List[MotionWithTransition] = Nil
+  private var callbackHolder: Option[Callback] = None
 
   def currentMotions: List[MotionWithTransition] = motionQueue
   def iaAllFinished: Boolean = this.motionQueue.forall(_.isFinished)
 
   def setEventCallbackForAllMotions(callback: Callback): Unit = {
-    motionQueue.foreach(_.setEventCallback(callback))
+    this.callbackHolder = Some(callback)
   }
 
   def startMotion(motion: Motion): MotionWithTransition = {
@@ -20,6 +21,7 @@ class MotionManager {
   }
 
   def startMotion(motion: MotionWithTransition): MotionWithTransition = {
+    this.callbackHolder.foreach(motion.setEventCallback)
     this.motionQueue.foreach(e => e.markAsForceFadeOut())
     this.motionQueue = this.motionQueue.appended(motion)
     motion

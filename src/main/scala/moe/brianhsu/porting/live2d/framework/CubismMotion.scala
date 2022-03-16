@@ -225,8 +225,6 @@ class CubismMotion extends ACubismMotion with Motion {
     }
 
 
-    println("isLoop:" + _isLoop)
-
     if (timeOffsetSeconds >= _motionData.duration) {
       if (_isLoop) {
         motionQueueEntry.SetStartTime(userTimeSeconds) //最初の状態へ

@@ -24,12 +24,6 @@ class MotionWithTransition(val baseMotion: Motion) {
   def isFinished: Boolean = mIsFinished
   def isForceToFadeOut: Boolean = mIsForceToFadeOut
 
-  def isLoop: Boolean = baseMotion.isLoop
-  def isLoopFadeIn: Boolean = baseMotion.isLoopFadeIn
-  def fadeInTimeInSeconds: Float = baseMotion.fadeInTimeInSeconds
-  def fadeOutTimeInSeconds: Float = baseMotion.fadeOutTimeInSeconds
-  def durationInSeconds: Option[Float] = baseMotion.durationInSeconds
-  def events: List[MotionEvent] = baseMotion.events
   def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
     if (mIsFinished) {
       Nil
@@ -38,8 +32,8 @@ class MotionWithTransition(val baseMotion: Motion) {
         this.isStarted = true
         this.startTimeInSeconds = totalElapsedTimeInSeconds
         this.fadeInStartTimeInSeconds = totalElapsedTimeInSeconds
-        if (this.endTimeInSeconds.isEmpty && durationInSeconds.isDefined) {
-          this.endTimeInSeconds = Some(this.startTimeInSeconds + durationInSeconds.get)
+        if (this.endTimeInSeconds.isEmpty && baseMotion.durationInSeconds.isDefined) {
+          this.endTimeInSeconds = Some(this.startTimeInSeconds + baseMotion.durationInSeconds.get)
         }
       }
 
@@ -58,7 +52,7 @@ class MotionWithTransition(val baseMotion: Motion) {
 
   def startFadeOut(totalElapsedTimeInSeconds: Float): Unit = {
     this.mIsForceToFadeOut = true
-    val newEndTimeSeconds = totalElapsedTimeInSeconds + fadeOutTimeInSeconds
+    val newEndTimeSeconds = totalElapsedTimeInSeconds + baseMotion.fadeOutTimeInSeconds
     val newEndTimeLessThanOriginal = endTimeInSeconds.forall(newEndTimeSeconds < _)
     if (newEndTimeLessThanOriginal) {
       this.endTimeInSeconds = Some(newEndTimeSeconds)
@@ -71,9 +65,8 @@ class MotionWithTransition(val baseMotion: Motion) {
 
   private def fireTriggeredEvents(totalElapsedTimeInSeconds: Float): Unit = {
     for {
-      _ <- durationInSeconds
       eventCallback <- eventCallbackHolder
-      triggeredEvent <- events.filter(_.shouldBeFired(this.lastEventCheckTimeInSeconds - startTimeInSeconds,
+      triggeredEvent <- baseMotion.events.filter(_.shouldBeFired(this.lastEventCheckTimeInSeconds - startTimeInSeconds,
                                                       totalElapsedTimeInSeconds - startTimeInSeconds))
     } {
       eventCallback(this, triggeredEvent)
@@ -93,18 +86,18 @@ class MotionWithTransition(val baseMotion: Motion) {
   }
 
   private def calculateFadeIn(totalElapsedTimeInSeconds: Float): Float = {
-    if (fadeInTimeInSeconds == 0.0f) {
+    if (baseMotion.fadeInTimeInSeconds == 0.0f) {
       1.0f
     } else {
-      Easing.sine((totalElapsedTimeInSeconds - this.fadeInStartTimeInSeconds) / fadeInTimeInSeconds)
+      Easing.sine((totalElapsedTimeInSeconds - this.fadeInStartTimeInSeconds) / baseMotion.fadeInTimeInSeconds)
     }
   }
 
   private def calculateFadeOut(totalElapsedTimeInSeconds: Float): Float = {
-    if (fadeOutTimeInSeconds == 0.0f || endTimeInSeconds.isEmpty) {
+    if (baseMotion.fadeOutTimeInSeconds == 0.0f || endTimeInSeconds.isEmpty) {
       1.0f
     } else {
-      Easing.sine((this.endTimeInSeconds.get - totalElapsedTimeInSeconds) / fadeOutTimeInSeconds)
+      Easing.sine((this.endTimeInSeconds.get - totalElapsedTimeInSeconds) / baseMotion.fadeOutTimeInSeconds)
     }
   }
 

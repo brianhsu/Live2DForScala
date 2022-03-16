@@ -2,7 +2,8 @@ package moe.brianhsu.porting.live2d.framework.model
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionManager
+import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
 import moe.brianhsu.porting.live2d.framework.{CubismMotion, CubismMotionQueueManager}
@@ -21,6 +22,10 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   private val expressionManager = new MotionManager
   private val newMotionManager = new MotionManager
 
+  newMotionManager.setEventCallbackForAllMotions((m: MotionWithTransition, e:MotionEvent) => {
+    println("motion:" + m)
+    println("motionEvent:" + e)
+  })
   motionManager.SetEventCallback(new CubismMotionEventFunction {
     override def apply(caller: CubismMotionQueueManager, eventValue: String, customData: AnyRef): Unit = {
       println("caller:" + caller)
@@ -48,7 +53,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     motion.isLoop(true)
     defaultLogger.info(s"Start motion $name")
     newMotionManager.startMotion(motion)
-    motionManager.StartMotion(motion)
+    //motionManager.StartMotion(motion)
   }
 
   def setExpression(name: String): Unit = {
@@ -58,24 +63,29 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     }
   }
 
-  override def update(frameTimeInfo: FrameTimeInfo): Unit = {
-    model.restoreParameters()
-    /*
-
+  private def startMotionWithNew(frameTimeInfo: FrameTimeInfo): Unit = {
     if (newMotionManager.iaAllFinished) {
       // Start Random Motion
     } else {
       val operations = newMotionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
       executeOperations(model, operations)
     }
-     */
 
+  }
+
+  private def startMotion(frameTimeInfo: FrameTimeInfo): Unit = {
     if (motionManager.IsFinished()) {
 
     } else {
       motionManager.DoUpdateMotion(model, frameTimeInfo.totalElapsedTimeInSeconds)
     }
 
+  }
+
+  override def update(frameTimeInfo: FrameTimeInfo): Unit = {
+    model.restoreParameters()
+    startMotionWithNew(frameTimeInfo)
+    //startMotion(frameTimeInfo)
     model.snapshotParameters()
 
     val expressionsOperations = expressionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
