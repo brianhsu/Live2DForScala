@@ -148,23 +148,10 @@ class CubismMotion(motionData: MotionData,
       c += 1
     }
 
+    val eyeBlinkOperations = createEyeBlinkOperations(model, weight, eyeBlinkValue, eyeBlinkFlags)
+    operations = operations ++ eyeBlinkOperations
+
     {
-      if (eyeBlinkValue != Float.MaxValue) {
-        for (i <- eyeBlinkParameterIds.indices if i < MaxEffectTargetSize) {
-          val sourceValue = model.parameters(eyeBlinkParameterIds(i)).current
-          //モーションでの上書きがあった時にはまばたきは適用しない
-          if (((eyeBlinkFlags >> i) & 0x01) != 0) {
-            //continue;
-          } else {
-
-            val v = sourceValue + (eyeBlinkValue - sourceValue) * weight
-            model.parameters.get(eyeBlinkParameterIds(i)).foreach { p =>
-              operations = operations.appended(ParameterValueUpdate(p.id, v))
-            }
-          }
-        }
-      }
-
       if (lipSyncValue != Float.MaxValue) {
         for (i <- lipSyncParameterIds.indices if i < MaxEffectTargetSize) {
           val sourceValue = model.parameters(lipSyncParameterIds(i)).current
@@ -189,6 +176,24 @@ class CubismMotion(motionData: MotionData,
     }
 
     operations
+  }
+
+  private def createEyeBlinkOperations(model: Live2DModel, weight: Float, eyeBlinkValue: Float, eyeBlinkFlags: Int) = {
+    if (eyeBlinkValue != Float.MaxValue) {
+      for {
+        (id, i) <- eyeBlinkParameterIds.zipWithIndex if ((eyeBlinkFlags >> i) & 0x01) == 0
+        parameter <- model.parameters.get(id)
+        sourceValue = parameter.current
+        newValue = sourceValue + (eyeBlinkValue - sourceValue) * weight
+      } yield {
+        val q = ParameterValueUpdate(parameter.id, newValue)
+        println("Create eye blink operations:" + q)
+        q
+      }
+    } else {
+      Nil
+    }
+
   }
 
   private def calculateElapsedTimeSinceLastLoop(totalElapsedTimeInSeconds: Float, startTimeInSeconds: Float) = {
