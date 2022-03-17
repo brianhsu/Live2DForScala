@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.utils
+package moe.brianhsu.utils
 
 import moe.brianhsu.live2d.adapter.gateway.core.memory.DefaultMemoryAllocator
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore

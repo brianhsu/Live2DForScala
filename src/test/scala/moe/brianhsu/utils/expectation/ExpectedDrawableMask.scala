@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.utils
+package moe.brianhsu.utils.expectation
 
 import scala.io.Source
 

@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.adapter.gateway.reader
 import moe.brianhsu.live2d.enitiy
 import moe.brianhsu.live2d.enitiy.model.CPointerParameter
 import moe.brianhsu.live2d.exception.ParameterInvalidException
-import moe.brianhsu.porting.live2d.utils.NativeMemoryUtils
+import moe.brianhsu.utils.NativeMemoryUtils
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting.Param
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.{Curve, Meta}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PoseSetting}
-import moe.brianhsu.testUtil.FilePathMatcher
+import moe.brianhsu.utils.FilePathMatcher
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}

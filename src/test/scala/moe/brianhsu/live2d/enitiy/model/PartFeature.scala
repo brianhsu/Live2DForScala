@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.model
 
 import moe.brianhsu.live2d.enitiy.model
-import moe.brianhsu.porting.live2d.utils.NativeMemoryUtils
+import moe.brianhsu.utils.NativeMemoryUtils
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

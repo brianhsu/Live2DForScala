@@ -10,7 +10,8 @@ import moe.brianhsu.live2d.enitiy.core.types._
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
 import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, CanvasInfo, MocInfo, Part}
 import moe.brianhsu.live2d.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
-import moe.brianhsu.porting.live2d.utils._
+import moe.brianhsu.utils.MockedCubismCore
+import moe.brianhsu.utils.expectation.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableIndex, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

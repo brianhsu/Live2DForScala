@@ -1,19 +1,11 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.motion
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.CurveTarget.{Model, Parameter, PartOpacity}
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.SegmentType._
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.{CurveTarget, MotionCurve, SegmentType}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import org.json4s.native.JsonMethods._
-import org.json4s.native.Serialization
-import org.json4s.{CustomSerializer, Formats, JString, NoTypeHints}
+import moe.brianhsu.utils.expectation.ExpectedCurves
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}
-
-import scala.io.Source
-import scala.util.Using
 
 class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
 
@@ -33,7 +25,7 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
       motionData.curveCount shouldBe 37
       motionData.duration shouldBe 10.4f
       motionData.curves.size shouldBe 37
-      motionData.curves should contain theSameElementsInOrderAs readCurvesFromFile("src/test/resources/expectation/motionData/markIdle0Curve.json")
+      motionData.curves should contain theSameElementsInOrderAs ExpectedCurves.fromFile("src/test/resources/expectation/motionData/markIdle0Curve.json")
     }
 
     Scenario("Load motion idle[1] from avatar Mark") {
@@ -52,7 +44,7 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
 
       val curves = motionData.curves
       curves.size shouldBe 37
-      motionData.curves should contain theSameElementsInOrderAs readCurvesFromFile("src/test/resources/expectation/motionData/markIdle1Curve.json")
+      motionData.curves should contain theSameElementsInOrderAs ExpectedCurves.fromFile("src/test/resources/expectation/motionData/markIdle1Curve.json")
 
     }
 
@@ -72,7 +64,7 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
 
       val curves = motionData.curves
       curves.size shouldBe 37
-      motionData.curves should contain theSameElementsInOrderAs readCurvesFromFile("src/test/resources/expectation/motionData/markIdle3Curve.json")
+      motionData.curves should contain theSameElementsInOrderAs ExpectedCurves.fromFile("src/test/resources/expectation/motionData/markIdle3Curve.json")
     }
 
     Scenario("Load motion from avatar Hiyori") {
@@ -91,45 +83,8 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
 
       val curves = motionData.curves
       curves.size shouldBe 31
-      motionData.curves should contain theSameElementsInOrderAs readCurvesFromFile("src/test/resources/expectation/motionData/hiyoriIdle1Curve.json")
+      motionData.curves should contain theSameElementsInOrderAs ExpectedCurves.fromFile("src/test/resources/expectation/motionData/hiyoriIdle1Curve.json")
     }
-  }
-  object TargetTypeSerializer extends CustomSerializer[CurveTarget](_ => (
-    {
-      case JString("Model") => Model
-      case JString("Parameter") => Parameter
-      case JString("PartOpacity") => PartOpacity
-    },
-    {
-      case Model => JString("Model")
-      case Parameter => JString("Parameter")
-      case PartOpacity => JString("PartOpacity")
-    }
-  ))
-  object SegmentTypeSerializer extends CustomSerializer[SegmentType](_ => (
-    {
-      case JString("Linear") => Linear
-      case JString("Bezier") => Bezier
-      case JString("BezierCardanoInterpretation") => BezierCardanoInterpretation
-      case JString("Stepped") => Stepped
-      case JString("InverseStepped") => InverseStepped
-    },
-    {
-      case Linear => JString("Linear")
-      case Bezier => JString("Bezier")
-      case BezierCardanoInterpretation => JString("BezierCardanoInterpretation")
-      case Stepped => JString("Stepped")
-      case InverseStepped => JString("InverseStepped")
-
-    }
-  ))
-
-  private implicit val format: Formats = Serialization.formats(NoTypeHints) + TargetTypeSerializer + SegmentTypeSerializer
-
-  private def readCurvesFromFile(filename: String): List[MotionCurve] = {
-    val source = Source.fromFile(filename)
-    val testData = Using.resource(source) { source => source.getLines().toList }
-    testData.map(line => parse(line).extract[MotionCurve])
   }
 
 
