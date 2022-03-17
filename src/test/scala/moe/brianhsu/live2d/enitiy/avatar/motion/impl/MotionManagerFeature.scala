@@ -250,5 +250,78 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
   }
 
+  Feature("Check if all motion is finished") {
+    Scenario("There is no motion in the queue") {
+      Given("a MotionManager that has not start any motion")
+      val motionManager = new MotionManager
+
+      Then("isAllFinished should be true")
+      motionManager.iaAllFinished shouldBe true
+    }
+
+    Scenario("All motion is not finished") {
+      Given("several MotionWithTransition")
+      val motion1 = stub[MotionWithTransition]
+      val motion2 = stub[MotionWithTransition]
+      val motion3 = stub[MotionWithTransition]
+
+      And("a MotionManager that has start these three motion")
+      val motionManager = new MotionManager
+      motionManager.startMotion(motion1)
+      motionManager.startMotion(motion2)
+      motionManager.startMotion(motion3)
+
+      And("these three motion are all not finished")
+      (() => motion1.isFinished).when().returns(false)
+      (() => motion2.isFinished).when().returns(false)
+      (() => motion3.isFinished).when().returns(false)
+
+      Then("isAllFinished should be false")
+      motionManager.iaAllFinished shouldBe false
+    }
+
+    Scenario("Only some motion is finished") {
+      Given("several MotionWithTransition")
+      val motion1 = stub[MotionWithTransition]
+      val motion2 = stub[MotionWithTransition]
+      val motion3 = stub[MotionWithTransition]
+
+      And("a MotionManager that has start these three motion")
+      val motionManager = new MotionManager
+      motionManager.startMotion(motion1)
+      motionManager.startMotion(motion2)
+      motionManager.startMotion(motion3)
+
+      And("these only the second motion is finished")
+      (() => motion1.isFinished).when().returns(false)
+      (() => motion2.isFinished).when().returns(true)
+      (() => motion3.isFinished).when().returns(false)
+
+      Then("isAllFinished should be false")
+      motionManager.iaAllFinished shouldBe false
+    }
+
+    Scenario("all motion is finished") {
+      Given("several MotionWithTransition")
+      val motion1 = stub[MotionWithTransition]
+      val motion2 = stub[MotionWithTransition]
+      val motion3 = stub[MotionWithTransition]
+
+      And("a MotionManager that has start these three motion")
+      val motionManager = new MotionManager
+      motionManager.startMotion(motion1)
+      motionManager.startMotion(motion2)
+      motionManager.startMotion(motion3)
+
+      And("these motions are all finished")
+      (() => motion1.isFinished).when().returns(true)
+      (() => motion2.isFinished).when().returns(true)
+      (() => motion3.isFinished).when().returns(true)
+
+      Then("isAllFinished should be true")
+      motionManager.iaAllFinished shouldBe true
+    }
+
+  }
 
 }

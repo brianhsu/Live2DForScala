@@ -3,10 +3,9 @@ package moe.brianhsu.porting.live2d.framework.model
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{MotionManager, MotionWithTransition}
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
-import moe.brianhsu.porting.live2d.framework.CubismMotion
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import org.slf4j.LoggerFactory
 
@@ -38,7 +37,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   def startMotion(motionGroup: String, index: Int): Unit = {
     val name = s"Motion(${motionGroup}_$index)"
     val motionSettings = avatarSettings.motionGroups(motionGroup)(index)
-    val motion = CubismMotion(motionSettings, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds)
+    val motion = AvatarMotion(motionSettings, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds)
     defaultLogger.info(s"Start motion $name")
     newMotionManager.startMotion(motion)
   }

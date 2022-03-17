@@ -1,22 +1,20 @@
-package moe.brianhsu.porting.live2d.framework
+package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData, MotionSegment}
+import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.AvatarMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-import scala.annotation.tailrec
-
-object CubismMotion {
+object AvatarMotion {
   private val EffectNameEyeBlink = "EyeBlink"
   private val EffectNameLipSync  = "LipSync"
 
-  def apply(motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String], isLoop: Boolean = false): CubismMotion = {
-    new CubismMotion(
+  def apply(motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String], isLoop: Boolean = false): AvatarMotion = {
+    new AvatarMotion(
       new AvatarMotionDataReader(motionInfo).loadMotionData(),
       eyeBlinkParameterIds, lipSyncParameterIds,
       isLoop, isLoopFadeIn = false,
@@ -28,7 +26,7 @@ object CubismMotion {
 
 }
 
-class CubismMotion(motionData: MotionData,
+class AvatarMotion(motionData: MotionData,
                    val eyeBlinkParameterIds: List[String] = Nil,
                    val lipSyncParameterIds: List[String] = Nil,
                    override val isLoop: Boolean = false,
