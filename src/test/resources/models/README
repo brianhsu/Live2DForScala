@@ -1,0 +1,6 @@
+The models inside this directior have been modified to make unit test have a better coverage.
+
+So it's not a direct copy of models that come from Cubism Live2D, so DO NOT use it, it might
+not work or might have strange behavior if you use them.
+
+Please also see LICENSE file for more copyright information about these model.

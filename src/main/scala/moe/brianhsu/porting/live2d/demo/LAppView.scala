@@ -1,18 +1,19 @@
 package moe.brianhsu.porting.live2d.demo
 
+import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPoseReader, FaceDirectionByMouse}
+import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
+import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{FaceDirection, Pose}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
-import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, LAppSprite, PowerSprite, SpriteShader}
-import moe.brianhsu.porting.live2d.framework.Cubism
-import moe.brianhsu.porting.live2d.framework.effect.impl.{Breath, EyeBlink, FaceDirection}
-import moe.brianhsu.porting.live2d.framework.math.ViewPortMatrixCalculator
-import moe.brianhsu.porting.live2d.framework.model.Avatar
+import moe.brianhsu.porting.live2d.demo.sprite._
+import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
+import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
+import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
 import java.awt.event.KeyEvent
 import scala.util.Try
-
-
 
 class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGL) {
 
@@ -26,17 +27,25 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private lazy val powerTexture = manager.loadTexture("src/main/resources/texture/close.png")
   private lazy val gearTexture = manager.loadTexture("src/main/resources/texture/icon_gear.png")
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
+  private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator
 
   private val frameTimeCalculator = new FrameTimeCalculator
-  private val avatarHolder: Try[Avatar] = Cubism.loadAvatar("src/main/resources/Haru")
-  private val modelHolder: Try[Live2DModel] = avatarHolder.flatMap(_.modelHolder)
+  private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
+
+  private val avatarHolder: Try[Avatar] = new AvatarFileReader("/home/brianhsu/WorkRoom/CubismSdkForNative-4-r.4/Samples/Resources/Mark").loadAvatar()
+  private val modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
+  private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
+  private val updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {
+    a.updateStrategyHolder = Some(new DefaultStrategy(a.avatarSettings, a.model))
+    a.updateStrategyHolder.get.asInstanceOf[DefaultStrategy]
+  })
   private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, backgroundTexture, spriteShader)
   private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, powerTexture, spriteShader)
   private val gearSprite: LAppSprite = new GearSprite(drawCanvasInfo, gearTexture, spriteShader)
-  private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
 
+  private val targetPointCalculator = new FaceDirectionByMouse(30)
 
-  private val faceDirection = new FaceDirection(30)
+  private val faceDirection = new FaceDirection(targetPointCalculator)
 
   {
     setupAvatarEffects()
@@ -62,15 +71,23 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     } {
       // TODO:
       // There should be a better way to get width / height
-      val projection = viewPortMatrixCalculator.getProjection(
-        drawCanvasInfo.currentCanvasWidth,
-        drawCanvasInfo.currentCanvasHeight,
-        model.canvasInfo.width,
-        model.modelMatrix
+      val projection = projectionMatrixCalculator.calculateProjection(
+        model.canvasInfo,
+        drawCanvasInfo.currentCanvasWidth, drawCanvasInfo.currentCanvasHeight,
+        viewPortMatrixCalculator.getViewMatrix,
+        updateModelMatrix(model)
       )
 
-      avatar.update(this.frameTimeCalculator.getDeltaTimeInSeconds)
+      avatar.update(this.frameTimeCalculator)
       renderer.draw(avatar, projection)
+    }
+
+    def updateModelMatrix(model: Live2DModel)(viewOrientation: ViewOrientation): Unit = {
+      val updatedMatrix = viewOrientation match {
+        case Horizontal => model.modelMatrix.scaleToHeight(2.0f)
+        case Vertical => model.modelMatrix.scaleToWidth(2.0f)
+      }
+      model.modelMatrix = updatedMatrix
     }
 
   }
@@ -91,12 +108,12 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
 
   def onMouseReleased(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(y.toFloat)
-    val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
-    val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
+    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
+    val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
+    val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
 
-    faceDirection.setFaceTargetCoordinate(0.0f, 0.0f)
+    targetPointCalculator.setFaceTargetCoordinate(0.0f, 0.0f)
     for {
       _ <- avatarHolder
       model <- modelHolder
@@ -109,11 +126,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
 
   def onMouseDragged(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformY(y.toFloat)
-    val viewX = viewPortMatrixCalculator.getViewMatrix.invertTransformX(transformedX)
-    val viewY = viewPortMatrixCalculator.getViewMatrix.invertTransformY(transformedY)
-    faceDirection.setFaceTargetCoordinate(viewX, viewY)
+    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
+    val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
+    val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
+    targetPointCalculator.setFaceTargetCoordinate(viewX, viewY)
   }
 
   private def initOpenGL(): Unit = {
@@ -139,25 +156,29 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
 
   private def setupAvatarEffects(): Unit = {
-    avatarHolder.foreach { avatar =>
-      avatar.setEffects(
-        new Breath() ::
-        new EyeBlink(avatar.getAvatarSettings) ::
-        faceDirection ::
+    for {
+      avatar <- avatarHolder
+      updateStrategy <- updateStrategyHolder
+    } {
+      val pose = new AvatarPoseReader(avatar.avatarSettings).loadPose.getOrElse(new Pose)
+      updateStrategy.setFunctionalEffects(
+        // new Breath() ::
+        //new EyeBlink(avatar.avatarSettings) ::
+        faceDirection :: pose ::
         Nil
       )
     }
   }
 
   private def startMotion(group: String, i: Int): Unit = {
-    avatarHolder.foreach { avatar =>
-      avatar.startMotion(group, i)
+    updateStrategyHolder.foreach { updateStrategy =>
+      updateStrategy.startMotion(group, i)
     }
 
   }
   private def startExpression(name: String): Unit = {
-    avatarHolder.foreach { avatar =>
-      avatar.setExpression(name)
+    updateStrategyHolder.foreach { updateStrategy =>
+      updateStrategy.setExpression(name)
     }
   }
 
@@ -166,6 +187,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     openGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     openGL.glClearDepth(1.0)
   }
+
   def keyReleased(keyEvent: KeyEvent): Unit = {
     keyEvent.getKeyChar match {
       case '0' => startExpression("f00")

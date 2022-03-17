@@ -131,7 +131,7 @@ trait NativeCubismAPI extends Library {
    * @param  outOriginInPixels  Origin of model on canvas.
    * @param  outPixelsPerUnit   Aspect used for scaling pixels to units.
    */
-  def csmReadCanvasInfo(model: CPointerToModel, outSizeInPixels: CsmVector, outOriginInPixels: CsmVector, outPixelsPerUnit: FloatByReference): CStringArray
+  def csmReadCanvasInfo(model: CPointerToModel, outSizeInPixels: CsmCoordinate, outOriginInPixels: CsmCoordinate, outPixelsPerUnit: FloatByReference): CStringArray
 
   /* ---------- *
    * PARAMETERS *

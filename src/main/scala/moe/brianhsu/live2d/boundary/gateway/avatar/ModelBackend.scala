@@ -1,8 +1,9 @@
 package moe.brianhsu.live2d.boundary.gateway.avatar
 
-import moe.brianhsu.live2d.enitiy.model.Parameter
-import moe.brianhsu.porting.live2d.framework.model.{CanvasInfo, Part}
-import moe.brianhsu.porting.live2d.framework.model.drawable.Drawable
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
+import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Parameter, Part}
+
+import scala.util.Try
 
 trait ModelBackend {
   /**
@@ -43,16 +44,11 @@ trait ModelBackend {
 
   /**
    * This method will access all lazy member fields that load data from the CubismCore C Library,
-   * and throws exceptions if there is any corrupted data.
+   * and return a Failure if there is any corrupted data, otherwise it will return a Success[ModelBackend].
    *
    * @return  The model itself.
-   * @throws  DrawableInitException if it cannot construct drawable objects.
-   * @throws  MocNotRevivedException if there are errors when reading .moc3 file.
-   * @throws  ParameterInitException if it cannot construct parameter objects.
-   * @throws  PartInitException if it cannot construct part objects.
-   * @throws  TextureSizeMismatchException if the the number of provided texture does not match the information in the model.
    */
-  def validateAllData(): Unit
+  def validatedBackend: Try[ModelBackend]
 
   /**
    * Update the Live 2D Model and reset all dynamic flags of drawables.

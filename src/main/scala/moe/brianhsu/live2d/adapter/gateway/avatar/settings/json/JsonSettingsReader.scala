@@ -30,14 +30,15 @@ class JsonSettingsReader(directory: String) extends SettingsReader {
       textureFiles <- parseTextureFiles(settings)
       pose <- parsePose(settings)
       eyeBlinkParameterIds <- parseEyeBlinkParameterIds(settings)
+      lipSyncParameterIds <- parseLipSyncParameterIds(settings)
       expressions <- parseExpressions(settings)
       motionGroups <- parseMotionGroups(settings)
     } yield {
 
       Settings(
         mocFile, textureFiles, pose,
-        eyeBlinkParameterIds, expressions,
-        motionGroups,
+        eyeBlinkParameterIds, lipSyncParameterIds,
+        expressions, motionGroups,
         settings.hitAreas
       )
     }
@@ -140,6 +141,27 @@ class JsonSettingsReader(directory: String) extends SettingsReader {
 
     for {
       group <- modelSetting.groups if isEyeBlinkParameter(group)
+      parameterId <- group.ids
+    } yield {
+      parameterId
+    }
+  }
+
+  /**
+   * Parse lip sync parameters.
+   *
+   * @param modelSetting  The model setting object.
+   *
+   * @return [[scala.util.Success]] containing list of parameters related to lip sync, otherwise [[scala.util.Failure]] denoted the exception.
+   */
+  private def parseLipSyncParameterIds(modelSetting: ModelSetting): Try[List[String]] = Try {
+
+    def isLipSyncParameter(group: Group): Boolean = {
+      group.name == "LipSync" && group.target == "Parameter"
+    }
+
+    for {
+      group <- modelSetting.groups if isLipSyncParameter(group)
       parameterId <- group.ids
     } yield {
       parameterId

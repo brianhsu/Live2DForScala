@@ -1,46 +1,28 @@
 package moe.brianhsu.porting.live2d.framework.model
 
+import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
+import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
+import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.porting.live2d.framework.{Cubism, CubismExpressionMotion, CubismMotion, CubismMotionManager, Pose}
-import moe.brianhsu.porting.live2d.framework.effect.Effect
-import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
+import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import org.slf4j.LoggerFactory
 
-import scala.util.Try
+class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel) extends UpdateStrategy {
 
-/**
- * This class represent a complete Live 2D Cubism Avatar runtime model.
- *
- * The runtime model should be a directory that contains a bunch of json and other files
- * that describe the behavior of the avatar.
- *
- * It should also includes a .moc3 file and texture files.
- *
- * You might obtain sample avatar from https://www.live2d.com/en/download/sample-data/
- *
- * @param   directory   The directory in the filesystem that contains the settings for the avatar
- */
-class Avatar(directory: String)(cubism: Cubism) {
-
-  private val avatarSettings: Settings = new JsonSettingsReader(directory).loadSettings().get
-  private val mocFile: String = avatarSettings.mocFile
+  private val defaultLogger = LoggerFactory.getLogger(this.getClass)
+  private val expressions = new AvatarExpressionReader(avatarSettings).loadExpressions
   private var effects: List[Effect] = Nil
-  private val expressionManager = new CubismMotionManager
-  private val motionManager = new CubismMotionManager
-  private val expressions = CubismExpressionMotion.createExpressions(avatarSettings)
-  private val pose = Pose(avatarSettings)
+  private val expressionManager = new MotionManager
+  private val newMotionManager = new MotionManager
 
-  val modelHolder: Try[Live2DModel] = {
-    val model = cubism
-      .loadModel(mocFile, avatarSettings.textureFiles)
+  newMotionManager.setEventCallbackForAllMotions((m: MotionWithTransition, e:MotionEvent) => {
+    println("motion:" + m)
+    println("motionEvent:" + e)
+  })
 
-      model.foreach(_.validateAllData())
-
-    model
-  }
-
-  def setEffects(effects: List[Effect]): Unit = {
+  def setFunctionalEffects(effects: List[Effect]): Unit = {
     this.effects = effects
   }
 
@@ -52,47 +34,62 @@ class Avatar(directory: String)(cubism: Cubism) {
     this.effects = effects.filterNot(_ == effect)
   }
 
-  def getAvatarSettings: Settings = avatarSettings
-
-  def getEffects: List[Effect] = effects
+  def startMotion(motionGroup: String, index: Int): Unit = {
+    val name = s"Motion(${motionGroup}_$index)"
+    val motionSettings = avatarSettings.motionGroups(motionGroup)(index)
+    val motion = AvatarMotion(motionSettings, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds)
+    defaultLogger.info(s"Start motion $name")
+    newMotionManager.startMotion(motion)
+  }
 
   def setExpression(name: String): Unit = {
-    expressions.get(name).foreach { expression =>
-      println(s"Start $name expression")
-      expressionManager.StartMotionPriority(expression, autoDelete = false, 3)
+    expressions.get(name).foreach { expressions =>
+      defaultLogger.info(s"Start $name expression")
+      this.expressionManager.startMotion(expressions)
     }
   }
 
-  lazy val motions: Seq[MotionSetting] = avatarSettings.motionGroups.values.toList.flatten
+  private def startMotionWithNew(frameTimeInfo: FrameTimeInfo): Unit = {
+    if (newMotionManager.iaAllFinished) {
+      // Start Random Motion
+    } else {
+      val operations = newMotionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
+      executeOperations(model, operations)
+    }
 
-  def startMotion(group: String, i: Int): Unit = {
-    val name = s"Motion(${group}_$i)"
-    val motionSettings = avatarSettings.motionGroups(group)(i)
-    val m = CubismMotion(motionSettings, _ => println(s"$name has finished"), avatarSettings.eyeBlinkParameterIds, Nil)
-    println(s"Start motionmotion  $name")
-    motionManager.StartMotionPriority(m, autoDelete = false, 2)
   }
+
+  override def update(frameTimeInfo: FrameTimeInfo): Unit = {
+    model.restoreParameters()
+    startMotionWithNew(frameTimeInfo)
+    model.snapshotParameters()
+
+    val expressionsOperations = expressionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
+    val operations = effects.flatMap(_.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds))
+
+    executeOperations(model, expressionsOperations ++ operations)
+
+    model.update()
+  }
+}
+
+/**
+ * This class represent a complete Live 2D Cubism Avatar runtime model.
+ *
+ */
+class Avatar(val avatarSettings: Settings, val model: Live2DModel) {
+
+  var updateStrategyHolder: Option[UpdateStrategy] = None
 
   /**
    * Update Live2D model parameters of this avatar according to time in seconds elapsed
    * from last update.
    *
-   * @param deltaTimeInSeconds How long has elapsed since last update, in seconds.
+   * The actually update implementation will be controlled by [[moe.brianhsu.live2d.enitiy.avatar.updater.UpdateStrategy]] inside [[updateStrategyHolder]].
+   *
+   * @param frameTimeInfo The FrameTimeInfo object tells us how about frame time information.
    */
-  def update(deltaTimeInSeconds: Float): Unit = {
-
-    modelHolder.foreach { model =>
-      model.restoreParameters()
-      if (motionManager.IsFinished()) {
-
-      } else {
-        motionManager.UpdateMotion(model, deltaTimeInSeconds)
-      }
-      model.snapshotParameters()
-      expressionManager.UpdateMotion(model, deltaTimeInSeconds)
-      effects.foreach { _.updateParameters(model, deltaTimeInSeconds) }
-      pose.UpdateParameters(model, deltaTimeInSeconds)
-      model.update()
-    }
+  def update(frameTimeInfo: FrameTimeInfo): Unit = {
+    updateStrategyHolder.foreach(_.update(frameTimeInfo))
   }
 }

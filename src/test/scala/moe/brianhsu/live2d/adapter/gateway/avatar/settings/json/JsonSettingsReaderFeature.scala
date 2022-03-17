@@ -5,13 +5,14 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting.Param
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.{Curve, Meta}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PoseSetting}
+import moe.brianhsu.testUtil.FilePathMatcher
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
 import java.io.FileNotFoundException
 
-class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues with TryValues {
+class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues with TryValues with FilePathMatcher {
   Feature("Read Live2D avatar settings") {
     Scenario("Load from Live 2D json setting folder") {
       Given("A folder path contains json files for a Live2D avatar model")
@@ -22,14 +23,16 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       val settings = jsonSettingsReader.loadSettings().success.value
 
       Then("the success loaded setting should have correct data")
-      inside(settings) { case Settings(mocFile, textureFiles, pose, eyeBlinkParameterIds, expressions, motionGroups, hitArea) =>
-        mocFile should endWith("/src/test/resources/models/Haru/Haru.moc3")
+      inside(settings) { case Settings(mocFile, textureFiles, pose, eyeBlinkParameterIds, lipSyncParameterIds, expressions, motionGroups, hitArea) =>
+        mocFile should endWithPath("/src/test/resources/models/Haru/Haru.moc3")
 
         textureFiles.size shouldBe 2
-        textureFiles(0) should endWith("src/test/resources/models/Haru/Haru.2048/texture_00.png")
-        textureFiles(1) should endWith("src/test/resources/models/Haru/Haru.2048/texture_01.png")
+        textureFiles(0) should endWithPath("src/test/resources/models/Haru/Haru.2048/texture_00.png")
+        textureFiles(1) should endWithPath("src/test/resources/models/Haru/Haru.2048/texture_01.png")
 
         eyeBlinkParameterIds shouldBe List("ParamEyeLOpen", "ParamEyeROpen")
+        lipSyncParameterIds shouldBe List("ParamMouthOpenY")
+
         shouldHaveCorrectPoseSettings(pose.value)
         shouldHaveCorrectExpressions(expressions)
         shouldHaveCorrectMotionGroup(motionGroups)
@@ -126,8 +129,8 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
         Parameters("ParamEyeLOpen", 0.8f, Some("Multiply")),
         Parameters("ParamEyeROpen", 0.8f, Some("Multiply")),
         Parameters("ParamBrowLForm", -0.33f, Some("Add")),
-        Parameters("ParamBrowRForm", -0.33f, Some("Add")),
-        Parameters("ParamMouthForm", -1.76f, Some("Add")),
+        Parameters("ParamBrowRForm", -0.33f, None),
+        Parameters("ParamMouthForm", -1.76f, Some("Overwrite")),
       )
     }
   }
@@ -141,7 +144,7 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
           Part("Part01ArmRA001", Nil)
         ),
         List(
-          Part("Part01ArmRB001", Nil),
+          Part("Part01ArmRB001", List("Part01ArmRA001")),
           Part("Part01ArmLA001", List("link3", "link4"))
         ),
       )
