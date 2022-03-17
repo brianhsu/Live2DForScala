@@ -235,14 +235,14 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       motionWithTransition.calculateOperations(model, 0, 0, 1.0f)
 
       And("the original end time should be 2.0")
-      val originalEndTime = motionWithTransition.getEndTimeInSecondsForUnitTest()
+      val originalEndTime = motionWithTransition.getEndTimeInSecondsForUnitTest
       originalEndTime.value shouldBe 2.0
 
       When("force fade out at 1.6 second, which is after original fade out time (2.0 - 0.5 = 1.5)")
       motionWithTransition.startFadeOut(1.6f)
 
       Then("the end time should not be touched")
-      motionWithTransition.getEndTimeInSecondsForUnitTest() shouldBe originalEndTime
+      motionWithTransition.getEndTimeInSecondsForUnitTest shouldBe originalEndTime
 
     }
 
@@ -260,7 +260,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       motionWithTransition.calculateOperations(model, 0, 0, 1.0f)
 
       And("the original end time should be 2.0")
-      val originalEndTime = motionWithTransition.getEndTimeInSecondsForUnitTest()
+      val originalEndTime = motionWithTransition.getEndTimeInSecondsForUnitTest
       originalEndTime.value shouldBe 2.0
 
       When("force fade out at 0.5 second, which is before original fade out time (2.0 - 0.5 = 1.5)")
@@ -269,7 +269,122 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
       Then("the new end time should be current elapsed time + fade out time")
       val expectedNewEndTime = currentTotalElapsedTime + baseMotion.fadeOutTimeInSeconds.get
-      motionWithTransition.getEndTimeInSecondsForUnitTest().value shouldBe expectedNewEndTime
+      motionWithTransition.getEndTimeInSecondsForUnitTest.value shouldBe expectedNewEndTime
+    }
+
+  }
+
+  Feature("Update startTimeInSeconds / fadeInStartTimeInSeconds when loop") {
+    Scenario("The base motion is loop but not loopFadeIn") {
+      Given("a base motion with duration 2 seconds and fade out time 0.5 second")
+      val baseMotion = stub[Motion]
+      (() => baseMotion.durationInSeconds).when().returning(Some(2))
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(None)
+      (() => baseMotion.fadeOutTimeInSeconds).when().returning(Some(0.5f))
+      (() => baseMotion.isLoop).when().returning(true)
+
+      And("a MotionWithTransition based on that motion")
+      val motionWithTransition = new MotionWithTransition(baseMotion)
+
+      And("start the motion at first frame")
+      motionWithTransition.calculateOperations(model, 0, 0, 1.0f)
+
+      val originalStartTime = motionWithTransition.getStartTimeInSecondsForUnitTest
+      val originalFadeInStartTime = motionWithTransition.getFadeInStartTimeInSecondsForUnitTest
+      And("the original start time should be 0.0")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe 0.0
+
+      When("update the motion at 1.5 second")
+      motionWithTransition.calculateOperations(model, 1.5f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should not be touched")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe originalStartTime
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe originalFadeInStartTime
+
+      When("update the motion at 1.99 second")
+      motionWithTransition.calculateOperations(model, 1.99f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should not be touched")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe originalStartTime
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe originalFadeInStartTime
+
+      When("update the motion at 2 second")
+      motionWithTransition.calculateOperations(model, 2f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should update to current time")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe 2.0f
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe originalFadeInStartTime
+
+      When("update the motion at 2.5 second")
+      motionWithTransition.calculateOperations(model, 2f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should not be touched")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe 2.0f
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe originalFadeInStartTime
+
+      When("update the motion at 4 second")
+      motionWithTransition.calculateOperations(model, 4f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should not be touched")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe 4.0f
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe originalFadeInStartTime
+
+    }
+    Scenario("The base motion is loop and loopFadeIn") {
+      Given("a base motion with duration 2 seconds and fade out time 0.5 second")
+      val baseMotion = stub[Motion]
+      (() => baseMotion.durationInSeconds).when().returning(Some(2))
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(None)
+      (() => baseMotion.fadeOutTimeInSeconds).when().returning(Some(0.5f))
+      (() => baseMotion.isLoop).when().returning(true)
+      (() => baseMotion.isLoopFadeIn).when().returning(true)
+
+      And("a MotionWithTransition based on that motion")
+      val motionWithTransition = new MotionWithTransition(baseMotion)
+
+      And("start the motion at first frame")
+      motionWithTransition.calculateOperations(model, 0, 0, 1.0f)
+
+      val originalStartTime = motionWithTransition.getStartTimeInSecondsForUnitTest
+      val originalFadeInStartTime = motionWithTransition.getFadeInStartTimeInSecondsForUnitTest
+      And("the original start time should be 0.0")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe 0.0
+
+      When("update the motion at 1.5 second")
+      motionWithTransition.calculateOperations(model, 1.5f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should not be touched")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe originalStartTime
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe originalFadeInStartTime
+
+      When("update the motion at 1.99 second")
+      motionWithTransition.calculateOperations(model, 1.99f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should not be touched")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe originalStartTime
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe originalFadeInStartTime
+
+      When("update the motion at 2 second")
+      motionWithTransition.calculateOperations(model, 2f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should update to current time")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe 2.0f
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe 2.0f
+
+      When("update the motion at 2.5 second")
+      motionWithTransition.calculateOperations(model, 2f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should not be touched")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe 2.0f
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe 2.0f
+
+      When("update the motion at 4 second")
+      motionWithTransition.calculateOperations(model, 4f, 0, 1.0f)
+
+      Then("the startTime / fadeInStartTime should not be touched")
+      motionWithTransition.getStartTimeInSecondsForUnitTest shouldBe 4.0f
+      motionWithTransition.getFadeInStartTimeInSecondsForUnitTest shouldBe 4.0f
+
     }
 
   }

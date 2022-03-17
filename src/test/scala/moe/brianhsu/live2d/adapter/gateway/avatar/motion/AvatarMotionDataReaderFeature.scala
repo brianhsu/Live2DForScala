@@ -1,23 +1,19 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.motion
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.CurveTarget.{Model, Parameter, PartOpacity}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.SegmentType._
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.{CurveTarget, MotionCurve, MotionData, MotionPoint, MotionSegment, SegmentType}
+import moe.brianhsu.live2d.enitiy.avatar.motion.data.{CurveTarget, MotionCurve, SegmentType}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import org.json4s.native.Serialization
 import org.json4s.native.JsonMethods._
-import org.json4s.{CustomSerializer, DefaultFormats, Formats, JString, NoTypeHints, ShortTypeHints}
+import org.json4s.native.Serialization
+import org.json4s.{CustomSerializer, Formats, JString, NoTypeHints}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}
 
 import scala.io.Source
 import scala.util.Using
-import CurveTarget.Model
-
-import java.io.PrintWriter
 
 class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
 
@@ -98,7 +94,7 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
       motionData.curves should contain theSameElementsInOrderAs readCurvesFromFile("src/test/resources/expectation/motionData/hiyoriIdle1Curve.json")
     }
   }
-  object TargetTypeSerializer extends CustomSerializer[CurveTarget](format => (
+  object TargetTypeSerializer extends CustomSerializer[CurveTarget](_ => (
     {
       case JString("Model") => Model
       case JString("Parameter") => Parameter
@@ -110,7 +106,7 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
       case PartOpacity => JString("PartOpacity")
     }
   ))
-  object SegmentTypeSerializer extends CustomSerializer[SegmentType](format => (
+  object SegmentTypeSerializer extends CustomSerializer[SegmentType](_ => (
     {
       case JString("Linear") => Linear
       case JString("Bezier") => Bezier

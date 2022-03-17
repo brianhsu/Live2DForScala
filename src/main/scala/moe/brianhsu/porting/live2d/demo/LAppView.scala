@@ -3,10 +3,10 @@ package moe.brianhsu.porting.live2d.demo
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPoseReader, FaceDirectionByMouse}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, Pose}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{FaceDirection, Pose}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
-import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, LAppSprite, PowerSprite, SpriteShader}
+import moe.brianhsu.porting.live2d.demo.sprite._
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
 import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}

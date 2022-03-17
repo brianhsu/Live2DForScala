@@ -14,7 +14,6 @@ class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
     val meta = motion.meta
     val events = motion.userData.map(userData => MotionEvent(userData.value, userData.time))
     var reversedCurve: List[MotionCurve] = Nil
-    var points: List[MotionPoint] = Nil
     var segments: List[MotionSegment] = Nil
 
     for (curveJson <- motion.curves) {
