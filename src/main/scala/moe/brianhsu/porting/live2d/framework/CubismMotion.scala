@@ -79,7 +79,7 @@ class CubismMotion(motionData: MotionData,
       var v: Float = 0
 
       // パラメータごとのフェード
-      if (curve.fadeInTime < 0.0f && curve.fadeOutTime < 0.0f) {
+      if (curve.fadeInTime.isEmpty && curve.fadeOutTime.isEmpty) {
         //モーションのフェードを適用
         v = sourceValue + (value - sourceValue) * weight
       } else {
@@ -87,24 +87,24 @@ class CubismMotion(motionData: MotionData,
         var fin: Float = 0
         var fout: Float = 0
 
-        if (curve.fadeInTime < 0.0f) {
+        if (curve.fadeInTime.isEmpty) {
           fin = tmpFadeIn
         } else {
-          fin = if (curve.fadeInTime == 0.0f) {
+          fin = if (curve.fadeInTime.get == 0.0f) {
             1.0f
           } else {
-            Easing.sine((totalElapsedTimeInSeconds - fadeInStartTimeInSeconds) / curve.fadeInTime)
+            Easing.sine((totalElapsedTimeInSeconds - fadeInStartTimeInSeconds) / curve.fadeInTime.get)
           }
 
         }
 
-        if (curve.fadeOutTime < 0.0f) {
+        if (curve.fadeOutTime.isEmpty) {
           fout = tmpFadeOut
         } else {
-          fout = if (curve.fadeOutTime == 0.0f || endTimeInSeconds.isEmpty) {
+          fout = if (curve.fadeOutTime.get == 0.0f || endTimeInSeconds.isEmpty) {
             1.0f
           } else {
-            Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / curve.fadeOutTime)
+            Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / curve.fadeOutTime.get)
           }
         }
         val paramWeight: Float = fin * fout

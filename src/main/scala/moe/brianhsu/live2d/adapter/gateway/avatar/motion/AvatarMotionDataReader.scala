@@ -29,8 +29,8 @@ class AvatarMotionDataReader(motion: MotionSetting) extends MotionDataReader {
         curveJson.id,
         CurveTarget(curveJson.target),
         segmentsInCurve.size, baseSegmentIndex,
-        curveJson.fadeInTime.getOrElse(-1.0f),
-        curveJson.fadeOutTime.getOrElse(-1.0f)
+        curveJson.fadeInTime,
+        curveJson.fadeOutTime
       )
 
       points = points ++ pointsInCurve
