@@ -17,7 +17,7 @@ test:
   script:
     # Execute your project's tests
     - sbt clean coverage test coverageReport
-  coverage: '/Statement coverage....: \d+\.\d+/'      
+  coverage: '/Statement coverage.: \d+\.\d+/'      
   artifacts:
     reports:
       cobertura: target/scala-2.13/coverage-report/cobertura.xml
