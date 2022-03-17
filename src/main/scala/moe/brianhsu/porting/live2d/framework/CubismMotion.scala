@@ -2,18 +2,12 @@ package moe.brianhsu.porting.live2d.framework
 
 import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.CurveTarget.{Model, Parameter, PartOpacity}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import org.json4s.{DefaultFormats, Formats, ShortTypeHints}
-import org.json4s.native.Serialization
-
-import java.io.PrintWriter
-import scala.util.Random
 
 object CubismMotion {
   private val EffectNameEyeBlink = "EyeBlink"
@@ -51,8 +45,8 @@ class CubismMotion(motionData: MotionData,
 
     var operations: List[EffectOperation] = Nil
 
-    val tmpFadeIn = calculateTempFadeIn(totalElapsedTimeInSeconds, startTimeInSeconds)
-    val tmpFadeOut = calculateTempFadeOut(totalElapsedTimeInSeconds, endTimeInSeconds)
+    val tmpFadeIn: Float = calculateTempFadeIn(totalElapsedTimeInSeconds, startTimeInSeconds)
+    val tmpFadeOut: Float = calculateTempFadeOut(totalElapsedTimeInSeconds, endTimeInSeconds)
     val elapsedTimeSinceLastLoop = calculateElapsedTimeSinceLastLoop(totalElapsedTimeInSeconds, startTimeInSeconds)
 
     val eyeBlinkValueHolder = motionData.modelCurves
@@ -69,50 +63,22 @@ class CubismMotion(motionData: MotionData,
     val occupiedLipSyncParameterId = motionData.parameterCurves.map(_.id).intersect(lipSyncParameterIds).toSet
 
     for(curve <- motionData.parameterCurves) {
-      val sourceValue: Float = model.parameters(curve.id).current
+      val parameterOriginalValue: Float = model.parameters(curve.id).current
 
-      // Evaluate curve and apply value.
       val eyeBlinkMultiplier = eyeBlinkValueHolder.filter(_ => eyeBlinkParameterIds.contains(curve.id)).getOrElse(1.0f)
       val lipSyncValueAdder = lipSyncValueHolder.filter(_ => lipSyncParameterIds.contains(curve.id)).getOrElse(0.0f)
       val value = evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop) * eyeBlinkMultiplier + lipSyncValueAdder
 
-      var v: Float = 0
-
-      // パラメータごとのフェード
-      if (curve.fadeInTime.isEmpty && curve.fadeOutTime.isEmpty) {
-        //モーションのフェードを適用
-        v = sourceValue + (value - sourceValue) * weight
+      val afterFading = if (curve.fadeInTime.isEmpty && curve.fadeOutTime.isEmpty) {
+        parameterOriginalValue + (value - parameterOriginalValue) * weight
       } else {
-        // パラメータに対してフェードインかフェードアウトが設定してある場合はそちらを適用
-        var fin: Float = 0
-        var fout: Float = 0
-
-        if (curve.fadeInTime.isEmpty) {
-          fin = tmpFadeIn
-        } else {
-          fin = if (curve.fadeInTime.get == 0.0f) {
-            1.0f
-          } else {
-            Easing.sine((totalElapsedTimeInSeconds - fadeInStartTimeInSeconds) / curve.fadeInTime.get)
-          }
-
-        }
-
-        if (curve.fadeOutTime.isEmpty) {
-          fout = tmpFadeOut
-        } else {
-          fout = if (curve.fadeOutTime.get == 0.0f || endTimeInSeconds.isEmpty) {
-            1.0f
-          } else {
-            Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / curve.fadeOutTime.get)
-          }
-        }
-        val paramWeight: Float = fin * fout
-
-        // パラメータごとのフェードを適用
-        v = sourceValue + (value - sourceValue) * paramWeight
+        applyFading(
+          totalElapsedTimeInSeconds, fadeInStartTimeInSeconds, endTimeInSeconds,
+          tmpFadeIn, tmpFadeOut, curve, parameterOriginalValue, value
+        )
       }
-      operations = operations.appended(FallbackParameterValueUpdate(curve.id, v))
+
+      operations = operations.appended(FallbackParameterValueUpdate(curve.id, afterFading))
     }
 
     operations = operations ++
@@ -121,6 +87,36 @@ class CubismMotion(motionData: MotionData,
       createPartOperations(elapsedTimeSinceLastLoop)
 
     operations
+  }
+
+  private def applyFading(totalElapsedTimeInSeconds: Float, fadeInStartTimeInSeconds: Float, endTimeInSeconds: Option[Float], tmpFadeIn: Float, tmpFadeOut: Float, curve: MotionCurve, parameterOriginalValue: Float, value: Float) = {
+    val fadeInWeight: Float = curve.fadeInTime
+      .map(fadeInTime => calculateFadeInTime(totalElapsedTimeInSeconds, fadeInStartTimeInSeconds, fadeInTime))
+      .getOrElse(tmpFadeIn)
+
+    val fadeOutWeight = curve.fadeOutTime
+      .map(fadeOutTime => calculateFadeOutTime(totalElapsedTimeInSeconds, endTimeInSeconds, fadeOutTime))
+      .getOrElse(tmpFadeOut)
+
+    val paramWeight: Float = fadeInWeight * fadeOutWeight
+
+    parameterOriginalValue + (value - parameterOriginalValue) * paramWeight
+  }
+
+  private def calculateFadeInTime(totalElapsedTimeInSeconds: Float, fadeInStartTimeInSeconds: Float, fadeInTime: Float): Float = {
+    if (fadeInTime == 0.0f) {
+      1.0f
+    } else {
+      Easing.sine((totalElapsedTimeInSeconds - fadeInStartTimeInSeconds) / fadeInTime)
+    }
+  }
+
+  private def calculateFadeOutTime(totalElapsedTimeInSeconds: Float, endTimeInSeconds: Option[Float], fadeOutTime: Float): Float = {
+    if (fadeOutTime == 0.0f || endTimeInSeconds.isEmpty) {
+      1.0f
+    } else {
+      Easing.sine((endTimeInSeconds.get - totalElapsedTimeInSeconds) / fadeOutTime)
+    }
   }
 
   private def createPartOperations(elapsedTimeSinceLastLoop: Float) = {
@@ -176,7 +172,7 @@ class CubismMotion(motionData: MotionData,
     fadeOutHolder.getOrElse(1.0f)
   }
 
-  private def calculateTempFadeIn(totalElapsedTimeInSeconds: Float, startTimeInSeconds: Float) = {
+  private def calculateTempFadeIn(totalElapsedTimeInSeconds: Float, startTimeInSeconds: Float): Float = {
     fadeInTimeInSeconds.filter(_ > 0.0f)
       .map(fadeInTime => Easing.sine((totalElapsedTimeInSeconds - startTimeInSeconds) / fadeInTime))
       .getOrElse(1.0f)
