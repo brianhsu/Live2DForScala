@@ -20,13 +20,12 @@
 		},
 		{
 			"Id": "ParamBrowRForm",
-			"Value": -0.33,
-			"Blend": "Add"
+			"Value": -0.33
 		},
 		{
 			"Id": "ParamMouthForm",
 			"Value": -1.76,
-			"Blend": "Add"
+			"Blend": "Overwrite"
 		}
 	]
 }

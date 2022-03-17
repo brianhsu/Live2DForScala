@@ -1,12 +1,12 @@
 package moe.brianhsu.porting.live2d.demo
 
-import moe.brianhsu.live2d.adapter.gateway.avatar.effect.FaceDirectionByMouse
+import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPoseReader, FaceDirectionByMouse}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, Pose}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{FaceDirection, Pose}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
-import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, LAppSprite, PowerSprite, SpriteShader}
+import moe.brianhsu.porting.live2d.demo.sprite._
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
 import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}
@@ -32,7 +32,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private val frameTimeCalculator = new FrameTimeCalculator
   private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
 
-  private val avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
+  private val avatarHolder: Try[Avatar] = new AvatarFileReader("/home/brianhsu/WorkRoom/CubismSdkForNative-4-r.4/Samples/Resources/Mark").loadAvatar()
   private val modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
   private val updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {
@@ -160,11 +160,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       avatar <- avatarHolder
       updateStrategy <- updateStrategyHolder
     } {
+      val pose = new AvatarPoseReader(avatar.avatarSettings).loadPose.getOrElse(new Pose)
       updateStrategy.setFunctionalEffects(
-        new Breath() ::
-        new EyeBlink(avatar.avatarSettings) ::
-        faceDirection ::
-        Pose(avatar.avatarSettings) ::
+        // new Breath() ::
+        //new EyeBlink(avatar.avatarSettings) ::
+        faceDirection :: pose ::
         Nil
       )
     }

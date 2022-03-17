@@ -43,7 +43,6 @@ class AvatarFileLoaderFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       val avatarHolder = new AvatarFileReader(directory).loadAvatar()
 
       Then("it should return a Failure")
-      println(avatarHolder)
       avatarHolder.failure.exception shouldBe an[MappingException]
     }
   }

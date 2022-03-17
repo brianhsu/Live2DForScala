@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.effect.FaceDirectionCalculator
-import moe.brianhsu.live2d.enitiy.avatar.effect.{ParameterValueAdd, ParameterValueUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.ParameterValueAdd
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
@@ -32,8 +32,8 @@ class FaceDirectionFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         ParameterValueAdd("ParamAngleY", 15.0f),
         ParameterValueAdd("ParamAngleY", -3.0f),
         ParameterValueAdd("ParamBodyAngleX", 2.0f),
-        ParameterValueUpdate("ParamEyeBallX", 0.2f),
-        ParameterValueUpdate("ParamEyeBallY", 0.5f)
+        ParameterValueAdd("ParamEyeBallX", 0.2f),
+        ParameterValueAdd("ParamEyeBallY", 0.5f)
       )
     }
 

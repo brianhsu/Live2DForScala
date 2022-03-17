@@ -9,6 +9,7 @@ object ExpectedDrawablePosition {
     val fileName = System.getProperty("os.name") match {
       case "Linux" => "expectation/drawablePositionListLinux.txt"
       case "Mac OS X" => "expectation/drawablePositionListMacOSX.txt"
+      case platform if platform.contains("Windows") => "expectation/drawablePositionListWindows.txt"
     }
 
     val lines = Source.fromResource(fileName).getLines().drop(1)

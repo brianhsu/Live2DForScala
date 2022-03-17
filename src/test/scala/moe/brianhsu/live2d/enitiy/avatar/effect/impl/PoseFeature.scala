@@ -1,36 +1,87 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
+import com.sun.jna.{Memory, Pointer}
+import moe.brianhsu.live2d.adapter.gateway.avatar.effect.AvatarPoseReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
+import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.porting.live2d.framework.PartData
+import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel, Part}
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}
 
-class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
+import scala.io.Source
+import org.json4s._
+import org.json4s.native.JsonMethods._
+import org.json4s.native.Serialization
+
+import scala.util.Using
+
+class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues with MockFactory {
+  private implicit val formats: Formats = Serialization.formats(ShortTypeHints(
+    List(
+      classOf[ParameterValueAdd],
+      classOf[ParameterValueMultiply],
+      classOf[ParameterValueUpdate],
+      classOf[FallbackParameterValueAdd],
+      classOf[FallbackParameterValueUpdate],
+      classOf[PartOpacityUpdate],
+    )
+  ))
+
   Feature("Read pose parts data from Live2D avatar settings") {
-    Scenario("Load from Live 2D json setting folder") {
-      Given("A folder path contains json files for a Live2D avatar model")
+    Scenario("Load pose with fade in time specific inside json file") {
+      Given("A folder path contains json files for Haru Live2D avatar model")
       val folderPath = "src/test/resources/models/Haru"
 
       When("Create a Pose effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
-      val pose = Pose(settings)
+      val reader = new AvatarPoseReader(settings)
+      val pose = reader.loadPose.get
 
-      Then("it should have correct pose part data")
-      pose.posePartGroups should contain theSameElementsInOrderAs List(
-        List(
-          PartData("Part01ArmLB001", List(PartData("link1", Nil), PartData("link2", Nil))),
-          PartData("Part01ArmRA001", Nil)
-        ),
-        List(
-          PartData("Part01ArmRB001", Nil),
-          PartData("Part01ArmLA001", List(PartData("link3", Nil), PartData("link4", Nil)))
+      val testDataFile = Source.fromFile("src/test/resources/expectation/pose.json")
+      val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
+
+      dataPointList.foreach { datPoint =>
+        pose.setInitStatusForTest(datPoint.isAlreadyInit)
+        val operations = pose.calculateOperations(
+          createStubbedModel(datPoint),
+          datPoint.totalElapsedTimeInSeconds,
+          datPoint.deltaTimeInSeconds
         )
-      )
-      pose.fadeTimeInSeconds shouldBe 1.5f
+        operations should contain theSameElementsInOrderAs operations
+      }
+
     }
   }
+
+  private def parseLog(line: String): LogData = parse(line).extract[LogData]
+
+  private def createStubbedModel(logData: LogData): Live2DModel = {
+    val model: Live2DModel = stub[Live2DModel]
+
+    for ((parameterId, currentValue) <- logData.fallbackParameters) {
+      (model.parameterWithFallback _)
+        .when(parameterId)
+        .returning(new JavaVMParameter(parameterId, value = currentValue))
+    }
+
+    val parts = logData.partOpacities.map { case (id, opacity) =>
+      val pointer: Pointer = new Memory(4)
+      pointer.setFloat(0, opacity)
+      (id, Part(pointer, id, None))
+    }
+
+    (() => model.parts).when().returning(parts)
+    model
+  }
+
+  case class LogData(totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float,
+                     isAlreadyInit: Boolean,
+                     fallbackParameters: Map[String, Float],
+                     partOpacities: Map[String, Float],
+                     operations: List[EffectOperation])
 
 }

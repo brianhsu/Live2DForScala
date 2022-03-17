@@ -34,7 +34,7 @@ class EyeBlink (avatarSettings: Settings,
     currentTimeInSeconds + parameters.blinkingIntervalRandomness() * nextBlinkingAfterSeconds
   }
 
-  override def calculateOperations(model: Live2DModel, currentTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
+  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
 
     /*
      * This value indicate the openness of the eye of a Live 2D avatar.
@@ -42,11 +42,11 @@ class EyeBlink (avatarSettings: Settings,
      *  - 1.0f means totally opened
      */
     val eyeOpenness = currentBlinkingState match {
-      case EyeBlink.Closing => closingEye(currentTimeInSeconds)
-      case EyeBlink.Closed => closedEye(currentTimeInSeconds)
-      case EyeBlink.Opening => openingEye(currentTimeInSeconds)
-      case EyeBlink.Interval => openedEyeAndWaitNextClosing(currentTimeInSeconds)
-      case EyeBlink.Init => openedEyeAndPrepareToBlink(currentTimeInSeconds)
+      case EyeBlink.Closing => closingEye(totalElapsedTimeInSeconds)
+      case EyeBlink.Closed => closedEye(totalElapsedTimeInSeconds)
+      case EyeBlink.Opening => openingEye(totalElapsedTimeInSeconds)
+      case EyeBlink.Interval => openedEyeAndWaitNextClosing(totalElapsedTimeInSeconds)
+      case EyeBlink.Init => openedEyeAndPrepareToBlink(totalElapsedTimeInSeconds)
     }
 
     avatarSettings.eyeBlinkParameterIds.map { id =>
