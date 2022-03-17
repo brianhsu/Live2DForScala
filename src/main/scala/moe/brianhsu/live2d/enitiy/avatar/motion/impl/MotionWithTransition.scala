@@ -29,14 +29,12 @@ class MotionWithTransition(val baseMotion: Motion) {
       Nil
     } else {
       if (!isStarted) {
-        println("Only started once.")
         this.isStarted = true
         this.startTimeInSeconds = totalElapsedTimeInSeconds
         this.fadeInStartTimeInSeconds = totalElapsedTimeInSeconds
         if (this.endTimeInSeconds.isEmpty && !baseMotion.isLoop && baseMotion.durationInSeconds.isDefined) {
           this.endTimeInSeconds = Some(this.startTimeInSeconds + baseMotion.durationInSeconds.get)
         }
-        println("endTimeInSeconds:" + endTimeInSeconds)
       }
 
       val timeOffsetSeconds: Float = Math.max(totalElapsedTimeInSeconds - startTimeInSeconds, 0.0f)
@@ -66,7 +64,6 @@ class MotionWithTransition(val baseMotion: Motion) {
   }
 
   def startFadeOut(totalElapsedTimeInSeconds: Float): Unit = {
-    println("Enter start to fade out")
     this.mIsForceToFadeOut = true
     val newEndTimeSeconds = totalElapsedTimeInSeconds + baseMotion.fadeOutTimeInSeconds.getOrElse(0.0f)
     val newEndTimeLessThanOriginal = endTimeInSeconds.forall(newEndTimeSeconds < _)
@@ -113,7 +110,7 @@ class MotionWithTransition(val baseMotion: Motion) {
       _ <- endTimeInSeconds
       fadeOutTime <- baseMotion.fadeOutTimeInSeconds if fadeOutTime > 0.0f
     } yield {
-      Easing.sine((this.endTimeInSeconds.get - totalElapsedTimeInSeconds) / baseMotion.fadeOutTimeInSeconds.get)
+      Easing.sine((this.endTimeInSeconds.get - totalElapsedTimeInSeconds) / fadeOutTime)
     }
     fadeOutHolder.getOrElse(1.0f)
   }
@@ -123,6 +120,20 @@ class MotionWithTransition(val baseMotion: Motion) {
    *
    * For unit test only.
    */
-  private[impl] def getEndTimeInSecondsForUnitTest(): Option[Float] = endTimeInSeconds
+  private[impl] def getEndTimeInSecondsForUnitTest: Option[Float] = endTimeInSeconds
+
+  /**
+   * Get the value of startTimeInSeconds
+   *
+   * For unit test only.
+   */
+  private[impl] def getStartTimeInSecondsForUnitTest: Float = startTimeInSeconds
+
+  /**
+   * Get the value of fadeInStartTimeInSeconds
+   *
+   * For unit test only.
+   */
+  private[impl] def getFadeInStartTimeInSecondsForUnitTest: Float = fadeInStartTimeInSeconds
 
 }

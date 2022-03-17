@@ -1,12 +1,11 @@
 package moe.brianhsu.live2d.enitiy.avatar.updater
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect._
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter, Part}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.prop.TableDrivenPropertyChecks
 
 class UpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory {
 
@@ -48,7 +47,7 @@ class UpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Match
           ParameterValueUpdate("id2", 0.3f, 0.4f),
           ParameterValueMultiply("id3", 0.5f, 0.6f),
           ParameterValueAdd("id3", 0.7f, 0.8f),
-          ParameterValueUpdate("id2", 0.9f, 1.0f),
+          ParameterValueUpdate("id2", 0.9f),
           ParameterValueMultiply("id1", 1.1f, 1.2f),
         )
       )
