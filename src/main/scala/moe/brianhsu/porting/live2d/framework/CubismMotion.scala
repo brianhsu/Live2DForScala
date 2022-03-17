@@ -50,8 +50,6 @@ class CubismMotion(motionData: MotionData,
                                    endTimeInSeconds: Option[Float]): List[EffectOperation] = {
 
     var operations: List[EffectOperation] = Nil
-    var occupiedLipSyncParameterId: Set[String] = Set.empty
-    var occupiedEyeBlinkParameterId: Set[String] = Set.empty
 
     val tmpFadeIn = calculateTempFadeIn(totalElapsedTimeInSeconds, startTimeInSeconds)
     val tmpFadeOut = calculateTempFadeOut(totalElapsedTimeInSeconds, endTimeInSeconds)
@@ -67,40 +65,21 @@ class CubismMotion(motionData: MotionData,
       .map(curve => evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop))
       .headOption
 
+    val occupiedEyeBlinkParameterId = motionData.parameterCurves.map(_.id).intersect(eyeBlinkParameterIds).toSet
+    val occupiedLipSyncParameterId = motionData.parameterCurves.map(_.id).intersect(lipSyncParameterIds).toSet
+
     for(curve <- motionData.parameterCurves) {
       val sourceValue: Float = model.parameters(curve.id).current
 
       // Evaluate curve and apply value.
-      var value = evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop)
-      if (eyeBlinkValueHolder.isDefined && eyeBlinkParameterIds.contains(curve.id)) {
-        value = value * eyeBlinkValueHolder.get
-        occupiedEyeBlinkParameterId += curve.id
-      }
-      if (eyeBlinkValueHolder.isDefined) {
-        var isBreak: Boolean = false
-        for (id <- eyeBlinkParameterIds if !isBreak) {
-          if (id == curve.id) {
-            value *= eyeBlinkValueHolder.get
-            occupiedEyeBlinkParameterId += id
-            isBreak = true
-          }
-        }
-      }
-      if (lipSyncValueHolder.isDefined) {
-        var isBreak: Boolean = false
-        for (id <- lipSyncParameterIds if !isBreak) {
-          if (id == curve.id) {
-            value += lipSyncValueHolder.get
-            occupiedLipSyncParameterId += id
-            isBreak = true
-          }
-        }
-      }
+      val eyeBlinkMultiplier = eyeBlinkValueHolder.filter(_ => eyeBlinkParameterIds.contains(curve.id)).getOrElse(1.0f)
+      val lipSyncValueAdder = lipSyncValueHolder.filter(_ => lipSyncParameterIds.contains(curve.id)).getOrElse(0.0f)
+      val value = evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop) * eyeBlinkMultiplier + lipSyncValueAdder
 
       var v: Float = 0
+
       // パラメータごとのフェード
-      if (curve.fadeInTime < 0.0f && curve.fadeOutTime < 0.0f)
-      {
+      if (curve.fadeInTime < 0.0f && curve.fadeOutTime < 0.0f) {
         //モーションのフェードを適用
         v = sourceValue + (value - sourceValue) * weight
       } else {
