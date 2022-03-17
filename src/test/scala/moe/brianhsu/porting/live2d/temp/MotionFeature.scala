@@ -86,11 +86,11 @@ class MotionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
       dataPointList.foreach { case LogData(input, output) =>
-        When("Calculate the operations from data point using motion")
+        //When("Calculate the operations from data point using motion")
         val model = createStubbedModel(input)
         val operations = motion.calculateOperations(model, input.totalElapsedTimeInSeconds, input.deltaTimeInSeconds, input.weight, input.startTimeInSeconds, input.fadeInStartTimeInSeconds, input.endTimeInSeconds)
 
-        Then("it should be the same as the result in recorded file")
+        //Then("it should be the same as the result in recorded file")
         operations should contain theSameElementsInOrderAs output.operations
       }
     }

@@ -4,10 +4,12 @@ import CubismMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
-import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
+import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData, MotionSegment}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+
+import scala.annotation.tailrec
 
 object CubismMotion {
   private val EffectNameEyeBlink = "EyeBlink"
@@ -35,7 +37,7 @@ class CubismMotion(motionData: MotionData,
                    override val fadeInTimeInSeconds: Option[Float],
                    override val fadeOutTimeInSeconds: Option[Float]) extends Motion {
 
-  override def events: List[MotionEvent] = this.motionData.events.toList
+  override def events: List[MotionEvent] = this.motionData.events
 
   override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float,
                                    weight: Float,
@@ -51,12 +53,12 @@ class CubismMotion(motionData: MotionData,
 
     val eyeBlinkValueHolder = motionData.modelCurves
       .filter(_.id == EffectNameEyeBlink)
-      .map(curve => evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop))
+      .map(curve => evaluateCurve(curve, elapsedTimeSinceLastLoop))
       .headOption
 
     val lipSyncValueHolder = motionData.modelCurves
       .filter(_.id == EffectNameLipSync)
-      .map(curve => evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop))
+      .map(curve => evaluateCurve(curve, elapsedTimeSinceLastLoop))
       .headOption
 
     val occupiedEyeBlinkParameterId = motionData.parameterCurves.map(_.id).intersect(eyeBlinkParameterIds).toSet
@@ -67,7 +69,7 @@ class CubismMotion(motionData: MotionData,
 
       val eyeBlinkMultiplier = eyeBlinkValueHolder.filter(_ => eyeBlinkParameterIds.contains(curve.id)).getOrElse(1.0f)
       val lipSyncValueAdder = lipSyncValueHolder.filter(_ => lipSyncParameterIds.contains(curve.id)).getOrElse(0.0f)
-      val value = evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop) * eyeBlinkMultiplier + lipSyncValueAdder
+      val value = evaluateCurve(curve, elapsedTimeSinceLastLoop) * eyeBlinkMultiplier + lipSyncValueAdder
 
       val afterFading = if (curve.fadeInTime.isEmpty && curve.fadeOutTime.isEmpty) {
         parameterOriginalValue + (value - parameterOriginalValue) * weight
@@ -122,7 +124,7 @@ class CubismMotion(motionData: MotionData,
   private def createPartOperations(elapsedTimeSinceLastLoop: Float) = {
     motionData.partOpacityCurves
       .map { curve =>
-        val value = evaluateCurve(motionData, curve, elapsedTimeSinceLastLoop)
+        val value = evaluateCurve(curve, elapsedTimeSinceLastLoop)
         FallbackParameterValueUpdate(curve.id, value)
       }
   }
@@ -178,30 +180,13 @@ class CubismMotion(motionData: MotionData,
       .getOrElse(1.0f)
   }
 
-  private def evaluateCurve(motionData: MotionData, curve: MotionCurve, time: Float): Float = {
+  private def evaluateCurve(curve: MotionCurve, time: Float): Float = {
+    val currentSegments = curve.segments
+    val targetSegmentHolder = currentSegments.find(c => c.points.last.time > time)
 
-    var target: Int = -1
-    val totalSegmentCount: Int = curve.baseSegmentIndex + curve.segmentCount
-    var pointPosition: Int = 0
-    var isBreak: Boolean = false
-
-    for (i <- curve.baseSegmentIndex until totalSegmentCount if !isBreak) {
-      // Get first point of next segment.
-      pointPosition = motionData.segments(i).basePointIndex + motionData.segments(i).segmentType.pointCount
-
-      // Break if time lies within current segment.
-      if (motionData.points(pointPosition).time > time) {
-        target = i
-        isBreak = true
-      }
+    targetSegmentHolder match {
+      case None => curve.segments.last.points.last.value
+      case Some(segment) => segment.segmentType.evaluate(segment.points.toArray, time)
     }
-
-    if (target == -1) {
-      return motionData.points(pointPosition).value
-    }
-
-    val segment = motionData.segments(target)
-    segment.segmentType.evaluate(motionData.points.drop(segment.basePointIndex), time)
   }
-
 }
