@@ -8,7 +8,19 @@ import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingContext
 
 import java.nio.{ByteBuffer, FloatBuffer}
 
-class ShaderRenderer(implicit gl: OpenGL) {
+object ShaderRenderer {
+  private var shaderRendererHolder: Option[ShaderRenderer] = None
+  def getInstance(implicit gl: OpenGL): ShaderRenderer = {
+    shaderRendererHolder match {
+      case Some(renderer) => renderer
+      case None => {
+        this.shaderRendererHolder = Some(new ShaderRenderer())
+        this.shaderRendererHolder.get
+      }
+    }
+  }
+}
+class ShaderRenderer private (implicit gl: OpenGL) {
 
   import gl._
 
@@ -50,8 +62,10 @@ class ShaderRenderer(implicit gl: OpenGL) {
     setGlVertexInfo(vertexArray, uvArray, shader)
 
     for (context <- drawClippingContextHolder) {
-      val textureIdHolder = renderer.offscreenBufferHolder.map(_.getColorBuffer)
-      textureIdHolder.foreach { textureId =>
+      for {
+        buffer <- renderer.offscreenBufferHolder
+        textureId <- buffer.bufferIds.textureBufferHolder
+      } {
         setGlTexture(GL_TEXTURE1, textureId, shader.samplerTexture1Location, 1)
         gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, FloatBuffer.wrap(context.getMatrixForDraw.elements))
         setGlColorChannel(context, shader)

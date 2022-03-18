@@ -9,24 +9,39 @@ import moe.brianhsu.porting.live2d.framework.model.Avatar
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.{ClippingContext, ClippingManager}
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.ShaderRenderer
 
-class Renderer(model: Live2DModel)(implicit gl: OpenGL) {
+class Renderer(var model: Live2DModel)(implicit gl: OpenGL) {
+  def destroy(): Unit = {
+    offscreenBufferHolder.foreach(_.destroy())
+  }
 
   import gl._
 
   private var projection: Option[GeneralMatrix] = None
-  private val textureManager = new TextureManager
-  private val shaderRenderer = new ShaderRenderer
+  private var textureManager = new TextureManager
+  private var shaderRenderer = ShaderRenderer.getInstance
   private val profile = new Profile()
   private var isCulling: Boolean = false
   private var clippingContextBufferForMask: Option[ClippingContext] = None
   private var clippingContextBufferForDraw: Option[ClippingContext] = None
-  private val clippingManagerHolder: Option[ClippingManager] = model.containMaskedDrawables match {
+  private var clippingManagerHolder: Option[ClippingManager] = model.containMaskedDrawables match {
     case true => Some(new ClippingManager(model, textureManager))
     case false => None
   }
 
-  private[renderer] val offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => new OffscreenFrame(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
+  var offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => new OffscreenFrame(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
 
+  def switchModel(model: Live2DModel): Unit = {
+    println("Switching model....")
+    this.offscreenBufferHolder.foreach(_.destroy())
+    this.model = model
+    this.textureManager = new TextureManager
+    this.shaderRenderer = ShaderRenderer.getInstance
+    this.clippingManagerHolder = model.containMaskedDrawables match {
+      case true => Some(new ClippingManager(model, textureManager))
+      case false => None
+    }
+    this.offscreenBufferHolder = clippingManagerHolder.map(manager => new OffscreenFrame(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
+  }
   def getProjection: Option[GeneralMatrix] = projection
   def getClippingContextBufferForDraw: Option[ClippingContext] = clippingContextBufferForDraw
   def getClippingContextBufferForMask: Option[ClippingContext] = clippingContextBufferForMask

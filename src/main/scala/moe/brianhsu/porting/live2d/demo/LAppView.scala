@@ -3,7 +3,7 @@ package moe.brianhsu.porting.live2d.demo
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPoseReader, FaceDirectionByMouse}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{FaceDirection, Pose}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, Pose}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite._
@@ -32,10 +32,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private val frameTimeCalculator = new FrameTimeCalculator
   private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
 
-  private val avatarHolder: Try[Avatar] = new AvatarFileReader("/home/brianhsu/WorkRoom/CubismSdkForNative-4-r.4/Samples/Resources/Mark").loadAvatar()
-  private val modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
-  private val rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
-  private val updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {
+  private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
+  private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
+  private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
+  private var updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {
     a.updateStrategyHolder = Some(new DefaultStrategy(a.avatarSettings, a.model))
     a.updateStrategyHolder.get.asInstanceOf[DefaultStrategy]
   })
@@ -162,8 +162,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     } {
       val pose = new AvatarPoseReader(avatar.avatarSettings).loadPose.getOrElse(new Pose)
       updateStrategy.setFunctionalEffects(
-        // new Breath() ::
-        //new EyeBlink(avatar.avatarSettings) ::
+        new Breath() ::
+        new EyeBlink(avatar.avatarSettings) ::
         faceDirection :: pose ::
         Nil
       )
@@ -188,6 +188,19 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     openGL.glClearDepth(1.0)
   }
 
+  private def switchModel(filename: String): Unit = {
+    this.avatarHolder = new AvatarFileReader(filename).loadAvatar()
+    this.modelHolder = avatarHolder.map(_.model)
+    this.updateStrategyHolder = avatarHolder.map(a => {
+      println("Create new update strategy")
+      a.updateStrategyHolder = Some(new DefaultStrategy(a.avatarSettings, a.model))
+      a.updateStrategyHolder.get.asInstanceOf[DefaultStrategy]
+    })
+    this.rendererHolder = modelHolder.map(model => new Renderer(model))
+    setupAvatarEffects()
+    initOpenGL()
+  }
+
   def keyReleased(keyEvent: KeyEvent): Unit = {
     keyEvent.getKeyChar match {
       case '0' => startExpression("f00")
@@ -204,6 +217,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       case 's' => startMotion("tapBody", 1)
       case 'd' => startMotion("tapBody", 2)
       case 'f' => startMotion("tapBody", 3)
+      case 'z' => switchModel("src/main/resources/Haru")
+      case 'x' => switchModel("src/test/resources/models/Mark")
+      case 'c' => switchModel("src/test/resources/models/Rice")
+      case 'v' => switchModel("src/test/resources/models/Natori")
+      case 'b' => switchModel("src/test/resources/models/Hiyori")
       case _   => println("Unknow key")
     }
   }
