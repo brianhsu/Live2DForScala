@@ -22,7 +22,14 @@ libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.11" % Test,
     "org.scalamock" %% "scalamock" % "5.2.0" % Test,
     "org.slf4j" % "slf4j-api" % "1.7.36",
-    "org.slf4j" % "slf4j-simple" % "1.7.36"
+    "org.slf4j" % "slf4j-simple" % "1.7.36",
+    "org.lwjgl" % "lwjgl" % "3.3.1",
+    "org.lwjgl" % "lwjgl" % "3.3.1" classifier "natives-linux",
+    "org.lwjgl" % "lwjgl-opengl" % "3.3.1",                          
+    "org.lwjgl" % "lwjgl-opengles" % "3.3.1",                          
+    "org.lwjgl" % "lwjgl-opengl" % "3.3.1" classifier "natives-linux",
+    "org.lwjgl" % "lwjgl-opengles" % "3.3.1" classifier "natives-linux"
+
 )
 
 fork := true

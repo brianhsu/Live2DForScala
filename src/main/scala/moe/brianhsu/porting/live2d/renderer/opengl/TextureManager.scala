@@ -33,7 +33,7 @@ class TextureManager(implicit gl: OpenGL) {
   private def createOpenGLTexture(bitmapInfo: ImageBitmap): TextureInfo = {
 
     val textureIds = new Array[Int](1)
-    gl.glGenTextures(1, textureIds, 0)
+    gl.glGenTextures(1, textureIds)
     gl.glBindTexture(GL_TEXTURE_2D, textureIds(0))
     gl.glTexImage2D(
       GL_TEXTURE_2D, 0, GL_RGBA,

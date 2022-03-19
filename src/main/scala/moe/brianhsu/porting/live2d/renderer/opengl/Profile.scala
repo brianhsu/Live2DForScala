@@ -55,7 +55,7 @@ class Profile(implicit gl: OpenGL) {
 
     gl.glGetIntegerv(GL_FRONT_FACE, lastFrontFace, 0)
 
-    gl.glGetBooleanv(GL_COLOR_WRITEMASK, lastColorMask, 0)
+    gl.glGetBooleanv(GL_COLOR_WRITEMASK, lastColorMask)
 
     gl.glGetIntegerv(GL_BLEND_SRC_RGB, lastBlending, 0)
     gl.glGetIntegerv(GL_BLEND_DST_RGB, lastBlending, 1)
@@ -69,7 +69,7 @@ class Profile(implicit gl: OpenGL) {
   def restore(): Unit = {
     gl.glUseProgram(lastProgram(0))
 
-    setGlEnableVertexAttribArray(1, lastVertexAttribArrayEnabled(0) != GL_FALSE)
+    setGlEnableVertexAttribArray(0, lastVertexAttribArrayEnabled(0) != GL_FALSE)
     setGlEnableVertexAttribArray(1, lastVertexAttribArrayEnabled(1) != GL_FALSE)
     setGlEnableVertexAttribArray(2, lastVertexAttribArrayEnabled(2) != GL_FALSE)
     setGlEnableVertexAttribArray(3, lastVertexAttribArrayEnabled(3) != GL_FALSE)

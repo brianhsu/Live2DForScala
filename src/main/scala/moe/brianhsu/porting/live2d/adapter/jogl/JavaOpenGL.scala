@@ -60,8 +60,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
   override val GL_DEPTH_BUFFER_BIT: Int = GL.GL_DEPTH_BUFFER_BIT
   override val GL_TRIANGLE_FAN: Int = GL.GL_TRIANGLE_FAN
 
-  override def glGenTextures(n: Int, textures: Array[Int], textures_offset: Int): Unit = {
-    gl.glGenTextures(n, textures, textures_offset)
+  override def glGenTextures(n: Int, textures: Array[Int]): Unit = {
+    gl.glGenTextures(n, textures, 0)
   }
 
   override def glBindTexture(target: Int, texture: Int): Unit = {
@@ -69,7 +69,7 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
   }
 
   override def glTexImage2D(target: Int, level: Int, internalformat: Int, width: Int, height: Int,
-                            border: Int, format: Int, `type`: Int, pixels: Buffer): Unit = {
+                            border: Int, format: Int, `type`: Int, pixels: ByteBuffer): Unit = {
     gl.glTexImage2D(target, level, internalformat, width, height, border, format, `type`, pixels)
   }
 
@@ -197,8 +197,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glIsEnabled(cap)
   }
 
-  override def glGetBooleanv(pname: Int, data: Array[Byte], data_offset: Int): Unit = {
-    gl.glGetBooleanv(pname, data, data_offset)
+  override def glGetBooleanv(pname: Int, data: Array[Byte]): Unit = {
+    gl.glGetBooleanv(pname, data, 0)
   }
 
   override def glDisableVertexAttribArray(index: Int): Unit = {
@@ -229,8 +229,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glGetIntegerv(pname, params)
   }
 
-  override def glGenFramebuffers(n: Int, framebuffers: Array[Int], framebuffers_offset: Int): Unit = {
-    gl.glGenFramebuffers(n, framebuffers, framebuffers_offset)
+  override def glGenFramebuffers(n: Int, framebuffers: Array[Int]): Unit = {
+    gl.glGenFramebuffers(n, framebuffers, 0)
   }
 
   override def glBindFramebuffer(target: Int, framebuffer: Int): Unit = {
@@ -249,12 +249,12 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glClear(mask)
   }
 
-  override def glDeleteTextures(n: Int, textures: Array[Int], textures_offset: Int): Unit = {
-    gl.glDeleteTextures(n, textures, textures_offset)
+  override def glDeleteTextures(n: Int, textures: Array[Int]): Unit = {
+    gl.glDeleteTextures(n, textures, 0)
   }
 
-  override def glDeleteFramebuffers(n: Int, framebuffers: Array[Int], framebuffers_offset: Int): Unit = {
-    gl.glDeleteFramebuffers(n, framebuffers, framebuffers_offset)
+  override def glDeleteFramebuffers(n: Int, framebuffers: Array[Int]): Unit = {
+    gl.glDeleteFramebuffers(n, framebuffers, 0)
   }
 
   override def glDrawElements(mode: Int, count: Int, `type`: Int, indices: ByteBuffer): Unit = {

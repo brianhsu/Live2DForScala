@@ -23,7 +23,7 @@ class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)(implicit
 
     if (colorBufferHolder.isEmpty) {
       val newColorBuffer: Array[Int] = Array(0)
-      gl.glGenTextures(1, newColorBuffer, 0)
+      gl.glGenTextures(1, newColorBuffer)
       gl.glBindTexture(GL_TEXTURE_2D, newColorBuffer(0))
       colorBufferHolder = newColorBuffer.find(_ != 0)
     }
@@ -38,7 +38,7 @@ class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)(implicit
 
     if (textureBufferHolder.isEmpty) {
       val newTextureBuffer: Array[Int] = Array(0)
-      gl.glGenFramebuffers(1, newTextureBuffer, 0)
+      gl.glGenFramebuffers(1, newTextureBuffer)
       textureBufferHolder = newTextureBuffer.find(_ != 0)
     }
 
@@ -79,11 +79,11 @@ class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)(implicit
 
   def destroy(): Unit = {
     bufferIds.colorBufferHolder.foreach { colorBuffer =>
-      gl.glDeleteTextures(1, Array(colorBuffer), 0)
+      gl.glDeleteTextures(1, Array(colorBuffer))
     }
 
     bufferIds.textureBufferHolder.foreach { renderTexture =>
-      gl.glDeleteFramebuffers(1, Array(renderTexture), 0)
+      gl.glDeleteFramebuffers(1, Array(renderTexture))
     }
   }
 }

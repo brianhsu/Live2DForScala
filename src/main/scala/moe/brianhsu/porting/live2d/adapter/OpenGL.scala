@@ -3,9 +3,9 @@ package moe.brianhsu.porting.live2d.adapter
 import java.nio.{Buffer, ByteBuffer, FloatBuffer, IntBuffer}
 
 trait OpenGL {
-  def glGenTextures(n: Int, textures: Array[Int], textures_offset: Int): Unit
+  def glGenTextures(n: Int, textures: Array[Int]): Unit
   def glBindTexture(target: Int, texture: Int): Unit
-  def glTexImage2D(target: Int, level: Int, internalformat: Int, width: Int, height: Int, border: Int, format: Int, `type`: Int, pixels: Buffer): Unit
+  def glTexImage2D(target: Int, level: Int, internalformat: Int, width: Int, height: Int, border: Int, format: Int, `type`: Int, pixels: ByteBuffer): Unit
   def glGenerateMipmap(target: Int): Unit
   def glTexParameteri(target: Int, pname: Int, param: Int): Unit
   def glViewport(x: Int, y: Int, width: Int, height: Int): Unit
@@ -36,7 +36,7 @@ trait OpenGL {
   def glGetIntegerv(pname: Int, params: Array[Int], params_offset: Int): Unit
   def glGetVertexAttribiv(index: Int, pname: Int, params: Array[Int], params_offset: Int): Unit
   def glIsEnabled(cap: Int): Boolean
-  def glGetBooleanv(pname: Int, data: Array[Byte], data_offset: Int): Unit
+  def glGetBooleanv(pname: Int, data: Array[Byte]): Unit
   def glDisableVertexAttribArray(index: Int): Unit
   def glEnable(cap: Int): Unit
   def glDisable(cap: Int): Unit
@@ -44,13 +44,13 @@ trait OpenGL {
   def glColorMask(red: Boolean, green: Boolean, blue: Boolean, alpha: Boolean): Unit
   def glBindBuffer(target: Int, buffer: Int): Unit
   def glGetIntegerv(pname: Int, params: IntBuffer): Unit
-  def glGenFramebuffers(n: Int, framebuffers: Array[Int], framebuffers_offset: Int): Unit
+  def glGenFramebuffers(n: Int, framebuffers: Array[Int]): Unit
   def glBindFramebuffer(target: Int, framebuffer: Int): Unit
   def glFramebufferTexture2D(target: Int, attachment: Int, textarget: Int, texture: Int, level: Int): Unit
   def glClearColor(red: Float, green: Float, blue: Float, alpha: Float): Unit
   def glClear(mask: Int): Unit
-  def glDeleteTextures(n: Int, textures: Array[Int], textures_offset: Int): Unit
-  def glDeleteFramebuffers(n: Int, framebuffers: Array[Int], framebuffers_offset: Int): Unit
+  def glDeleteTextures(n: Int, textures: Array[Int]): Unit
+  def glDeleteFramebuffers(n: Int, framebuffers: Array[Int]): Unit
   def glDrawElements(mode: Int, count: Int, `type`: Int, indices: ByteBuffer): Unit
   def glClearDepth(depth: Double): Unit
   def glBlendFunc(sfactor: Int, dfactor: Int): Unit
