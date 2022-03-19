@@ -134,6 +134,10 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glGetProgramInfoLog(program, bufSize, length, infoLog)
   }
 
+  override def glGetShaderi(shader: Int, pname: Int): Int = {
+    return 0
+  }
+
   override def glGetShaderiv(shader: Int, pname: Int, params: IntBuffer): Unit = {
     gl.glGetShaderiv(shader, pname, params)
   }

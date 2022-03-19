@@ -1,11 +1,15 @@
 package moe.brianhsu.porting.live2d.swtopengl
 
+import moe.brianhsu.porting.live2d.adapter.lwjgl.{LWJGLOpenGL, SWTOpenGLCanvasInfo}
+import moe.brianhsu.porting.live2d.demo.LAppView
 import org.eclipse.swt._
+import org.eclipse.swt.events.{PaintEvent, PaintListener}
 import org.eclipse.swt.graphics._
 import org.eclipse.swt.layout._
 import org.eclipse.swt.opengl._
 import org.eclipse.swt.widgets._
 import org.lwjgl.opengl._
+import org.lwjgl.opengles.GLES
 
 object SWTOpenGL {
   def drawTorus(r: Float, R: Float, nsides: Int, rings: Int): Unit = {
@@ -50,54 +54,27 @@ object SWTOpenGL {
     data.doubleBuffer = true
     val canvas = new GLCanvas(comp, SWT.NONE, data)
     canvas.setCurrent()
-    GL.createCapabilities()
+    GL.createCapabilities
+    val canvasInfo = new SWTOpenGLCanvasInfo(canvas)
+    val appView = new LAppView(canvasInfo)(new LWJGLOpenGL)
 
-    canvas.addListener(SWT.Resize, event => {
-      val bounds = canvas.getBounds()
-      val fAspect = bounds.width.asInstanceOf[Float] / bounds.height.asInstanceOf[Float]
-      canvas.setCurrent()
-      GL.createCapabilities()
-      GL11.glViewport(0, 0, bounds.width, bounds.height)
-      GL11.glMatrixMode(GL11.GL_PROJECTION)
-      GL11.glLoadIdentity()
-      val near = 0.5f
-      val bottom = -near * Math.tan(45.0f / 2).asInstanceOf[Float]
-      val left = fAspect * bottom
-      GL11.glFrustum(left, -left, bottom, -bottom, near, 400.0f)
-      GL11.glMatrixMode(GL11.GL_MODELVIEW)
-      GL11.glLoadIdentity()
+    canvas.addListener(SWT.RESIZE, event => {
+      appView.resize()
+      appView.display()
     })
-    GL11.glClearColor(1.0f, 1.0f, 1.0f, 1.0f)
-    GL11.glColor3f(1.0f, 0.0f, 0.0f)
-    GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST)
-    GL11.glClearDepth(1.0)
-    GL11.glLineWidth(2)
-    GL11.glEnable(GL11.GL_DEPTH_TEST)
     val run = new Runnable() {
-      var rot = 0
-
       override def run(): Unit = {
         if (!canvas.isDisposed()) {
-          canvas.setCurrent()
-          GL.createCapabilities()
-          GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT)
-          GL11.glClearColor(.3f, .5f, .8f, 1.0f)
-          GL11.glLoadIdentity()
-          GL11.glTranslatef(0.0f, 0.0f, -10.0f)
-          val frot = rot
-          GL11.glRotatef(0.15f * rot, 2.0f * frot, 10.0f * frot, 1.0f)
-          GL11.glRotatef(0.3f * rot, 3.0f * frot, 1.0f * frot, 1.0f)
-          rot += 1
-          GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
-          GL11.glColor3f(0.9f, 0.9f, 0.9f)
-          drawTorus(1, 1.9f + (Math.sin((0.004f * frot)).asInstanceOf[Float]), 15, 15)
-          canvas.swapBuffers()
-          display.asyncExec(this)
+          canvas.setCurrent();
+          GL.createCapabilities();
+          appView.display()
+          canvas.swapBuffers();
+          display.asyncExec(this);
         }
       }
     };
-    canvas.addListener(SWT.Paint, event => run.run())
-    display.asyncExec(run)
+    canvas.addListener(SWT.Paint, event => run.run());
+    display.asyncExec(run);
     shell.setText("SWT/LWJGL Example")
     shell.setSize(640, 480)
     shell.open()

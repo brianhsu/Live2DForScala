@@ -52,7 +52,10 @@ class TextureManager(implicit gl: OpenGL) {
   private def readBitmapFromFile(filename: String): ImageBitmap = {
     val image = ImageIO.read(new File(filename))
     val bitmap = image.getRaster.getPixels(0, 0, image.getWidth, image.getHeight, null: Array[Int]).map(_.toByte)
-    ImageBitmap(image.getWidth, image.getHeight, ByteBuffer.wrap(bitmap))
+    val buffer = ByteBuffer.allocateDirect(bitmap.length)
+    buffer.put(bitmap)
+    buffer.flip()
+    ImageBitmap(image.getWidth, image.getHeight, buffer)
   }
 
 }

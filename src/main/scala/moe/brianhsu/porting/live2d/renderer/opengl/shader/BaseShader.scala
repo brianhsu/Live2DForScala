@@ -94,12 +94,15 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
     val logLengthHolder = IntBuffer.allocate(1)
     gl.glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, logLengthHolder)
     val logLength = logLengthHolder.get()
+
+    //val logLength = gl.glGetShaderi(shaderId, GL_INFO_LOG_LENGTH)
     logLength match {
       case 0 => None
       case _ =>
-        val logBuffer = ByteBuffer.allocate(logLength)
-        gl.glGetShaderInfoLog(shaderId, logLength, logLengthHolder, logBuffer)
-        Some(byteBufferToString(logBuffer, logLength))
+        //val logBuffer = ByteBuffer.allocate(logLength)
+        //gl.glGetShaderInfoLog(shaderId, logLength, logLengthHolder, logBuffer)
+        //Some(byteBufferToString(logBuffer, logLength))
+        Some("Canoot compile sharder")
     }
   }
 

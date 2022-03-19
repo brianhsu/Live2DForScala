@@ -21,6 +21,7 @@ trait OpenGL {
   def glShaderSource(shader: Int, count: Int, string: Array[String], length: IntBuffer): Unit
   def glGetProgramiv(program: Int, pname: Int, params: IntBuffer): Unit
   def glGetProgramInfoLog(program: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit
+  def glGetShaderi(shader: Int, pname: Int): Int
   def glGetShaderiv(shader: Int, pname: Int, params: IntBuffer): Unit
   def glGetShaderInfoLog(shader: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit
   def glGetAttribLocation(program: Int, name: String): Int
