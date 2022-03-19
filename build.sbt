@@ -13,6 +13,7 @@ Compile / doc / scalacOptions ++= Seq("-private")
 autoAPIMappings := true
 
 libraryDependencies ++= Seq(
+    "org.eclipse.swt" % "org.eclipse.swt.gtk.linux.x86_64" % "4.3",
     "net.java.dev.jna" % "jna" % "5.10.0",
     "org.json4s" %% "json4s-native" % "4.0.4",
 //    "org.jogamp.gluegen" % "gluegen-rt" % "2.3.2",
