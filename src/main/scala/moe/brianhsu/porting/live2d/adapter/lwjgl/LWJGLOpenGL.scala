@@ -120,7 +120,7 @@ class LWJGLOpenGL extends OpenGL {
     GL20.glCreateShader(`type`)
   }
 
-  override def glShaderSource(shader: Int, count: Int, string: Array[String], length: IntBuffer): Unit = {
+  override def glShaderSource(shader: Int, count: Int, string: Array[String]): Unit = {
     GL20.glShaderSource(shader, string: _*)
   }
 

@@ -18,7 +18,7 @@ trait OpenGL {
   def glDeleteShader(shader: Int): Unit
   def glLinkProgram(program: Int): Unit
   def glCreateShader(`type`: Int): Int
-  def glShaderSource(shader: Int, count: Int, string: Array[String], length: IntBuffer): Unit
+  def glShaderSource(shader: Int, count: Int, string: Array[String]): Unit
   def glGetProgramiv(program: Int, pname: Int, params: IntBuffer): Unit
   def glGetProgramInfoLog(program: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit
   def glGetShaderi(shader: Int, pname: Int): Int

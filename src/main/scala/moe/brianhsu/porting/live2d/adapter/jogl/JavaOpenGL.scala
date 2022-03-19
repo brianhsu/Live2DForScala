@@ -122,8 +122,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glCreateShader(`type`)
   }
 
-  override def glShaderSource(shader: Int, count: Int, string: Array[String], length: IntBuffer): Unit = {
-    gl.glShaderSource(shader, count, string, length)
+  override def glShaderSource(shader: Int, count: Int, string: Array[String]): Unit = {
+    gl.glShaderSource(shader, count, string, null, 0)
   }
 
   override def glGetProgramiv(program: Int, pname: Int, params: IntBuffer): Unit = {
