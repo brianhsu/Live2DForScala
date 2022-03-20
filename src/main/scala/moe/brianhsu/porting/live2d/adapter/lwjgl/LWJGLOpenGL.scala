@@ -184,16 +184,15 @@ class LWJGLOpenGL extends OpenGL {
   }
 
   override def glGetVertexAttribiv(index: Int, pname: Int, params: Array[Int], params_offset: Int): Unit = {
-
-    GL20.glGetVertexAttribiv(index, pname, IntBuffer.wrap(params, params_offset, 1).array())
+    val tmp = Array(Int.MinValue)
+    GL20.glGetVertexAttribiv(index, pname, tmp)
+    params(params_offset) = tmp(0)
   }
 
   override def glIsEnabled(cap: Int): Boolean = GL11.glIsEnabled(cap)
 
   override def glGetBooleanv(pname: Int, data: Array[Byte]): Unit = {
-    val tmp = ByteBuffer.allocateDirect(1)
-    GL11.glGetBooleanv(pname, tmp)
-    data(0) = tmp.get()
+    GL11.glGetBooleanv(pname, data)
   }
 
   override def glDisableVertexAttribArray(index: Int): Unit = {

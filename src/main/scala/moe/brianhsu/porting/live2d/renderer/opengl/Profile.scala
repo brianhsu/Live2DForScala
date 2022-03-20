@@ -57,6 +57,7 @@ class Profile(implicit gl: OpenGL) {
     gl.glGetIntegerv(GL_FRONT_FACE, lastFrontFace, 0)
 
     gl.glGetBooleanv(GL_COLOR_WRITEMASK, lastColorMask)
+    println("lastColorMask:" + lastColorMask.toList)
 
     gl.glGetIntegerv(GL_BLEND_SRC_RGB, lastBlending, 0)
     gl.glGetIntegerv(GL_BLEND_DST_RGB, lastBlending, 1)
