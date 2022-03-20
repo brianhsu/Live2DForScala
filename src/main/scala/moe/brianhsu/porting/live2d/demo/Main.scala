@@ -35,6 +35,7 @@ object Main {
     canvas.addGLEventListener(glMain)
     canvas.addMouseListener(glMain)
     canvas.addMouseMotionListener(glMain)
+    canvas.addMouseWheelListener(glMain)
     canvas.addKeyListener(glMain)
     canvas.setBackground(new Color(1, 0, 0, 0))
     canvas

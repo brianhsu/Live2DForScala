@@ -4,7 +4,7 @@ import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
 import moe.brianhsu.porting.live2d.adapter.jogl.{JavaOpenGL, JavaOpenGLCanvasInfo}
 
-import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent}
+import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent, MouseWheelEvent}
 import java.util.concurrent.{ScheduledThreadPoolExecutor, TimeUnit}
 
 class FixedFPSAnimator(fps: Int, drawable: GLAutoDrawable) {
@@ -79,6 +79,9 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
   override def keyPressed(keyEvent: KeyEvent): Unit = {}
   override def keyReleased(keyEvent: KeyEvent): Unit = {
     this.view.foreach(_.keyReleased(keyEvent.getKeyChar))
-
   }
+  override def mouseWheelMoved(e: MouseWheelEvent): Unit = {
+    this.view.foreach(_.zoom(e.getScrollAmount * -e.getWheelRotation * 0.01f))
+  }
+
 }

@@ -52,6 +52,9 @@ object SWTOpenGL {
         appView.keyReleased(e.character)
       }
     })
+    canvas.addMouseWheelListener { e: MouseEvent =>
+      appView.zoom(e.count * 0.01f)
+    }
     canvas.addMouseListener(new MouseListener() {
       override def mouseDoubleClick(e: MouseEvent): Unit = {}
       override def mouseDown(e: MouseEvent): Unit = {}

@@ -18,6 +18,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
 
   import openGL._
 
+  private var zoom: Float = 2.0f
   private val spriteShader: SpriteShader = new SpriteShader().useProgram()
   private val manager = TextureManager.getInstance
 
@@ -54,7 +55,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     modelHolder.foreach(_.reset())
   }
 
-  def display(): Unit = {
+  def display(isForceUpdate: Boolean = false): Unit = {
     clearScreen()
 
     this.backgroundSprite.render()
@@ -67,13 +68,15 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       model <- modelHolder
       renderer <- rendererHolder
     } {
+
       // TODO:
       // There should be a better way to get width / height
       val projection = projectionMatrixCalculator.calculateProjection(
         model.canvasInfo,
         drawCanvasInfo.currentCanvasWidth, drawCanvasInfo.currentCanvasHeight,
         viewPortMatrixCalculator.getViewMatrix,
-        updateModelMatrix(model)
+        updateModelMatrix(model),
+        isForceUpdate
       )
 
       avatar.update(this.frameTimeCalculator)
@@ -82,8 +85,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
 
     def updateModelMatrix(model: Live2DModel)(viewOrientation: ViewOrientation): Unit = {
       val updatedMatrix = viewOrientation match {
-        case Horizontal => model.modelMatrix.scaleToHeight(2.0f)
-        case Vertical => model.modelMatrix.scaleToWidth(2.0f)
+        case Horizontal => model.modelMatrix.scaleToHeight(zoom)
+        case Vertical => model.modelMatrix.scaleToWidth(zoom)
       }
       model.modelMatrix = updatedMatrix
     }
@@ -190,6 +193,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     this.rendererHolder = modelHolder.map(model => new Renderer(model))
     setupAvatarEffects()
     initOpenGL()
+  }
+
+  def zoom(level: Float): Unit = {
+    this.zoom += level
+    this.display(true)
   }
 
   def keyReleased(key: Char): Unit = {
