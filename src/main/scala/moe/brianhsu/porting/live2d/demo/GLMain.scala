@@ -51,7 +51,7 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
   override def init(drawable: GLAutoDrawable): Unit = {
     implicit val openGL: JavaOpenGL = new JavaOpenGL(drawable.getGL.getGL2)
     this.view = Option(new LAppView(canvasInfo))
-    this.animator = Option(new FixedFPSAnimator(30, drawable))
+    this.animator = Option(new FixedFPSAnimator(60, drawable))
     this.animator.foreach { x => x.start() }
   }
 
