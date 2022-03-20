@@ -81,7 +81,6 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
     val logLengthHolder = Array(Int.MinValue)
     gl.glGetProgramiv(programId, GL_INFO_LOG_LENGTH, logLengthHolder)
     val logLength = logLengthHolder(0)
-    println("logLength:" + logLengthHolder.toList)
     logLength match {
       case 0 => None
       case _ =>
@@ -92,14 +91,16 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
   }
 
   private def getShaderErrorLog(shaderId: Int): Option[String] = {
-    val logLengthHolder = IntBuffer.allocate(1)
+    val logLengthHolder = Array(Int.MinValue)
     gl.glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, logLengthHolder)
-    val logLength = logLengthHolder.get()
+    val logLength = logLengthHolder(0)
+    println("sharder:" + logLengthHolder.toList)
+
     logLength match {
       case 0 => None
       case _ =>
         val logBuffer = ByteBuffer.allocate(logLength)
-        gl.glGetShaderInfoLog(shaderId, logLength, logLengthHolder, logBuffer)
+        gl.glGetShaderInfoLog(shaderId, logLength, IntBuffer.wrap(logLengthHolder), logBuffer)
         Some(byteBufferToString(logBuffer, logLength))
     }
   }
