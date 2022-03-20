@@ -56,6 +56,7 @@ trait OpenGL {
   def glClearDepth(depth: Double): Unit
   def glBlendFunc(sfactor: Int, dfactor: Int): Unit
   def glDrawArrays(mode: Int, first: Int, count: Int): Unit
+  def newDirectFloatBuffer(float: Array[Float]): FloatBuffer
 
   val GL_TEXTURE_2D: Int
   val GL_RGBA: Int

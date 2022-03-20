@@ -1,5 +1,6 @@
 package moe.brianhsu.porting.live2d.adapter.jogl
 
+import com.jogamp.common.nio.Buffers
 import com.jogamp.opengl.{GL, GL2, GL2ES2}
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 
@@ -271,6 +272,9 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
 
   override def glDrawArrays(mode: Int, first: Int, count: Int): Unit = {
     gl.glDrawArrays(mode, first, count)
+  }
+  def newDirectFloatBuffer(floats: Array[Float]): FloatBuffer = {
+    Buffers.newDirectFloatBuffer(floats)
   }
 
 }

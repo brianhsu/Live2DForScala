@@ -1,5 +1,6 @@
 package moe.brianhsu.porting.live2d.adapter.lwjgl
 
+import com.jogamp.common.nio.Buffers
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 import org.lwjgl.opengl._
 import org.lwjgl.opengles.GLES20
@@ -263,6 +264,10 @@ class LWJGLOpenGL extends OpenGL {
 
   override def glDrawArrays(mode: Int, first: Int, count: Int): Unit = {
     GL11.glDrawArrays(mode, first, count)
+  }
+
+  def newDirectFloatBuffer(floats: Array[Float]): FloatBuffer = {
+    Buffers.newDirectFloatBuffer(floats)
   }
 
 }
