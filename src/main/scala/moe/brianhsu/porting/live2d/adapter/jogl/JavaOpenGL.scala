@@ -152,8 +152,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glGetUniformLocation(program, name)
   }
 
-  override def glUniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: FloatBuffer): Unit = {
-    gl.glUniformMatrix4fv(location, count, transpose, value)
+  override def glUniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: Array[Float]): Unit = {
+    gl.glUniformMatrix4fv(location, count, transpose, value, 0)
   }
 
   override def glUniform4f(location: Int, v0: Float, v1: Float, v2: Float, v3: Float): Unit = {

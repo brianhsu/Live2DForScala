@@ -145,8 +145,8 @@ class LWJGLOpenGL extends OpenGL {
 
   override def glGetUniformLocation(program: Int, name: String): Int = GL20.glGetUniformLocation(program, name)
 
-  override def glUniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: FloatBuffer): Unit = {
-    GL20.glUniformMatrix4fv(location, transpose, value.array())
+  override def glUniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: Array[Float]): Unit = {
+    GL20.glUniformMatrix4fv(location, transpose, value)
   }
 
   override def glUniform4f(location: Int, v0: Float, v1: Float, v2: Float, v3: Float): Unit = {

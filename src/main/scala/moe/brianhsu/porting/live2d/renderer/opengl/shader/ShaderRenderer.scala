@@ -67,7 +67,7 @@ class ShaderRenderer private (implicit gl: OpenGL) {
         textureId <- buffer.bufferIds.textureBufferHolder
       } {
         setGlTexture(GL_TEXTURE1, textureId, shader.samplerTexture1Location, 1)
-        gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, FloatBuffer.wrap(context.getMatrixForDraw.elements))
+        gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, context.getMatrixForDraw.elements)
         setGlColorChannel(context, shader)
       }
     }
@@ -76,7 +76,7 @@ class ShaderRenderer private (implicit gl: OpenGL) {
     setGlTexture(GL_TEXTURE0, textureId, shader.samplerTexture0Location, 0)
 
     //座標変換
-    gl.glUniformMatrix4fv(shader.uniformMatrixLocation, 1, transpose = false, FloatBuffer.wrap(projection.elements))
+    gl.glUniformMatrix4fv(shader.uniformMatrixLocation, 1, transpose = false, projection.elements)
     gl.glUniform4f(shader.uniformBaseColorLocation, baseColor.r, baseColor.g, baseColor.b, baseColor.a)
     setGlBlend(blending)
   }
@@ -90,7 +90,7 @@ class ShaderRenderer private (implicit gl: OpenGL) {
     setGlVertexInfo(vertexArray, uvArray, shader)
     setGlColorChannel(context, shader)
 
-    gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, FloatBuffer.wrap(context.getMatrixForMask.elements))
+    gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, context.getMatrixForMask.elements)
 
     val rect = context.getLayoutBounds
 

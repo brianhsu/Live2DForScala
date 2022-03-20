@@ -26,7 +26,7 @@ trait OpenGL {
   def glGetShaderInfoLog(shader: Int, bufSize: Int, infoLog: ByteBuffer): Unit
   def glGetAttribLocation(program: Int, name: String): Int
   def glGetUniformLocation(program: Int, name: String): Int
-  def glUniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: FloatBuffer): Unit
+  def glUniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: Array[Float]): Unit
   def glUniform4f(location: Int, v0: Float, v1: Float, v2: Float, v3: Float): Unit
   def glActiveTexture(texture: Int): Unit
   def glUniform1i(location: Int, v0: Int): Unit
