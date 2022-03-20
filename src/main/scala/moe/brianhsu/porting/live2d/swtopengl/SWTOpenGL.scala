@@ -10,6 +10,8 @@ import org.eclipse.swt.widgets._
 import org.lwjgl.opengl._
 
 object SWTOpenGL {
+  private var lastX: Option[Int] = None
+  private var lastY: Option[Int] = None
 
   def main(args: Array[String]): Unit = {
     val display = new Display()
@@ -62,11 +64,22 @@ object SWTOpenGL {
         if ((e.stateMask & SWT.BUTTON1) != 0) {
           appView.onMouseReleased(e.x, e.y)
         }
+        lastX = None
+        lastY = None
       }
     })
     canvas.addMouseMoveListener( mouseEvent => {
       if ((mouseEvent.stateMask & SWT.BUTTON1) != 0) {
         appView.onMouseDragged(mouseEvent.x, mouseEvent.y)
+      }
+      if ((mouseEvent.stateMask & SWT.BUTTON3) != 0) {
+        val offsetX = this.lastX.map(mouseEvent.x - _).getOrElse(0).toFloat * 0.0020f
+        val offsetY = this.lastY.map(_ - mouseEvent.y).getOrElse(0).toFloat * 0.0020f
+
+        appView.move(offsetX, offsetY)
+
+        this.lastX = Some(mouseEvent.x)
+        this.lastY = Some(mouseEvent.y)
       }
     })
     display.asyncExec(updater)

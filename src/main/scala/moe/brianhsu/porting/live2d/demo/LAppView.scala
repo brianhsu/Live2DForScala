@@ -19,6 +19,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   import openGL._
 
   private var zoom: Float = 2.0f
+  private var offsetX: Float = 0.0f
+  private var offsetY: Float = 0.0f
   private val spriteShader: SpriteShader = new SpriteShader().useProgram()
   private val manager = TextureManager.getInstance
 
@@ -85,8 +87,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
 
     def updateModelMatrix(model: Live2DModel)(viewOrientation: ViewOrientation): Unit = {
       val updatedMatrix = viewOrientation match {
-        case Horizontal => model.modelMatrix.scaleToHeight(zoom)
-        case Vertical => model.modelMatrix.scaleToWidth(zoom)
+        case Horizontal => model.modelMatrix.scaleToHeight(zoom).left(offsetX).top(offsetY)
+        case Vertical => model.modelMatrix.scaleToWidth(zoom).left(offsetX).top(offsetY)
       }
       model.modelMatrix = updatedMatrix
     }
@@ -193,6 +195,12 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     this.rendererHolder = modelHolder.map(model => new Renderer(model))
     setupAvatarEffects()
     initOpenGL()
+  }
+
+  def move(offsetX: Float, offsetY: Float): Unit = {
+    this.offsetX += offsetX
+    this.offsetY += offsetY
+    this.display(true)
   }
 
   def zoom(level: Float): Unit = {
