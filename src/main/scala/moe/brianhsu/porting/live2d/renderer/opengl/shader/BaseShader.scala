@@ -85,8 +85,8 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
     logLength match {
       case 0 => None
       case _ =>
-        val logBuffer = ByteBuffer.allocate(logLength)
-        gl.glGetProgramInfoLog(programId, logLength, IntBuffer.wrap(logLengthHolder), logBuffer)
+        val logBuffer = ByteBuffer.allocateDirect(logLength)
+        gl.glGetProgramInfoLog(programId, logLength, logBuffer)
         Some(byteBufferToString(logBuffer, logLength))
     }
   }

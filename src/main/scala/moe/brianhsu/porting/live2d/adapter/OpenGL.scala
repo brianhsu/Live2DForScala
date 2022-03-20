@@ -20,7 +20,7 @@ trait OpenGL {
   def glCreateShader(`type`: Int): Int
   def glShaderSource(shader: Int, count: Int, string: Array[String]): Unit
   def glGetProgramiv(program: Int, pname: Int, params: Array[Int]): Unit
-  def glGetProgramInfoLog(program: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit
+  def glGetProgramInfoLog(program: Int, bufSize: Int, infoLog: ByteBuffer): Unit
   def glGetShaderi(shader: Int, pname: Int): Int
   def glGetShaderiv(shader: Int, pname: Int, params: IntBuffer): Unit
   def glGetShaderInfoLog(shader: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit

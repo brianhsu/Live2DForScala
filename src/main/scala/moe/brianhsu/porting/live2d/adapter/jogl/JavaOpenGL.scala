@@ -130,8 +130,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glGetProgramiv(program, pname, params, 0)
   }
 
-  override def glGetProgramInfoLog(program: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit = {
-    gl.glGetProgramInfoLog(program, bufSize, length, infoLog)
+  override def glGetProgramInfoLog(program: Int, bufSize: Int, infoLog: ByteBuffer): Unit = {
+    gl.glGetProgramInfoLog(program, bufSize, IntBuffer.allocate(1), infoLog)
   }
 
   override def glGetShaderi(shader: Int, pname: Int): Int = {

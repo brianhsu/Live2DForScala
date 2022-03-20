@@ -128,8 +128,8 @@ class LWJGLOpenGL extends OpenGL {
     GL20.glGetProgramiv(program, pname, params)
   }
 
-  override def glGetProgramInfoLog(program: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit = {
-    GL20.glGetProgramInfoLog(program, length, infoLog)
+  override def glGetProgramInfoLog(program: Int, bufSize: Int, infoLog: ByteBuffer): Unit = {
+    GL20.glGetProgramInfoLog(program, Array(Int.MinValue), infoLog)
   }
 
   override def glGetShaderiv(shader: Int, pname: Int, params: IntBuffer): Unit = {

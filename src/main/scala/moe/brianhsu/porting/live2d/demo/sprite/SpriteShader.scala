@@ -10,7 +10,10 @@ class SpriteShader(implicit gl: OpenGL) extends BaseShader[SpriteShader] {
       |attribute vec3 position;
       |attribute vec2 uv;
       |varying vec2 vuv;
-      |""".stripMargin.trim
+      |void main(void){
+      |    gl_Position = vec4(position, 1.0);
+      |    vuv = uv;
+      |}""".stripMargin.trim
 
   override def fragmentShaderSource: String =
     """
