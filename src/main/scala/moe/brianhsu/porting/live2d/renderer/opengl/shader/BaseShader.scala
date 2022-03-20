@@ -78,14 +78,15 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
   }
 
   private def getProgramErrorLog(programId: Int): Option[String] = {
-    val logLengthHolder = IntBuffer.allocate(1)
+    val logLengthHolder = Array(Int.MinValue)
     gl.glGetProgramiv(programId, GL_INFO_LOG_LENGTH, logLengthHolder)
-    val logLength = logLengthHolder.get()
+    val logLength = logLengthHolder(0)
+    println("logLength:" + logLengthHolder.toList)
     logLength match {
       case 0 => None
       case _ =>
         val logBuffer = ByteBuffer.allocate(logLength)
-        gl.glGetProgramInfoLog(programId, logLength, logLengthHolder, logBuffer)
+        gl.glGetProgramInfoLog(programId, logLength, IntBuffer.wrap(logLengthHolder), logBuffer)
         Some(byteBufferToString(logBuffer, logLength))
     }
   }

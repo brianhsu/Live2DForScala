@@ -124,8 +124,8 @@ class LWJGLOpenGL extends OpenGL {
     GL20.glShaderSource(shader, string: _*)
   }
 
-  override def glGetProgramiv(program: Int, pname: Int, params: IntBuffer): Unit = {
-    GL20.glGetProgramiv(program, pname, params.array())
+  override def glGetProgramiv(program: Int, pname: Int, params: Array[Int]): Unit = {
+    GL20.glGetProgramiv(program, pname, params)
   }
 
   override def glGetProgramInfoLog(program: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit = {
