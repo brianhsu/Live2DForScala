@@ -178,7 +178,9 @@ class LWJGLOpenGL extends OpenGL {
   }
 
   override def glGetIntegerv(pname: Int, params: Array[Int], params_offset: Int): Unit = {
-    GL11.glGetIntegerv(pname, IntBuffer.wrap(params, params_offset, 1).array())
+    val tmp = Array(Int.MinValue)
+    GL11.glGetIntegerv(pname, tmp)
+    params(params_offset) = tmp(0)
   }
 
   override def glGetVertexAttribiv(index: Int, pname: Int, params: Array[Int], params_offset: Int): Unit = {
