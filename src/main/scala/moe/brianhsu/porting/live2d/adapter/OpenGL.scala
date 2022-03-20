@@ -23,7 +23,7 @@ trait OpenGL {
   def glGetProgramInfoLog(program: Int, bufSize: Int, infoLog: ByteBuffer): Unit
 
   def glGetShaderiv(shader: Int, pname: Int, params: Array[Int]): Unit
-  def glGetShaderInfoLog(shader: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit
+  def glGetShaderInfoLog(shader: Int, bufSize: Int, infoLog: ByteBuffer): Unit
   def glGetAttribLocation(program: Int, name: String): Int
   def glGetUniformLocation(program: Int, name: String): Int
   def glUniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: FloatBuffer): Unit

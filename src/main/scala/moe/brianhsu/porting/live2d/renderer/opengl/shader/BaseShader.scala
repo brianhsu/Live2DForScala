@@ -94,13 +94,12 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
     val logLengthHolder = Array(Int.MinValue)
     gl.glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, logLengthHolder)
     val logLength = logLengthHolder(0)
-    println("sharder:" + logLengthHolder.toList)
 
     logLength match {
       case 0 => None
       case _ =>
-        val logBuffer = ByteBuffer.allocate(logLength)
-        gl.glGetShaderInfoLog(shaderId, logLength, IntBuffer.wrap(logLengthHolder), logBuffer)
+        val logBuffer = ByteBuffer.allocateDirect(logLength)
+        gl.glGetShaderInfoLog(shaderId, logLength, logBuffer)
         Some(byteBufferToString(logBuffer, logLength))
     }
   }
