@@ -6,20 +6,21 @@ import moe.brianhsu.porting.live2d.adapter.OpenGL
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureColor}
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingContext
 
-import java.nio.{ByteBuffer, FloatBuffer}
+import java.nio.ByteBuffer
 
 object ShaderRenderer {
-  private var shaderRendererHolder: Option[ShaderRenderer] = None
+  private var shaderRendererHolder: Map[OpenGL, ShaderRenderer] = Map.empty
+
   def getInstance(implicit gl: OpenGL): ShaderRenderer = {
-    shaderRendererHolder match {
+    shaderRendererHolder.get(gl) match {
       case Some(renderer) => renderer
-      case None => {
-        this.shaderRendererHolder = Some(new ShaderRenderer())
-        this.shaderRendererHolder.get
-      }
+      case None =>
+        this.shaderRendererHolder += (gl -> new ShaderRenderer())
+        this.shaderRendererHolder(gl)
     }
   }
 }
+
 class ShaderRenderer private (implicit gl: OpenGL) {
 
   import gl._

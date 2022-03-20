@@ -4,14 +4,26 @@ import TextureManager.TextureInfo
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 
 import java.io.File
-import java.nio.ByteBuffer
+import java.nio.{ByteBuffer, ByteOrder}
 import javax.imageio.ImageIO
 
 object TextureManager {
   case class TextureInfo(textureId: Int, width: Int, height: Int)
+
+  private var manager: Map[OpenGL, TextureManager] = Map.empty
+
+  def getInstance(implicit gl: OpenGL): TextureManager = {
+    manager.get(gl) match {
+      case Some(manager) => manager
+      case None =>
+        this.manager += (gl -> new TextureManager())
+        this.manager(gl)
+    }
+  }
+
 }
 
-class TextureManager(implicit gl: OpenGL) {
+class TextureManager private (implicit gl: OpenGL) {
 
   import gl._
 
@@ -38,7 +50,7 @@ class TextureManager(implicit gl: OpenGL) {
     gl.glTexImage2D(
       GL_TEXTURE_2D, 0, GL_RGBA,
       bitmapInfo.width, bitmapInfo.height, 0,
-      GL_RGBA, GL_UNSIGNED_BYTE, bitmapInfo.bitmap
+      GL_RGBA, GL_UNSIGNED_BYTE, bitmapInfo.bitmap.rewind()
     )
 
     gl.glGenerateMipmap(GL_TEXTURE_2D)
@@ -53,8 +65,10 @@ class TextureManager(implicit gl: OpenGL) {
     val image = ImageIO.read(new File(filename))
     val bitmap = image.getRaster.getPixels(0, 0, image.getWidth, image.getHeight, null: Array[Int]).map(_.toByte)
     val buffer = ByteBuffer.allocateDirect(bitmap.length)
-    buffer.put(bitmap)
-    buffer.flip()
+      .order(ByteOrder.nativeOrder())
+      .put(bitmap)
+      .rewind()
+
     ImageBitmap(image.getWidth, image.getHeight, buffer)
   }
 

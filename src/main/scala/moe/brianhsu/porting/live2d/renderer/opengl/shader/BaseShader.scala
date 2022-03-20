@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 
-import java.nio.{ByteBuffer, IntBuffer}
+import java.nio.ByteBuffer
 import scala.util.Try
 
 

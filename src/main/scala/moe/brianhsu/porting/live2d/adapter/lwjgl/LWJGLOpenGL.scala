@@ -3,9 +3,8 @@ package moe.brianhsu.porting.live2d.adapter.lwjgl
 import com.jogamp.common.nio.Buffers
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 import org.lwjgl.opengl._
-import org.lwjgl.opengles.GLES20
 
-import java.nio.{ByteBuffer, FloatBuffer, IntBuffer}
+import java.nio.{ByteBuffer, ByteOrder, FloatBuffer}
 
 class LWJGLOpenGL extends OpenGL {
   override val GL_TEXTURE_2D: Int = GL11.GL_TEXTURE_2D
@@ -221,8 +220,10 @@ class LWJGLOpenGL extends OpenGL {
     GL15.glBindBuffer(target, buffer)
   }
 
-  override def glGetIntegerv(pname: Int, params: IntBuffer): Unit = {
-    GL11.glGetIntegerv(pname, params.array())
+  override def glGetIntegerv(pname: Int, params: Array[Int]): Unit = {
+    val buffer = Buffers.newDirectIntBuffer(params.length)
+    GL11.glGetIntegerv(pname, buffer)
+    buffer.get(params)
   }
 
   override def glGenFramebuffers(n: Int, framebuffers: Array[Int]): Unit = {
@@ -269,8 +270,12 @@ class LWJGLOpenGL extends OpenGL {
     GL11.glDrawArrays(mode, first, count)
   }
 
-  def newDirectFloatBuffer(floats: Array[Float]): FloatBuffer = {
-    Buffers.newDirectFloatBuffer(floats)
+  override def newDirectFloatBuffer(floats: Array[Float]): FloatBuffer = {
+    ByteBuffer.allocateDirect(floats.length * 4)
+      .order(ByteOrder.nativeOrder())
+      .asFloatBuffer()
+      .put(floats)
+      .rewind()
   }
 
 }

@@ -4,7 +4,7 @@ import com.jogamp.common.nio.Buffers
 import com.jogamp.opengl.{GL, GL2, GL2ES2}
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 
-import java.nio.{Buffer, ByteBuffer, FloatBuffer, IntBuffer}
+import java.nio.{ByteBuffer, FloatBuffer, IntBuffer}
 
 class JavaOpenGL(gl: GL2) extends OpenGL {
   override val GL_TEXTURE_2D: Int = GL.GL_TEXTURE_2D
@@ -226,8 +226,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glBindBuffer(target, buffer)
   }
 
-  override def glGetIntegerv(pname: Int, params: IntBuffer): Unit = {
-    gl.glGetIntegerv(pname, params)
+  override def glGetIntegerv(pname: Int, params: Array[Int]): Unit = {
+    gl.glGetIntegerv(pname, params, 0)
   }
 
   override def glGenFramebuffers(n: Int, framebuffers: Array[Int]): Unit = {
@@ -273,7 +273,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
   override def glDrawArrays(mode: Int, first: Int, count: Int): Unit = {
     gl.glDrawArrays(mode, first, count)
   }
-  def newDirectFloatBuffer(floats: Array[Float]): FloatBuffer = {
+
+  override def newDirectFloatBuffer(floats: Array[Float]): FloatBuffer = {
     Buffers.newDirectFloatBuffer(floats)
   }
 

@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.adapter
 
-import java.nio.{Buffer, ByteBuffer, FloatBuffer, IntBuffer}
+import java.nio.{ByteBuffer, FloatBuffer}
 
 trait OpenGL {
   def glGenTextures(n: Int, textures: Array[Int]): Unit
@@ -8,7 +8,6 @@ trait OpenGL {
   def glTexImage2D(target: Int, level: Int, internalformat: Int, width: Int, height: Int, border: Int, format: Int, `type`: Int, pixels: ByteBuffer): Unit
   def glGenerateMipmap(target: Int): Unit
   def glTexParameteri(target: Int, pname: Int, param: Int): Unit
-  def glViewport(x: Int, y: Int, width: Int, height: Int): Unit
   def glUseProgram(program: Int): Unit
   def glCompileShader(shader: Int): Unit
   def glDeleteProgram(program: Int): Unit
@@ -44,7 +43,7 @@ trait OpenGL {
   def glFrontFace(mode: Int): Unit
   def glColorMask(red: Boolean, green: Boolean, blue: Boolean, alpha: Boolean): Unit
   def glBindBuffer(target: Int, buffer: Int): Unit
-  def glGetIntegerv(pname: Int, params: IntBuffer): Unit
+  def glGetIntegerv(pname: Int, params: Array[Int]): Unit
   def glGenFramebuffers(n: Int, framebuffers: Array[Int]): Unit
   def glBindFramebuffer(target: Int, framebuffer: Int): Unit
   def glFramebufferTexture2D(target: Int, attachment: Int, textarget: Int, texture: Int, level: Int): Unit
@@ -57,6 +56,7 @@ trait OpenGL {
   def glBlendFunc(sfactor: Int, dfactor: Int): Unit
   def glDrawArrays(mode: Int, first: Int, count: Int): Unit
   def newDirectFloatBuffer(float: Array[Float]): FloatBuffer
+  def glViewport(x: Int, y: Int, w: Int, h: Int): Unit
 
   val GL_TEXTURE_2D: Int
   val GL_RGBA: Int

@@ -3,8 +3,6 @@ package moe.brianhsu.porting.live2d.renderer.opengl
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 import moe.brianhsu.porting.live2d.renderer.opengl.OffscreenFrame.{colorBufferHolder, textureBufferHolder}
 
-import java.nio.IntBuffer
-
 case class BufferIds(textureBufferHolder: Option[Int], colorBufferHolder: Option[Int])
 
 object OffscreenFrame {
@@ -21,12 +19,14 @@ class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)(implicit
 
   def createTextureAndColorBuffer(): BufferIds = {
 
-    if (colorBufferHolder.isEmpty) {
-      val newColorBuffer: Array[Int] = Array(0)
-      gl.glGenTextures(1, newColorBuffer)
-      gl.glBindTexture(GL_TEXTURE_2D, newColorBuffer(0))
-      colorBufferHolder = newColorBuffer.find(_ != 0)
+    if (colorBufferHolder.isDefined && textureBufferHolder.isDefined) {
+      return BufferIds(colorBufferHolder, textureBufferHolder)
     }
+
+    val newColorBuffer: Array[Int] = Array(0)
+    gl.glGenTextures(1, newColorBuffer)
+    gl.glBindTexture(GL_TEXTURE_2D, newColorBuffer(0))
+    colorBufferHolder = newColorBuffer.find(_ != 0)
 
     gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, displayBufferWidth, displayBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null)
     gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
@@ -35,16 +35,13 @@ class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)(implicit
     gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     gl.glBindTexture(GL_TEXTURE_2D, 0)
 
+    val newTextureBuffer: Array[Int] = Array(0)
+    gl.glGenFramebuffers(1, newTextureBuffer)
+    textureBufferHolder = newTextureBuffer.find(_ != 0)
 
-    if (textureBufferHolder.isEmpty) {
-      val newTextureBuffer: Array[Int] = Array(0)
-      gl.glGenFramebuffers(1, newTextureBuffer)
-      textureBufferHolder = newTextureBuffer.find(_ != 0)
-    }
-
-    val tmpFramebufferObjectWrapper = IntBuffer.allocate(1)
+    val tmpFramebufferObjectWrapper = Array(Int.MinValue)
     gl.glGetIntegerv(GL_FRAMEBUFFER_BINDING, tmpFramebufferObjectWrapper)
-    val tmpFramebufferObject = tmpFramebufferObjectWrapper.get()
+    val tmpFramebufferObject = tmpFramebufferObjectWrapper(0)
 
     gl.glBindFramebuffer(GL_FRAMEBUFFER, textureBufferHolder.get)
     gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufferHolder.get, 0)
@@ -56,9 +53,9 @@ class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)(implicit
   def beginDraw(restoreFBO: Int): Unit = {
     bufferIds.textureBufferHolder.foreach { texture =>
       if (restoreFBO < 0) {
-        val binding = IntBuffer.allocate(1)
+        val binding = Array(Int.MinValue)
         gl.glGetIntegerv(GL_FRAMEBUFFER_BINDING, binding)
-        oldFBO = binding.get()
+        oldFBO = binding(0)
       } else {
         oldFBO = restoreFBO
       }
