@@ -78,7 +78,7 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
   override def keyTyped(keyEvent: KeyEvent): Unit = {}
   override def keyPressed(keyEvent: KeyEvent): Unit = {}
   override def keyReleased(keyEvent: KeyEvent): Unit = {
-    this.view.foreach(_.keyReleased(keyEvent))
+    this.view.foreach(_.keyReleased(keyEvent.getKeyChar))
 
   }
 }

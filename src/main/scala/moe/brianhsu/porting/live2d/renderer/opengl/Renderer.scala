@@ -17,31 +17,19 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGL) {
   import gl._
 
   private var projection: Option[GeneralMatrix] = None
-  private var textureManager = new TextureManager
-  private var shaderRenderer = ShaderRenderer.getInstance
-  private val profile = new Profile()
+  private val textureManager = TextureManager.getInstance
+  private val shaderRenderer = ShaderRenderer.getInstance
+  private val profile = Profile.getInstance
   private var isCulling: Boolean = false
   private var clippingContextBufferForMask: Option[ClippingContext] = None
   private var clippingContextBufferForDraw: Option[ClippingContext] = None
-  private var clippingManagerHolder: Option[ClippingManager] = model.containMaskedDrawables match {
+  private val clippingManagerHolder: Option[ClippingManager] = model.containMaskedDrawables match {
     case true => Some(new ClippingManager(model, textureManager))
     case false => None
   }
 
   var offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => new OffscreenFrame(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
 
-  def switchModel(model: Live2DModel): Unit = {
-    println("Switching model....")
-    this.offscreenBufferHolder.foreach(_.destroy())
-    this.model = model
-    this.textureManager = new TextureManager
-    this.shaderRenderer = ShaderRenderer.getInstance
-    this.clippingManagerHolder = model.containMaskedDrawables match {
-      case true => Some(new ClippingManager(model, textureManager))
-      case false => None
-    }
-    this.offscreenBufferHolder = clippingManagerHolder.map(manager => new OffscreenFrame(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
-  }
   def getProjection: Option[GeneralMatrix] = projection
   def getClippingContextBufferForDraw: Option[ClippingContext] = clippingContextBufferForDraw
   def getClippingContextBufferForMask: Option[ClippingContext] = clippingContextBufferForMask

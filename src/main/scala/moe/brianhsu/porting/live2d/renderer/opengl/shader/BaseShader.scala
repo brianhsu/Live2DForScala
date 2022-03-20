@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 
-import java.nio.{ByteBuffer, IntBuffer}
+import java.nio.ByteBuffer
 import scala.util.Try
 
 
@@ -61,7 +61,7 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
   private def compileShader(shaderType: Int, shaderSourceCode: String): Try[Int] = Try {
     val shaderId = gl.glCreateShader(shaderType)
 
-    gl.glShaderSource(shaderId, 1, Array(shaderSourceCode), null)
+    gl.glShaderSource(shaderId, 1, Array(shaderSourceCode))
     gl.glCompileShader(shaderId)
 
     getShaderErrorLog(shaderId).foreach { log =>
@@ -78,27 +78,28 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
   }
 
   private def getProgramErrorLog(programId: Int): Option[String] = {
-    val logLengthHolder = IntBuffer.allocate(1)
+    val logLengthHolder = Array(Int.MinValue)
     gl.glGetProgramiv(programId, GL_INFO_LOG_LENGTH, logLengthHolder)
-    val logLength = logLengthHolder.get()
+    val logLength = logLengthHolder(0)
     logLength match {
       case 0 => None
       case _ =>
-        val logBuffer = ByteBuffer.allocate(logLength)
-        gl.glGetProgramInfoLog(programId, logLength, logLengthHolder, logBuffer)
+        val logBuffer = ByteBuffer.allocateDirect(logLength)
+        gl.glGetProgramInfoLog(programId, logLength, logBuffer)
         Some(byteBufferToString(logBuffer, logLength))
     }
   }
 
   private def getShaderErrorLog(shaderId: Int): Option[String] = {
-    val logLengthHolder = IntBuffer.allocate(1)
+    val logLengthHolder = Array(Int.MinValue)
     gl.glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, logLengthHolder)
-    val logLength = logLengthHolder.get()
+    val logLength = logLengthHolder(0)
+
     logLength match {
       case 0 => None
       case _ =>
-        val logBuffer = ByteBuffer.allocate(logLength)
-        gl.glGetShaderInfoLog(shaderId, logLength, logLengthHolder, logBuffer)
+        val logBuffer = ByteBuffer.allocateDirect(logLength)
+        gl.glGetShaderInfoLog(shaderId, logLength, logBuffer)
         Some(byteBufferToString(logBuffer, logLength))
     }
   }

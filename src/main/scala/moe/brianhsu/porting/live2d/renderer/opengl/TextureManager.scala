@@ -4,14 +4,26 @@ import TextureManager.TextureInfo
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 
 import java.io.File
-import java.nio.ByteBuffer
+import java.nio.{ByteBuffer, ByteOrder}
 import javax.imageio.ImageIO
 
 object TextureManager {
   case class TextureInfo(textureId: Int, width: Int, height: Int)
+
+  private var manager: Map[OpenGL, TextureManager] = Map.empty
+
+  def getInstance(implicit gl: OpenGL): TextureManager = {
+    manager.get(gl) match {
+      case Some(manager) => manager
+      case None =>
+        this.manager += (gl -> new TextureManager())
+        this.manager(gl)
+    }
+  }
+
 }
 
-class TextureManager(implicit gl: OpenGL) {
+class TextureManager private (implicit gl: OpenGL) {
 
   import gl._
 
@@ -33,12 +45,12 @@ class TextureManager(implicit gl: OpenGL) {
   private def createOpenGLTexture(bitmapInfo: ImageBitmap): TextureInfo = {
 
     val textureIds = new Array[Int](1)
-    gl.glGenTextures(1, textureIds, 0)
+    gl.glGenTextures(1, textureIds)
     gl.glBindTexture(GL_TEXTURE_2D, textureIds(0))
     gl.glTexImage2D(
       GL_TEXTURE_2D, 0, GL_RGBA,
       bitmapInfo.width, bitmapInfo.height, 0,
-      GL_RGBA, GL_UNSIGNED_BYTE, bitmapInfo.bitmap
+      GL_RGBA, GL_UNSIGNED_BYTE, bitmapInfo.bitmap.rewind()
     )
 
     gl.glGenerateMipmap(GL_TEXTURE_2D)
@@ -52,7 +64,12 @@ class TextureManager(implicit gl: OpenGL) {
   private def readBitmapFromFile(filename: String): ImageBitmap = {
     val image = ImageIO.read(new File(filename))
     val bitmap = image.getRaster.getPixels(0, 0, image.getWidth, image.getHeight, null: Array[Int]).map(_.toByte)
-    ImageBitmap(image.getWidth, image.getHeight, ByteBuffer.wrap(bitmap))
+    val buffer = ByteBuffer.allocateDirect(bitmap.length)
+      .order(ByteOrder.nativeOrder())
+      .put(bitmap)
+      .rewind()
+
+    ImageBitmap(image.getWidth, image.getHeight, buffer)
   }
 
 }

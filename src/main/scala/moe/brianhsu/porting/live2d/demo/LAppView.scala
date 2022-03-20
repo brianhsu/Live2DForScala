@@ -12,16 +12,14 @@ import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, V
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
-import java.awt.event.KeyEvent
 import scala.util.Try
 
 class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGL) {
 
-
   import openGL._
 
   private val spriteShader: SpriteShader = new SpriteShader().useProgram()
-  private val manager = new TextureManager()
+  private val manager = TextureManager.getInstance
 
   private lazy val backgroundTexture = manager.loadTexture("src/main/resources/texture/back_class_normal.png")
   private lazy val powerTexture = manager.loadTexture("src/main/resources/texture/close.png")
@@ -101,9 +99,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       drawCanvasInfo.currentCanvasHeight
     )
 
+    openGL.glViewport(0, 0, drawCanvasInfo.currentCanvasWidth, drawCanvasInfo.currentCanvasHeight)
     backgroundSprite.resize()
     powerSprite.resize()
     gearSprite.resize()
+
     this.display()
   }
 
@@ -135,15 +135,6 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
 
   private def initOpenGL(): Unit = {
 
-    // TODO:
-    // 1. Check if Linux's openGLDrawable.getSurfaceWidth / getSurfaceHeight also return wrong value
-    // 2. There should be a better way to do this.
-    /*
-    viewPortMatrixCalculator.updateViewPort(
-      openGLDrawable.getSurfaceWidth,
-      openGLDrawable.getSurfaceHeight
-    )
-    */
     viewPortMatrixCalculator.updateViewPort(
       drawCanvasInfo.currentCanvasWidth,
       drawCanvasInfo.currentCanvasHeight
@@ -201,8 +192,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     initOpenGL()
   }
 
-  def keyReleased(keyEvent: KeyEvent): Unit = {
-    keyEvent.getKeyChar match {
+  def keyReleased(key: Char): Unit = {
+    key match {
       case '0' => startExpression("f00")
       case '1' => startExpression("f01")
       case '2' => startExpression("f02")
