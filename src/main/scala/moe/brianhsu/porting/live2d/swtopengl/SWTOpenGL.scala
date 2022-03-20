@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets._
 import org.lwjgl.opengl._
 import org.lwjgl.opengles.GLES
 
+import java.nio.ByteBuffer
+
 object SWTOpenGL {
   def drawTorus(r: Float, R: Float, nsides: Int, rings: Int): Unit = {
     val ringDelta = 2.0f * Math.PI.asInstanceOf[Float] / rings
@@ -58,10 +60,13 @@ object SWTOpenGL {
     val canvasInfo = new SWTOpenGLCanvasInfo(canvas)
     val appView = new LAppView(canvasInfo)(new LWJGLOpenGL)
 
+    /*
     canvas.addListener(SWT.RESIZE, event => {
       appView.resize()
       appView.display()
     })
+
+     */
     val run = new Runnable() {
       override def run(): Unit = {
         if (!canvas.isDisposed()) {

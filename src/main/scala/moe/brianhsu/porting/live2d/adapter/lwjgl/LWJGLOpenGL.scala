@@ -192,7 +192,9 @@ class LWJGLOpenGL extends OpenGL {
   override def glIsEnabled(cap: Int): Boolean = GL11.glIsEnabled(cap)
 
   override def glGetBooleanv(pname: Int, data: Array[Byte]): Unit = {
-    GL11.glGetBooleanv(pname, data)
+    val directBuffer = ByteBuffer.allocateDirect(data.length)
+    GL11.glGetBooleanv(GL11.GL_COLOR_WRITEMASK, directBuffer)
+    directBuffer.get(data)
   }
 
   override def glDisableVertexAttribArray(index: Int): Unit = {

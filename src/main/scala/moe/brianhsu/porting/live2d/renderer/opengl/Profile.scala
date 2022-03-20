@@ -46,7 +46,6 @@ class Profile(implicit gl: OpenGL) {
     gl.glGetVertexAttribiv(1, GL_VERTEX_ATTRIB_ARRAY_ENABLED, lastVertexAttribArrayEnabled, 1)
     gl.glGetVertexAttribiv(2, GL_VERTEX_ATTRIB_ARRAY_ENABLED, lastVertexAttribArrayEnabled, 2)
     gl.glGetVertexAttribiv(3, GL_VERTEX_ATTRIB_ARRAY_ENABLED, lastVertexAttribArrayEnabled, 3)
-    println(lastVertexAttribArrayEnabled.toList)
 
     lastScissorTest = gl.glIsEnabled(GL_SCISSOR_TEST)
     lastStencilTest = gl.glIsEnabled(GL_STENCIL_TEST)
@@ -57,13 +56,11 @@ class Profile(implicit gl: OpenGL) {
     gl.glGetIntegerv(GL_FRONT_FACE, lastFrontFace, 0)
 
     gl.glGetBooleanv(GL_COLOR_WRITEMASK, lastColorMask)
-    println("lastColorMask:" + lastColorMask.toList)
 
     gl.glGetIntegerv(GL_BLEND_SRC_RGB, lastBlending, 0)
     gl.glGetIntegerv(GL_BLEND_DST_RGB, lastBlending, 1)
     gl.glGetIntegerv(GL_BLEND_SRC_ALPHA, lastBlending, 2)
     gl.glGetIntegerv(GL_BLEND_DST_ALPHA, lastBlending, 3)
-    println("Last Blending:" + lastBlending.toList)
 
     gl.glGetIntegerv(GL_FRAMEBUFFER_BINDING, lastFBO, 0)
     gl.glGetIntegerv(GL_VIEWPORT, IntBuffer.wrap(lastViewport))
