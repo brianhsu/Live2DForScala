@@ -17,7 +17,7 @@ class EyeBlinkFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wi
     Scenario("Use default eye blink parameters without any randomness") {
       Given("An avatar setting contains two eye openness parameter")
       val eyeBlinkParameterIds = List("EyeOpen1", "EyeOpen2")
-      val avatarSettings = Settings(null, Nil, None, eyeBlinkParameterIds, Nil, Map.empty, Map.empty, Nil)
+      val avatarSettings = Settings(null, Nil, None, None, eyeBlinkParameterIds, Nil, Map.empty, Map.empty, Nil)
 
       When("Using parameter without randomness")
       val eyeBlink = new EyeBlink(avatarSettings, EyeBlink.Parameters(4.0f, () => 1.0f, 0.1f, 0.05f, 0.15f))

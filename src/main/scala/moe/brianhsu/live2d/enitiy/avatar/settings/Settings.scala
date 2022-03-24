@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.settings
 
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PoseSetting}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PhysicsSetting, PoseSetting}
 
 /**
  * Live2D Cubism Model Setting
@@ -21,6 +21,7 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, Hit
 case class Settings(
   mocFile: String,
   textureFiles: List[String],
+  physics: Option[PhysicsSetting],
   pose: Option[PoseSetting],
   eyeBlinkParameterIds: List[String],
   lipSyncParameterIds: List[String],

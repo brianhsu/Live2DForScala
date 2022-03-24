@@ -1,11 +1,15 @@
 package moe.brianhsu.live2d.enitiy.avatar.settings.detail
 
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Meta, Setting}
+import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType
+
 object PhysicsSetting {
   case class NormalizationValue(minimum: Float, default: Float, maximum: Float)
   case class Normalization(position: NormalizationValue, angle: NormalizationValue)
-  case class Vertex(position: Point, mobility: Float)
-  case class Input()
-  case class Output()
+  case class Vertex(position: Point, mobility: Float, delay: Float, acceleration: Float, radius: Float)
+  case class Target(target: String, id: String)
+  case class Input(source: Target, weight: Float, `type`: String, reflect: Boolean)
+  case class Output(destination: Target, vertexIndex: Int, scale: Float, weight: Float, `type`: String, reflect: Boolean)
   case class Setting(
     id: String, input: List[Input], output: List[Output], vertices: List[Vertex],
     normalization: Normalization
@@ -17,7 +21,8 @@ object PhysicsSetting {
   case class Meta(
     physicsSettingCount: Int, totalInputCount: Int, totalOutputCount: Int, vertexCount: Int,
     effectiveForces: EffectiveForce,
-    physicsDictionary: PhysicsInfo
+    physicsDictionary: List[PhysicsInfo]
   )
 }
-case class PhysicsSetting(version: Int)
+
+case class PhysicsSetting(version: Int, meta: Meta, physicsSettings: List[Setting])
