@@ -22,13 +22,20 @@ case object CubismPhysicsSource_Angle extends CubismPhysicsSource      ///< 角�
 /**
  * 物理演算のパラメータ情報。
  */
-case class CubismPhysicsParameter(Id: String, TargetType: CubismPhysicsTargetType)
+class CubismPhysicsParameter {
+  var Id: String = null
+  var TargetType: CubismPhysicsTargetType = null
+}
 
 /**
  *
  * 物理演算の正規化情報。
  */
-case class CubismPhysicsNormalization(Minimum: Float, Maximum: Float, Default: Float)
+class CubismPhysicsNormalization {
+  var Minimum: Float = 0.0f
+  var Maximum: Float = 0.0f
+  var Default: Float = 0.0f
+}
 
 
 
@@ -37,34 +44,34 @@ case class CubismPhysicsNormalization(Minimum: Float, Maximum: Float, Default: F
  *
  * 物理演算の演算に使用する物理点の情報。
  */
-case class CubismPhysicsParticle(
-  InitialPosition: CubismVector,          ///< 初期位置
-  Mobility: Float,              ///< 動きやすさ
-  Delay: Float,                    ///< 遅れ
-  Acceleration: Float,                ///< 加速度
-  Radius: Float,                      ///< 距離
-  Position: CubismVector,                 ///< 現在の位置
-  LastPosition: CubismVector,             ///< 最後の位置
-  LastGravity: CubismVector,              ///< 最後の重力
-  Force: CubismVector,                    ///< 現在かかっている力
-  Velocity: CubismVector                 ///< 現在の速度
-)
+class CubismPhysicsParticle {
+  var InitialPosition: CubismVector = null ///< 初期位置
+  var Mobility: Float = 0.0f///< 動きやすさ
+  var Delay: Float = 0.0f ///< 遅れ
+  var Acceleration: Float = 0.0f ///< 加速度
+  var Radius: Float = 0.0f ///< 距離
+  var Position: CubismVector = null///< 現在の位置
+  var LastPosition: CubismVector = null///< 最後の位置
+  var LastGravity: CubismVector = null ///< 最後の重力
+  var Force: CubismVector = null ///< 現在かかっている力
+  var Velocity: CubismVector = null ///< 現在の速度
+}
 
 /**
  * @brief 物理演算の物理点の管理
  *
  * 物理演算の物理点の管理。
  */
-case class CubismPhysicsSubRig(
-  InputCount: Int,                                        ///< 入力の個数
-  OutputCount: Int,                                       ///< 出力の個数
-  ParticleCount: Int,                                     ///< 物理点の個数
-  BaseInputIndex: Int,                                    ///< 入力の最初のインデックス
-  BaseOutputIndex: Int,                                   ///< 出力の最初のインデックス
-  BaseParticleIndex: Int,                                 ///< 物理点の最初のインデックス
-  NormalizationPosition: CubismPhysicsNormalization,           ///< 正規化された位置
-  NormalizationAngle: CubismPhysicsNormalization              ///< 正規化された角度
-)
+class CubismPhysicsSubRig {
+  var InputCount: Int = 0 ///< 入力の個数
+  var OutputCount: Int = 0 ///< 出力の個数
+  var ParticleCount: Int = 0 ///< 物理点の個数
+  var BaseInputIndex: Int = 0 ///< 入力の最初のインデックス
+  var BaseOutputIndex: Int = 0///< 出力の最初のインデックス
+  var BaseParticleIndex: Int = 0///< 物理点の最初のインデックス
+  var NormalizationPosition: CubismPhysicsNormalization = new CubismPhysicsNormalization///< 正規化された位置
+  var NormalizationAngle: CubismPhysicsNormalization = new CubismPhysicsNormalization///< 正規化された角度
+}
 
 trait NormalizedPhysicsParameterValueGetter {
   /**
@@ -128,44 +135,45 @@ trait PhysicsScaleGetter {
  *
  * 物理演算の入力情報。
  */
-case class CubismPhysicsInput(
-  Source: CubismPhysicsParameter,                  ///< 入力元のパラメータ
-  SourceParameterIndex: Int,                  ///< 入力元のパラメータのインデックス
-  Weight: Float,                              ///< 重み
-  Type: Int,                                  ///< 入力の種類
-  Reflect: Int,                               ///< 値が反転されているかどうか
-  GetNormalizedParameterValue: NormalizedPhysicsParameterValueGetter          ///< 正規化されたパラメータ値の取得関数
-)
+class CubismPhysicsInput {
+  var Source: CubismPhysicsParameter = null ///< 入力元のパラメータ
+  var SourceParameterIndex: Int = 0 ///< 入力元のパラメータのインデックス
+  var Weight: Float = 0 ///< 重み
+  var Type: CubismPhysicsSource = null ///< 入力の種類
+  var Reflect: Boolean = false///< 値が反転されているかどうか
+  var GetNormalizedParameterValue: NormalizedPhysicsParameterValueGetter = null ///< 正規化されたパラメータ値の取得関数
+}
 
 /**
  *
  * 物理演算の出力情報。
  */
-case class CubismPhysicsOutput(
- Destination: CubismPhysicsParameter,         ///< 出力先のパラメータ
- DestinationParameterIndex: Int,         ///< 出力先のパラメータのインデックス
- VertexIndex: Int,                       ///< 振り子のインデックス
- TranslationScale: CubismVector,             ///< 移動値のスケール
- AngleScale: Float,                      ///< 角度のスケール
- Weight: Float,                          /// 重み
- Type: CubismPhysicsSource,                   ///< 出力の種類
- Reflect: Int,                           ///< 値が反転されているかどうか
- ValueBelowMinimum: Float,               ///< 最小値を下回った時の値
- ValueExceededMaximum: Float,            ///< 最大値をこえた時の値
- GetValue: PhysicsValueGetter,                 ///< 物理演算の値の取得関数
- GetScale: PhysicsScaleGetter                ///< 物理演算のスケール値の取得関数
-)
+class CubismPhysicsOutput {
+ var Destination: CubismPhysicsParameter = null         ///< 出力先のパラメータ
+ var DestinationParameterIndex: Int = 0         ///< 出力先のパラメータのインデックス
+ var VertexIndex: Int = 0                       ///< 振り子のインデックス
+ var TranslationScale: CubismVector = null             ///< 移動値のスケール
+ var AngleScale: Float = 0                      ///< 角度のスケール
+ var Weight: Float = 0                          /// 重み
+ var Type: CubismPhysicsSource = null                   ///< 出力の種類
+ var Reflect: Boolean = false                           ///< 値が反転されているかどうか
+ var ValueBelowMinimum: Float = null               ///< 最小値を下回った時の値
+ var ValueExceededMaximum: Float = null            ///< 最大値をこえた時の値
+ var GetValue: PhysicsValueGetter = null                 ///< 物理演算の値の取得関数
+ var GetScale: PhysicsScaleGetter = null               ///< 物理演算のスケール値の取得関数
+}
 
 /**
  * 物理演算のデータ。
  */
-case class CubismPhysicsRig(
-  SubRigCount: Int,                           ///< 物理演算の物理点の個数
-  Settings: List[CubismPhysicsSubRig],        ///< 物理演算の物理点の管理のリスト
-  Inputs: List[CubismPhysicsInput],           ///< 物理演算の入力のリスト
-  Outputs: List[CubismPhysicsOutput],         ///< 物理演算の出力のリスト
-  Particles: List[CubismPhysicsParticle],     ///< 物理演算の物理点のリスト
-  Gravity: CubismVector,                          ///< 重力
-  Wind: CubismVector                             ///< 風
-)
+class CubismPhysicsRig {
+  var SubRigCount: Int = 0 ///< 物理演算の物理点の個数
+  var Settings: Array[CubismPhysicsSubRig] = null ///< 物理演算の物理点の管理のリスト
+  var Inputs: Array[CubismPhysicsInput] = null ///< 物理演算の入力のリスト
+  var Outputs: Array[CubismPhysicsOutput] = null ///< 物理演算の出力のリスト
+  var Particles: Array[CubismPhysicsParticle] = null ///< 物理演算の物理点のリスト
+  var Gravity: CubismVector = null///< 重力
+  var Wind: CubismVector = null ///< 風
+}
 
+case class Options(Gravity: CubismVector, Wind: CubismVector)

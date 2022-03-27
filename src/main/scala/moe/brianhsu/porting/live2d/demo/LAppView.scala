@@ -160,7 +160,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       updateStrategy.setFunctionalEffects(
         new Breath() ::
         new EyeBlink(avatar.avatarSettings) ::
-        faceDirection :: pose ::
+        faceDirection :: //pose ::
         Nil
       )
     }
