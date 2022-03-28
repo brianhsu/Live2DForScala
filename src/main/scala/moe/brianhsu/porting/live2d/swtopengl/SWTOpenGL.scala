@@ -95,5 +95,4 @@ object SWTOpenGL {
     display.dispose()
 
   }
-
 }

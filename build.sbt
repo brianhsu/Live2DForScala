@@ -4,9 +4,9 @@ organization := "moe.brianhsu.live2d"
 
 scalaVersion := "2.13.5"
 
-scalacOptions := Seq("-deprecation", "-Ywarn-unused")
+//scalacOptions := Seq("-deprecation", "-Ywarn-unused")
 
-//scalacOptions := Seq("-deprecation")
+scalacOptions := Seq("-deprecation")
 
 Compile / doc / scalacOptions ++= Seq("-private")
 

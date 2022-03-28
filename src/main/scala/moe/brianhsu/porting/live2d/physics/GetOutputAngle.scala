@@ -1,15 +1,24 @@
 package moe.brianhsu.porting.live2d.physics
-import moe.brianhsu.porting.live2d.math.CubismVector
+import moe.brianhsu.porting.live2d.framework.math.{CubismMath, CubismVector2}
 
 object GetOutputAngle extends PhysicsValueGetter {
-  /**
-   * 物理演算の値の取得関数の宣言。
-   *
-   * @param       translation     移動値
-   * @param       particles       物理点のリスト
-   * @param       isInverted      値が反転されているか？
-   * @param       parentGravity   重力
-   * @return 値
-   */
-  override def apply(translation: CubismVector, particles: CubismPhysicsParticle, particleIndex: Int, isInverted: Int, parentGravity: CubismVector): Float = ???
+  override def apply(translation: CubismVector2, particles: Array[CubismPhysicsParticle], particleIndex: Int, isInverted: Boolean, inputParentGravity: CubismVector2): Float = {
+    var outputValue: Float = 0
+    var parentGravity = inputParentGravity.copy()
+
+    if (particleIndex >= 2) {
+      parentGravity = particles(particleIndex - 1).Position - particles(particleIndex - 2).Position
+    } else {
+      parentGravity *= -1.0f
+    }
+
+    outputValue = CubismMath.DirectionToRadian(parentGravity, translation)
+
+    if (isInverted) {
+      outputValue *= -1.0f
+    }
+
+    outputValue
+
+  }
 }

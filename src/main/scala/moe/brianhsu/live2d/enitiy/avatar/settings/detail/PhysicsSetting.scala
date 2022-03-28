@@ -1,7 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.settings.detail
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Meta, Setting}
-import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType
 
 object PhysicsSetting {
   case class NormalizationValue(minimum: Float, default: Float, maximum: Float)
