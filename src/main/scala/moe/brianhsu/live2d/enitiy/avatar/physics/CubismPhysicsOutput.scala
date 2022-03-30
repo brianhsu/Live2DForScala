@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
-import moe.brianhsu.porting.live2d.physics.{CubismPhysicsParameter, PhysicsScaleGetter, PhysicsValueGetter}
+import moe.brianhsu.porting.live2d.physics.{PhysicsScaleGetter, PhysicsValueGetter}
 
 case class CubismPhysicsOutput(
   destination: CubismPhysicsParameter, ///< 出力先のパラメータ

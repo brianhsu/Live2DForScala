@@ -5,10 +5,7 @@ import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsSubRig, CubismPhysicsType, TargetType}
 
 
-case class CubismPhysicsParameter(
-  var id: String = null,
-  var targetType: TargetType = null,
-)
+
 
 
 

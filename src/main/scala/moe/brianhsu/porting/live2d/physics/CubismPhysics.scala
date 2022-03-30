@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsSubRig, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsParameter, CubismPhysicsSubRig, TargetType}
 import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.CubismPhysics.updateParticles
 
