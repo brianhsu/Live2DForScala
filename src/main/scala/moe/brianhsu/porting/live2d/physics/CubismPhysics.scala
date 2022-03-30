@@ -3,7 +3,7 @@ package moe.brianhsu.porting.live2d.physics
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
-import moe.brianhsu.porting.live2d.framework.math.{CubismMath, CubismVector2, MutableData}
+import moe.brianhsu.porting.live2d.framework.math.{CubismMath, CubismVector, MutableData}
 import moe.brianhsu.porting.live2d.physics.CubismPhysics.updateParticles
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsSource.{CubismPhysicsSource_Angle, CubismPhysicsSource_X, CubismPhysicsSource_Y}
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType.CubismPhysicsTargetType_Parameter
@@ -19,19 +19,19 @@ object CubismPhysics {
     ret
   }
 
-  def updateParticles(strand: Array[CubismPhysicsParticle], strandCount: Int, totalTranslation: CubismVector2,
-                      totalAngle: MutableData[Float], windDirection: CubismVector2,
+  def updateParticles(strand: Array[CubismPhysicsParticle], strandCount: Int, totalTranslation: CubismVector,
+                      totalAngle: MutableData[Float], windDirection: CubismVector,
                       thresholdValue: Float, deltaTimeSeconds: Float,
                       airResistance: Float): Unit = {
 
     var totalRadian: Float = 0.0f
     var delay: Float = 0.0f
     var radian: Float = 0.0f
-    var currentGravity: CubismVector2 = CubismVector2()
-    val direction: CubismVector2 = CubismVector2()
-    val velocity: CubismVector2 = CubismVector2()
-    var force: CubismVector2 = CubismVector2()
-    var newDirection: CubismVector2 = CubismVector2()
+    var currentGravity: CubismVector = CubismVector()
+    val direction: CubismVector = CubismVector()
+    val velocity: CubismVector = CubismVector()
+    var force: CubismVector = CubismVector()
+    var newDirection: CubismVector = CubismVector()
 
     strand(0).Position = totalTranslation
 
@@ -79,7 +79,7 @@ object CubismPhysics {
         strand(i).Velocity *= strand(i).Mobility
       }
 
-      strand(i).Force = CubismVector2(0.0f, 0.0f)
+      strand(i).Force = CubismVector(0.0f, 0.0f)
       strand(i).LastGravity = currentGravity
     }
 
@@ -92,23 +92,23 @@ class CubismPhysics {
   val AirResistance = 5.0f
 
   case class Options(
-    var Gravity: CubismVector2 = CubismVector2(),          ///< 重力方向
-    var Wind: CubismVector2 = CubismVector2()             ///< 風の方向
+    var Gravity: CubismVector = CubismVector(),          ///< 重力方向
+    var Wind: CubismVector = CubismVector()             ///< 風の方向
   )
 
   var _physicsRig: CubismPhysicsRig = null          ///< 物理演算のデータ
   var _options: Options = Options(
-    CubismVector2(0.0f, -1.0f),
-    CubismVector2(10.0f, 10.0f)
+    CubismVector(0.0f, -1.0f),
+    CubismVector(10.0f, 10.0f)
   )  ///< オプション
 
   def parse(json: PhysicsSetting): Unit = {
     _physicsRig = new CubismPhysicsRig
-    _physicsRig.Gravity = CubismVector2(
+    _physicsRig.Gravity = CubismVector(
       json.meta.effectiveForces.gravity.x,
       json.meta.effectiveForces.gravity.y
     )
-    _physicsRig.Wind = CubismVector2(
+    _physicsRig.Wind = CubismVector(
       json.meta.effectiveForces.wind.x,
       json.meta.effectiveForces.wind.y
     )
@@ -193,7 +193,7 @@ class CubismPhysics {
         _physicsRig.Particles(particleIndex + j).Delay = json.physicsSettings(i).vertices(j).delay
         _physicsRig.Particles(particleIndex + j).Acceleration = json.physicsSettings(i).vertices(j).acceleration
         _physicsRig.Particles(particleIndex + j).Radius = json.physicsSettings(i).vertices(j).radius
-        _physicsRig.Particles(particleIndex + j).Position = CubismVector2(
+        _physicsRig.Particles(particleIndex + j).Position = CubismVector(
           json.physicsSettings(i).vertices(j).position.x,
           json.physicsSettings(i).vertices(j).position.y
         )
@@ -205,31 +205,31 @@ class CubismPhysics {
   }
 
   def initialize(): Unit = {
-    var radius: CubismVector2 = CubismVector2()
+    var radius: CubismVector = CubismVector()
 
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
       val currentSetting = _physicsRig.Settings(settingIndex)
       val strand = _physicsRig.Particles.drop(currentSetting.BaseParticleIndex)
 
       // Initialize the top of particle.
-      strand(0).InitialPosition = CubismVector2(0.0f, 0.0f)
+      strand(0).InitialPosition = CubismVector(0.0f, 0.0f)
       strand(0).LastPosition = strand(0).InitialPosition
-      strand(0).LastGravity = CubismVector2(0.0f, -1.0f)
+      strand(0).LastGravity = CubismVector(0.0f, -1.0f)
       strand(0).LastGravity.Y *= -1.0f
-      strand(0).Velocity = CubismVector2(0.0f, 0.0f)
-      strand(0).Force = CubismVector2(0.0f, 0.0f)
+      strand(0).Velocity = CubismVector(0.0f, 0.0f)
+      strand(0).Force = CubismVector(0.0f, 0.0f)
 
       // Initialize paritcles.
       for (i <- 1 until currentSetting.ParticleCount) {
-        radius = CubismVector2(0.0f, 0.0f)
+        radius = CubismVector(0.0f, 0.0f)
         radius.Y = strand(i).Radius
         strand(i).InitialPosition = strand(i - 1).InitialPosition + radius
         strand(i).Position = strand(i).InitialPosition
         strand(i).LastPosition = strand(i).InitialPosition
-        strand(i).LastGravity = CubismVector2(0.0f, -1.0f)
+        strand(i).LastGravity = CubismVector(0.0f, -1.0f)
         strand(i).LastGravity.Y *= -1.0f
-        strand(i).Velocity = CubismVector2(0.0f, 0.0f)
-        strand(i).Force = CubismVector2(0.0f, 0.0f)
+        strand(i).Velocity = CubismVector(0.0f, 0.0f)
+        strand(i).Force = CubismVector(0.0f, 0.0f)
       }
     }
 
@@ -281,7 +281,7 @@ class CubismPhysics {
     var weight: Float = 0.0f
     var radAngle: Float = 0.0f
     var outputValue: Float = 0.0f
-    val totalTranslation: CubismVector2 = CubismVector2()
+    val totalTranslation: CubismVector = CubismVector()
     var particleIndex: Int = 0
     var currentSetting: CubismPhysicsSubRig = null
     var currentInput: Array[CubismPhysicsInput] = null
@@ -339,7 +339,7 @@ class CubismPhysics {
             loop.break()
           }
 
-          val translation = CubismVector2()
+          val translation = CubismVector()
           translation.X = currentParticles(particleIndex).Position.X - currentParticles(particleIndex - 1).Position.X
           translation.Y = currentParticles(particleIndex).Position.Y - currentParticles(particleIndex - 1).Position.Y
 

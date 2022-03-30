@@ -1,8 +1,8 @@
 package moe.brianhsu.porting.live2d.physics
-import moe.brianhsu.porting.live2d.framework.math.{CubismMath, CubismVector2}
+import moe.brianhsu.porting.live2d.framework.math.{CubismMath, CubismVector}
 
 object GetOutputAngle extends PhysicsValueGetter {
-  override def apply(translation: CubismVector2, particles: Array[CubismPhysicsParticle], particleIndex: Int, isInverted: Boolean, inputParentGravity: CubismVector2): Float = {
+  override def apply(translation: CubismVector, particles: Array[CubismPhysicsParticle], particleIndex: Int, isInverted: Boolean, inputParentGravity: CubismVector): Float = {
     var outputValue: Float = 0
     var parentGravity = inputParentGravity.copy()
 
