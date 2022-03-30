@@ -7,7 +7,7 @@ object GetOutputAngle extends PhysicsValueGetter {
     var parentGravity = inputParentGravity.copy()
 
     if (particleIndex >= 2) {
-      parentGravity = particles(particleIndex - 1).Position - particles(particleIndex - 2).Position
+      parentGravity = particles(particleIndex - 1).position - particles(particleIndex - 2).position
     } else {
       parentGravity *= -1.0f
     }

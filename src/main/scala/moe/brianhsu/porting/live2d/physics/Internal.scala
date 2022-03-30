@@ -9,18 +9,18 @@ import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhys
 
 
 
-class CubismPhysicsParticle {
-  var InitialPosition = EuclideanVector()          ///< 初期位置
-  var Mobility: Float = 0.0f                   ///< 動きやすさ
-  var Delay: Float = 0.0f                       ///< 遅れ
-  var Acceleration: Float = 0.0f                ///< 加速度
-  var Radius: Float = 0.0f                      ///< 距離
-  var Position = EuclideanVector()                 ///< 現在の位置
-  var LastPosition = EuclideanVector()             ///< 最後の位置
-  var LastGravity = EuclideanVector()              ///< 最後の重力
-  var Force = EuclideanVector()                    ///< 現在かかっている力
-  var Velocity = EuclideanVector()                 ///< 現在の速度
-}
+case class CubismPhysicsParticle(
+  mobility: Float,                   ///< 動きやすさ
+  delay: Float,                       ///< 遅れ
+  acceleration: Float,                ///< 加速度
+  radius: Float,                      ///< 距離
+  initialPosition: EuclideanVector,          ///< 初期位置
+  var position: EuclideanVector,                 ///< 現在の位置
+  var lastPosition: EuclideanVector,             ///< 最後の位置
+  var lastGravity: EuclideanVector,              ///< 最後の重力
+  var force: EuclideanVector,                    ///< 現在かかっている力
+  var velocity: EuclideanVector                 ///< 現在の速度
+)
 
 
 
@@ -116,12 +116,4 @@ trait PhysicsScaleGetter {
 
 
 
-class CubismPhysicsRig {
-  var SubRigCount: Int = 0                           ///< 物理演算の物理点の個数
-  var Settings: Array[CubismPhysicsSubRig] = Array()       ///< 物理演算の物理点の管理のリスト
-  var Inputs: Array[CubismPhysicsInput] = Array()          ///< 物理演算の入力のリスト
-  var Outputs: Array[CubismPhysicsOutput] = Array()         ///< 物理演算の出力のリスト
-  var Particles: Array[CubismPhysicsParticle] = Array()     ///< 物理演算の物理点のリスト
-  var Gravity: EuclideanVector = EuclideanVector()          ///< 重力
-  var Wind: EuclideanVector = EuclideanVector()                    ///< 風
-}
+

@@ -78,19 +78,31 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
   Feature("UpdateParticles") {
     Scenario("delay is not 0") {
-      val strand1 = new CubismPhysicsParticle
-      strand1.Position = EuclideanVector(0, 0)
-      strand1.Mobility = 1
-      strand1.Delay = 1
-      strand1.Acceleration = 1
-      strand1.Radius = 0
+      val strand1 = CubismPhysicsParticle(
+        mobility = 1,
+        delay = 1,
+        acceleration = 1,
+        radius = 0,
+        initialPosition = EuclideanVector(0.0f),
+        position = EuclideanVector(0, 0),
+        lastPosition = EuclideanVector(0.0f, 0.0f),
+        lastGravity = EuclideanVector(0.0f, 0.0f),
+        force = EuclideanVector(0.0f, 0.0f),
+        velocity = EuclideanVector(0.0f, 0.0f),
+      )
 
-      val strand2 = new CubismPhysicsParticle
-      strand2.Position = EuclideanVector(1f, 15)
-      strand2.Mobility = 0.95f
-      strand2.Delay = 0.8f
-      strand2.Acceleration = 1.5f
-      strand2.Radius = 15
+      val strand2 = CubismPhysicsParticle(
+        mobility = 0.95f,
+        delay = 0.8f,
+        acceleration = 1.5f,
+        radius = 15,
+        initialPosition = EuclideanVector(0.0f),
+        position = EuclideanVector(1f, 15),
+        lastPosition = EuclideanVector(0.0f, 0.0f),
+        lastGravity = EuclideanVector(0.0f, 0.0f),
+        force = EuclideanVector(0.0f, 0.0f),
+        velocity = EuclideanVector(0.0f, 0.0f),
+      )
 
       val strands = Array(strand1, strand2)
 
@@ -104,43 +116,55 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
         0.1f
       )
 
-      strand1.InitialPosition shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.Mobility shouldBe 1.0f
-      strand1.Delay shouldBe 1.0f
-      strand1.Acceleration shouldBe 1.0f
-      strand1.Radius shouldBe 0.0f
-      strand1.Position shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.LastPosition shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.LastGravity shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.Force shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.Velocity shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.initialPosition shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.mobility shouldBe 1.0f
+      strand1.delay shouldBe 1.0f
+      strand1.acceleration shouldBe 1.0f
+      strand1.radius shouldBe 0.0f
+      strand1.position shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.lastPosition shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.lastGravity shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.force shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.velocity shouldBe EuclideanVector(0.0f, 0.0f)
 
-      strand2.InitialPosition shouldBe EuclideanVector(0.0f, 0.0f)
-      strand2.Mobility shouldBe 0.95f
-      strand2.Delay shouldBe 0.8f
-      strand2.Acceleration shouldBe 1.5f
-      strand2.Radius shouldBe 15.0f
-      strand2.Position shouldBe EuclideanVector(0.0f, 14.998851f)
-      strand2.LastPosition shouldBe EuclideanVector(1.0f, 15.0f)
-      strand2.LastGravity shouldBe EuclideanVector(0.0f, 1.0f)
-      strand2.Force shouldBe EuclideanVector(0.0f, 0.0f)
-      strand2.Velocity shouldBe EuclideanVector(-0.118868865f, -1.3660143E-4f)
+      strand2.initialPosition shouldBe EuclideanVector(0.0f, 0.0f)
+      strand2.mobility shouldBe 0.95f
+      strand2.delay shouldBe 0.8f
+      strand2.acceleration shouldBe 1.5f
+      strand2.radius shouldBe 15.0f
+      strand2.position shouldBe EuclideanVector(0.0f, 14.998851f)
+      strand2.lastPosition shouldBe EuclideanVector(1.0f, 15.0f)
+      strand2.lastGravity shouldBe EuclideanVector(0.0f, 1.0f)
+      strand2.force shouldBe EuclideanVector(0.0f, 0.0f)
+      strand2.velocity shouldBe EuclideanVector(-0.118868865f, -1.3660143E-4f)
     }
 
     Scenario("delay is 0") {
-      val strand1 = new CubismPhysicsParticle
-      strand1.Position = EuclideanVector(0, 0)
-      strand1.Mobility = 1
-      strand1.Delay = 1
-      strand1.Acceleration = 1
-      strand1.Radius = 0
+      val strand1 = CubismPhysicsParticle(
+        mobility = 1,
+        delay = 1,
+        acceleration = 1,
+        radius = 0,
+        initialPosition = EuclideanVector(0.0f),
+        position = EuclideanVector(0, 0),
+        lastPosition = EuclideanVector(0.0f, 0.0f),
+        lastGravity = EuclideanVector(0.0f, 0.0f),
+        force = EuclideanVector(0.0f, 0.0f),
+        velocity = EuclideanVector(0.0f, 0.0f),
+      )
 
-      val strand2 = new CubismPhysicsParticle
-      strand2.Position = EuclideanVector(1f, 15)
-      strand2.Mobility = 0.95f
-      strand2.Delay = 0
-      strand2.Acceleration = 1.5f
-      strand2.Radius = 15
+      val strand2 = new CubismPhysicsParticle(
+        mobility = 0.95f,
+        delay = 0f,
+        acceleration = 1.5f,
+        radius = 15,
+        initialPosition = EuclideanVector(0.0f),
+        position = EuclideanVector(1f, 15),
+        lastPosition = EuclideanVector(0.0f, 0.0f),
+        lastGravity = EuclideanVector(0.0f, 0.0f),
+        force = EuclideanVector(0.0f, 0.0f),
+        velocity = EuclideanVector(0.0f, 0.0f),
+      )
 
       val strands = Array(strand1, strand2)
 
@@ -154,27 +178,27 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
         0.1f
       )
 
-      strand1.InitialPosition shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.Mobility shouldBe 1.0f
-      strand1.Delay shouldBe 1.0f
-      strand1.Acceleration shouldBe 1.0f
-      strand1.Radius shouldBe 0.0f
-      strand1.Position shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.LastPosition shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.LastGravity shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.Force shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.Velocity shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.initialPosition shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.mobility shouldBe 1.0f
+      strand1.delay shouldBe 1.0f
+      strand1.acceleration shouldBe 1.0f
+      strand1.radius shouldBe 0.0f
+      strand1.position shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.lastPosition shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.lastGravity shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.force shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.velocity shouldBe EuclideanVector(0.0f, 0.0f)
 
-      strand2.InitialPosition shouldBe EuclideanVector(0.0f, 0.0f)
-      strand2.Mobility shouldBe 0.95f
-      strand2.Delay shouldBe 0.0f
-      strand2.Acceleration shouldBe 1.5f
-      strand2.Radius shouldBe 15.0f
-      strand2.Position shouldBe EuclideanVector(0.0f, -14.966778f)
-      strand2.LastPosition shouldBe EuclideanVector(1.0f, 15.0f)
-      strand2.LastGravity shouldBe EuclideanVector(0.0f, 1.0f)
-      strand2.Force shouldBe EuclideanVector(0.0f, 0.0f)
-      strand2.Velocity shouldBe EuclideanVector(0.0f, 0.0f)
+      strand2.initialPosition shouldBe EuclideanVector(0.0f, 0.0f)
+      strand2.mobility shouldBe 0.95f
+      strand2.delay shouldBe 0.0f
+      strand2.acceleration shouldBe 1.5f
+      strand2.radius shouldBe 15.0f
+      strand2.position shouldBe EuclideanVector(0.0f, -14.966778f)
+      strand2.lastPosition shouldBe EuclideanVector(1.0f, 15.0f)
+      strand2.lastGravity shouldBe EuclideanVector(0.0f, 1.0f)
+      strand2.force shouldBe EuclideanVector(0.0f, 0.0f)
+      strand2.velocity shouldBe EuclideanVector(0.0f, 0.0f)
     }
 
   }

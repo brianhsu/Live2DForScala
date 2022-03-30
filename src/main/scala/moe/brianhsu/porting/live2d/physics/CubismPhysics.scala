@@ -5,7 +5,8 @@ import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsParameter, CubismPhysicsSubRig, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsParameter, CubismPhysicsRig, CubismPhysicsSubRig, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Output, Setting, Vertex}
 import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.CubismPhysics.updateParticles
 
@@ -33,59 +34,59 @@ object CubismPhysics {
     var force: EuclideanVector = EuclideanVector()
     var newDirection: EuclideanVector = EuclideanVector()
 
-    strand(0).Position = totalTranslation
+    strand(0).position = totalTranslation
 
     totalRadian = Radian.degreesToRadian(totalAngle.data)
     currentGravity = Radian.radianToDirection(totalRadian).normalize()
 
     for (i <- 1 until strandCount) {
-      strand(i).Force = (currentGravity * strand(i).Acceleration) + windDirection
+      strand(i).force = (currentGravity * strand(i).acceleration) + windDirection
 
-      strand(i).LastPosition = strand(i).Position
+      strand(i).lastPosition = strand(i).position
 
-      delay = strand(i).Delay * deltaTimeSeconds * 30.0f
+      delay = strand(i).delay * deltaTimeSeconds * 30.0f
 
       direction = EuclideanVector(
-        x = strand(i).Position.x - strand(i - 1).Position.x,
-        y = strand(i).Position.y - strand(i - 1).Position.y
+        x = strand(i).position.x - strand(i - 1).position.x,
+        y = strand(i).position.y - strand(i - 1).position.y
       )
 
-      radian = Radian.directionToRadian(strand(i).LastGravity, currentGravity) / airResistance;
+      radian = Radian.directionToRadian(strand(i).lastGravity, currentGravity) / airResistance;
 
       direction = EuclideanVector(
         x = ((Math.cos(radian).toFloat * direction.x) - (direction.y * Math.sin(radian).toFloat)),
         y = ((Math.sin(radian).toFloat * direction.x) + (direction.y * Math.cos(radian).toFloat))
       )
 
-      strand(i).Position = strand(i - 1).Position + direction;
+      strand(i).position = strand(i - 1).position + direction;
 
       velocity = EuclideanVector(
-        x = strand(i).Velocity.x * delay,
-        y = strand(i).Velocity.y * delay
+        x = strand(i).velocity.x * delay,
+        y = strand(i).velocity.y * delay
       )
-      force = strand(i).Force * delay * delay
+      force = strand(i).force * delay * delay
 
-      strand(i).Position = strand(i).Position + velocity + force
+      strand(i).position = strand(i).position + velocity + force
 
-      newDirection = (strand(i).Position - strand(i - 1).Position).normalize()
+      newDirection = (strand(i).position - strand(i - 1).position).normalize()
 
-      strand(i).Position = strand(i - 1).Position + (newDirection * strand(i).Radius)
+      strand(i).position = strand(i - 1).position + (newDirection * strand(i).radius)
 
-      if (Math.abs(strand(i).Position.x) < thresholdValue) {
-        strand(i).Position = strand(i).Position.copy(x = 0.0f)
+      if (Math.abs(strand(i).position.x) < thresholdValue) {
+        strand(i).position = strand(i).position.copy(x = 0.0f)
       }
 
       if (delay != 0.0f) {
-        strand(i).Velocity = EuclideanVector(
-          x = strand(i).Position.x - strand(i).LastPosition.x,
-          y = strand(i).Position.y - strand(i).LastPosition.y
+        strand(i).velocity = EuclideanVector(
+          x = strand(i).position.x - strand(i).lastPosition.x,
+          y = strand(i).position.y - strand(i).lastPosition.y
         )
-        strand(i).Velocity /= delay
-        strand(i).Velocity *= strand(i).Mobility
+        strand(i).velocity /= delay
+        strand(i).velocity *= strand(i).mobility
       }
 
-      strand(i).Force = EuclideanVector(0.0f, 0.0f)
-      strand(i).LastGravity = currentGravity
+      strand(i).force = EuclideanVector(0.0f, 0.0f)
+      strand(i).lastGravity = currentGravity
     }
 
   }
@@ -108,135 +109,143 @@ class CubismPhysics {
   )  ///< オプション
 
   def parse(json: PhysicsSetting): Unit = {
-    _physicsRig = new CubismPhysicsRig
-    _physicsRig.Gravity = EuclideanVector(
-      json.meta.effectiveForces.gravity.x,
-      json.meta.effectiveForces.gravity.y
-    )
-    _physicsRig.Wind = EuclideanVector(
-      json.meta.effectiveForces.wind.x,
-      json.meta.effectiveForces.wind.y
-    )
-    _physicsRig.SubRigCount = json.physicsSettings.size
-    _physicsRig.Settings = Array.fill(_physicsRig.SubRigCount)(null)
-    _physicsRig.Inputs = Array.fill(json.meta.totalInputCount)(null)
-    _physicsRig.Outputs = Array.fill(json.meta.totalOutputCount)(null)
-    _physicsRig.Particles = Array.fill(json.meta.vertexCount)(new CubismPhysicsParticle)
 
     var inputIndex: Int = 0
     var outputIndex: Int = 0
     var particleIndex: Int = 0
 
-    for (i <- _physicsRig.Settings.indices) {
-      _physicsRig.Settings(i) = new CubismPhysicsSubRig(
-        json.physicsSettings(i).input.size,
-        json.physicsSettings(i).output.size,
-        json.physicsSettings(i).vertices.size,
-        inputIndex, outputIndex, particleIndex,
-        CubismPhysicsNormalization(
-          json.physicsSettings(i).normalization.position.minimum,
-          json.physicsSettings(i).normalization.position.maximum,
-          json.physicsSettings(i).normalization.position.default
-        ),
-        CubismPhysicsNormalization(
-          json.physicsSettings(i).normalization.angle.minimum,
-          json.physicsSettings(i).normalization.angle.maximum,
-          json.physicsSettings(i).normalization.angle.default
-        )
+    var settings: List[CubismPhysicsSubRig] = Nil
+    var inputs: List[CubismPhysicsInput] = Nil
+    var outputs: List[CubismPhysicsOutput] = Nil
+    var particles: List[CubismPhysicsParticle] = Nil
+
+    for (i <- json.physicsSettings.indices) {
+      val setting = json.physicsSettings(i)
+      settings ::= createSubRig(setting, inputIndex, outputIndex, particleIndex)
+
+      inputs ++= setting.input.map(createInput)
+      outputs ++= setting.output.map(createOutput)
+      particles ++= createParticleList(setting.vertices)
+
+      inputIndex += setting.input.size
+      outputIndex += setting.output.size
+      particleIndex += setting.vertices.size
+    }
+    _physicsRig = new CubismPhysicsRig(
+      json.physicsSettings.size,
+      settings.reverse.toArray,
+      inputs.toArray,
+      outputs.toArray,
+      particles.toArray,
+      EuclideanVector(
+        json.meta.effectiveForces.gravity.x,
+        json.meta.effectiveForces.gravity.y
+      ),
+      EuclideanVector(
+        json.meta.effectiveForces.wind.x,
+        json.meta.effectiveForces.wind.y
       )
-
-      // Input
-      for (j <- json.physicsSettings(i).input.indices) {
-
-        val (inputType, normalizeFunction) = json.physicsSettings(i).input(j).`type` match {
-          case "X" => (X, GetInputTranslationXFromNormalizedParameterValue)
-          case "Y" => (Y, GetInputTranslationYFromNormalizedParameterValue)
-          case "Angle" => (Angle, GetInputAngleFromNormalizedParameterValue)
-          case _ => throw new UnsupportedOperationException("Unsupported input type")
-        }
-
-        _physicsRig.Inputs(inputIndex + j) = CubismPhysicsInput(
-          CubismPhysicsParameter(json.physicsSettings(i).input(j).source.id, TargetType.Parameter),
-          inputType,
-          json.physicsSettings(i).input(j).weight,
-          json.physicsSettings(i).input(j).reflect,
-          normalizeFunction
-        )
-      }
-      inputIndex += json.physicsSettings(i).input.size
-
-      // Output
-
-      for (j <- json.physicsSettings(i).output.indices) {
-
-        val (outputType, translationFunction, scaleFunction) = json.physicsSettings(i).output(j).`type` match {
-          case "X" => (X, GetOutputTranslationX, GetOutputScaleTranslationX)
-          case "Y" => (Y, GetOutputTranslationY, GetOutputScaleTranslationY)
-          case "Angle" => (Angle, GetOutputAngle, GetOutputScaleAngle)
-          case _ => throw new UnsupportedOperationException("Unsupported output type")
-        }
-
-        _physicsRig.Outputs(outputIndex + j) = new CubismPhysicsOutput(
-          CubismPhysicsParameter(
-            json.physicsSettings(i).output(j).destination.id,
-            TargetType.Parameter
-          ),
-          json.physicsSettings(i).output(j).vertexIndex,
-          json.physicsSettings(i).output(j).scale,
-          json.physicsSettings(i).output(j).weight,
-          outputType,
-          json.physicsSettings(i).output(j).reflect,
-          translationFunction,
-          scaleFunction
-        )
-      }
-      outputIndex += json.physicsSettings(i).output.size
-
-      // Particle
-      for (j <- json.physicsSettings(i).vertices.indices) {
-        _physicsRig.Particles(particleIndex + j).Mobility = json.physicsSettings(i).vertices(j).mobility
-        _physicsRig.Particles(particleIndex + j).Delay = json.physicsSettings(i).vertices(j).delay
-        _physicsRig.Particles(particleIndex + j).Acceleration = json.physicsSettings(i).vertices(j).acceleration
-        _physicsRig.Particles(particleIndex + j).Radius = json.physicsSettings(i).vertices(j).radius
-        _physicsRig.Particles(particleIndex + j).Position = EuclideanVector(
-          json.physicsSettings(i).vertices(j).position.x,
-          json.physicsSettings(i).vertices(j).position.y
-        )
-      }
-
-      particleIndex += json.physicsSettings(i).vertices.size
-    }
-    initialize()
+    )
   }
 
-  def initialize(): Unit = {
-    var radius: EuclideanVector = EuclideanVector()
+  private def createParticleList(vertexSettings: List[Vertex]): List[CubismPhysicsParticle] = {
+    var previousParticle: Option[CubismPhysicsParticle] = None
+    var resultList: List[CubismPhysicsParticle] = Nil
 
-    for (settingIndex <- 0 until _physicsRig.SubRigCount) {
-      val currentSetting = _physicsRig.Settings(settingIndex)
-      val strand = _physicsRig.Particles.drop(currentSetting.baseParticleIndex)
-
-      // Initialize the top of particle.
-      strand(0).InitialPosition = EuclideanVector(0.0f, 0.0f)
-      strand(0).LastPosition = strand(0).InitialPosition
-      strand(0).LastGravity = EuclideanVector(0.0f, 1.0f)
-      strand(0).Velocity = EuclideanVector(0.0f, 0.0f)
-      strand(0).Force = EuclideanVector(0.0f, 0.0f)
-
-      // Initialize paritcles.
-      for (i <- 1 until currentSetting.particleCount) {
-        radius = EuclideanVector(0.0f, strand(i).Radius)
-        strand(i).InitialPosition = strand(i - 1).InitialPosition + radius
-        strand(i).Position = strand(i).InitialPosition
-        strand(i).LastPosition = strand(i).InitialPosition
-        strand(i).LastGravity = EuclideanVector(0.0f, 1.0f)
-        strand(i).Velocity = EuclideanVector(0.0f, 0.0f)
-        strand(i).Force = EuclideanVector(0.0f, 0.0f)
-      }
+    for (vertexSetting <- vertexSettings) {
+      val particle = createParticle(previousParticle, vertexSetting)
+      resultList ::= particle
+      previousParticle = Some(particle)
     }
 
+    resultList.reverse
   }
 
+  private def createParticle(previousParticle: Option[CubismPhysicsParticle],
+                             vertexSetting: Vertex): CubismPhysicsParticle = {
+    val initialPosition = previousParticle match {
+      case None => EuclideanVector(0.0f, 0.0f)
+      case Some(particle) =>
+        val radius = EuclideanVector(0.0f, vertexSetting.radius)
+        particle.initialPosition + radius
+    }
+
+    val position = if (previousParticle.isEmpty) {
+      EuclideanVector(vertexSetting.position.x, vertexSetting.position.y)
+    } else {
+      initialPosition
+    }
+
+    val lastPosition = initialPosition
+
+    CubismPhysicsParticle(
+      vertexSetting.mobility, vertexSetting.delay,
+      vertexSetting.acceleration, vertexSetting.radius,
+      initialPosition, position, lastPosition,
+      EuclideanVector(0.0f, 1.0f),
+      EuclideanVector(0.0f, 0.0f),
+      EuclideanVector(0.0f, 0.0f)
+    )
+  }
+
+  private def createOutput(outputSetting: Output): CubismPhysicsOutput = {
+    val (outputType, translationFunction, scaleFunction) = outputSetting.`type` match {
+      case "X" => (X, GetOutputTranslationX, GetOutputScaleTranslationX)
+      case "Y" => (Y, GetOutputTranslationY, GetOutputScaleTranslationY)
+      case "Angle" => (Angle, GetOutputAngle, GetOutputScaleAngle)
+      case _ => throw new UnsupportedOperationException("Unsupported output type")
+    }
+
+    CubismPhysicsOutput(
+      CubismPhysicsParameter(
+        outputSetting.destination.id,
+        TargetType.Parameter
+      ),
+      outputSetting.vertexIndex,
+      outputSetting.scale,
+      outputSetting.weight,
+      outputType,
+      outputSetting.reflect,
+      translationFunction,
+      scaleFunction
+    )
+  }
+  private def createInput(input: Input): CubismPhysicsInput = {
+    val (inputType, normalizeFunction) = input.`type` match {
+      case "X" => (X, GetInputTranslationXFromNormalizedParameterValue)
+      case "Y" => (Y, GetInputTranslationYFromNormalizedParameterValue)
+      case "Angle" => (Angle, GetInputAngleFromNormalizedParameterValue)
+      case _ => throw new UnsupportedOperationException("Unsupported input type")
+    }
+
+    CubismPhysicsInput(
+      CubismPhysicsParameter(input.source.id, TargetType.Parameter),
+      inputType,
+      input.weight,
+      input.reflect,
+      normalizeFunction
+    )
+  }
+
+  private def createSubRig(setting: Setting,
+                           inputIndex: Int, outputIndex: Int, particleIndex: Int): CubismPhysicsSubRig = {
+    CubismPhysicsSubRig(
+      setting.input.size,
+      setting.output.size,
+      setting.vertices.size,
+      inputIndex, outputIndex, particleIndex,
+      CubismPhysicsNormalization(
+        setting.normalization.position.minimum,
+        setting.normalization.position.maximum,
+        setting.normalization.position.default
+      ),
+      CubismPhysicsNormalization(
+        setting.normalization.angle.minimum,
+        setting.normalization.angle.maximum,
+        setting.normalization.angle.default
+      )
+    )
+  }
 
   def updateOutputParameterValue(id: String, parameter: Parameter, parameterCurrent: Float, parameterValueMinimum: Float, parameterValueMaximum: Float,
                                  translation: Float, output: CubismPhysicsOutput): EffectOperation = {
@@ -283,13 +292,13 @@ class CubismPhysics {
     var currentParticles: Array[CubismPhysicsParticle] = null
     var operations: List[EffectOperation] = Nil
 
-    for (settingIndex <- 0 until _physicsRig.SubRigCount) {
+    for (settingIndex <- 0 until _physicsRig.subRigCount) {
       totalAngle = MutableData(0.0f)
       totalTranslation = EuclideanVector(0.0f, 0.0f)
-      currentSetting = _physicsRig.Settings(settingIndex)
-      currentInput = _physicsRig.Inputs.drop(currentSetting.baseInputIndex)
-      currentOutput = _physicsRig.Outputs.drop(currentSetting.baseOutputIndex)
-      currentParticles = _physicsRig.Particles.drop(currentSetting.baseParticleIndex)
+      currentSetting = _physicsRig.settings(settingIndex)
+      currentInput = _physicsRig.inputs.drop(currentSetting.baseInputIndex)
+      currentOutput = _physicsRig.outputs.drop(currentSetting.baseOutputIndex)
+      currentParticles = _physicsRig.particles.drop(currentSetting.baseParticleIndex)
       // Load input parameters.
       for (i <- 0 until currentSetting.inputCount) {
         weight = currentInput(i).weight / MaximumWeight
@@ -336,8 +345,8 @@ class CubismPhysics {
           }
 
           val translation = EuclideanVector(
-            x = currentParticles(particleIndex).Position.x - currentParticles(particleIndex - 1).Position.x,
-            y = currentParticles(particleIndex).Position.y - currentParticles(particleIndex - 1).Position.y
+            x = currentParticles(particleIndex).position.x - currentParticles(particleIndex - 1).position.x,
+            y = currentParticles(particleIndex).position.y - currentParticles(particleIndex - 1).position.y
           )
 
           outputValue = currentOutput(i).valueGetter(
