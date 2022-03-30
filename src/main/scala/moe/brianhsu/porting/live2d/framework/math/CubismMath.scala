@@ -5,10 +5,10 @@ object CubismMath {
   var Pi = 3.1415926535897932384626433832795f
 
   def radianToDirection(totalAngle: Float): CubismVector = {
-    val ret = CubismVector()
-    ret.x = Math.sin(totalAngle).toFloat
-    ret.y = Math.cos(totalAngle).toFloat
-    ret
+    CubismVector(
+      Math.sin(totalAngle).toFloat,
+      Math.cos(totalAngle).toFloat
+    )
   }
 
   def degreesToRadian(degrees: Float): Float = (degrees / 180.0f) * Pi

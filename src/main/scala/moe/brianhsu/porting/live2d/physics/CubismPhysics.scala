@@ -15,7 +15,6 @@ object CubismPhysics {
   def create(settings: PhysicsSetting): CubismPhysics = {
     val ret = new CubismPhysics
     ret.parse(settings)
-    ret._physicsRig.Gravity.y = 0
     ret
   }
 
@@ -28,16 +27,15 @@ object CubismPhysics {
     var delay: Float = 0.0f
     var radian: Float = 0.0f
     var currentGravity: CubismVector = CubismVector()
-    val direction: CubismVector = CubismVector()
-    val velocity: CubismVector = CubismVector()
+    var direction: CubismVector = CubismVector()
+    var velocity: CubismVector = CubismVector()
     var force: CubismVector = CubismVector()
     var newDirection: CubismVector = CubismVector()
 
     strand(0).Position = totalTranslation
 
     totalRadian = CubismMath.degreesToRadian(totalAngle.data)
-    currentGravity = CubismMath.radianToDirection(totalRadian)
-    currentGravity.normalize()
+    currentGravity = CubismMath.radianToDirection(totalRadian).normalize()
 
     for (i <- 1 until strandCount) {
       strand(i).Force = (currentGravity * strand(i).Acceleration) + windDirection
@@ -46,35 +44,41 @@ object CubismPhysics {
 
       delay = strand(i).Delay * deltaTimeSeconds * 30.0f
 
-      direction.x = strand(i).Position.x - strand(i - 1).Position.x
-      direction.y = strand(i).Position.y - strand(i - 1).Position.y
+      direction = CubismVector(
+        x = strand(i).Position.x - strand(i - 1).Position.x,
+        y = strand(i).Position.y - strand(i - 1).Position.y
+      )
 
       radian = CubismMath.directionToRadian(strand(i).LastGravity, currentGravity) / airResistance;
 
-      direction.x = ((Math.cos(radian).toFloat * direction.x) - (direction.y * Math.sin(radian).toFloat))
-      direction.y = ((Math.sin(radian).toFloat * direction.x) + (direction.y * Math.cos(radian).toFloat))
+      direction = CubismVector(
+        x = ((Math.cos(radian).toFloat * direction.x) - (direction.y * Math.sin(radian).toFloat)),
+        y = ((Math.sin(radian).toFloat * direction.x) + (direction.y * Math.cos(radian).toFloat))
+      )
 
       strand(i).Position = strand(i - 1).Position + direction;
 
-      velocity.x = strand(i).Velocity.x * delay
-      velocity.y = strand(i).Velocity.y * delay
+      velocity = CubismVector(
+        x = strand(i).Velocity.x * delay,
+        y = strand(i).Velocity.y * delay
+      )
       force = strand(i).Force * delay * delay
 
       strand(i).Position = strand(i).Position + velocity + force
 
-      newDirection = strand(i).Position - strand(i - 1).Position
-
-      newDirection.normalize()
+      newDirection = (strand(i).Position - strand(i - 1).Position).normalize()
 
       strand(i).Position = strand(i - 1).Position + (newDirection * strand(i).Radius)
 
       if (Math.abs(strand(i).Position.x) < thresholdValue) {
-        strand(i).Position.x = 0.0f;
+        strand(i).Position = strand(i).Position.copy(x = 0.0f)
       }
 
       if (delay != 0.0f) {
-        strand(i).Velocity.x = strand(i).Position.x - strand(i).LastPosition.x
-        strand(i).Velocity.y = strand(i).Position.y - strand(i).LastPosition.y
+        strand(i).Velocity = CubismVector(
+          x = strand(i).Position.x - strand(i).LastPosition.x,
+          y = strand(i).Position.y - strand(i).LastPosition.y
+        )
         strand(i).Velocity /= delay
         strand(i).Velocity *= strand(i).Mobility
       }
@@ -214,20 +218,17 @@ class CubismPhysics {
       // Initialize the top of particle.
       strand(0).InitialPosition = CubismVector(0.0f, 0.0f)
       strand(0).LastPosition = strand(0).InitialPosition
-      strand(0).LastGravity = CubismVector(0.0f, -1.0f)
-      strand(0).LastGravity.y *= -1.0f
+      strand(0).LastGravity = CubismVector(0.0f, 1.0f)
       strand(0).Velocity = CubismVector(0.0f, 0.0f)
       strand(0).Force = CubismVector(0.0f, 0.0f)
 
       // Initialize paritcles.
       for (i <- 1 until currentSetting.ParticleCount) {
-        radius = CubismVector(0.0f, 0.0f)
-        radius.y = strand(i).Radius
+        radius = CubismVector(0.0f, strand(i).Radius)
         strand(i).InitialPosition = strand(i - 1).InitialPosition + radius
         strand(i).Position = strand(i).InitialPosition
         strand(i).LastPosition = strand(i).InitialPosition
-        strand(i).LastGravity = CubismVector(0.0f, -1.0f)
-        strand(i).LastGravity.y *= -1.0f
+        strand(i).LastGravity = CubismVector(0.0f, 1.0f)
         strand(i).Velocity = CubismVector(0.0f, 0.0f)
         strand(i).Force = CubismVector(0.0f, 0.0f)
       }
@@ -291,8 +292,7 @@ class CubismPhysics {
 
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
       totalAngle = MutableData(0.0f)
-      totalTranslation.x = 0.0f
-      totalTranslation.y = 0.0f
+      totalTranslation = CubismVector(0.0f, 0.0f)
       currentSetting = _physicsRig.Settings(settingIndex)
       currentInput = _physicsRig.Inputs.drop(currentSetting.BaseInputIndex)
       currentOutput = _physicsRig.Outputs.drop(currentSetting.BaseOutputIndex)
@@ -316,8 +316,10 @@ class CubismPhysics {
         totalTranslation = newTotalTranslation
       }
       radAngle = CubismMath.degreesToRadian(-totalAngle.data);
-      totalTranslation.x = (totalTranslation.x * Math.cos(radAngle).toFloat - totalTranslation.y * Math.sin(radAngle).toFloat)
-      totalTranslation.y = (totalTranslation.x * Math.sin(radAngle).toFloat + totalTranslation.y * Math.cos(radAngle).toFloat)
+      totalTranslation = CubismVector(
+        x = (totalTranslation.x * Math.cos(radAngle).toFloat - totalTranslation.y * Math.sin(radAngle).toFloat),
+        y = (totalTranslation.x * Math.sin(radAngle).toFloat + totalTranslation.y * Math.cos(radAngle).toFloat)
+      )
 
       // Calculate particles position.
       updateParticles(
@@ -340,9 +342,10 @@ class CubismPhysics {
             loop.break()
           }
 
-          val translation = CubismVector()
-          translation.x = currentParticles(particleIndex).Position.x - currentParticles(particleIndex - 1).Position.x
-          translation.y = currentParticles(particleIndex).Position.y - currentParticles(particleIndex - 1).Position.y
+          val translation = CubismVector(
+            x = currentParticles(particleIndex).Position.x - currentParticles(particleIndex - 1).Position.x,
+            y = currentParticles(particleIndex).Position.y - currentParticles(particleIndex - 1).Position.y
+          )
 
           outputValue = currentOutput(i).GetValue(
             translation,
