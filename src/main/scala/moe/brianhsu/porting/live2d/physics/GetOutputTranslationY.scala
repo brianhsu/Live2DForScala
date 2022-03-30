@@ -3,7 +3,7 @@ import moe.brianhsu.porting.live2d.framework.math.CubismVector
 
 object GetOutputTranslationY extends PhysicsValueGetter {
   override def apply(translation: CubismVector, particles: Array[CubismPhysicsParticle], particleIndex: Int, isInverted: Boolean, parentGravity: CubismVector): Float = {
-    var outputValue: Float = translation.Y
+    var outputValue: Float = translation.y
 
     if (isInverted) {
       outputValue *= -1.0f

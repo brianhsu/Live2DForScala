@@ -125,7 +125,7 @@ trait NormalizedPhysicsParameterValueGetter {
     normalizationAngle: CubismPhysicsNormalization = new CubismPhysicsNormalization,
     isInverted: Boolean,
     weight: Float
-  ): Unit
+  ): CubismVector
 
 }
 

@@ -15,7 +15,7 @@ object CubismPhysics {
   def create(settings: PhysicsSetting): CubismPhysics = {
     val ret = new CubismPhysics
     ret.parse(settings)
-    ret._physicsRig.Gravity.Y = 0
+    ret._physicsRig.Gravity.y = 0
     ret
   }
 
@@ -46,18 +46,18 @@ object CubismPhysics {
 
       delay = strand(i).Delay * deltaTimeSeconds * 30.0f
 
-      direction.X = strand(i).Position.X - strand(i - 1).Position.X
-      direction.Y = strand(i).Position.Y - strand(i - 1).Position.Y
+      direction.x = strand(i).Position.x - strand(i - 1).Position.x
+      direction.y = strand(i).Position.y - strand(i - 1).Position.y
 
       radian = CubismMath.directionToRadian(strand(i).LastGravity, currentGravity) / airResistance;
 
-      direction.X = ((Math.cos(radian).toFloat * direction.X) - (direction.Y * Math.sin(radian).toFloat))
-      direction.Y = ((Math.sin(radian).toFloat * direction.X) + (direction.Y * Math.cos(radian).toFloat))
+      direction.x = ((Math.cos(radian).toFloat * direction.x) - (direction.y * Math.sin(radian).toFloat))
+      direction.y = ((Math.sin(radian).toFloat * direction.x) + (direction.y * Math.cos(radian).toFloat))
 
       strand(i).Position = strand(i - 1).Position + direction;
 
-      velocity.X = strand(i).Velocity.X * delay
-      velocity.Y = strand(i).Velocity.Y * delay
+      velocity.x = strand(i).Velocity.x * delay
+      velocity.y = strand(i).Velocity.y * delay
       force = strand(i).Force * delay * delay
 
       strand(i).Position = strand(i).Position + velocity + force
@@ -68,13 +68,13 @@ object CubismPhysics {
 
       strand(i).Position = strand(i - 1).Position + (newDirection * strand(i).Radius)
 
-      if (Math.abs(strand(i).Position.X) < thresholdValue) {
-        strand(i).Position.X = 0.0f;
+      if (Math.abs(strand(i).Position.x) < thresholdValue) {
+        strand(i).Position.x = 0.0f;
       }
 
       if (delay != 0.0f) {
-        strand(i).Velocity.X = strand(i).Position.X - strand(i).LastPosition.X
-        strand(i).Velocity.Y = strand(i).Position.Y - strand(i).LastPosition.Y
+        strand(i).Velocity.x = strand(i).Position.x - strand(i).LastPosition.x
+        strand(i).Velocity.y = strand(i).Position.y - strand(i).LastPosition.y
         strand(i).Velocity /= delay
         strand(i).Velocity *= strand(i).Mobility
       }
@@ -215,19 +215,19 @@ class CubismPhysics {
       strand(0).InitialPosition = CubismVector(0.0f, 0.0f)
       strand(0).LastPosition = strand(0).InitialPosition
       strand(0).LastGravity = CubismVector(0.0f, -1.0f)
-      strand(0).LastGravity.Y *= -1.0f
+      strand(0).LastGravity.y *= -1.0f
       strand(0).Velocity = CubismVector(0.0f, 0.0f)
       strand(0).Force = CubismVector(0.0f, 0.0f)
 
       // Initialize paritcles.
       for (i <- 1 until currentSetting.ParticleCount) {
         radius = CubismVector(0.0f, 0.0f)
-        radius.Y = strand(i).Radius
+        radius.y = strand(i).Radius
         strand(i).InitialPosition = strand(i - 1).InitialPosition + radius
         strand(i).Position = strand(i).InitialPosition
         strand(i).LastPosition = strand(i).InitialPosition
         strand(i).LastGravity = CubismVector(0.0f, -1.0f)
-        strand(i).LastGravity.Y *= -1.0f
+        strand(i).LastGravity.y *= -1.0f
         strand(i).Velocity = CubismVector(0.0f, 0.0f)
         strand(i).Force = CubismVector(0.0f, 0.0f)
       }
@@ -281,7 +281,7 @@ class CubismPhysics {
     var weight: Float = 0.0f
     var radAngle: Float = 0.0f
     var outputValue: Float = 0.0f
-    val totalTranslation: CubismVector = CubismVector()
+    var totalTranslation: CubismVector = CubismVector()
     var particleIndex: Int = 0
     var currentSetting: CubismPhysicsSubRig = null
     var currentInput: Array[CubismPhysicsInput] = null
@@ -291,8 +291,8 @@ class CubismPhysics {
 
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
       totalAngle = MutableData(0.0f)
-      totalTranslation.X = 0.0f
-      totalTranslation.Y = 0.0f
+      totalTranslation.x = 0.0f
+      totalTranslation.y = 0.0f
       currentSetting = _physicsRig.Settings(settingIndex)
       currentInput = _physicsRig.Inputs.drop(currentSetting.BaseInputIndex)
       currentOutput = _physicsRig.Outputs.drop(currentSetting.BaseOutputIndex)
@@ -301,7 +301,7 @@ class CubismPhysics {
       for (i <- 0 until currentSetting.InputCount) {
         weight = currentInput(i).Weight / MaximumWeight
 
-        currentInput(i).GetNormalizedParameterValue(
+        val newTotalTranslation = currentInput(i).GetNormalizedParameterValue(
           totalTranslation,
           totalAngle,
           model.parameters(currentInput(i).SourceParameterId).current,
@@ -313,10 +313,11 @@ class CubismPhysics {
           currentInput(i).Reflect,
           weight
         )
+        totalTranslation = newTotalTranslation
       }
       radAngle = CubismMath.degreesToRadian(-totalAngle.data);
-      totalTranslation.X = (totalTranslation.X * Math.cos(radAngle).toFloat - totalTranslation.Y * Math.sin(radAngle).toFloat)
-      totalTranslation.Y = (totalTranslation.X * Math.sin(radAngle).toFloat + totalTranslation.Y * Math.cos(radAngle).toFloat)
+      totalTranslation.x = (totalTranslation.x * Math.cos(radAngle).toFloat - totalTranslation.y * Math.sin(radAngle).toFloat)
+      totalTranslation.y = (totalTranslation.x * Math.sin(radAngle).toFloat + totalTranslation.y * Math.cos(radAngle).toFloat)
 
       // Calculate particles position.
       updateParticles(
@@ -340,8 +341,8 @@ class CubismPhysics {
           }
 
           val translation = CubismVector()
-          translation.X = currentParticles(particleIndex).Position.X - currentParticles(particleIndex - 1).Position.X
-          translation.Y = currentParticles(particleIndex).Position.Y - currentParticles(particleIndex - 1).Position.Y
+          translation.x = currentParticles(particleIndex).Position.x - currentParticles(particleIndex - 1).Position.x
+          translation.y = currentParticles(particleIndex).Position.y - currentParticles(particleIndex - 1).Position.y
 
           outputValue = currentOutput(i).GetValue(
             translation,
