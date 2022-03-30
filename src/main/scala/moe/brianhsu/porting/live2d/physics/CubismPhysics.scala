@@ -10,6 +10,7 @@ import org.json4s.{Formats, ShortTypeHints}
 import org.json4s.native.Serialization
 
 import java.io.PrintWriter
+import scala.util.control.Breaks
 import scala.util.control.Breaks.break
 
 object CubismPhysics {
@@ -24,6 +25,17 @@ class CubismPhysics {
   val MaximumWeight = 100.0f
   val MovementThreshold = 0.001f
   val AirResistance = 5.0f
+  private implicit val formats: Formats = Serialization.formats(ShortTypeHints(
+    List(
+      classOf[ParameterValueAdd],
+      classOf[ParameterValueMultiply],
+      classOf[ParameterValueUpdate],
+      classOf[FallbackParameterValueAdd],
+      classOf[FallbackParameterValueUpdate],
+      classOf[PartOpacityUpdate],
+    )
+  ))
+  private val printWriter = new PrintWriter("/home/brianhsu/hi.json")
 
   case class Options(
     var Gravity: CubismVector2 = CubismVector2(),          ///< 重力方向
@@ -287,6 +299,8 @@ class CubismPhysics {
     var currentOutput: Array[CubismPhysicsOutput] = null
     var currentParticles: Array[CubismPhysicsParticle] = null
     var operations: List[EffectOperation] = Nil
+    val parametersInLog = model.parameters.view.mapValues(p => CurrentParameter(p.current, p.min, p.max, p.default)).toMap
+
 
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
       totalAngle = MutableData(0.0f)
@@ -329,40 +343,54 @@ class CubismPhysics {
         AirResistance
       )
       // Update output parameters.
-      for (i <- 0 until currentSetting.OutputCount) {
-        particleIndex = currentOutput(i).VertexIndex;
+      val loop = new Breaks
+      loop.breakable {
+        for (i <- 0 until currentSetting.OutputCount) {
+          particleIndex = currentOutput(i).VertexIndex;
 
-        if (particleIndex < 1 || particleIndex >= currentSetting.ParticleCount) {
-          break()
+          if (particleIndex < 1 || particleIndex >= currentSetting.ParticleCount) {
+            loop.break
+          }
+
+          val translation = CubismVector2()
+          translation.X = currentParticles(particleIndex).Position.X - currentParticles(particleIndex - 1).Position.X
+          translation.Y = currentParticles(particleIndex).Position.Y - currentParticles(particleIndex - 1).Position.Y
+
+          outputValue = currentOutput(i).GetValue(
+            translation,
+            currentParticles,
+            particleIndex,
+            currentOutput(i).Reflect,
+            _options.Gravity
+          )
+
+          operations ::= UpdateOutputParameterValue(
+            currentOutput(i).DestinationParameterId,
+            model.parameters(currentOutput(i).DestinationParameterId),
+            model.parameters(currentOutput(i).DestinationParameterId).current,
+            model.parameters(currentOutput(i).DestinationParameterId).min,
+            model.parameters(currentOutput(i).DestinationParameterId).max,
+            outputValue,
+            currentOutput(i)
+          )
         }
-
-        val translation = CubismVector2()
-        translation.X = currentParticles(particleIndex).Position.X - currentParticles(particleIndex - 1).Position.X
-        translation.Y = currentParticles(particleIndex).Position.Y - currentParticles(particleIndex - 1).Position.Y
-
-        outputValue = currentOutput(i).GetValue(
-          translation,
-          currentParticles,
-          particleIndex,
-          currentOutput(i).Reflect,
-          _options.Gravity
-        )
-
-        operations ::= UpdateOutputParameterValue(
-          currentOutput(i).DestinationParameterId,
-          model.parameters(currentOutput(i).DestinationParameterId),
-          model.parameters(currentOutput(i).DestinationParameterId).current,
-          model.parameters(currentOutput(i).DestinationParameterId).min,
-          model.parameters(currentOutput(i).DestinationParameterId).max,
-          outputValue,
-          currentOutput(i)
-        )
       }
 
     }
-    operations.reverse
+    val t = operations.reverse
+    val l = LogData(totalElapsedTimeInSeconds, deltaTimeSeconds, parametersInLog, t)
+    printWriter.println(org.json4s.native.Serialization.write(l))
+    printWriter.flush()
+    t
   }
 
 }
 
 
+case class CurrentParameter(current: Float, min: Float, max: Float, default: Float)
+case class LogData(
+  totalElapsedTimeInSeconds: Float,
+  deltaTimeSeconds: Float,
+  parameters: Map[String, CurrentParameter],
+  operations: List[EffectOperation]
+)

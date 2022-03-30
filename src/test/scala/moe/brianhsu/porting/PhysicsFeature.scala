@@ -29,7 +29,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
   ))
 
   Feature("Read pose parts data from Live2D avatar settings") {
-    Scenario("Load pose with fade in time specific inside json file") {
+    Scenario("s1") {
       Given("A folder path contains json files for Rice Live2D avatar model")
       val folderPath = "src/test/resources/models/Rice"
 
@@ -40,6 +40,26 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       val physics = CubismPhysics.Create(physicsSetting)
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/physicsOperations.json")
+      val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
+
+      dataPointList.foreach { dataPoint =>
+        val model = createStubbedModel(dataPoint)
+        val operations = physics.Evaluate(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
+        operations.size shouldBe dataPoint.operations.size
+        operations should contain theSameElementsInOrderAs dataPoint.operations
+      }
+    }
+    Scenario("s2") {
+      Given("A folder path contains json files for Rice Live2D avatar model")
+      val folderPath = "src/test/resources/models/Hiyori"
+
+      When("Create a Physics effect from this Live2D avatar settings")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val settings: Settings = jsonSettingsReader.loadSettings().success.value
+      val physicsSetting = settings.physics.value
+      val physics = CubismPhysics.Create(physicsSetting)
+
+      val testDataFile = Source.fromFile("src/test/resources/expectation/HiyoriPhysic.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
       dataPointList.foreach { dataPoint =>
