@@ -33,7 +33,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private val frameTimeCalculator = new FrameTimeCalculator
   private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
 
-  private var avatarHolder: Try[Avatar] = new AvatarFileReader("/home/brianhsu/WorkRoom/CubismSDK/Samples/Resources/Rice").loadAvatar()
+  private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/test/resources/models/Hiyori").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
   private var updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {

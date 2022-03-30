@@ -14,6 +14,8 @@ class FaceDirection(directionCalculator: FaceDirectionCalculator) extends Effect
     List(
       ParameterValueAdd("ParamAngleX", dragX * 30),
       ParameterValueAdd("ParamAngleY", dragY * 30),
+
+      // FIXME: This should be ParamAngleZ
       ParameterValueAdd("ParamAngleY", dragX * dragY * -30),
       ParameterValueAdd("ParamBodyAngleX", dragX * 10),
       ParameterValueAdd("ParamEyeBallX", dragX),
