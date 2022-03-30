@@ -2,19 +2,15 @@ package moe.brianhsu.porting.live2d.physics
 
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Negative, Neutral, Positive, Sign}
 import moe.brianhsu.porting.live2d.framework.math.MutableData
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsSource, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsType, CubismPhysicsSubRig, TargetType}
 
 
-class CubismPhysicsParameter {
-  var Id: String = null                          ///< パラメータID
-  var TargetType: TargetType = null     ///< 適用先の種類
-}
+case class CubismPhysicsParameter(
+  var id: String = null,
+  var targetType: TargetType = null,
+)
 
-class CubismPhysicsNormalization {
-  var Minimum: Float = 0.0f             ///< 最大値
-  var Maximum: Float = 0.0f             ///< 最小値
-  var Default: Float = 0.0f             ///< デフォルト値
-}
+
 
 class CubismPhysicsParticle {
   var InitialPosition = EuclideanVector()          ///< 初期位置
@@ -29,16 +25,7 @@ class CubismPhysicsParticle {
   var Velocity = EuclideanVector()                 ///< 現在の速度
 }
 
-class CubismPhysicsSubRig {
-  var InputCount: Int = 0                                        ///< 入力の個数
-  var OutputCount: Int = 0                                       ///< 出力の個数
-  var ParticleCount: Int = 0                                     ///< 物理点の個数
-  var BaseInputIndex: Int = 0                                    ///< 入力の最初のインデックス
-  var BaseOutputIndex: Int = 0                                   ///< 出力の最初のインデックス
-  var BaseParticleIndex: Int = 0                                 ///< 物理点の最初のインデックス
-  var NormalizationPosition = new CubismPhysicsNormalization           ///< 正規化された位置
-  var NormalizationAngle  = new CubismPhysicsNormalization              ///< 正規化された角度
-}
+
 
 object NormalizedPhysicsParameterValueGetter {
   private def getRangeValue(min: Float, max: Float): Float = {
@@ -109,8 +96,8 @@ trait NormalizedPhysicsParameterValueGetter {
     parameterMinimumValue: Float,
     parameterMaximumValue: Float,
     parameterDefaultValue: Float,
-    normalizationPosition: CubismPhysicsNormalization = new CubismPhysicsNormalization,
-    normalizationAngle: CubismPhysicsNormalization = new CubismPhysicsNormalization,
+    normalizationPosition: CubismPhysicsNormalization,
+    normalizationAngle: CubismPhysicsNormalization,
     isInverted: Boolean,
     weight: Float
   ): EuclideanVector
@@ -128,15 +115,7 @@ trait PhysicsScaleGetter {
   ): Float
 }
 
-class CubismPhysicsInput {
-  var Source: CubismPhysicsParameter = new CubismPhysicsParameter ///< 入力元のパラメータ
-  var SourceParameterId: String = null                  ///< 入力元のパラメータのインデックス
-  var SourceParameterIndex: Int = 0                  ///< 入力元のパラメータのインデックス
-  var Weight: Float = 0.0f                              ///< 重み
-  var Type: CubismPhysicsSource = null                                  ///< 入力の種類
-  var Reflect: Boolean = false                               ///< 値が反転されているかどうか
-  var GetNormalizedParameterValue: NormalizedPhysicsParameterValueGetter = null ///< 正規化されたパラメータ値の取得関数
-}
+
 
 class CubismPhysicsOutput {
   var Destination: CubismPhysicsParameter = new CubismPhysicsParameter        ///< 出力先のパラメータ
@@ -146,7 +125,7 @@ class CubismPhysicsOutput {
   var TranslationScale: EuclideanVector = EuclideanVector()             ///< 移動値のスケール
   var AngleScale: Float = 0.0f                      ///< 角度のスケール
   var Weight: Float = 0.0f                          /// 重み
-  var Type: CubismPhysicsSource = null                   ///< 出力の種類
+  var Type: CubismPhysicsType = null                   ///< 出力の種類
   var Reflect: Boolean = false ///< 値が反転されているかどうか
   var ValueBelowMinimum: Float = 0.0f               ///< 最小値を下回った時の値
   var ValueExceededMaximum: Float = 0.0f            ///< 最大値をこえた時の値

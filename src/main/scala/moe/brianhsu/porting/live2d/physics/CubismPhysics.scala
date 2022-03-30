@@ -1,11 +1,11 @@
 package moe.brianhsu.porting.live2d.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
-import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsSource.{Angle, X, Y}
+import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
-import moe.brianhsu.live2d.enitiy.avatar.physics.TargetType
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsSubRig, TargetType}
 import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.CubismPhysics.updateParticles
 
@@ -118,8 +118,8 @@ class CubismPhysics {
       json.meta.effectiveForces.wind.y
     )
     _physicsRig.SubRigCount = json.physicsSettings.size
-    _physicsRig.Settings = Array.fill(_physicsRig.SubRigCount)(new CubismPhysicsSubRig)
-    _physicsRig.Inputs = Array.fill(json.meta.totalInputCount)(new CubismPhysicsInput)
+    _physicsRig.Settings = Array.fill(_physicsRig.SubRigCount)(null)
+    _physicsRig.Inputs = Array.fill(json.meta.totalInputCount)(null)
     _physicsRig.Outputs = Array.fill(json.meta.totalOutputCount)(new CubismPhysicsOutput)
     _physicsRig.Particles = Array.fill(json.meta.vertexCount)(new CubismPhysicsParticle)
 
@@ -127,51 +127,57 @@ class CubismPhysics {
     var outputIndex: Int = 0
     var particleIndex: Int = 0
 
-    for (i <- 0 until _physicsRig.Settings.length) {
-      _physicsRig.Settings(i).NormalizationPosition.Minimum = json.physicsSettings(i).normalization.position.minimum
-      _physicsRig.Settings(i).NormalizationPosition.Maximum = json.physicsSettings(i).normalization.position.maximum
-      _physicsRig.Settings(i).NormalizationPosition.Default = json.physicsSettings(i).normalization.position.default
-
-      _physicsRig.Settings(i).NormalizationAngle.Minimum = json.physicsSettings(i).normalization.angle.minimum
-      _physicsRig.Settings(i).NormalizationAngle.Maximum = json.physicsSettings(i).normalization.angle.maximum
-      _physicsRig.Settings(i).NormalizationAngle.Default = json.physicsSettings(i).normalization.angle.default
+    for (i <- _physicsRig.Settings.indices) {
+      _physicsRig.Settings(i) = new CubismPhysicsSubRig(
+        json.physicsSettings(i).input.size,
+        json.physicsSettings(i).output.size,
+        json.physicsSettings(i).vertices.size,
+        inputIndex, outputIndex, particleIndex,
+        CubismPhysicsNormalization(
+          json.physicsSettings(i).normalization.position.minimum,
+          json.physicsSettings(i).normalization.position.maximum,
+          json.physicsSettings(i).normalization.position.default
+        ),
+        CubismPhysicsNormalization(
+          json.physicsSettings(i).normalization.angle.minimum,
+          json.physicsSettings(i).normalization.angle.maximum,
+          json.physicsSettings(i).normalization.angle.default
+        )
+      )
 
       // Input
-      _physicsRig.Settings(i).InputCount = json.physicsSettings(i).input.size
-      _physicsRig.Settings(i).BaseInputIndex = inputIndex
-      for (j <- 0 until _physicsRig.Settings(i).InputCount) {
-        _physicsRig.Inputs(inputIndex + j).SourceParameterId = json.physicsSettings(i).input(j).source.id
-        _physicsRig.Inputs(inputIndex + j).SourceParameterIndex = -1
-        _physicsRig.Inputs(inputIndex + j).Weight = json.physicsSettings(i).input(j).weight
-        _physicsRig.Inputs(inputIndex + j).Reflect = json.physicsSettings(i).input(j).reflect
-        if (json.physicsSettings(i).input(j).`type` == "X") {
-          _physicsRig.Inputs(inputIndex + j).Type = X
-          _physicsRig.Inputs(inputIndex + j).GetNormalizedParameterValue = GetInputTranslationXFromNormalizedParameterValue
+      for (j <- json.physicsSettings(i).input.indices) {
+        val (inputType, normalizeFunction) = if (json.physicsSettings(i).input(j).`type` == "X") {
+          (X, GetInputTranslationXFromNormalizedParameterValue)
         } else if (json.physicsSettings(i).input(j).`type` == "Y") {
-          _physicsRig.Inputs(inputIndex + j).Type = Y
-          _physicsRig.Inputs(inputIndex + j).GetNormalizedParameterValue = GetInputTranslationYFromNormalizedParameterValue
+          (Y, GetInputTranslationYFromNormalizedParameterValue)
         } else if (json.physicsSettings(i).input(j).`type` == "Angle") {
-          _physicsRig.Inputs(inputIndex + j).Type = Angle
-          _physicsRig.Inputs(inputIndex + j).GetNormalizedParameterValue = GetInputAngleFromNormalizedParameterValue
+          (Angle, GetInputAngleFromNormalizedParameterValue)
+        } else {
+          throw new UnsupportedOperationException("Unsupported input type")
         }
-
-        _physicsRig.Inputs(inputIndex + j).Source.TargetType = TargetType.Parameter
-        _physicsRig.Inputs(inputIndex + j).Source.Id = json.physicsSettings(i).input(j).source.id
-
+        _physicsRig.Inputs(inputIndex + j) = new CubismPhysicsInput(
+          CubismPhysicsParameter(json.physicsSettings(i).input(j).source.id, TargetType.Parameter),
+          json.physicsSettings(i).input(j).weight,
+          inputType,
+          json.physicsSettings(i).input(j).reflect,
+          normalizeFunction
+        )
       }
-      inputIndex += _physicsRig.Settings(i).InputCount;
+      inputIndex += json.physicsSettings(i).input.size
 
       // Output
-      _physicsRig.Settings(i).OutputCount = json.physicsSettings(i).output.size
-      _physicsRig.Settings(i).BaseOutputIndex = outputIndex
-      for (j <- 0 until _physicsRig.Settings(i).OutputCount) {
+
+      for (j <- json.physicsSettings(i).output.indices) {
         _physicsRig.Outputs(outputIndex + j).DestinationParameterId = json.physicsSettings(i).output(j).destination.id
         _physicsRig.Outputs(outputIndex + j).DestinationParameterIndex = -1
         _physicsRig.Outputs(outputIndex + j).VertexIndex = json.physicsSettings(i).output(j).vertexIndex
         _physicsRig.Outputs(outputIndex + j).AngleScale = json.physicsSettings(i).output(j).scale
         _physicsRig.Outputs(outputIndex + j).Weight = json.physicsSettings(i).output(j).weight
-        _physicsRig.Outputs(outputIndex + j).Destination.TargetType = TargetType.Parameter
-        _physicsRig.Outputs(outputIndex + j).Destination.Id = json.physicsSettings(i).output(j).destination.id
+        _physicsRig.Outputs(outputIndex + j).Destination.targetType = TargetType.Parameter
+        _physicsRig.Outputs(outputIndex + j).Destination.id = json.physicsSettings(i).output(j).destination.id
+        _physicsRig.Outputs(outputIndex + j).Reflect = json.physicsSettings(i).output(j).reflect
+
         if (json.physicsSettings(i).output(j).`type` == "X") {
           _physicsRig.Outputs(outputIndex + j).Type = X
           _physicsRig.Outputs(outputIndex + j).GetValue = GetOutputTranslationX
@@ -186,14 +192,11 @@ class CubismPhysics {
           _physicsRig.Outputs(outputIndex + j).GetScale = GetOutputScaleAngle
         }
 
-        _physicsRig.Outputs(outputIndex + j).Reflect = json.physicsSettings(i).output(j).reflect
       }
-      outputIndex += _physicsRig.Settings(i).OutputCount
+      outputIndex += json.physicsSettings(i).output.size
 
       // Particle
-      _physicsRig.Settings(i).ParticleCount = json.physicsSettings(i).vertices.size
-      _physicsRig.Settings(i).BaseParticleIndex = particleIndex
-      for (j <- 0 until _physicsRig.Settings(i).ParticleCount) {
+      for (j <- json.physicsSettings(i).vertices.indices) {
         _physicsRig.Particles(particleIndex + j).Mobility = json.physicsSettings(i).vertices(j).mobility
         _physicsRig.Particles(particleIndex + j).Delay = json.physicsSettings(i).vertices(j).delay
         _physicsRig.Particles(particleIndex + j).Acceleration = json.physicsSettings(i).vertices(j).acceleration
@@ -204,7 +207,7 @@ class CubismPhysics {
         )
       }
 
-      particleIndex += _physicsRig.Settings(i).ParticleCount
+      particleIndex += json.physicsSettings(i).vertices.size
     }
     initialize()
   }
@@ -214,7 +217,7 @@ class CubismPhysics {
 
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
       val currentSetting = _physicsRig.Settings(settingIndex)
-      val strand = _physicsRig.Particles.drop(currentSetting.BaseParticleIndex)
+      val strand = _physicsRig.Particles.drop(currentSetting.baseParticleIndex)
 
       // Initialize the top of particle.
       strand(0).InitialPosition = EuclideanVector(0.0f, 0.0f)
@@ -224,7 +227,7 @@ class CubismPhysics {
       strand(0).Force = EuclideanVector(0.0f, 0.0f)
 
       // Initialize paritcles.
-      for (i <- 1 until currentSetting.ParticleCount) {
+      for (i <- 1 until currentSetting.particleCount) {
         radius = EuclideanVector(0.0f, strand(i).Radius)
         strand(i).InitialPosition = strand(i - 1).InitialPosition + radius
         strand(i).Position = strand(i).InitialPosition
@@ -295,23 +298,23 @@ class CubismPhysics {
       totalAngle = MutableData(0.0f)
       totalTranslation = EuclideanVector(0.0f, 0.0f)
       currentSetting = _physicsRig.Settings(settingIndex)
-      currentInput = _physicsRig.Inputs.drop(currentSetting.BaseInputIndex)
-      currentOutput = _physicsRig.Outputs.drop(currentSetting.BaseOutputIndex)
-      currentParticles = _physicsRig.Particles.drop(currentSetting.BaseParticleIndex)
+      currentInput = _physicsRig.Inputs.drop(currentSetting.baseInputIndex)
+      currentOutput = _physicsRig.Outputs.drop(currentSetting.baseOutputIndex)
+      currentParticles = _physicsRig.Particles.drop(currentSetting.baseParticleIndex)
       // Load input parameters.
-      for (i <- 0 until currentSetting.InputCount) {
-        weight = currentInput(i).Weight / MaximumWeight
+      for (i <- 0 until currentSetting.inputCount) {
+        weight = currentInput(i).weight / MaximumWeight
 
-        val newTotalTranslation = currentInput(i).GetNormalizedParameterValue(
+        val newTotalTranslation = currentInput(i).getNormalizedParameterValue(
           totalTranslation,
           totalAngle,
-          model.parameters(currentInput(i).SourceParameterId).current,
-          model.parameters(currentInput(i).SourceParameterId).min,
-          model.parameters(currentInput(i).SourceParameterId).max,
-          model.parameters(currentInput(i).SourceParameterId).default,
-          currentSetting.NormalizationPosition,
-          currentSetting.NormalizationAngle,
-          currentInput(i).Reflect,
+          model.parameters(currentInput(i).source.id).current,
+          model.parameters(currentInput(i).source.id).min,
+          model.parameters(currentInput(i).source.id).max,
+          model.parameters(currentInput(i).source.id).default,
+          currentSetting.normalizationPosition,
+          currentSetting.normalizationAngle,
+          currentInput(i).isReflect,
           weight
         )
         totalTranslation = newTotalTranslation
@@ -325,21 +328,21 @@ class CubismPhysics {
       // Calculate particles position.
       updateParticles(
         currentParticles,
-        currentSetting.ParticleCount,
+        currentSetting.particleCount,
         totalTranslation,
         totalAngle,
         _options.Wind,
-        MovementThreshold * currentSetting.NormalizationPosition.Maximum,
+        MovementThreshold * currentSetting.normalizationPosition.maximum,
         deltaTimeSeconds,
         AirResistance
       )
       // Update output parameters.
       val loop = new Breaks
       loop.breakable {
-        for (i <- 0 until currentSetting.OutputCount) {
+        for (i <- 0 until currentSetting.outputCount) {
           particleIndex = currentOutput(i).VertexIndex;
 
-          if (particleIndex < 1 || particleIndex >= currentSetting.ParticleCount) {
+          if (particleIndex < 1 || particleIndex >= currentSetting.particleCount) {
             loop.break()
           }
 
