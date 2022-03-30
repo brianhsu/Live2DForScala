@@ -20,7 +20,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   private var effects: List[Effect] = Nil
   private val expressionManager = new MotionManager
   private val newMotionManager = new MotionManager
-  private val physicsHolder = avatarSettings.physics.map(CubismPhysics.Create)
+  private val physicsHolder = avatarSettings.physics.map(CubismPhysics.create)
 
   newMotionManager.setEventCallbackForAllMotions((m: MotionWithTransition, e:MotionEvent) => {
     println("motion:" + m)
@@ -78,7 +78,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     if (enablePhy) {
       val operations: List[EffectOperation] = for {
         physics <- physicsHolder.toList
-        operations <- physics.Evaluate(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
+        operations <- physics.evaluate(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
       } yield {
         operations
       }

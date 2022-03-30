@@ -40,14 +40,14 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val physicsSetting = settings.physics.value
-      val physics = CubismPhysics.Create(physicsSetting)
+      val physics = CubismPhysics.create(physicsSetting)
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/physicsOperations.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
       dataPointList.foreach { dataPoint =>
         val model = createStubbedModel(dataPoint)
-        val operations = physics.Evaluate(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
+        val operations = physics.evaluate(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
         operations.size shouldBe dataPoint.operations.size
         operations should contain theSameElementsInOrderAs dataPoint.operations
       }
@@ -60,14 +60,14 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val physicsSetting = settings.physics.value
-      val physics = CubismPhysics.Create(physicsSetting)
+      val physics = CubismPhysics.create(physicsSetting)
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/HiyoriPhysic.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
       dataPointList.foreach { dataPoint =>
         val model = createStubbedModel(dataPoint)
-        val operations = physics.Evaluate(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
+        val operations = physics.evaluate(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
         operations.size shouldBe dataPoint.operations.size
         operations should contain theSameElementsInOrderAs dataPoint.operations
       }
@@ -93,7 +93,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
       val strands = Array(strand1, strand2)
 
-      CubismPhysics.UpdateParticles(
+      CubismPhysics.updateParticles(
         strands, strands.size,
         CubismVector2(0, 0),
         MutableData(0.0f),
@@ -143,7 +143,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
       val strands = Array(strand1, strand2)
 
-      CubismPhysics.UpdateParticles(
+      CubismPhysics.updateParticles(
         strands, strands.size,
         CubismVector2(0, 0),
         MutableData(0.0f),
@@ -286,7 +286,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       )
 
       forAll(table) { (inputValue, parameterMinimum, parameterMaximum, normalizedMinimum, normalizedMaximum, normalizedDefault, isInverted, expectedResult) =>
-        val result = NormalizedPhysicsParameterValueGetter.NormalizeParameterValue(
+        val result = NormalizedPhysicsParameterValueGetter.normalizeParameterValue(
           inputValue, parameterMinimum, parameterMaximum,
           normalizedMinimum, normalizedMaximum, normalizedDefault, isInverted
         )

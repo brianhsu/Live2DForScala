@@ -4,20 +4,22 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParame
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
 import moe.brianhsu.porting.live2d.framework.math.{CubismMath, CubismVector2, MutableData}
-import moe.brianhsu.porting.live2d.physics.CubismPhysics.UpdateParticles
+import moe.brianhsu.porting.live2d.physics.CubismPhysics.updateParticles
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsSource.{CubismPhysicsSource_Angle, CubismPhysicsSource_X, CubismPhysicsSource_Y}
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType.CubismPhysicsTargetType_Parameter
 
 import scala.util.control.Breaks
 
 object CubismPhysics {
-  def Create(settings: PhysicsSetting): CubismPhysics = {
+
+  def create(settings: PhysicsSetting): CubismPhysics = {
     val ret = new CubismPhysics
-    ret.Parse(settings)
+    ret.parse(settings)
     ret._physicsRig.Gravity.Y = 0
     ret
   }
-  def UpdateParticles(strand: Array[CubismPhysicsParticle], strandCount: Int, totalTranslation: CubismVector2,
+
+  def updateParticles(strand: Array[CubismPhysicsParticle], strandCount: Int, totalTranslation: CubismVector2,
                       totalAngle: MutableData[Float], windDirection: CubismVector2,
                       thresholdValue: Float, deltaTimeSeconds: Float,
                       airResistance: Float): Unit = {
@@ -33,8 +35,8 @@ object CubismPhysics {
 
     strand(0).Position = totalTranslation
 
-    totalRadian = CubismMath.DegreesToRadian(totalAngle.data)
-    currentGravity = CubismMath.RadianToDirection(totalRadian)
+    totalRadian = CubismMath.degreesToRadian(totalAngle.data)
+    currentGravity = CubismMath.radianToDirection(totalRadian)
     currentGravity.normalize()
 
     for (i <- 1 until strandCount) {
@@ -47,7 +49,7 @@ object CubismPhysics {
       direction.X = strand(i).Position.X - strand(i - 1).Position.X
       direction.Y = strand(i).Position.Y - strand(i - 1).Position.Y
 
-      radian = CubismMath.DirectionToRadian(strand(i).LastGravity, currentGravity) / airResistance;
+      radian = CubismMath.directionToRadian(strand(i).LastGravity, currentGravity) / airResistance;
 
       direction.X = ((Math.cos(radian).toFloat * direction.X) - (direction.Y * Math.sin(radian).toFloat))
       direction.Y = ((Math.sin(radian).toFloat * direction.X) + (direction.Y * Math.cos(radian).toFloat))
@@ -100,7 +102,7 @@ class CubismPhysics {
     CubismVector2(10.0f, 10.0f)
   )  ///< オプション
 
-  def Parse(json: PhysicsSetting): Unit = {
+  def parse(json: PhysicsSetting): Unit = {
     _physicsRig = new CubismPhysicsRig
     _physicsRig.Gravity = CubismVector2(
       json.meta.effectiveForces.gravity.x,
@@ -199,10 +201,10 @@ class CubismPhysics {
 
       particleIndex += _physicsRig.Settings(i).ParticleCount
     }
-    Initialize()
+    initialize()
   }
 
-  def Initialize(): Unit = {
+  def initialize(): Unit = {
     var radius: CubismVector2 = CubismVector2()
 
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
@@ -234,7 +236,7 @@ class CubismPhysics {
   }
 
 
-  def UpdateOutputParameterValue(id: String, parameter: Parameter, parameterCurrent: Float, parameterValueMinimum: Float, parameterValueMaximum: Float,
+  def updateOutputParameterValue(id: String, parameter: Parameter, parameterCurrent: Float, parameterValueMinimum: Float, parameterValueMaximum: Float,
                                  translation: Float, output: CubismPhysicsOutput): EffectOperation = {
 
     var outputScale: Float = 0.0f
@@ -274,14 +276,12 @@ class CubismPhysics {
 
   }
 
-  def Evaluate(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeSeconds: Float): List[EffectOperation] = {
+  def evaluate(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeSeconds: Float): List[EffectOperation] = {
     var totalAngle: MutableData[Float] = MutableData(0.0f)
     var weight: Float = 0.0f
     var radAngle: Float = 0.0f
     var outputValue: Float = 0.0f
-    var totalTranslation: CubismVector2 = CubismVector2()
-    var i: Int = 0
-    var settingIndex: Int = 0
+    val totalTranslation: CubismVector2 = CubismVector2()
     var particleIndex: Int = 0
     var currentSetting: CubismPhysicsSubRig = null
     var currentInput: Array[CubismPhysicsInput] = null
@@ -314,12 +314,12 @@ class CubismPhysics {
           weight
         )
       }
-      radAngle = CubismMath.DegreesToRadian(-totalAngle.data);
+      radAngle = CubismMath.degreesToRadian(-totalAngle.data);
       totalTranslation.X = (totalTranslation.X * Math.cos(radAngle).toFloat - totalTranslation.Y * Math.sin(radAngle).toFloat)
       totalTranslation.Y = (totalTranslation.X * Math.sin(radAngle).toFloat + totalTranslation.Y * Math.cos(radAngle).toFloat)
 
       // Calculate particles position.
-      UpdateParticles(
+      updateParticles(
         currentParticles,
         currentSetting.ParticleCount,
         totalTranslation,
@@ -351,7 +351,7 @@ class CubismPhysics {
             _options.Gravity
           )
 
-          operations ::= UpdateOutputParameterValue(
+          operations ::= updateOutputParameterValue(
             currentOutput(i).DestinationParameterId,
             model.parameters(currentOutput(i).DestinationParameterId),
             model.parameters(currentOutput(i).DestinationParameterId).current,

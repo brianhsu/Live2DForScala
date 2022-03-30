@@ -1,5 +1,6 @@
 package moe.brianhsu.porting.live2d.physics
 
+import moe.brianhsu.live2d.enitiy.math.{Negative, Neutral, Positive, Sign}
 import moe.brianhsu.porting.live2d.framework.math.{CubismVector2, MutableData}
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsSource.CubismPhysicsSource
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType.CubismPhysicsTargetType
@@ -52,84 +53,64 @@ class CubismPhysicsSubRig {
 }
 
 object NormalizedPhysicsParameterValueGetter {
-  private def GetRangeValue(min: Float, max: Float): Float = {
+  private def getRangeValue(min: Float, max: Float): Float = {
     val maxValue = Math.max(min, max)
     val minValue = Math.min(min, max)
     Math.abs(maxValue - minValue)
   }
 
-  private def GetDefaultValue(min: Float, max: Float): Float = {
+  private def getDefaultValue(min: Float, max: Float): Float = {
     val minValue = Math.min(min, max)
-    minValue + (GetRangeValue(min, max) / 2.0f)
+    minValue + (getRangeValue(min, max) / 2.0f)
   }
 
-  private def Sign(value: Float): Int = {
-    var ret = 0
-
-    if (value > 0.0f) {
-      ret = 1
-    } else if (value < 0.0f) {
-      ret = -1
-    }
-
-    ret
-  }
-
-  def NormalizeParameterValue(inputValue: Float, parameterMinimum: Float,
-    parameterMaximum: Float,
-    normalizedMinimum: Float,
-    normalizedMaximum: Float,
-    normalizedDefault: Float,
-    isInverted: Boolean
-  ): Float = {
-    var result: Float = 0.0f
-
-    var value = inputValue
+  def normalizeParameterValue(inputValue: Float,
+                              parameterMinimum: Float, parameterMaximum: Float, normalizedMinimum: Float,
+                              normalizedMaximum: Float, normalizedDefault: Float, isInverted: Boolean): Float = {
     val maxValue = Math.max(parameterMaximum, parameterMinimum)
-
-    if (maxValue < value) {
-      value = maxValue
-    }
-
     val minValue = Math.min(parameterMaximum, parameterMinimum)
-
-    if (minValue > value) {
-      value = minValue
-    }
-
+    val value = inputValue.min(maxValue).max(minValue)
     val minNormValue = Math.min(normalizedMinimum, normalizedMaximum)
     val maxNormValue = Math.max(normalizedMinimum, normalizedMaximum)
     val middleNormValue = normalizedDefault
 
-    val middleValue = GetDefaultValue(minValue, maxValue)
-    println("value: " + value)
-    println("middleValue: " + middleValue)
-
+    val middleValue = getDefaultValue(minValue, maxValue)
     val paramValue = value - middleValue
 
-    Sign(paramValue) match {
-      case 1 =>
-        val nLength: Float = maxNormValue - middleNormValue
-        val pLength = maxValue - middleValue
-        if (pLength != 0.0f) {
-          result = paramValue * (nLength / pLength)
-          result += middleNormValue
-        }
-
-      case -1 =>
-        val nLength: Float = minNormValue - middleNormValue
-        val pLength: Float = minValue - middleValue
-
-        if (pLength != 0.0f) {
-          result = paramValue * (nLength / pLength)
-          result += middleNormValue
-        }
-      case 0 =>
-        result = middleNormValue;
-      case _ =>
+    val result = Sign(paramValue) match {
+      case Positive =>
+        calculateForPositiveParameterValue(maxValue, maxNormValue, middleNormValue, middleValue, paramValue)
+      case Negative =>
+        calculateNegativeParameterValue(minValue, minNormValue, middleNormValue, middleValue, paramValue)
+      case Neutral => middleNormValue
     }
 
-    if (isInverted) result else (result * -1.0f)
+    if (isInverted) {
+      result
+    } else {
+      result * -1.0f
+    }
+  }
+
+  private def calculateNegativeParameterValue(minValue: Float, minNormValue: Float, middleNormValue: Float, middleValue: Float, paramValue: Float) = {
+    val nLength: Float = minNormValue - middleNormValue
+    val pLength: Float = minValue - middleValue
+
+    if (pLength != 0.0f) {
+      paramValue * (nLength / pLength) + middleNormValue
+    } else {
+      0.0f
+    }
+  }
+
+  private def calculateForPositiveParameterValue(maxValue: Float, maxNormValue: Float, middleNormValue: Float, middleValue: Float, paramValue: Float) = {
+    val nLength: Float = maxNormValue - middleNormValue
+    val pLength = maxValue - middleValue
+    if (pLength != 0.0f) {
+      paramValue * (nLength / pLength) + middleNormValue
+    } else {
+      0.0f
+    }
   }
 }
 trait NormalizedPhysicsParameterValueGetter {

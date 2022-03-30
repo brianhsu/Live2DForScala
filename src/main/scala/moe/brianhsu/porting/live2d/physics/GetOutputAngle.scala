@@ -12,7 +12,7 @@ object GetOutputAngle extends PhysicsValueGetter {
       parentGravity *= -1.0f
     }
 
-    outputValue = CubismMath.DirectionToRadian(parentGravity, translation)
+    outputValue = CubismMath.directionToRadian(parentGravity, translation)
 
     if (isInverted) {
       outputValue *= -1.0f
