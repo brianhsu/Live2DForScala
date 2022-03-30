@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.physics
 
-import moe.brianhsu.live2d.enitiy.math.{Negative, Neutral, Positive, Sign}
-import moe.brianhsu.porting.live2d.framework.math.{CubismVector, MutableData}
+import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Negative, Neutral, Positive, Sign}
+import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsSource.CubismPhysicsSource
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType.CubismPhysicsTargetType
 
@@ -29,16 +29,16 @@ class CubismPhysicsNormalization {
 }
 
 class CubismPhysicsParticle {
-  var InitialPosition = CubismVector()          ///< 初期位置
+  var InitialPosition = EuclideanVector()          ///< 初期位置
   var Mobility: Float = 0.0f                   ///< 動きやすさ
   var Delay: Float = 0.0f                       ///< 遅れ
   var Acceleration: Float = 0.0f                ///< 加速度
   var Radius: Float = 0.0f                      ///< 距離
-  var Position = CubismVector()                 ///< 現在の位置
-  var LastPosition = CubismVector()             ///< 最後の位置
-  var LastGravity = CubismVector()              ///< 最後の重力
-  var Force = CubismVector()                    ///< 現在かかっている力
-  var Velocity = CubismVector()                 ///< 現在の速度
+  var Position = EuclideanVector()                 ///< 現在の位置
+  var LastPosition = EuclideanVector()             ///< 最後の位置
+  var LastGravity = EuclideanVector()              ///< 最後の重力
+  var Force = EuclideanVector()                    ///< 現在かかっている力
+  var Velocity = EuclideanVector()                 ///< 現在の速度
 }
 
 class CubismPhysicsSubRig {
@@ -115,7 +115,7 @@ object NormalizedPhysicsParameterValueGetter {
 }
 trait NormalizedPhysicsParameterValueGetter {
   def apply(
-    targetTranslation: CubismVector,
+    targetTranslation: EuclideanVector,
     targetAngle: MutableData[Float],
     value: Float,
     parameterMinimumValue: Float,
@@ -125,17 +125,17 @@ trait NormalizedPhysicsParameterValueGetter {
     normalizationAngle: CubismPhysicsNormalization = new CubismPhysicsNormalization,
     isInverted: Boolean,
     weight: Float
-  ): CubismVector
+  ): EuclideanVector
 
 }
 
 trait PhysicsValueGetter {
-  def apply(translation: CubismVector, particles: Array[CubismPhysicsParticle], particleIndex: Int, isInverted: Boolean, parentGravity: CubismVector): Float
+  def apply(translation: EuclideanVector, particles: Array[CubismPhysicsParticle], particleIndex: Int, isInverted: Boolean, parentGravity: EuclideanVector): Float
 }
 
 trait PhysicsScaleGetter {
   def apply(
-    translationScale: CubismVector,
+    translationScale: EuclideanVector,
     angleScale: Float
   ): Float
 }
@@ -155,7 +155,7 @@ class CubismPhysicsOutput {
   var DestinationParameterId: String = null         ///< 出力先のパラメータのインデックス
   var DestinationParameterIndex: Int = 0         ///< 出力先のパラメータのインデックス
   var VertexIndex: Int = 0                       ///< 振り子のインデックス
-  var TranslationScale: CubismVector = CubismVector()             ///< 移動値のスケール
+  var TranslationScale: EuclideanVector = EuclideanVector()             ///< 移動値のスケール
   var AngleScale: Float = 0.0f                      ///< 角度のスケール
   var Weight: Float = 0.0f                          /// 重み
   var Type: CubismPhysicsSource = null                   ///< 出力の種類
@@ -172,6 +172,6 @@ class CubismPhysicsRig {
   var Inputs: Array[CubismPhysicsInput] = Array()          ///< 物理演算の入力のリスト
   var Outputs: Array[CubismPhysicsOutput] = Array()         ///< 物理演算の出力のリスト
   var Particles: Array[CubismPhysicsParticle] = Array()     ///< 物理演算の物理点のリスト
-  var Gravity: CubismVector = CubismVector()          ///< 重力
-  var Wind: CubismVector = CubismVector()                    ///< 風
+  var Gravity: EuclideanVector = EuclideanVector()          ///< 重力
+  var Wind: EuclideanVector = EuclideanVector()                    ///< 風
 }

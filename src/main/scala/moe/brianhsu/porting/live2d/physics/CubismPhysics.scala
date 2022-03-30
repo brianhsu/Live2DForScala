@@ -2,8 +2,9 @@ package moe.brianhsu.porting.live2d.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
+import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
-import moe.brianhsu.porting.live2d.framework.math.{CubismMath, CubismVector, MutableData}
+import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.CubismPhysics.updateParticles
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsSource.{CubismPhysicsSource_Angle, CubismPhysicsSource_X, CubismPhysicsSource_Y}
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType.CubismPhysicsTargetType_Parameter
@@ -18,24 +19,24 @@ object CubismPhysics {
     ret
   }
 
-  def updateParticles(strand: Array[CubismPhysicsParticle], strandCount: Int, totalTranslation: CubismVector,
-                      totalAngle: MutableData[Float], windDirection: CubismVector,
+  def updateParticles(strand: Array[CubismPhysicsParticle], strandCount: Int, totalTranslation: EuclideanVector,
+                      totalAngle: MutableData[Float], windDirection: EuclideanVector,
                       thresholdValue: Float, deltaTimeSeconds: Float,
                       airResistance: Float): Unit = {
 
     var totalRadian: Float = 0.0f
     var delay: Float = 0.0f
     var radian: Float = 0.0f
-    var currentGravity: CubismVector = CubismVector()
-    var direction: CubismVector = CubismVector()
-    var velocity: CubismVector = CubismVector()
-    var force: CubismVector = CubismVector()
-    var newDirection: CubismVector = CubismVector()
+    var currentGravity: EuclideanVector = EuclideanVector()
+    var direction: EuclideanVector = EuclideanVector()
+    var velocity: EuclideanVector = EuclideanVector()
+    var force: EuclideanVector = EuclideanVector()
+    var newDirection: EuclideanVector = EuclideanVector()
 
     strand(0).Position = totalTranslation
 
-    totalRadian = CubismMath.degreesToRadian(totalAngle.data)
-    currentGravity = CubismMath.radianToDirection(totalRadian).normalize()
+    totalRadian = Radian.degreesToRadian(totalAngle.data)
+    currentGravity = Radian.radianToDirection(totalRadian).normalize()
 
     for (i <- 1 until strandCount) {
       strand(i).Force = (currentGravity * strand(i).Acceleration) + windDirection
@@ -44,21 +45,21 @@ object CubismPhysics {
 
       delay = strand(i).Delay * deltaTimeSeconds * 30.0f
 
-      direction = CubismVector(
+      direction = EuclideanVector(
         x = strand(i).Position.x - strand(i - 1).Position.x,
         y = strand(i).Position.y - strand(i - 1).Position.y
       )
 
-      radian = CubismMath.directionToRadian(strand(i).LastGravity, currentGravity) / airResistance;
+      radian = Radian.directionToRadian(strand(i).LastGravity, currentGravity) / airResistance;
 
-      direction = CubismVector(
+      direction = EuclideanVector(
         x = ((Math.cos(radian).toFloat * direction.x) - (direction.y * Math.sin(radian).toFloat)),
         y = ((Math.sin(radian).toFloat * direction.x) + (direction.y * Math.cos(radian).toFloat))
       )
 
       strand(i).Position = strand(i - 1).Position + direction;
 
-      velocity = CubismVector(
+      velocity = EuclideanVector(
         x = strand(i).Velocity.x * delay,
         y = strand(i).Velocity.y * delay
       )
@@ -75,7 +76,7 @@ object CubismPhysics {
       }
 
       if (delay != 0.0f) {
-        strand(i).Velocity = CubismVector(
+        strand(i).Velocity = EuclideanVector(
           x = strand(i).Position.x - strand(i).LastPosition.x,
           y = strand(i).Position.y - strand(i).LastPosition.y
         )
@@ -83,7 +84,7 @@ object CubismPhysics {
         strand(i).Velocity *= strand(i).Mobility
       }
 
-      strand(i).Force = CubismVector(0.0f, 0.0f)
+      strand(i).Force = EuclideanVector(0.0f, 0.0f)
       strand(i).LastGravity = currentGravity
     }
 
@@ -96,23 +97,23 @@ class CubismPhysics {
   val AirResistance = 5.0f
 
   case class Options(
-    var Gravity: CubismVector = CubismVector(),          ///< 重力方向
-    var Wind: CubismVector = CubismVector()             ///< 風の方向
+    var Gravity: EuclideanVector = EuclideanVector(),          ///< 重力方向
+    var Wind: EuclideanVector = EuclideanVector()             ///< 風の方向
   )
 
   var _physicsRig: CubismPhysicsRig = null          ///< 物理演算のデータ
   var _options: Options = Options(
-    CubismVector(0.0f, -1.0f),
-    CubismVector(10.0f, 10.0f)
+    EuclideanVector(0.0f, -1.0f),
+    EuclideanVector(10.0f, 10.0f)
   )  ///< オプション
 
   def parse(json: PhysicsSetting): Unit = {
     _physicsRig = new CubismPhysicsRig
-    _physicsRig.Gravity = CubismVector(
+    _physicsRig.Gravity = EuclideanVector(
       json.meta.effectiveForces.gravity.x,
       json.meta.effectiveForces.gravity.y
     )
-    _physicsRig.Wind = CubismVector(
+    _physicsRig.Wind = EuclideanVector(
       json.meta.effectiveForces.wind.x,
       json.meta.effectiveForces.wind.y
     )
@@ -197,7 +198,7 @@ class CubismPhysics {
         _physicsRig.Particles(particleIndex + j).Delay = json.physicsSettings(i).vertices(j).delay
         _physicsRig.Particles(particleIndex + j).Acceleration = json.physicsSettings(i).vertices(j).acceleration
         _physicsRig.Particles(particleIndex + j).Radius = json.physicsSettings(i).vertices(j).radius
-        _physicsRig.Particles(particleIndex + j).Position = CubismVector(
+        _physicsRig.Particles(particleIndex + j).Position = EuclideanVector(
           json.physicsSettings(i).vertices(j).position.x,
           json.physicsSettings(i).vertices(j).position.y
         )
@@ -209,28 +210,28 @@ class CubismPhysics {
   }
 
   def initialize(): Unit = {
-    var radius: CubismVector = CubismVector()
+    var radius: EuclideanVector = EuclideanVector()
 
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
       val currentSetting = _physicsRig.Settings(settingIndex)
       val strand = _physicsRig.Particles.drop(currentSetting.BaseParticleIndex)
 
       // Initialize the top of particle.
-      strand(0).InitialPosition = CubismVector(0.0f, 0.0f)
+      strand(0).InitialPosition = EuclideanVector(0.0f, 0.0f)
       strand(0).LastPosition = strand(0).InitialPosition
-      strand(0).LastGravity = CubismVector(0.0f, 1.0f)
-      strand(0).Velocity = CubismVector(0.0f, 0.0f)
-      strand(0).Force = CubismVector(0.0f, 0.0f)
+      strand(0).LastGravity = EuclideanVector(0.0f, 1.0f)
+      strand(0).Velocity = EuclideanVector(0.0f, 0.0f)
+      strand(0).Force = EuclideanVector(0.0f, 0.0f)
 
       // Initialize paritcles.
       for (i <- 1 until currentSetting.ParticleCount) {
-        radius = CubismVector(0.0f, strand(i).Radius)
+        radius = EuclideanVector(0.0f, strand(i).Radius)
         strand(i).InitialPosition = strand(i - 1).InitialPosition + radius
         strand(i).Position = strand(i).InitialPosition
         strand(i).LastPosition = strand(i).InitialPosition
-        strand(i).LastGravity = CubismVector(0.0f, 1.0f)
-        strand(i).Velocity = CubismVector(0.0f, 0.0f)
-        strand(i).Force = CubismVector(0.0f, 0.0f)
+        strand(i).LastGravity = EuclideanVector(0.0f, 1.0f)
+        strand(i).Velocity = EuclideanVector(0.0f, 0.0f)
+        strand(i).Force = EuclideanVector(0.0f, 0.0f)
       }
     }
 
@@ -282,7 +283,7 @@ class CubismPhysics {
     var weight: Float = 0.0f
     var radAngle: Float = 0.0f
     var outputValue: Float = 0.0f
-    var totalTranslation: CubismVector = CubismVector()
+    var totalTranslation: EuclideanVector = EuclideanVector()
     var particleIndex: Int = 0
     var currentSetting: CubismPhysicsSubRig = null
     var currentInput: Array[CubismPhysicsInput] = null
@@ -292,7 +293,7 @@ class CubismPhysics {
 
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
       totalAngle = MutableData(0.0f)
-      totalTranslation = CubismVector(0.0f, 0.0f)
+      totalTranslation = EuclideanVector(0.0f, 0.0f)
       currentSetting = _physicsRig.Settings(settingIndex)
       currentInput = _physicsRig.Inputs.drop(currentSetting.BaseInputIndex)
       currentOutput = _physicsRig.Outputs.drop(currentSetting.BaseOutputIndex)
@@ -315,8 +316,8 @@ class CubismPhysics {
         )
         totalTranslation = newTotalTranslation
       }
-      radAngle = CubismMath.degreesToRadian(-totalAngle.data);
-      totalTranslation = CubismVector(
+      radAngle = Radian.degreesToRadian(-totalAngle.data);
+      totalTranslation = EuclideanVector(
         x = (totalTranslation.x * Math.cos(radAngle).toFloat - totalTranslation.y * Math.sin(radAngle).toFloat),
         y = (totalTranslation.x * Math.sin(radAngle).toFloat + totalTranslation.y * Math.cos(radAngle).toFloat)
       )
@@ -342,7 +343,7 @@ class CubismPhysics {
             loop.break()
           }
 
-          val translation = CubismVector(
+          val translation = EuclideanVector(
             x = currentParticles(particleIndex).Position.x - currentParticles(particleIndex - 1).Position.x,
             y = currentParticles(particleIndex).Position.y - currentParticles(particleIndex - 1).Position.y
           )

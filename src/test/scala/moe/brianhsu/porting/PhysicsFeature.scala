@@ -3,8 +3,9 @@ package moe.brianhsu.porting
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.effect._
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
-import moe.brianhsu.porting.live2d.framework.math.{CubismVector, MutableData}
+import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.{CubismPhysics, CubismPhysicsParticle, NormalizedPhysicsParameterValueGetter}
 import org.json4s._
 import org.json4s.native.JsonMethods._
@@ -78,14 +79,14 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
   Feature("UpdateParticles") {
     Scenario("delay is not 0") {
       val strand1 = new CubismPhysicsParticle
-      strand1.Position = CubismVector(0, 0)
+      strand1.Position = EuclideanVector(0, 0)
       strand1.Mobility = 1
       strand1.Delay = 1
       strand1.Acceleration = 1
       strand1.Radius = 0
 
       val strand2 = new CubismPhysicsParticle
-      strand2.Position = CubismVector(1f, 15)
+      strand2.Position = EuclideanVector(1f, 15)
       strand2.Mobility = 0.95f
       strand2.Delay = 0.8f
       strand2.Acceleration = 1.5f
@@ -95,47 +96,47 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
       CubismPhysics.updateParticles(
         strands, strands.size,
-        CubismVector(0, 0),
+        EuclideanVector(0, 0),
         MutableData(0.0f),
-        CubismVector(0, 0),
+        EuclideanVector(0, 0),
         2f,
         0.333f,
         0.1f
       )
 
-      strand1.InitialPosition shouldBe CubismVector(0.0f, 0.0f)
+      strand1.InitialPosition shouldBe EuclideanVector(0.0f, 0.0f)
       strand1.Mobility shouldBe 1.0f
       strand1.Delay shouldBe 1.0f
       strand1.Acceleration shouldBe 1.0f
       strand1.Radius shouldBe 0.0f
-      strand1.Position shouldBe CubismVector(0.0f, 0.0f)
-      strand1.LastPosition shouldBe CubismVector(0.0f, 0.0f)
-      strand1.LastGravity shouldBe CubismVector(0.0f, 0.0f)
-      strand1.Force shouldBe CubismVector(0.0f, 0.0f)
-      strand1.Velocity shouldBe CubismVector(0.0f, 0.0f)
+      strand1.Position shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.LastPosition shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.LastGravity shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.Force shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.Velocity shouldBe EuclideanVector(0.0f, 0.0f)
 
-      strand2.InitialPosition shouldBe CubismVector(0.0f, 0.0f)
+      strand2.InitialPosition shouldBe EuclideanVector(0.0f, 0.0f)
       strand2.Mobility shouldBe 0.95f
       strand2.Delay shouldBe 0.8f
       strand2.Acceleration shouldBe 1.5f
       strand2.Radius shouldBe 15.0f
-      strand2.Position shouldBe CubismVector(0.0f, 14.998851f)
-      strand2.LastPosition shouldBe CubismVector(1.0f, 15.0f)
-      strand2.LastGravity shouldBe CubismVector(0.0f, 1.0f)
-      strand2.Force shouldBe CubismVector(0.0f, 0.0f)
-      strand2.Velocity shouldBe CubismVector(-0.118868865f, -1.3660143E-4f)
+      strand2.Position shouldBe EuclideanVector(0.0f, 14.998851f)
+      strand2.LastPosition shouldBe EuclideanVector(1.0f, 15.0f)
+      strand2.LastGravity shouldBe EuclideanVector(0.0f, 1.0f)
+      strand2.Force shouldBe EuclideanVector(0.0f, 0.0f)
+      strand2.Velocity shouldBe EuclideanVector(-0.118868865f, -1.3660143E-4f)
     }
 
     Scenario("delay is 0") {
       val strand1 = new CubismPhysicsParticle
-      strand1.Position = CubismVector(0, 0)
+      strand1.Position = EuclideanVector(0, 0)
       strand1.Mobility = 1
       strand1.Delay = 1
       strand1.Acceleration = 1
       strand1.Radius = 0
 
       val strand2 = new CubismPhysicsParticle
-      strand2.Position = CubismVector(1f, 15)
+      strand2.Position = EuclideanVector(1f, 15)
       strand2.Mobility = 0.95f
       strand2.Delay = 0
       strand2.Acceleration = 1.5f
@@ -145,35 +146,35 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
       CubismPhysics.updateParticles(
         strands, strands.size,
-        CubismVector(0, 0),
+        EuclideanVector(0, 0),
         MutableData(0.0f),
-        CubismVector(0, 0),
+        EuclideanVector(0, 0),
         2f,
         0.0f,
         0.1f
       )
 
-      strand1.InitialPosition shouldBe CubismVector(0.0f, 0.0f)
+      strand1.InitialPosition shouldBe EuclideanVector(0.0f, 0.0f)
       strand1.Mobility shouldBe 1.0f
       strand1.Delay shouldBe 1.0f
       strand1.Acceleration shouldBe 1.0f
       strand1.Radius shouldBe 0.0f
-      strand1.Position shouldBe CubismVector(0.0f, 0.0f)
-      strand1.LastPosition shouldBe CubismVector(0.0f, 0.0f)
-      strand1.LastGravity shouldBe CubismVector(0.0f, 0.0f)
-      strand1.Force shouldBe CubismVector(0.0f, 0.0f)
-      strand1.Velocity shouldBe CubismVector(0.0f, 0.0f)
+      strand1.Position shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.LastPosition shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.LastGravity shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.Force shouldBe EuclideanVector(0.0f, 0.0f)
+      strand1.Velocity shouldBe EuclideanVector(0.0f, 0.0f)
 
-      strand2.InitialPosition shouldBe CubismVector(0.0f, 0.0f)
+      strand2.InitialPosition shouldBe EuclideanVector(0.0f, 0.0f)
       strand2.Mobility shouldBe 0.95f
       strand2.Delay shouldBe 0.0f
       strand2.Acceleration shouldBe 1.5f
       strand2.Radius shouldBe 15.0f
-      strand2.Position shouldBe CubismVector(0.0f, -14.966778f)
-      strand2.LastPosition shouldBe CubismVector(1.0f, 15.0f)
-      strand2.LastGravity shouldBe CubismVector(0.0f, 1.0f)
-      strand2.Force shouldBe CubismVector(0.0f, 0.0f)
-      strand2.Velocity shouldBe CubismVector(0.0f, 0.0f)
+      strand2.Position shouldBe EuclideanVector(0.0f, -14.966778f)
+      strand2.LastPosition shouldBe EuclideanVector(1.0f, 15.0f)
+      strand2.LastGravity shouldBe EuclideanVector(0.0f, 1.0f)
+      strand2.Force shouldBe EuclideanVector(0.0f, 0.0f)
+      strand2.Velocity shouldBe EuclideanVector(0.0f, 0.0f)
     }
 
   }
