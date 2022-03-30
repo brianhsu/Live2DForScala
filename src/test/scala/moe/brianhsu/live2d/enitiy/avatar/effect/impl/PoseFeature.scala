@@ -44,12 +44,12 @@ class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with T
       val testDataFile = Source.fromFile("src/test/resources/expectation/pose.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
-      dataPointList.foreach { datPoint =>
-        pose.setInitStatusForTest(datPoint.isAlreadyInit)
+      dataPointList.foreach { dataPoint =>
+        pose.setInitStatusForTest(dataPoint.isAlreadyInit)
         val operations = pose.calculateOperations(
-          createStubbedModel(datPoint),
-          datPoint.totalElapsedTimeInSeconds,
-          datPoint.deltaTimeInSeconds
+          createStubbedModel(dataPoint),
+          dataPoint.totalElapsedTimeInSeconds,
+          dataPoint.deltaTimeInSeconds
         )
         operations should contain theSameElementsInOrderAs operations
       }

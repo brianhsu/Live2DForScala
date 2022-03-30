@@ -1,11 +1,15 @@
 package moe.brianhsu.porting.live2d.physics
 
+import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
 import moe.brianhsu.porting.live2d.framework.math.{CubismMath, CubismVector2, MutableData}
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsSource.{CubismPhysicsSource_Angle, CubismPhysicsSource_X, CubismPhysicsSource_Y}
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType.CubismPhysicsTargetType_Parameter
+import org.json4s.{Formats, ShortTypeHints}
+import org.json4s.native.Serialization
 
+import java.io.PrintWriter
 import scala.util.control.Breaks.break
 
 object CubismPhysics {
@@ -17,7 +21,6 @@ object CubismPhysics {
   }
 }
 class CubismPhysics {
-
   val MaximumWeight = 100.0f
   val MovementThreshold = 0.001f
   val AirResistance = 5.0f
@@ -230,8 +233,8 @@ class CubismPhysics {
 
   }
 
-  def UpdateOutputParameterValue(parameter: Parameter, parameterValueMinimum: Float, parameterValueMaximum: Float,
-                                 translation: Float, output: CubismPhysicsOutput): Unit = {
+  def UpdateOutputParameterValue(id: String, parameter: Parameter, parameterCurrent: Float, parameterValueMinimum: Float, parameterValueMaximum: Float,
+                                 translation: Float, output: CubismPhysicsOutput): EffectOperation = {
 
     var outputScale: Float = 0.0f
     var value: Float = 0.0f
@@ -261,14 +264,16 @@ class CubismPhysics {
       //*parameterValue = value;
       parameter.update(value)
     } else {
-      value = (parameter.current * (1.0f - weight)) + (value * weight)
+      value = (parameterCurrent * (1.0f - weight)) + (value * weight)
       //*parameterValue = value;
       parameter.update(value)
     }
 
+    ParameterValueUpdate(id, value)
+
   }
 
-  def Evaluate(model: Live2DModel, deltaTimeSeconds: Float): Unit = {
+  def Evaluate(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeSeconds: Float): List[EffectOperation] = {
     var totalAngle: MutableData[Float] = MutableData(0.0f)
     var weight: Float = 0.0f
     var radAngle: Float = 0.0f
@@ -281,6 +286,8 @@ class CubismPhysics {
     var currentInput: Array[CubismPhysicsInput] = null
     var currentOutput: Array[CubismPhysicsOutput] = null
     var currentParticles: Array[CubismPhysicsParticle] = null
+    var operations: List[EffectOperation] = Nil
+
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
       totalAngle = MutableData(0.0f)
       totalTranslation.X = 0.0f
@@ -341,8 +348,10 @@ class CubismPhysics {
           _options.Gravity
         )
 
-        UpdateOutputParameterValue(
+        operations ::= UpdateOutputParameterValue(
+          currentOutput(i).DestinationParameterId,
           model.parameters(currentOutput(i).DestinationParameterId),
+          model.parameters(currentOutput(i).DestinationParameterId).current,
           model.parameters(currentOutput(i).DestinationParameterId).min,
           model.parameters(currentOutput(i).DestinationParameterId).max,
           outputValue,
@@ -351,6 +360,9 @@ class CubismPhysics {
       }
 
     }
+    operations.reverse
   }
 
 }
+
+

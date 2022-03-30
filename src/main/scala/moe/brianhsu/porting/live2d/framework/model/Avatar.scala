@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
+import moe.brianhsu.live2d.enitiy.avatar.effect.{Effect, EffectOperation}
 import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
@@ -20,7 +20,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   private var effects: List[Effect] = Nil
   private val expressionManager = new MotionManager
   private val newMotionManager = new MotionManager
-  private val physics = avatarSettings.physics.map(CubismPhysics.Create)
+  private val physicsHolder = avatarSettings.physics.map(CubismPhysics.Create)
 
   newMotionManager.setEventCallbackForAllMotions((m: MotionWithTransition, e:MotionEvent) => {
     println("motion:" + m)
@@ -76,7 +76,13 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     //executeOperations(model, operations)
 
     if (enablePhy) {
-      physics.foreach(_.Evaluate(model, frameTimeInfo.deltaTimeInSeconds))
+      val operations: List[EffectOperation] = for {
+        physics <- physicsHolder.toList
+        operations <- physics.Evaluate(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
+      } yield {
+        operations
+      }
+      executeOperations(model, operations)
     }
 
     model.update()
