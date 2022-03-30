@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.physics
 
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Negative, Neutral, Positive, Sign}
 import moe.brianhsu.porting.live2d.framework.math.MutableData
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsType, CubismPhysicsSubRig, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsSubRig, CubismPhysicsType, TargetType}
 
 
 case class CubismPhysicsParameter(
@@ -117,21 +117,7 @@ trait PhysicsScaleGetter {
 
 
 
-class CubismPhysicsOutput {
-  var Destination: CubismPhysicsParameter = new CubismPhysicsParameter        ///< 出力先のパラメータ
-  var DestinationParameterId: String = null         ///< 出力先のパラメータのインデックス
-  var DestinationParameterIndex: Int = 0         ///< 出力先のパラメータのインデックス
-  var VertexIndex: Int = 0                       ///< 振り子のインデックス
-  var TranslationScale: EuclideanVector = EuclideanVector()             ///< 移動値のスケール
-  var AngleScale: Float = 0.0f                      ///< 角度のスケール
-  var Weight: Float = 0.0f                          /// 重み
-  var Type: CubismPhysicsType = null                   ///< 出力の種類
-  var Reflect: Boolean = false ///< 値が反転されているかどうか
-  var ValueBelowMinimum: Float = 0.0f               ///< 最小値を下回った時の値
-  var ValueExceededMaximum: Float = 0.0f            ///< 最大値をこえた時の値
-  var GetValue: PhysicsValueGetter = null                ///< 物理演算の値の取得関数
-  var GetScale: PhysicsScaleGetter = null                ///< 物理演算のスケール値の取得関数
-}
+
 
 class CubismPhysicsRig {
   var SubRigCount: Int = 0                           ///< 物理演算の物理点の個数

@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsSubRig, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsSubRig, TargetType}
 import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.CubismPhysics.updateParticles
 
@@ -120,7 +120,7 @@ class CubismPhysics {
     _physicsRig.SubRigCount = json.physicsSettings.size
     _physicsRig.Settings = Array.fill(_physicsRig.SubRigCount)(null)
     _physicsRig.Inputs = Array.fill(json.meta.totalInputCount)(null)
-    _physicsRig.Outputs = Array.fill(json.meta.totalOutputCount)(new CubismPhysicsOutput)
+    _physicsRig.Outputs = Array.fill(json.meta.totalOutputCount)(null)
     _physicsRig.Particles = Array.fill(json.meta.vertexCount)(new CubismPhysicsParticle)
 
     var inputIndex: Int = 0
@@ -147,19 +147,18 @@ class CubismPhysics {
 
       // Input
       for (j <- json.physicsSettings(i).input.indices) {
-        val (inputType, normalizeFunction) = if (json.physicsSettings(i).input(j).`type` == "X") {
-          (X, GetInputTranslationXFromNormalizedParameterValue)
-        } else if (json.physicsSettings(i).input(j).`type` == "Y") {
-          (Y, GetInputTranslationYFromNormalizedParameterValue)
-        } else if (json.physicsSettings(i).input(j).`type` == "Angle") {
-          (Angle, GetInputAngleFromNormalizedParameterValue)
-        } else {
-          throw new UnsupportedOperationException("Unsupported input type")
+
+        val (inputType, normalizeFunction) = json.physicsSettings(i).input(j).`type` match {
+          case "X" => (X, GetInputTranslationXFromNormalizedParameterValue)
+          case "Y" => (Y, GetInputTranslationYFromNormalizedParameterValue)
+          case "Angle" => (Angle, GetInputAngleFromNormalizedParameterValue)
+          case _ => throw new UnsupportedOperationException("Unsupported input type")
         }
-        _physicsRig.Inputs(inputIndex + j) = new CubismPhysicsInput(
+
+        _physicsRig.Inputs(inputIndex + j) = CubismPhysicsInput(
           CubismPhysicsParameter(json.physicsSettings(i).input(j).source.id, TargetType.Parameter),
-          json.physicsSettings(i).input(j).weight,
           inputType,
+          json.physicsSettings(i).input(j).weight,
           json.physicsSettings(i).input(j).reflect,
           normalizeFunction
         )
@@ -169,29 +168,27 @@ class CubismPhysics {
       // Output
 
       for (j <- json.physicsSettings(i).output.indices) {
-        _physicsRig.Outputs(outputIndex + j).DestinationParameterId = json.physicsSettings(i).output(j).destination.id
-        _physicsRig.Outputs(outputIndex + j).DestinationParameterIndex = -1
-        _physicsRig.Outputs(outputIndex + j).VertexIndex = json.physicsSettings(i).output(j).vertexIndex
-        _physicsRig.Outputs(outputIndex + j).AngleScale = json.physicsSettings(i).output(j).scale
-        _physicsRig.Outputs(outputIndex + j).Weight = json.physicsSettings(i).output(j).weight
-        _physicsRig.Outputs(outputIndex + j).Destination.targetType = TargetType.Parameter
-        _physicsRig.Outputs(outputIndex + j).Destination.id = json.physicsSettings(i).output(j).destination.id
-        _physicsRig.Outputs(outputIndex + j).Reflect = json.physicsSettings(i).output(j).reflect
 
-        if (json.physicsSettings(i).output(j).`type` == "X") {
-          _physicsRig.Outputs(outputIndex + j).Type = X
-          _physicsRig.Outputs(outputIndex + j).GetValue = GetOutputTranslationX
-          _physicsRig.Outputs(outputIndex + j).GetScale = GetOutputScaleTranslationX
-        } else if (json.physicsSettings(i).output(j).`type` == "Y") {
-          _physicsRig.Outputs(outputIndex + j).Type = Y
-          _physicsRig.Outputs(outputIndex + j).GetValue = GetOutputTranslationY
-          _physicsRig.Outputs(outputIndex + j).GetScale = GetOutputScaleTranslationY
-        } else if (json.physicsSettings(i).output(j).`type` == "Angle") {
-          _physicsRig.Outputs(outputIndex + j).Type = Angle
-          _physicsRig.Outputs(outputIndex + j).GetValue = GetOutputAngle
-          _physicsRig.Outputs(outputIndex + j).GetScale = GetOutputScaleAngle
+        val (outputType, translationFunction, scaleFunction) = json.physicsSettings(i).output(j).`type` match {
+          case "X" => (X, GetOutputTranslationX, GetOutputScaleTranslationX)
+          case "Y" => (Y, GetOutputTranslationY, GetOutputScaleTranslationY)
+          case "Angle" => (Angle, GetOutputAngle, GetOutputScaleAngle)
+          case _ => throw new UnsupportedOperationException("Unsupported output type")
         }
 
+        _physicsRig.Outputs(outputIndex + j) = new CubismPhysicsOutput(
+          CubismPhysicsParameter(
+            json.physicsSettings(i).output(j).destination.id,
+            TargetType.Parameter
+          ),
+          json.physicsSettings(i).output(j).vertexIndex,
+          json.physicsSettings(i).output(j).scale,
+          json.physicsSettings(i).output(j).weight,
+          outputType,
+          json.physicsSettings(i).output(j).reflect,
+          translationFunction,
+          scaleFunction
+        )
       }
       outputIndex += json.physicsSettings(i).output.size
 
@@ -248,25 +245,17 @@ class CubismPhysics {
     var value: Float = 0.0f
     var weight: Float = 0.0f
 
-    outputScale = output.GetScale(output.TranslationScale, output.AngleScale)
+    outputScale = output.scaleGetter(output.translationScale, output.angleScale)
 
     value = translation * outputScale
 
     if (value < parameterValueMinimum) {
-      if (value < output.ValueBelowMinimum) {
-        output.ValueBelowMinimum = value
-      }
-
       value = parameterValueMinimum
     } else if (value > parameterValueMaximum) {
-      if (value > output.ValueExceededMaximum) {
-        output.ValueExceededMaximum = value
-      }
-
       value = parameterValueMaximum
     }
 
-    weight = (output.Weight / MaximumWeight)
+    weight = (output.weight / MaximumWeight)
 
     if (weight >= 1.0f) {
       //*parameterValue = value;
@@ -340,7 +329,7 @@ class CubismPhysics {
       val loop = new Breaks
       loop.breakable {
         for (i <- 0 until currentSetting.outputCount) {
-          particleIndex = currentOutput(i).VertexIndex;
+          particleIndex = currentOutput(i).vertexIndex;
 
           if (particleIndex < 1 || particleIndex >= currentSetting.particleCount) {
             loop.break()
@@ -351,20 +340,20 @@ class CubismPhysics {
             y = currentParticles(particleIndex).Position.y - currentParticles(particleIndex - 1).Position.y
           )
 
-          outputValue = currentOutput(i).GetValue(
+          outputValue = currentOutput(i).valueGetter(
             translation,
             currentParticles,
             particleIndex,
-            currentOutput(i).Reflect,
+            currentOutput(i).isReflect,
             _options.Gravity
           )
 
           operations ::= updateOutputParameterValue(
-            currentOutput(i).DestinationParameterId,
-            model.parameters(currentOutput(i).DestinationParameterId),
-            model.parameters(currentOutput(i).DestinationParameterId).current,
-            model.parameters(currentOutput(i).DestinationParameterId).min,
-            model.parameters(currentOutput(i).DestinationParameterId).max,
+            currentOutput(i).destination.id,
+            model.parameters(currentOutput(i).destination.id),
+            model.parameters(currentOutput(i).destination.id).current,
+            model.parameters(currentOutput(i).destination.id).min,
+            model.parameters(currentOutput(i).destination.id).max,
             outputValue,
             currentOutput(i)
           )
