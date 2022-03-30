@@ -12,16 +12,17 @@ import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, V
 import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
-import java.awt.event.KeyEvent
 import scala.util.Try
 
 class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGL) {
 
-
   import openGL._
 
+  private var zoom: Float = 2.0f
+  private var offsetX: Float = 0.0f
+  private var offsetY: Float = 0.0f
   private val spriteShader: SpriteShader = new SpriteShader().useProgram()
-  private val manager = new TextureManager()
+  private val manager = TextureManager.getInstance
 
   private lazy val backgroundTexture = manager.loadTexture("src/main/resources/texture/back_class_normal.png")
   private lazy val powerTexture = manager.loadTexture("src/main/resources/texture/close.png")
@@ -32,7 +33,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private val frameTimeCalculator = new FrameTimeCalculator
   private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
 
-  private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
+  private var avatarHolder: Try[Avatar] = new AvatarFileReader("/home/brianhsu/WorkRoom/CubismSDK/Samples/Resources/Rice").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
   private var updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {
@@ -56,7 +57,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     modelHolder.foreach(_.reset())
   }
 
-  def display(): Unit = {
+  def display(isForceUpdate: Boolean = false): Unit = {
     clearScreen()
 
     this.backgroundSprite.render()
@@ -69,13 +70,15 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       model <- modelHolder
       renderer <- rendererHolder
     } {
+
       // TODO:
       // There should be a better way to get width / height
       val projection = projectionMatrixCalculator.calculateProjection(
         model.canvasInfo,
         drawCanvasInfo.currentCanvasWidth, drawCanvasInfo.currentCanvasHeight,
         viewPortMatrixCalculator.getViewMatrix,
-        updateModelMatrix(model)
+        updateModelMatrix(model),
+        isForceUpdate
       )
 
       avatar.update(this.frameTimeCalculator)
@@ -84,8 +87,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
 
     def updateModelMatrix(model: Live2DModel)(viewOrientation: ViewOrientation): Unit = {
       val updatedMatrix = viewOrientation match {
-        case Horizontal => model.modelMatrix.scaleToHeight(2.0f)
-        case Vertical => model.modelMatrix.scaleToWidth(2.0f)
+        case Horizontal => model.modelMatrix.scaleToHeight(zoom).left(offsetX).top(offsetY)
+        case Vertical => model.modelMatrix.scaleToWidth(zoom).left(offsetX).top(offsetY)
       }
       model.modelMatrix = updatedMatrix
     }
@@ -101,9 +104,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       drawCanvasInfo.currentCanvasHeight
     )
 
+    openGL.glViewport(0, 0, drawCanvasInfo.currentSurfaceWidth, drawCanvasInfo.currentSurfaceHeight)
     backgroundSprite.resize()
     powerSprite.resize()
     gearSprite.resize()
+
     this.display()
   }
 
@@ -135,15 +140,6 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
 
   private def initOpenGL(): Unit = {
 
-    // TODO:
-    // 1. Check if Linux's openGLDrawable.getSurfaceWidth / getSurfaceHeight also return wrong value
-    // 2. There should be a better way to do this.
-    /*
-    viewPortMatrixCalculator.updateViewPort(
-      openGLDrawable.getSurfaceWidth,
-      openGLDrawable.getSurfaceHeight
-    )
-    */
     viewPortMatrixCalculator.updateViewPort(
       drawCanvasInfo.currentCanvasWidth,
       drawCanvasInfo.currentCanvasHeight
@@ -162,9 +158,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     } {
       val pose = new AvatarPoseReader(avatar.avatarSettings).loadPose.getOrElse(new Pose)
       updateStrategy.setFunctionalEffects(
-        new Breath() ::
-        new EyeBlink(avatar.avatarSettings) ::
-        faceDirection :: pose ::
+        //new Breath() ::
+        //new EyeBlink(avatar.avatarSettings) ::
+        //faceDirection ::
+        pose ::
         Nil
       )
     }
@@ -201,8 +198,19 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     initOpenGL()
   }
 
-  def keyReleased(keyEvent: KeyEvent): Unit = {
-    keyEvent.getKeyChar match {
+  def move(offsetX: Float, offsetY: Float): Unit = {
+    this.offsetX += offsetX
+    this.offsetY += offsetY
+    this.display(true)
+  }
+
+  def zoom(level: Float): Unit = {
+    this.zoom += level
+    this.display(true)
+  }
+
+  def keyReleased(key: Char): Unit = {
+    key match {
       case '0' => startExpression("f00")
       case '1' => startExpression("f01")
       case '2' => startExpression("f02")
@@ -217,7 +225,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       case 's' => startMotion("tapBody", 1)
       case 'd' => startMotion("tapBody", 2)
       case 'f' => startMotion("tapBody", 3)
-      case 'z' => switchModel("src/main/resources/Haru")
+      case 'z' => {
+        println("Z is pressed...")
+        DefaultStrategy.enablePhy = true
+      }
       case 'x' => switchModel("src/test/resources/models/Mark")
       case 'c' => switchModel("src/test/resources/models/Rice")
       case 'v' => switchModel("src/test/resources/models/Natori")

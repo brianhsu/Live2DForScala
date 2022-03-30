@@ -7,8 +7,12 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManage
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.porting.live2d.framework.model.DefaultStrategy.enablePhy
+import moe.brianhsu.porting.live2d.physics.CubismPhysics
 import org.slf4j.LoggerFactory
-
+object DefaultStrategy {
+  var enablePhy: Boolean = false
+}
 class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel) extends UpdateStrategy {
 
   private val defaultLogger = LoggerFactory.getLogger(this.getClass)
@@ -16,6 +20,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   private var effects: List[Effect] = Nil
   private val expressionManager = new MotionManager
   private val newMotionManager = new MotionManager
+  private val physics = avatarSettings.physics.map(CubismPhysics.Create)
 
   newMotionManager.setEventCallbackForAllMotions((m: MotionWithTransition, e:MotionEvent) => {
     println("motion:" + m)
@@ -68,6 +73,11 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     val operations = effects.flatMap(_.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds))
 
     executeOperations(model, expressionsOperations ++ operations)
+    //executeOperations(model, operations)
+
+    if (enablePhy) {
+      physics.foreach(_.Evaluate(model, frameTimeInfo.deltaTimeInSeconds))
+    }
 
     model.update()
   }

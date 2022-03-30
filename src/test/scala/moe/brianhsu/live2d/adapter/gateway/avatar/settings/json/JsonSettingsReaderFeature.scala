@@ -3,14 +3,16 @@ package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting.Parameters
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.{Curve, Meta}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, NormalizationValue, Output, PhysicsInfo, Point, Target, Vertex}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PoseSetting}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PhysicsSetting, PoseSetting}
 import moe.brianhsu.utils.FilePathMatcher
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
 import java.io.FileNotFoundException
+import javax.print.attribute.standard.Destination
 
 class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues with TryValues with FilePathMatcher {
   Feature("Read Live2D avatar settings") {
@@ -23,13 +25,14 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       val settings = jsonSettingsReader.loadSettings().success.value
 
       Then("the success loaded setting should have correct data")
-      inside(settings) { case Settings(mocFile, textureFiles, pose, eyeBlinkParameterIds, lipSyncParameterIds, expressions, motionGroups, hitArea) =>
+      inside(settings) { case Settings(mocFile, textureFiles, physics, pose, eyeBlinkParameterIds, lipSyncParameterIds, expressions, motionGroups, hitArea) =>
         mocFile should endWithPath("/src/test/resources/models/Haru/Haru.moc3")
 
         textureFiles.size shouldBe 2
         textureFiles(0) should endWithPath("src/test/resources/models/Haru/Haru.2048/texture_00.png")
         textureFiles(1) should endWithPath("src/test/resources/models/Haru/Haru.2048/texture_01.png")
 
+        physics shouldBe None
         eyeBlinkParameterIds shouldBe List("ParamEyeLOpen", "ParamEyeROpen")
         lipSyncParameterIds shouldBe List("ParamMouthOpenY")
 
@@ -40,6 +43,85 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
           HitAreaSetting("Head", "HitArea"),
           HitAreaSetting("Body", "HitArea2"),
         )
+      }
+    }
+    Scenario("Load physic settings from Avatar folder") {
+      Given("A folder path contains json files for a Live2D avatar model")
+      val folderPath = "src/test/resources/models/Rice"
+
+      When("Load it using JsonSettingsReader")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val settings = jsonSettingsReader.loadSettings().success.value
+
+      Then("the success loaded setting should have correct physics data")
+      inside(settings) { case Settings(_, _, physics, _, _, _, _, _, _) =>
+        val physicsSetting = physics.value
+        inside(physicsSetting) { case PhysicsSetting(version, meta, physicsSettings) =>
+          version shouldBe 3
+          inside(meta) { case PhysicsSetting.Meta(physicsSettingCount, totalInputCount, totalOutputCount, vertexCount,
+                                                  effectiveForces, physicsDictionary) =>
+            physicsSettingCount shouldBe 9
+            totalInputCount shouldBe 32
+            totalOutputCount shouldBe 42
+            vertexCount shouldBe 51
+            effectiveForces.gravity shouldBe Point(0f, -1f)
+            effectiveForces.wind shouldBe Point(0f, 0f)
+            physicsDictionary should contain theSameElementsInOrderAs List(
+              PhysicsInfo("PhysicsSetting1", "後髪A"),
+              PhysicsInfo("PhysicsSetting2", "後髪B"),
+              PhysicsInfo("PhysicsSetting3", "後髪C"),
+              PhysicsInfo("PhysicsSetting4", "右横髪"),
+              PhysicsInfo("PhysicsSetting5", "左横髪"),
+              PhysicsInfo("PhysicsSetting6", "前髪"),
+              PhysicsInfo("PhysicsSetting7", "頭リボン"),
+              PhysicsInfo("PhysicsSetting8", "胸リボン"),
+              PhysicsInfo("PhysicsSetting9", "腰リボン")
+            )
+          }
+          physicsSettings.size shouldBe physicsSetting.meta.physicsSettingCount
+        }
+
+        val firstSetting = physicsSetting.physicsSettings(0)
+        firstSetting.id shouldBe "PhysicsSetting1"
+        firstSetting.input should contain theSameElementsInOrderAs List(
+          Input(Target("Parameter", "ParamAngleX"), 60.0f, "X", reflect = false),
+          Input(Target("Parameter", "ParamAngleZ"), 60.0f, "Angle", reflect = false),
+          Input(Target("Parameter", "ParamBodyAngleX"), 40.0f, "X", reflect = false),
+          Input(Target("Parameter", "ParamBodyAngleZ"), 40.0f, "Angle", reflect = false),
+        )
+        firstSetting.output should contain theSameElementsInOrderAs List(
+          Output(Target("Parameter", "Param_Angle_Rotation_1_ArtMesh82"), 1, 15.0f, 100.0f, "Angle", reflect = false),
+          Output(Target("Parameter", "Param_Angle_Rotation_2_ArtMesh82"), 2, 30.0f, 100.0f, "Angle", reflect = false),
+          Output(Target("Parameter", "Param_Angle_Rotation_3_ArtMesh82"), 3, 30.0f, 100.0f, "Angle", reflect = false),
+          Output(Target("Parameter", "Param_Angle_Rotation_4_ArtMesh82"), 4, 30.0f, 100.0f, "Angle", reflect = false),
+          Output(Target("Parameter", "Param_Angle_Rotation_5_ArtMesh82"), 5, 30.0f, 100.0f, "Angle", reflect = false),
+          Output(Target("Parameter", "Param_Angle_Rotation_6_ArtMesh82"), 6, 30.0f, 100.0f, "Angle", reflect = false),
+          Output(Target("Parameter", "Param_Angle_Rotation_7_ArtMesh82"), 7, 30.0f, 100.0f, "Angle", reflect = false),
+        )
+        firstSetting.vertices should contain theSameElementsInOrderAs List(
+          Vertex(Point(0, 0), 1, 0.95f, 1.5f, 7),
+          Vertex(Point(0, 7), 0.85f, 0.95f, 1.5f, 7),
+          Vertex(Point(0, 14), 0.85f, 0.95f, 1.5f, 7),
+          Vertex(Point(0, 21), 0.85f, 0.95f, 1.5f, 7),
+          Vertex(Point(0, 28), 0.85f, 0.95f, 1.5f, 7),
+          Vertex(Point(0, 35), 0.85f, 0.95f, 1.5f, 7),
+          Vertex(Point(0, 42), 0.85f, 0.95f, 1.5f, 7),
+          Vertex(Point(0, 49), 0.85f, 0.95f, 1.5f, 7),
+        )
+        inside(firstSetting.normalization) { case Normalization(position, angle) =>
+          inside(position) { case NormalizationValue(minimum, default, maximum) =>
+            minimum shouldBe -10.0f
+            default shouldBe 0.0f
+            maximum shouldBe 10.0f
+          }
+          inside(angle) { case NormalizationValue(minimum, default, maximum) =>
+            minimum shouldBe -10.0f
+            default shouldBe 0.0f
+            maximum shouldBe 10.0f
+          }
+
+        }
+
       }
     }
 

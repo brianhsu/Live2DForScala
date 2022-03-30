@@ -1,6 +1,5 @@
 package moe.brianhsu.porting.live2d.demo.sprite
 
-import com.jogamp.common.nio.Buffers
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.porting.live2d.renderer.opengl.TextureManager.TextureInfo
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
@@ -59,8 +58,8 @@ abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureIn
       (rect.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.topY - maxHeight * 0.5f) / (maxHeight * 0.5f)
     )
 
-    val buffer1 = Buffers.newDirectFloatBuffer(positionVertex)
-    val buffer2 = Buffers.newDirectFloatBuffer(uvVertex)
+    val buffer1 = gl.newDirectFloatBuffer(positionVertex)
+    val buffer2 = gl.newDirectFloatBuffer(uvVertex)
 
     gl.glVertexAttribPointer(positionLocation, 2, GL_FLOAT, normalized = false, 0, buffer1)
     gl.glVertexAttribPointer(uvLocation, 2, GL_FLOAT, normalized = false, 0, buffer2)

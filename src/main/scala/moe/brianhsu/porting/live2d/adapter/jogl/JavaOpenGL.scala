@@ -1,9 +1,10 @@
 package moe.brianhsu.porting.live2d.adapter.jogl
 
+import com.jogamp.common.nio.Buffers
 import com.jogamp.opengl.{GL, GL2, GL2ES2}
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 
-import java.nio.{Buffer, ByteBuffer, FloatBuffer, IntBuffer}
+import java.nio.{ByteBuffer, FloatBuffer, IntBuffer}
 
 class JavaOpenGL(gl: GL2) extends OpenGL {
   override val GL_TEXTURE_2D: Int = GL.GL_TEXTURE_2D
@@ -60,8 +61,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
   override val GL_DEPTH_BUFFER_BIT: Int = GL.GL_DEPTH_BUFFER_BIT
   override val GL_TRIANGLE_FAN: Int = GL.GL_TRIANGLE_FAN
 
-  override def glGenTextures(n: Int, textures: Array[Int], textures_offset: Int): Unit = {
-    gl.glGenTextures(n, textures, textures_offset)
+  override def glGenTextures(n: Int, textures: Array[Int]): Unit = {
+    gl.glGenTextures(n, textures, 0)
   }
 
   override def glBindTexture(target: Int, texture: Int): Unit = {
@@ -69,7 +70,7 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
   }
 
   override def glTexImage2D(target: Int, level: Int, internalformat: Int, width: Int, height: Int,
-                            border: Int, format: Int, `type`: Int, pixels: Buffer): Unit = {
+                            border: Int, format: Int, `type`: Int, pixels: ByteBuffer): Unit = {
     gl.glTexImage2D(target, level, internalformat, width, height, border, format, `type`, pixels)
   }
 
@@ -122,24 +123,24 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glCreateShader(`type`)
   }
 
-  override def glShaderSource(shader: Int, count: Int, string: Array[String], length: IntBuffer): Unit = {
-    gl.glShaderSource(shader, count, string, length)
+  override def glShaderSource(shader: Int, count: Int, string: Array[String]): Unit = {
+    gl.glShaderSource(shader, count, string, null, 0)
   }
 
-  override def glGetProgramiv(program: Int, pname: Int, params: IntBuffer): Unit = {
-    gl.glGetProgramiv(program, pname, params)
+  override def glGetProgramiv(program: Int, pname: Int, params: Array[Int]): Unit = {
+    gl.glGetProgramiv(program, pname, params, 0)
   }
 
-  override def glGetProgramInfoLog(program: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit = {
-    gl.glGetProgramInfoLog(program, bufSize, length, infoLog)
+  override def glGetProgramInfoLog(program: Int, bufSize: Int, infoLog: ByteBuffer): Unit = {
+    gl.glGetProgramInfoLog(program, bufSize, IntBuffer.allocate(1), infoLog)
   }
 
-  override def glGetShaderiv(shader: Int, pname: Int, params: IntBuffer): Unit = {
-    gl.glGetShaderiv(shader, pname, params)
+  override def glGetShaderiv(shader: Int, pname: Int, params: Array[Int]): Unit = {
+    gl.glGetShaderiv(shader, pname, params, 0)
   }
 
-  override def glGetShaderInfoLog(shader: Int, bufSize: Int, length: IntBuffer, infoLog: ByteBuffer): Unit = {
-    gl.glGetShaderInfoLog(shader, bufSize, length, infoLog)
+  override def glGetShaderInfoLog(shader: Int, bufSize: Int, infoLog: ByteBuffer): Unit = {
+    gl.glGetShaderInfoLog(shader, bufSize, IntBuffer.allocate(1), infoLog)
   }
 
   override def glGetAttribLocation(program: Int, name: String): Int = {
@@ -151,8 +152,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glGetUniformLocation(program, name)
   }
 
-  override def glUniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: FloatBuffer): Unit = {
-    gl.glUniformMatrix4fv(location, count, transpose, value)
+  override def glUniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: Array[Float]): Unit = {
+    gl.glUniformMatrix4fv(location, count, transpose, value, 0)
   }
 
   override def glUniform4f(location: Int, v0: Float, v1: Float, v2: Float, v3: Float): Unit = {
@@ -197,8 +198,8 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glIsEnabled(cap)
   }
 
-  override def glGetBooleanv(pname: Int, data: Array[Byte], data_offset: Int): Unit = {
-    gl.glGetBooleanv(pname, data, data_offset)
+  override def glGetBooleanv(pname: Int, data: Array[Byte]): Unit = {
+    gl.glGetBooleanv(pname, data, 0)
   }
 
   override def glDisableVertexAttribArray(index: Int): Unit = {
@@ -225,12 +226,12 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glBindBuffer(target, buffer)
   }
 
-  override def glGetIntegerv(pname: Int, params: IntBuffer): Unit = {
-    gl.glGetIntegerv(pname, params)
+  override def glGetIntegerv(pname: Int, params: Array[Int]): Unit = {
+    gl.glGetIntegerv(pname, params, 0)
   }
 
-  override def glGenFramebuffers(n: Int, framebuffers: Array[Int], framebuffers_offset: Int): Unit = {
-    gl.glGenFramebuffers(n, framebuffers, framebuffers_offset)
+  override def glGenFramebuffers(n: Int, framebuffers: Array[Int]): Unit = {
+    gl.glGenFramebuffers(n, framebuffers, 0)
   }
 
   override def glBindFramebuffer(target: Int, framebuffer: Int): Unit = {
@@ -249,12 +250,12 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
     gl.glClear(mask)
   }
 
-  override def glDeleteTextures(n: Int, textures: Array[Int], textures_offset: Int): Unit = {
-    gl.glDeleteTextures(n, textures, textures_offset)
+  override def glDeleteTextures(n: Int, textures: Array[Int]): Unit = {
+    gl.glDeleteTextures(n, textures, 0)
   }
 
-  override def glDeleteFramebuffers(n: Int, framebuffers: Array[Int], framebuffers_offset: Int): Unit = {
-    gl.glDeleteFramebuffers(n, framebuffers, framebuffers_offset)
+  override def glDeleteFramebuffers(n: Int, framebuffers: Array[Int]): Unit = {
+    gl.glDeleteFramebuffers(n, framebuffers, 0)
   }
 
   override def glDrawElements(mode: Int, count: Int, `type`: Int, indices: ByteBuffer): Unit = {
@@ -271,6 +272,10 @@ class JavaOpenGL(gl: GL2) extends OpenGL {
 
   override def glDrawArrays(mode: Int, first: Int, count: Int): Unit = {
     gl.glDrawArrays(mode, first, count)
+  }
+
+  override def newDirectFloatBuffer(floats: Array[Float]): FloatBuffer = {
+    Buffers.newDirectFloatBuffer(floats)
   }
 
 }

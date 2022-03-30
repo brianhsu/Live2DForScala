@@ -4,8 +4,9 @@ import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
 import moe.brianhsu.porting.live2d.adapter.jogl.{JavaOpenGL, JavaOpenGLCanvasInfo}
 
-import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent}
+import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent, MouseWheelEvent}
 import java.util.concurrent.{ScheduledThreadPoolExecutor, TimeUnit}
+import javax.swing.SwingUtilities
 
 class FixedFPSAnimator(fps: Int, drawable: GLAutoDrawable) {
   private val scheduledThreadPool = new ScheduledThreadPoolExecutor(1)
@@ -51,7 +52,7 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
   override def init(drawable: GLAutoDrawable): Unit = {
     implicit val openGL: JavaOpenGL = new JavaOpenGL(drawable.getGL.getGL2)
     this.view = Option(new LAppView(canvasInfo))
-    this.animator = Option(new FixedFPSAnimator(30, drawable))
+    this.animator = Option(new FixedFPSAnimator(60, drawable))
     this.animator.foreach { x => x.start() }
   }
 
@@ -67,18 +68,36 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
     this.view.foreach(_.resize())
   }
 
+  private var lastX: Option[Int] = None
+  private var lastY: Option[Int] = None
   override def mouseDragged(e: MouseEvent): Unit = {
-    this.view.foreach(_.onMouseDragged(e.getX, e.getY))
+    if (SwingUtilities.isLeftMouseButton(e)) {
+      this.view.foreach(_.onMouseDragged(e.getX, e.getY))
+    }
+    if (SwingUtilities.isRightMouseButton(e)) {
+      val offsetX = this.lastX.map(e.getX - _).getOrElse(0).toFloat * 0.002f
+      val offsetY = this.lastY.map(_ - e.getY).getOrElse(0).toFloat * 0.002f
+
+      this.view.foreach(_.move(offsetX, offsetY))
+
+      this.lastX = Some(e.getX)
+      this.lastY = Some(e.getY)
+    }
   }
 
   override def mouseReleased(mouseEvent: MouseEvent): Unit = {
     this.view.foreach(_.onMouseReleased(mouseEvent.getX, mouseEvent.getY))
+    this.lastX = None
+    this.lastY = None
   }
 
   override def keyTyped(keyEvent: KeyEvent): Unit = {}
   override def keyPressed(keyEvent: KeyEvent): Unit = {}
   override def keyReleased(keyEvent: KeyEvent): Unit = {
-    this.view.foreach(_.keyReleased(keyEvent))
-
+    this.view.foreach(_.keyReleased(keyEvent.getKeyChar))
   }
+  override def mouseWheelMoved(e: MouseWheelEvent): Unit = {
+    this.view.foreach(_.zoom(e.getScrollAmount * -e.getWheelRotation * 0.01f))
+  }
+
 }

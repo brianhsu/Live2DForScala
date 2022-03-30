@@ -19,7 +19,8 @@ class ProjectionMatrixCalculator {
 
   def calculateProjection(canvasInfo: CanvasInfo, windowWidth: Int,
                           windowHeight: Int, viewMatrix: ViewMatrix,
-                          onUpdated: ViewOrientation => Unit): GeneralMatrix  = {
+                          onUpdated: ViewOrientation => Unit,
+                          forceUpdate: Boolean = false): GeneralMatrix  = {
 
     val viewOrientation = if (canvasInfo.width > 1.0 && windowWidth < windowHeight) Vertical else Horizontal
 
@@ -27,7 +28,8 @@ class ProjectionMatrixCalculator {
       currentProjection.isEmpty ||
         !previousViewMatrix.contains(viewMatrix) ||
         previousWindowWidth != windowWidth ||
-        previousWindowHeight != windowHeight
+        previousWindowHeight != windowHeight ||
+        forceUpdate
 
     if (shouldUpdate) {
       val projection = if (viewOrientation == Horizontal) {

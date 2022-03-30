@@ -2,9 +2,21 @@ package moe.brianhsu.porting.live2d.renderer.opengl
 
 import moe.brianhsu.porting.live2d.adapter.OpenGL
 
-import java.nio.IntBuffer
+object Profile {
+  private var profile: Map[OpenGL, Profile] = Map.empty
 
-class Profile(implicit gl: OpenGL) {
+  def getInstance(implicit gl: OpenGL): Profile = {
+    profile.get(gl) match {
+      case Some(profile) => profile
+      case None =>
+        this.profile += (gl -> new Profile())
+        this.profile(gl)
+    }
+  }
+
+}
+
+class Profile private (implicit gl: OpenGL) {
 
   import gl._
 
@@ -55,7 +67,7 @@ class Profile(implicit gl: OpenGL) {
 
     gl.glGetIntegerv(GL_FRONT_FACE, lastFrontFace, 0)
 
-    gl.glGetBooleanv(GL_COLOR_WRITEMASK, lastColorMask, 0)
+    gl.glGetBooleanv(GL_COLOR_WRITEMASK, lastColorMask)
 
     gl.glGetIntegerv(GL_BLEND_SRC_RGB, lastBlending, 0)
     gl.glGetIntegerv(GL_BLEND_DST_RGB, lastBlending, 1)
@@ -63,13 +75,13 @@ class Profile(implicit gl: OpenGL) {
     gl.glGetIntegerv(GL_BLEND_DST_ALPHA, lastBlending, 3)
 
     gl.glGetIntegerv(GL_FRAMEBUFFER_BINDING, lastFBO, 0)
-    gl.glGetIntegerv(GL_VIEWPORT, IntBuffer.wrap(lastViewport))
+    gl.glGetIntegerv(GL_VIEWPORT, lastViewport)
   }
 
   def restore(): Unit = {
     gl.glUseProgram(lastProgram(0))
 
-    setGlEnableVertexAttribArray(1, lastVertexAttribArrayEnabled(0) != GL_FALSE)
+    setGlEnableVertexAttribArray(0, lastVertexAttribArrayEnabled(0) != GL_FALSE)
     setGlEnableVertexAttribArray(1, lastVertexAttribArrayEnabled(1) != GL_FALSE)
     setGlEnableVertexAttribArray(2, lastVertexAttribArrayEnabled(2) != GL_FALSE)
     setGlEnableVertexAttribArray(3, lastVertexAttribArrayEnabled(3) != GL_FALSE)
