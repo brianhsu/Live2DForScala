@@ -51,20 +51,7 @@ class CubismPhysicsSubRig {
   var NormalizationAngle  = new CubismPhysicsNormalization              ///< 正規化された角度
 }
 
-trait NormalizedPhysicsParameterValueGetter {
-  def apply(
-    targetTranslation: CubismVector2,
-    targetAngle: MutableData[Float],
-    value: Float,
-    parameterMinimumValue: Float,
-    parameterMaximumValue: Float,
-    parameterDefaultValue: Float,
-    normalizationPosition: CubismPhysicsNormalization = new CubismPhysicsNormalization,
-    normalizationAngle: CubismPhysicsNormalization = new CubismPhysicsNormalization,
-    isInverted: Boolean,
-    weight: Float
-  ): Unit
-
+object NormalizedPhysicsParameterValueGetter {
   private def GetRangeValue(min: Float, max: Float): Float = {
     val maxValue = Math.max(min, max)
     val minValue = Math.min(min, max)
@@ -88,15 +75,13 @@ trait NormalizedPhysicsParameterValueGetter {
     ret
   }
 
-  def NormalizeParameterValue(
-    inputValue: Float,
-    parameterMinimum: Float,
+  def NormalizeParameterValue(inputValue: Float, parameterMinimum: Float,
     parameterMaximum: Float,
-    parameterDefault: Float,
     normalizedMinimum: Float,
     normalizedMaximum: Float,
     normalizedDefault: Float,
-    isInverted: Boolean): Float = {
+    isInverted: Boolean
+  ): Float = {
     var result: Float = 0.0f
 
     var value = inputValue
@@ -109,7 +94,7 @@ trait NormalizedPhysicsParameterValueGetter {
     val minValue = Math.min(parameterMaximum, parameterMinimum)
 
     if (minValue > value) {
-      value = minValue;
+      value = minValue
     }
 
     val minNormValue = Math.min(normalizedMinimum, normalizedMaximum)
@@ -117,6 +102,9 @@ trait NormalizedPhysicsParameterValueGetter {
     val middleNormValue = normalizedDefault
 
     val middleValue = GetDefaultValue(minValue, maxValue)
+    println("value: " + value)
+    println("middleValue: " + middleValue)
+
     val paramValue = value - middleValue
 
     Sign(paramValue) match {
@@ -143,6 +131,20 @@ trait NormalizedPhysicsParameterValueGetter {
 
     if (isInverted) result else (result * -1.0f)
   }
+}
+trait NormalizedPhysicsParameterValueGetter {
+  def apply(
+    targetTranslation: CubismVector2,
+    targetAngle: MutableData[Float],
+    value: Float,
+    parameterMinimumValue: Float,
+    parameterMaximumValue: Float,
+    parameterDefaultValue: Float,
+    normalizationPosition: CubismPhysicsNormalization = new CubismPhysicsNormalization,
+    normalizationAngle: CubismPhysicsNormalization = new CubismPhysicsNormalization,
+    isInverted: Boolean,
+    weight: Float
+  ): Unit
 
 }
 

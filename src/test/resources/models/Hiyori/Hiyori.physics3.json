@@ -542,7 +542,7 @@
 					},
 					"VertexIndex": 1,
 					"Scale": 1.402,
-					"Weight": 100,
+					"Weight": 30,
 					"Type": "Angle",
 					"Reflect": false
 				}
@@ -1445,7 +1445,7 @@
 					},
 					"VertexIndex": 3,
 					"Scale": 10,
-					"Weight": 100,
+					"Weight": 50,
 					"Type": "Angle",
 					"Reflect": false
 				},

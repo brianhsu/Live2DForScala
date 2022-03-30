@@ -4,14 +4,11 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParame
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
 import moe.brianhsu.porting.live2d.framework.math.{CubismMath, CubismVector2, MutableData}
+import moe.brianhsu.porting.live2d.physics.CubismPhysics.UpdateParticles
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsSource.{CubismPhysicsSource_Angle, CubismPhysicsSource_X, CubismPhysicsSource_Y}
 import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType.CubismPhysicsTargetType_Parameter
-import org.json4s.{Formats, ShortTypeHints}
-import org.json4s.native.Serialization
 
-import java.io.PrintWriter
 import scala.util.control.Breaks
-import scala.util.control.Breaks.break
 
 object CubismPhysics {
   def Create(settings: PhysicsSetting): CubismPhysics = {
@@ -20,22 +17,77 @@ object CubismPhysics {
     ret._physicsRig.Gravity.Y = 0
     ret
   }
+  def UpdateParticles(strand: Array[CubismPhysicsParticle], strandCount: Int, totalTranslation: CubismVector2,
+                      totalAngle: MutableData[Float], windDirection: CubismVector2,
+                      thresholdValue: Float, deltaTimeSeconds: Float,
+                      airResistance: Float): Unit = {
+
+    var totalRadian: Float = 0.0f
+    var delay: Float = 0.0f
+    var radian: Float = 0.0f
+    var currentGravity: CubismVector2 = CubismVector2()
+    val direction: CubismVector2 = CubismVector2()
+    val velocity: CubismVector2 = CubismVector2()
+    var force: CubismVector2 = CubismVector2()
+    var newDirection: CubismVector2 = CubismVector2()
+
+    strand(0).Position = totalTranslation
+
+    totalRadian = CubismMath.DegreesToRadian(totalAngle.data)
+    currentGravity = CubismMath.RadianToDirection(totalRadian)
+    currentGravity.normalize()
+
+    for (i <- 1 until strandCount) {
+      strand(i).Force = (currentGravity * strand(i).Acceleration) + windDirection
+
+      strand(i).LastPosition = strand(i).Position
+
+      delay = strand(i).Delay * deltaTimeSeconds * 30.0f
+
+      direction.X = strand(i).Position.X - strand(i - 1).Position.X
+      direction.Y = strand(i).Position.Y - strand(i - 1).Position.Y
+
+      radian = CubismMath.DirectionToRadian(strand(i).LastGravity, currentGravity) / airResistance;
+
+      direction.X = ((Math.cos(radian).toFloat * direction.X) - (direction.Y * Math.sin(radian).toFloat))
+      direction.Y = ((Math.sin(radian).toFloat * direction.X) + (direction.Y * Math.cos(radian).toFloat))
+
+      strand(i).Position = strand(i - 1).Position + direction;
+
+      velocity.X = strand(i).Velocity.X * delay
+      velocity.Y = strand(i).Velocity.Y * delay
+      force = strand(i).Force * delay * delay
+
+      strand(i).Position = strand(i).Position + velocity + force
+
+      newDirection = strand(i).Position - strand(i - 1).Position
+
+      newDirection.normalize()
+
+      strand(i).Position = strand(i - 1).Position + (newDirection * strand(i).Radius)
+
+      if (Math.abs(strand(i).Position.X) < thresholdValue) {
+        strand(i).Position.X = 0.0f;
+      }
+
+      if (delay != 0.0f) {
+        strand(i).Velocity.X = strand(i).Position.X - strand(i).LastPosition.X
+        strand(i).Velocity.Y = strand(i).Position.Y - strand(i).LastPosition.Y
+        strand(i).Velocity /= delay
+        strand(i).Velocity *= strand(i).Mobility
+      }
+
+      strand(i).Force = CubismVector2(0.0f, 0.0f)
+      strand(i).LastGravity = currentGravity
+    }
+
+  }
+
 }
 class CubismPhysics {
   val MaximumWeight = 100.0f
   val MovementThreshold = 0.001f
   val AirResistance = 5.0f
-  private implicit val formats: Formats = Serialization.formats(ShortTypeHints(
-    List(
-      classOf[ParameterValueAdd],
-      classOf[ParameterValueMultiply],
-      classOf[ParameterValueUpdate],
-      classOf[FallbackParameterValueAdd],
-      classOf[FallbackParameterValueUpdate],
-      classOf[PartOpacityUpdate],
-    )
-  ))
-  private val printWriter = new PrintWriter("/home/brianhsu/hi.json")
 
   case class Options(
     var Gravity: CubismVector2 = CubismVector2(),          ///< 重力方向
@@ -181,69 +233,6 @@ class CubismPhysics {
 
   }
 
-  def UpdateParticles(strand: Array[CubismPhysicsParticle], strandCount: Int, totalTranslation: CubismVector2, totalAngle: MutableData[Float],
-                      windDirection: CubismVector2, thresholdValue: Float, deltaTimeSeconds: Float, airResistance: Float): Unit = {
-    var i: Int = 0
-    var totalRadian: Float = 0.0f
-    var delay: Float = 0.0f
-    var radian: Float = 0.0f
-    var currentGravity: CubismVector2 = CubismVector2()
-    var direction: CubismVector2 = CubismVector2()
-    var velocity: CubismVector2 = CubismVector2()
-    var force: CubismVector2 = CubismVector2()
-    var newDirection: CubismVector2 = CubismVector2()
-
-    strand(0).Position = totalTranslation
-
-    totalRadian = CubismMath.DegreesToRadian(totalAngle.data)
-    currentGravity = CubismMath.RadianToDirection(totalRadian)
-    currentGravity.normalize()
-
-    for (i <- 1 until strandCount) {
-      strand(i).Force = (currentGravity * strand(i).Acceleration) + windDirection
-
-      strand(i).LastPosition = strand(i).Position
-
-      delay = strand(i).Delay * deltaTimeSeconds * 30.0f
-
-      direction.X = strand(i).Position.X - strand(i - 1).Position.X
-      direction.Y = strand(i).Position.Y - strand(i - 1).Position.Y
-
-      radian = CubismMath.DirectionToRadian(strand(i).LastGravity, currentGravity) / airResistance;
-
-      direction.X = ((Math.cos(radian).toFloat * direction.X) - (direction.Y * Math.sin(radian).toFloat))
-      direction.Y = ((Math.sin(radian).toFloat * direction.X) + (direction.Y * Math.cos(radian).toFloat))
-
-      strand(i).Position = strand(i - 1).Position + direction;
-
-      velocity.X = strand(i).Velocity.X * delay
-      velocity.Y = strand(i).Velocity.Y * delay
-      force = strand(i).Force * delay * delay
-
-      strand(i).Position = strand(i).Position + velocity + force
-
-      newDirection = strand(i).Position - strand(i - 1).Position
-
-      newDirection.normalize()
-
-      strand(i).Position = strand(i - 1).Position + (newDirection * strand(i).Radius)
-
-      if (Math.abs(strand(i).Position.X) < thresholdValue) {
-        strand(i).Position.X = 0.0f;
-      }
-
-      if (delay != 0.0f) {
-        strand(i).Velocity.X = strand(i).Position.X - strand(i).LastPosition.X
-        strand(i).Velocity.Y = strand(i).Position.Y - strand(i).LastPosition.Y
-        strand(i).Velocity /= delay
-        strand(i).Velocity *= strand(i).Mobility
-      }
-
-      strand(i).Force = CubismVector2(0.0f, 0.0f)
-      strand(i).LastGravity = currentGravity
-    }
-
-  }
 
   def UpdateOutputParameterValue(id: String, parameter: Parameter, parameterCurrent: Float, parameterValueMinimum: Float, parameterValueMaximum: Float,
                                  translation: Float, output: CubismPhysicsOutput): EffectOperation = {
@@ -299,8 +288,6 @@ class CubismPhysics {
     var currentOutput: Array[CubismPhysicsOutput] = null
     var currentParticles: Array[CubismPhysicsParticle] = null
     var operations: List[EffectOperation] = Nil
-    val parametersInLog = model.parameters.view.mapValues(p => CurrentParameter(p.current, p.min, p.max, p.default)).toMap
-
 
     for (settingIndex <- 0 until _physicsRig.SubRigCount) {
       totalAngle = MutableData(0.0f)
@@ -349,7 +336,7 @@ class CubismPhysics {
           particleIndex = currentOutput(i).VertexIndex;
 
           if (particleIndex < 1 || particleIndex >= currentSetting.ParticleCount) {
-            loop.break
+            loop.break()
           }
 
           val translation = CubismVector2()
@@ -377,20 +364,6 @@ class CubismPhysics {
       }
 
     }
-    val t = operations.reverse
-    val l = LogData(totalElapsedTimeInSeconds, deltaTimeSeconds, parametersInLog, t)
-    printWriter.println(org.json4s.native.Serialization.write(l))
-    printWriter.flush()
-    t
+    operations.reverse
   }
-
 }
-
-
-case class CurrentParameter(current: Float, min: Float, max: Float, default: Float)
-case class LogData(
-  totalElapsedTimeInSeconds: Float,
-  deltaTimeSeconds: Float,
-  parameters: Map[String, CurrentParameter],
-  operations: List[EffectOperation]
-)
