@@ -1,13 +1,13 @@
 package moe.brianhsu.porting.live2d.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsSource.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
+import moe.brianhsu.live2d.enitiy.avatar.physics.TargetType
 import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.CubismPhysics.updateParticles
-import moe.brianhsu.porting.live2d.physics.CubismPhysicsSource.{CubismPhysicsSource_Angle, CubismPhysicsSource_X, CubismPhysicsSource_Y}
-import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType.CubismPhysicsTargetType_Parameter
 
 import scala.util.control.Breaks
 
@@ -145,17 +145,17 @@ class CubismPhysics {
         _physicsRig.Inputs(inputIndex + j).Weight = json.physicsSettings(i).input(j).weight
         _physicsRig.Inputs(inputIndex + j).Reflect = json.physicsSettings(i).input(j).reflect
         if (json.physicsSettings(i).input(j).`type` == "X") {
-          _physicsRig.Inputs(inputIndex + j).Type = CubismPhysicsSource_X
+          _physicsRig.Inputs(inputIndex + j).Type = X
           _physicsRig.Inputs(inputIndex + j).GetNormalizedParameterValue = GetInputTranslationXFromNormalizedParameterValue
         } else if (json.physicsSettings(i).input(j).`type` == "Y") {
-          _physicsRig.Inputs(inputIndex + j).Type = CubismPhysicsSource_Y
+          _physicsRig.Inputs(inputIndex + j).Type = Y
           _physicsRig.Inputs(inputIndex + j).GetNormalizedParameterValue = GetInputTranslationYFromNormalizedParameterValue
         } else if (json.physicsSettings(i).input(j).`type` == "Angle") {
-          _physicsRig.Inputs(inputIndex + j).Type = CubismPhysicsSource_Angle
+          _physicsRig.Inputs(inputIndex + j).Type = Angle
           _physicsRig.Inputs(inputIndex + j).GetNormalizedParameterValue = GetInputAngleFromNormalizedParameterValue
         }
 
-        _physicsRig.Inputs(inputIndex + j).Source.TargetType = CubismPhysicsTargetType_Parameter
+        _physicsRig.Inputs(inputIndex + j).Source.TargetType = TargetType.Parameter
         _physicsRig.Inputs(inputIndex + j).Source.Id = json.physicsSettings(i).input(j).source.id
 
       }
@@ -170,18 +170,18 @@ class CubismPhysics {
         _physicsRig.Outputs(outputIndex + j).VertexIndex = json.physicsSettings(i).output(j).vertexIndex
         _physicsRig.Outputs(outputIndex + j).AngleScale = json.physicsSettings(i).output(j).scale
         _physicsRig.Outputs(outputIndex + j).Weight = json.physicsSettings(i).output(j).weight
-        _physicsRig.Outputs(outputIndex + j).Destination.TargetType = CubismPhysicsTargetType_Parameter
+        _physicsRig.Outputs(outputIndex + j).Destination.TargetType = TargetType.Parameter
         _physicsRig.Outputs(outputIndex + j).Destination.Id = json.physicsSettings(i).output(j).destination.id
         if (json.physicsSettings(i).output(j).`type` == "X") {
-          _physicsRig.Outputs(outputIndex + j).Type = CubismPhysicsSource_X
+          _physicsRig.Outputs(outputIndex + j).Type = X
           _physicsRig.Outputs(outputIndex + j).GetValue = GetOutputTranslationX
           _physicsRig.Outputs(outputIndex + j).GetScale = GetOutputScaleTranslationX
         } else if (json.physicsSettings(i).output(j).`type` == "Y") {
-          _physicsRig.Outputs(outputIndex + j).Type = CubismPhysicsSource_Y
+          _physicsRig.Outputs(outputIndex + j).Type = Y
           _physicsRig.Outputs(outputIndex + j).GetValue = GetOutputTranslationY
           _physicsRig.Outputs(outputIndex + j).GetScale = GetOutputScaleTranslationY
         } else if (json.physicsSettings(i).output(j).`type` == "Angle") {
-          _physicsRig.Outputs(outputIndex + j).Type = CubismPhysicsSource_Angle
+          _physicsRig.Outputs(outputIndex + j).Type = Angle
           _physicsRig.Outputs(outputIndex + j).GetValue = GetOutputAngle
           _physicsRig.Outputs(outputIndex + j).GetScale = GetOutputScaleAngle
         }

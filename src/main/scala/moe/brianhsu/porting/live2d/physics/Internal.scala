@@ -2,24 +2,12 @@ package moe.brianhsu.porting.live2d.physics
 
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Negative, Neutral, Positive, Sign}
 import moe.brianhsu.porting.live2d.framework.math.MutableData
-import moe.brianhsu.porting.live2d.physics.CubismPhysicsSource.CubismPhysicsSource
-import moe.brianhsu.porting.live2d.physics.CubismPhysicsTargetType.CubismPhysicsTargetType
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsSource, TargetType}
 
-object CubismPhysicsTargetType extends Enumeration {
-  type CubismPhysicsTargetType = Value
-  val CubismPhysicsTargetType_Parameter = Value("Parameter")
-}
-
-object CubismPhysicsSource extends Enumeration {
-  type CubismPhysicsSource = Value
-  val CubismPhysicsSource_X = Value("X")
-  val CubismPhysicsSource_Y = Value("Y")
-  val CubismPhysicsSource_Angle = Value("Angle")
-}
 
 class CubismPhysicsParameter {
   var Id: String = null                          ///< パラメータID
-  var TargetType: CubismPhysicsTargetType = null     ///< 適用先の種類
+  var TargetType: TargetType = null     ///< 適用先の種類
 }
 
 class CubismPhysicsNormalization {
