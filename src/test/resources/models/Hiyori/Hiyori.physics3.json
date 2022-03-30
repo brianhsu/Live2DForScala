@@ -2,7 +2,7 @@
 	"Version": 3,
 	"Meta": {
 		"PhysicsSettingCount": 11,
-		"TotalInputCount": 34,
+		"TotalInputCount": 35,
 		"TotalOutputCount": 35,
 		"VertexCount": 58,
 		"EffectiveForces": {
@@ -78,6 +78,15 @@
 				{
 					"Source": {
 						"Target": "Parameter",
+						"Id": "ParamAngleY"
+					},
+					"Weight": 60,
+					"Type": "Y",
+					"Reflect": false
+				},
+				{
+					"Source": {
+						"Target": "Parameter",
 						"Id": "ParamAngleZ"
 					},
 					"Weight": 60,
@@ -113,7 +122,7 @@
 					"Scale": 1.522,
 					"Weight": 100,
 					"Type": "Angle",
-					"Reflect": false
+					"Reflect": true
 				}
 			],
 			"Vertices": [
