@@ -33,8 +33,6 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
   private def createRig(json: PhysicsSetting): CubismPhysicsRig = {
 
-    var inputIndex: Int = 0
-    var outputIndex: Int = 0
     var particleIndex: Int = 0
 
     var settings: List[CubismPhysicsSubRig] = Nil
@@ -44,14 +42,16 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
     for (i <- json.physicsSettings.indices) {
       val setting = json.physicsSettings(i)
-      settings ::= createSubRig(setting, inputIndex, outputIndex, particleIndex)
+      val inputsInSetting = setting.input.map(createInput)
+      val outputsInSetting = setting.output.map(createOutput)
+      settings ::= createSubRig(
+        setting, particleIndex,
+        inputsInSetting, outputsInSetting)
 
-      inputs ++= setting.input.map(createInput)
-      outputs ++= setting.output.map(createOutput)
+      inputs ++= inputsInSetting
+      outputs ++= outputsInSetting
       particles ++= createParticleList(setting.vertices)
 
-      inputIndex += setting.input.size
-      outputIndex += setting.output.size
       particleIndex += setting.vertices.size
     }
 
@@ -153,12 +153,12 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
   }
 
   private def createSubRig(setting: Setting,
-    inputIndex: Int, outputIndex: Int, particleIndex: Int): CubismPhysicsSubRig = {
+    particleIndex: Int,
+    inputsInSetting: List[CubismPhysicsInput],
+    outputsInSetting: List[CubismPhysicsOutput]): CubismPhysicsSubRig = {
     CubismPhysicsSubRig(
-      setting.input.size,
-      setting.output.size,
       setting.vertices.size,
-      inputIndex, outputIndex, particleIndex,
+      particleIndex,
       CubismPhysicsNormalization(
         setting.normalization.position.minimum,
         setting.normalization.position.maximum,
@@ -168,7 +168,8 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
         setting.normalization.angle.minimum,
         setting.normalization.angle.maximum,
         setting.normalization.angle.default
-      )
+      ),
+      inputsInSetting, outputsInSetting
     )
   }
 

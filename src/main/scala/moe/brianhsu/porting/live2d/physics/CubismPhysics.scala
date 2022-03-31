@@ -124,44 +124,34 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, options: Options) {
   }
 
   def evaluate(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeSeconds: Float): List[EffectOperation] = {
-    var totalAngle: MutableData[Float] = MutableData(0.0f)
-    var weight: Float = 0.0f
-    var radAngle: Float = 0.0f
-    var outputValue: Float = 0.0f
-    var totalTranslation: EuclideanVector = EuclideanVector()
-    var particleIndex: Int = 0
-    var currentSetting: CubismPhysicsSubRig = null
-    var currentInput: Array[CubismPhysicsInput] = null
-    var currentOutput: Array[CubismPhysicsOutput] = null
-    var currentParticles: Array[CubismPhysicsParticle] = null
     var operations: List[EffectOperation] = Nil
 
     for (settingIndex <- 0 until physicsRig.subRigCount) {
-      totalAngle = MutableData(0.0f)
-      totalTranslation = EuclideanVector(0.0f, 0.0f)
-      currentSetting = physicsRig.settings(settingIndex)
-      currentInput = physicsRig.inputs.drop(currentSetting.baseInputIndex)
-      currentOutput = physicsRig.outputs.drop(currentSetting.baseOutputIndex)
-      currentParticles = physicsRig.particles.drop(currentSetting.baseParticleIndex).take(currentSetting.particleCount)
-      // Load input parameters.
-      for (i <- 0 until currentSetting.inputCount) {
-        weight = currentInput(i).weight / MaximumWeight
+      val totalAngle = MutableData(0.0f)
+      var totalTranslation = EuclideanVector(0.0f, 0.0f)
+      val currentSetting = physicsRig.settings(settingIndex)
+      val currentOutput = currentSetting.outputs
+      val currentParticles = physicsRig.particles.drop(currentSetting.baseParticleIndex).take(currentSetting.particleCount)
 
-        val newTotalTranslation = currentInput(i).getNormalizedParameterValue(
+      // Load input parameters.
+      for (input <- currentSetting.inputs) {
+        val weight = input.weight / MaximumWeight
+
+        val newTotalTranslation = input.getNormalizedParameterValue(
           totalTranslation,
           totalAngle,
-          model.parameters(currentInput(i).source.id).current,
-          model.parameters(currentInput(i).source.id).min,
-          model.parameters(currentInput(i).source.id).max,
-          model.parameters(currentInput(i).source.id).default,
+          model.parameters(input.source.id).current,
+          model.parameters(input.source.id).min,
+          model.parameters(input.source.id).max,
+          model.parameters(input.source.id).default,
           currentSetting.normalizationPosition,
           currentSetting.normalizationAngle,
-          currentInput(i).isReflect,
+          input.isReflect,
           weight
         )
         totalTranslation = newTotalTranslation
       }
-      radAngle = Radian.degreesToRadian(-totalAngle.data)
+      val radAngle = Radian.degreesToRadian(-totalAngle.data)
       totalTranslation = EuclideanVector(
         x = totalTranslation.x * Math.cos(radAngle).toFloat - totalTranslation.y * Math.sin(radAngle).toFloat,
         y = totalTranslation.x * Math.sin(radAngle).toFloat + totalTranslation.y * Math.cos(radAngle).toFloat
@@ -180,8 +170,8 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, options: Options) {
       // Update output parameters.
       val loop = new Breaks
       loop.breakable {
-        for (i <- 0 until currentSetting.outputCount) {
-          particleIndex = currentOutput(i).vertexIndex
+        for (output <- currentSetting.outputs) {
+          val particleIndex = output.vertexIndex
 
           if (particleIndex < 1 || particleIndex >= currentSetting.particleCount) {
             loop.break()
@@ -192,22 +182,22 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, options: Options) {
             y = currentParticles(particleIndex).position.y - currentParticles(particleIndex - 1).position.y
           )
 
-          outputValue = currentOutput(i).valueGetter(
+          val outputValue = output.valueGetter(
             translation,
             currentParticles,
             particleIndex,
-            currentOutput(i).isReflect,
+            output.isReflect,
             options.Gravity
           )
 
           operations ::= updateOutputParameterValue(
-            currentOutput(i).destination.id,
-            model.parameters(currentOutput(i).destination.id),
-            model.parameters(currentOutput(i).destination.id).current,
-            model.parameters(currentOutput(i).destination.id).min,
-            model.parameters(currentOutput(i).destination.id).max,
+            output.destination.id,
+            model.parameters(output.destination.id),
+            model.parameters(output.destination.id).current,
+            model.parameters(output.destination.id).min,
+            model.parameters(output.destination.id).max,
             outputValue,
-            currentOutput(i)
+            output
           )
         }
       }
