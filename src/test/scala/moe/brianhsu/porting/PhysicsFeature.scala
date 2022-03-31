@@ -18,7 +18,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{GivenWhenThen, OptionValues, TryValues}
 
 import scala.io.Source
-import scala.util.{Random, Using}
+import scala.util.Using
 
 class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues
   with MockFactory with OptionValues with TableDrivenPropertyChecks {
@@ -60,7 +60,6 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       When("Create a Physics effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
-      val physicsSetting = settings.physics.value
       val physics = new AvatarPhysicsReader(settings).loadPhysics.value
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/HiyoriPhysic.json")
@@ -107,7 +106,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       val strands = Array(strand1, strand2)
 
       CubismPhysics.updateParticles(
-        strands, strands.size,
+        strands,
         EuclideanVector(0, 0),
         MutableData(0.0f),
         EuclideanVector(0, 0),
@@ -169,7 +168,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       val strands = Array(strand1, strand2)
 
       CubismPhysics.updateParticles(
-        strands, strands.size,
+        strands,
         EuclideanVector(0, 0),
         MutableData(0.0f),
         EuclideanVector(0, 0),

@@ -11,7 +11,7 @@ import scala.util.control.Breaks
 
 object CubismPhysics {
 
-  def updateParticles(strand: Array[CubismPhysicsParticle], strandCount: Int, totalTranslation: EuclideanVector,
+  def updateParticles(strand: Array[CubismPhysicsParticle], totalTranslation: EuclideanVector,
                       totalAngle: MutableData[Float], windDirection: EuclideanVector,
                       thresholdValue: Float, deltaTimeSeconds: Float,
                       airResistance: Float): Unit = {
@@ -30,7 +30,7 @@ object CubismPhysics {
     totalRadian = Radian.degreesToRadian(totalAngle.data)
     currentGravity = Radian.radianToDirection(totalRadian).normalize()
 
-    for (i <- 1 until strandCount) {
+    for (i <- 1 until strand.length) {
       strand(i).force = (currentGravity * strand(i).acceleration) + windDirection
 
       strand(i).lastPosition = strand(i).position
@@ -142,7 +142,7 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, options: Options) {
       currentSetting = physicsRig.settings(settingIndex)
       currentInput = physicsRig.inputs.drop(currentSetting.baseInputIndex)
       currentOutput = physicsRig.outputs.drop(currentSetting.baseOutputIndex)
-      currentParticles = physicsRig.particles.drop(currentSetting.baseParticleIndex)
+      currentParticles = physicsRig.particles.drop(currentSetting.baseParticleIndex).take(currentSetting.particleCount)
       // Load input parameters.
       for (i <- 0 until currentSetting.inputCount) {
         weight = currentInput(i).weight / MaximumWeight
@@ -170,7 +170,6 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, options: Options) {
       // Calculate particles position.
       updateParticles(
         currentParticles,
-        currentSetting.particleCount,
         totalTranslation,
         totalAngle,
         options.Wind,
