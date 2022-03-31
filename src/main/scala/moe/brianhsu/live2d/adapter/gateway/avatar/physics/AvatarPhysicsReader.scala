@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhys
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Output, Setting, Vertex}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, Output, Setting, Vertex}
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.porting.live2d.physics.CubismPhysics.Options
 import moe.brianhsu.porting.live2d.physics.{CubismPhysics, CubismPhysicsParticle, GetInputAngleFromNormalizedParameterValue, GetInputTranslationXFromNormalizedParameterValue, GetInputTranslationYFromNormalizedParameterValue, GetOutputAngle, GetOutputScaleAngle, GetOutputScaleTranslationX, GetOutputScaleTranslationY, GetOutputTranslationX, GetOutputTranslationY}
@@ -33,34 +33,17 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
   private def createRig(json: PhysicsSetting): CubismPhysicsRig = {
 
-    var particleIndex: Int = 0
-
-    var settings: List[CubismPhysicsSubRig] = Nil
-    var inputs: List[CubismPhysicsInput] = Nil
-    var outputs: List[CubismPhysicsOutput] = Nil
-    var particles: List[CubismPhysicsParticle] = Nil
-
-    for (i <- json.physicsSettings.indices) {
-      val setting = json.physicsSettings(i)
-      val inputsInSetting = setting.input.map(createInput)
-      val outputsInSetting = setting.output.map(createOutput)
-      settings ::= createSubRig(
-        setting, particleIndex,
-        inputsInSetting, outputsInSetting)
-
-      inputs ++= inputsInSetting
-      outputs ++= outputsInSetting
-      particles ++= createParticleList(setting.vertices)
-
-      particleIndex += setting.vertices.size
+    val settings: List[CubismPhysicsSubRig] = json.physicsSettings.map { setting =>
+      createSubRig(
+        setting.normalization,
+        setting.input.map(createInput),
+        setting.output.map(createOutput),
+        createParticleList(setting.vertices)
+      )
     }
 
     CubismPhysicsRig(
-      json.physicsSettings.size,
-      settings.reverse.toArray,
-      inputs.toArray,
-      outputs.toArray,
-      particles.toArray,
+      settings,
       EuclideanVector(
         json.meta.effectiveForces.gravity.x,
         json.meta.effectiveForces.gravity.y
@@ -152,24 +135,23 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
     )
   }
 
-  private def createSubRig(setting: Setting,
-    particleIndex: Int,
-    inputsInSetting: List[CubismPhysicsInput],
-    outputsInSetting: List[CubismPhysicsOutput]): CubismPhysicsSubRig = {
+  private def createSubRig(normalization: Normalization,
+                           inputsInSetting: List[CubismPhysicsInput],
+                           outputsInSetting: List[CubismPhysicsOutput],
+                           particleInSetting: List[CubismPhysicsParticle]): CubismPhysicsSubRig = {
+
     CubismPhysicsSubRig(
-      setting.vertices.size,
-      particleIndex,
       CubismPhysicsNormalization(
-        setting.normalization.position.minimum,
-        setting.normalization.position.maximum,
-        setting.normalization.position.default
+        normalization.position.minimum,
+        normalization.position.maximum,
+        normalization.position.default
       ),
       CubismPhysicsNormalization(
-        setting.normalization.angle.minimum,
-        setting.normalization.angle.maximum,
-        setting.normalization.angle.default
+        normalization.angle.minimum,
+        normalization.angle.maximum,
+        normalization.angle.default
       ),
-      inputsInSetting, outputsInSetting
+      inputsInSetting, outputsInSetting, particleInSetting
     )
   }
 

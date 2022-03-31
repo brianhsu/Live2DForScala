@@ -126,12 +126,10 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, options: Options) {
   def evaluate(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeSeconds: Float): List[EffectOperation] = {
     var operations: List[EffectOperation] = Nil
 
-    for (settingIndex <- 0 until physicsRig.subRigCount) {
+    for (currentSetting <- physicsRig.settings) {
       val totalAngle = MutableData(0.0f)
       var totalTranslation = EuclideanVector(0.0f, 0.0f)
-      val currentSetting = physicsRig.settings(settingIndex)
-      val currentOutput = currentSetting.outputs
-      val currentParticles = physicsRig.particles.drop(currentSetting.baseParticleIndex).take(currentSetting.particleCount)
+      val currentParticles = currentSetting.particles.toArray
 
       // Load input parameters.
       for (input <- currentSetting.inputs) {
@@ -173,7 +171,7 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, options: Options) {
         for (output <- currentSetting.outputs) {
           val particleIndex = output.vertexIndex
 
-          if (particleIndex < 1 || particleIndex >= currentSetting.particleCount) {
+          if (particleIndex < 1 || particleIndex >= currentSetting.particles.size) {
             loop.break()
           }
 

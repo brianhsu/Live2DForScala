@@ -1,10 +1,11 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics
 
+import moe.brianhsu.porting.live2d.physics.CubismPhysicsParticle
+
 case class CubismPhysicsSubRig(
-  particleCount: Int, ///< 物理点の個数
-  baseParticleIndex: Int, ///< 物理点の最初のインデックス
   normalizationPosition: CubismPhysicsNormalization, ///< 正規化された位置
   normalizationAngle: CubismPhysicsNormalization,
   inputs: List[CubismPhysicsInput],
-  outputs: List[CubismPhysicsOutput]
+  outputs: List[CubismPhysicsOutput],
+  particles: List[CubismPhysicsParticle]
 )
