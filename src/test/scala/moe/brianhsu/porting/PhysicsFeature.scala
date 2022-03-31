@@ -1,5 +1,6 @@
 package moe.brianhsu.porting
 
+import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.effect._
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
@@ -40,8 +41,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       When("Create a Physics effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
-      val physicsSetting = settings.physics.value
-      val physics = CubismPhysics.create(physicsSetting)
+      val physics = new AvatarPhysicsReader(settings).loadPhysics.value
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/physicsOperations.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
@@ -61,7 +61,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val physicsSetting = settings.physics.value
-      val physics = CubismPhysics.create(physicsSetting)
+      val physics = new AvatarPhysicsReader(settings).loadPhysics.value
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/HiyoriPhysic.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }

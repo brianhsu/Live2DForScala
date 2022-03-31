@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
+import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.{Effect, EffectOperation}
 import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManager, MotionWithTransition}
@@ -20,7 +21,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   private var effects: List[Effect] = Nil
   private val expressionManager = new MotionManager
   private val newMotionManager = new MotionManager
-  private val physicsHolder = avatarSettings.physics.map(CubismPhysics.create)
+  private val physicsHolder = new AvatarPhysicsReader(avatarSettings).loadPhysics
 
   newMotionManager.setEventCallbackForAllMotions((m: MotionWithTransition, e:MotionEvent) => {
     println("motion:" + m)
