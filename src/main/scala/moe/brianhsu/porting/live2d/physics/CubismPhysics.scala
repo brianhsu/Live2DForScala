@@ -134,7 +134,7 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, options: Options) {
     var operations: List[EffectOperation] = Nil
 
     for (currentSetting <- physicsRig.settings) {
-      val particleUpdateParameter = calculateParticleUpdateParameter(currentSetting, model)
+      val particleUpdateParameter = currentSetting.calculateParticleUpdateParameter(model)
       val updatedParticles = updateParticles(
         currentSetting.particles,
         particleUpdateParameter,
