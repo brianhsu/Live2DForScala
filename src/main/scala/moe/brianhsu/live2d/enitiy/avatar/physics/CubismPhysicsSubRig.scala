@@ -1,11 +1,13 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics
 
-import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsSubRig.MaximumWeight
+import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsSubRig.{AirResistance, MaximumWeight, MovementThreshold}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 object CubismPhysicsSubRig {
   val MaximumWeight = 100.0f
+  val MovementThreshold = 0.001f
+  val AirResistance = 5.0f
 }
 
 case class CubismPhysicsSubRig(
@@ -42,6 +44,85 @@ case class CubismPhysicsSubRig(
     )
 
     particleUpdateParameter.copy(translation = totalTranslation)
+  }
+
+  def updateParticles(particleUpdateParameter: ParticleUpdateParameter,
+                      windDirection: EuclideanVector,
+                      deltaTimeSeconds: Float,
+                      airResistance: Float = AirResistance): List[CubismPhysicsParticle] = {
+
+    var resultList: List[CubismPhysicsParticle] = Nil
+    val initParticle = particles.head.copy(
+      position = particleUpdateParameter.translation
+    )
+
+    val totalRadian = Radian.degreesToRadian(particleUpdateParameter.angle)
+    val currentGravity = Radian.radianToDirection(totalRadian).normalize()
+    var previousParticle = initParticle
+
+    resultList ::= initParticle
+
+    for (currentParticle <- particles.drop(1)) {
+      val initForce = (currentGravity * currentParticle.acceleration) + windDirection
+      val lastPosition = currentParticle.position
+      val delay = currentParticle.delay * deltaTimeSeconds * 30.0f
+      val newDirection = calculateNewDirection(currentParticle, previousParticle, currentGravity, initForce, delay, airResistance)
+      val finalPosition = calculateFinalPosition(previousParticle, currentParticle, newDirection)
+
+      val velocity = if (delay != 0.0f) {
+        (finalPosition - lastPosition) / delay * currentParticle.mobility
+      } else {
+        EuclideanVector(0.0f, 0.0f)
+      }
+
+      val updatedParticle = currentParticle.copy(
+        velocity = velocity,
+        position = finalPosition,
+        lastPosition = lastPosition,
+        lastGravity = currentGravity
+      )
+
+      resultList ::= updatedParticle
+      previousParticle = updatedParticle
+    }
+
+    resultList.reverse
+
+  }
+
+  private def calculateFinalPosition(previousParticle: CubismPhysicsParticle, currentParticle: CubismPhysicsParticle, newDirection: EuclideanVector): EuclideanVector = {
+    val thresholdValue = MovementThreshold * normalizationPosition.maximum
+    val finalPosition = previousParticle.position + (newDirection * currentParticle.radius)
+
+    if (Math.abs(finalPosition.x) < thresholdValue) {
+      finalPosition.copy(x = 0.0f)
+    } else {
+      finalPosition
+    }
+  }
+
+  private def calculateNewDirection(currentParticle: CubismPhysicsParticle, previousParticle: CubismPhysicsParticle,
+    currentGravity: EuclideanVector, initForce: EuclideanVector, delay: Float, airResistance: Float): EuclideanVector = {
+    val direction = EuclideanVector(
+      x = currentParticle.position.x - previousParticle.position.x,
+      y = currentParticle.position.y - previousParticle.position.y
+    )
+
+    val radian = Radian.directionToRadian(currentParticle.lastGravity, currentGravity) / airResistance
+
+    val directionWithRadian = EuclideanVector(
+      x = (Math.cos(radian).toFloat * direction.x) - (direction.y * Math.sin(radian).toFloat),
+      y = (Math.sin(radian).toFloat * direction.x) + (direction.y * Math.cos(radian).toFloat)
+    )
+
+    val positionWithDirection = previousParticle.position + directionWithRadian
+
+    val velocity = currentParticle.velocity * delay
+    val force = initForce * delay * delay
+
+    val positionWithVelocityForce = positionWithDirection + velocity + force
+
+    (positionWithVelocityForce - previousParticle.position).normalize()
   }
 
 }

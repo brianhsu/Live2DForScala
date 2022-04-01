@@ -7,7 +7,6 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, Output, Setting, Vertex}
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
-import moe.brianhsu.porting.live2d.physics.CubismPhysics.Options
 import moe.brianhsu.porting.live2d.physics.{CubismPhysics, GetInputAngleFromNormalizedParameterValue, GetInputTranslationXFromNormalizedParameterValue, GetInputTranslationYFromNormalizedParameterValue, GetOutputAngle, GetOutputScaleAngle, GetOutputScaleTranslationX, GetOutputScaleTranslationY, GetOutputTranslationX, GetOutputTranslationY}
 
 class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
@@ -22,13 +21,9 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
   }
 
   private def createCubismPhysics(physicsSetting: PhysicsSetting): CubismPhysics = {
-    val cubismRig = createRig(physicsSetting)
-    val options: Options = Options(
-      EuclideanVector(0.0f, -1.0f),
-      EuclideanVector(10.0f, 10.0f)
-    )
-
-    new CubismPhysics(cubismRig, options)
+    val gravityDirection = EuclideanVector(0.0f, -1.0f)
+    val windDirection = EuclideanVector(10.0f, 10.0f)
+    new CubismPhysics(createRig(physicsSetting), gravityDirection, windDirection)
   }
 
   private def createRig(json: PhysicsSetting): CubismPhysicsRig = {

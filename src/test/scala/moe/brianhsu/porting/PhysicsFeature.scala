@@ -3,7 +3,7 @@ package moe.brianhsu.porting
 import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.effect._
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsParticle, ParticleUpdateParameter}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsNormalization, CubismPhysicsParticle, CubismPhysicsSubRig, ParticleUpdateParameter}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
@@ -102,12 +102,15 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       )
 
       val particles = List(particle1, particle2)
+      val setting = CubismPhysicsSubRig(
+        CubismPhysicsNormalization(0, 2000, 0),
+        CubismPhysicsNormalization(0, 1000, 0),
+        Nil, Nil, particles
+      )
 
-      val List(updatedParticle1, updateParticle2) = CubismPhysics.updateParticles(
-        particles,
+      val List(updatedParticle1, updateParticle2) = setting.updateParticles(
         ParticleUpdateParameter(EuclideanVector(0, 0), 0.0f),
         EuclideanVector(0, 0),
-        2f,
         0.333f,
         0.1f
       )
@@ -159,13 +162,16 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       )
 
       val particles = List(particle1, particle2)
+      val setting = CubismPhysicsSubRig(
+        CubismPhysicsNormalization(0, 2000, 0),
+        CubismPhysicsNormalization(0, 1000, 0),
+        Nil, Nil, particles
+      )
 
-      val List(updatedParticle1, updateParticle2) = CubismPhysics.updateParticles(
-        particles,
+      val List(updatedParticle1, updateParticle2) = setting.updateParticles(
         ParticleUpdateParameter(EuclideanVector(0, 0), 0.0f),
         windDirection = EuclideanVector(0, 0),
-        2f,
-        0.0f,
+        deltaTimeSeconds = 0.0f,
         0.1f
       )
 
@@ -300,7 +306,11 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       )
 
       forAll(table) { (inputValue, parameterMinimum, parameterMaximum, normalizedMinimum, normalizedMaximum, normalizedDefault, isInverted, expectedResult) =>
-        val result = NormalizedPhysicsParameterValueGetter.normalizeParameterValue(
+        val dummyValueGetter = new NormalizedPhysicsParameterValueGetter {
+          override def apply(particleUpdateParameter: ParticleUpdateParameter, value: Float, parameterMinimumValue: Float, parameterMaximumValue: Float, parameterDefaultValue: Float, normalizationPosition: CubismPhysicsNormalization, normalizationAngle: CubismPhysicsNormalization, isInverted: Boolean, weight: Float): ParticleUpdateParameter = ???
+        }
+
+        val result = dummyValueGetter.normalizeParameterValue(
           inputValue, parameterMinimum, parameterMaximum,
           normalizedMinimum, normalizedMaximum, normalizedDefault, isInverted
         )
