@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 import com.sun.jna.{Memory, Pointer}
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.AvatarPoseReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{UpdateOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel, Part}
 import org.scalamock.scalatest.MockFactory
@@ -82,6 +82,6 @@ class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with T
                      isAlreadyInit: Boolean,
                      fallbackParameters: Map[String, Float],
                      partOpacities: Map[String, Float],
-                     operations: List[EffectOperation])
+                     operations: List[UpdateOperation])
 
 }

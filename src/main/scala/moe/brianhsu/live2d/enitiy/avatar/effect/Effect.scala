@@ -5,5 +5,5 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 trait Effect {
   def calculateOperations(model: Live2DModel,
                           totalElapsedTimeInSeconds: Float,
-                          deltaTimeInSeconds: Float): List[EffectOperation]
+                          deltaTimeInSeconds: Float): List[UpdateOperation]
 }

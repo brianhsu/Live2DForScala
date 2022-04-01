@@ -1,6 +1,6 @@
 package moe.brianhsu.utils.expectation
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{UpdateOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import org.json4s.{Formats, ShortTypeHints}
 import org.json4s.native.JsonMethods.parse
 import org.json4s.native.Serialization
@@ -29,7 +29,7 @@ object ExpectedAvatarMotionOperation {
 }
 
 case class ExpectedAvatarMotionOperation(input: Input, output: Output)
-case class Output(operations: List[EffectOperation])
+case class Output(operations: List[UpdateOperation])
 case class Input(totalElapsedTimeInSeconds: Float,
                  deltaTimeInSeconds: Float, weight: Float,
                  startTimeInSeconds: Float,

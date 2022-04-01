@@ -129,7 +129,7 @@ class UpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Match
 
   class DummyUpdateStrategy extends UpdateStrategy {
     override def update(frameTimeInfo: FrameTimeInfo): Unit = {}
-    override def executeOperations(model: Live2DModel, operations: List[EffectOperation]): Unit = {
+    override def executeOperations(model: Live2DModel, operations: List[UpdateOperation]): Unit = {
       super.executeOperations(model, operations)
     }
   }

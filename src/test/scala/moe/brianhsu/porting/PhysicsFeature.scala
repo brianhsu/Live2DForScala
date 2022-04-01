@@ -336,7 +336,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
     totalElapsedTimeInSeconds: Float,
     deltaTimeSeconds: Float,
     parameters: Map[String, CurrentParameter],
-    operations: List[EffectOperation]
+    operations: List[UpdateOperation]
   )
 
 }

@@ -1,12 +1,12 @@
 package moe.brianhsu.live2d.enitiy.avatar.updater
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{UpdateOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 trait UpdateStrategy {
   def update(frameTimeInfo: FrameTimeInfo): Unit
 
-  protected def executeOperations(model: Live2DModel, operations: List[EffectOperation]): Unit = {
+  protected def executeOperations(model: Live2DModel, operations: List[UpdateOperation]): Unit = {
     operations.foreach {
       case ParameterValueAdd(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.add(value, weight))
       case ParameterValueUpdate(parameterId, value, weight) => model.parameters.get(parameterId).foreach(_.update(value, weight))

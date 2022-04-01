@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.framework.model
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.{Effect, EffectOperation}
+import moe.brianhsu.live2d.enitiy.avatar.effect.{Effect, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
@@ -77,7 +77,7 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     //executeOperations(model, operations)
 
     if (enablePhy) {
-      val operations: List[EffectOperation] = for {
+      val operations: List[UpdateOperation] = for {
         physics <- physicsHolder.toList
         operations <- physics.evaluate(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds)
       } yield {
