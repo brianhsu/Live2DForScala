@@ -13,4 +13,8 @@ case class CubismPhysicsOutput(
   valueGetter: PhysicsValueGetter, ///< 物理演算の値の取得関数
   scaleGetter: PhysicsScaleGetter, ///< 物理演算のスケール値の取得関数
   translationScale: EuclideanVector = EuclideanVector() ///< 移動値のスケール
-)
+) {
+  def hasValidVertexIndex(particleCount: Int): Boolean = {
+    vertexIndex >= 1 && vertexIndex < particleCount
+  }
+}

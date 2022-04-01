@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.physics
 
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Negative, Neutral, Positive, Sign}
 import moe.brianhsu.porting.live2d.framework.math.MutableData
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsSubRig, CubismPhysicsType, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsSubRig, CubismPhysicsType, ParticleUpdateParameter, TargetType}
 
 
 
@@ -87,8 +87,7 @@ object NormalizedPhysicsParameterValueGetter {
 }
 trait NormalizedPhysicsParameterValueGetter {
   def apply(
-    targetTranslation: EuclideanVector,
-    targetAngle: MutableData[Float],
+    particleUpdateParameter: ParticleUpdateParameter,
     value: Float,
     parameterMinimumValue: Float,
     parameterMaximumValue: Float,
@@ -97,7 +96,7 @@ trait NormalizedPhysicsParameterValueGetter {
     normalizationAngle: CubismPhysicsNormalization,
     isInverted: Boolean,
     weight: Float
-  ): EuclideanVector
+  ): ParticleUpdateParameter
 
 }
 

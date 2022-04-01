@@ -108,7 +108,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       CubismPhysics.updateParticles(
         strands,
         EuclideanVector(0, 0),
-        MutableData(0.0f),
+        0.0f,
         EuclideanVector(0, 0),
         2f,
         0.333f,
@@ -170,7 +170,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       CubismPhysics.updateParticles(
         strands,
         EuclideanVector(0, 0),
-        MutableData(0.0f),
+        0.0f,
         EuclideanVector(0, 0),
         2f,
         0.0f,

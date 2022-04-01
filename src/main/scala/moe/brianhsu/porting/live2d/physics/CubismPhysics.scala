@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, ParameterValueUpdate}
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsOutput, CubismPhysicsRig, CubismPhysicsSubRig}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsOutput, CubismPhysicsRig, CubismPhysicsSubRig, ParticleUpdateParameter}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
 import moe.brianhsu.porting.live2d.framework.math.MutableData
@@ -12,7 +12,7 @@ import scala.util.control.Breaks
 object CubismPhysics {
 
   def updateParticles(strand: Array[CubismPhysicsParticle], totalTranslation: EuclideanVector,
-                      totalAngle: MutableData[Float], windDirection: EuclideanVector,
+                      totalAngle: Float, windDirection: EuclideanVector,
                       thresholdValue: Float, deltaTimeSeconds: Float,
                       airResistance: Float): Unit = {
 
@@ -27,7 +27,7 @@ object CubismPhysics {
 
     strand(0).position = totalTranslation
 
-    totalRadian = Radian.degreesToRadian(totalAngle.data)
+    totalRadian = Radian.degreesToRadian(totalAngle)
     currentGravity = Radian.radianToDirection(totalRadian).normalize()
 
     for (i <- 1 until strand.length) {
@@ -127,80 +127,80 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, options: Options) {
     var operations: List[EffectOperation] = Nil
 
     for (currentSetting <- physicsRig.settings) {
-      val totalAngle = MutableData(0.0f)
-      var totalTranslation = EuclideanVector(0.0f, 0.0f)
-      val currentParticles = currentSetting.particles.toArray
-
-      // Load input parameters.
-      for (input <- currentSetting.inputs) {
-        val weight = input.weight / MaximumWeight
-
-        val newTotalTranslation = input.getNormalizedParameterValue(
-          totalTranslation,
-          totalAngle,
-          model.parameters(input.source.id).current,
-          model.parameters(input.source.id).min,
-          model.parameters(input.source.id).max,
-          model.parameters(input.source.id).default,
-          currentSetting.normalizationPosition,
-          currentSetting.normalizationAngle,
-          input.isReflect,
-          weight
-        )
-        totalTranslation = newTotalTranslation
-      }
-      val radAngle = Radian.degreesToRadian(-totalAngle.data)
-      totalTranslation = EuclideanVector(
-        x = totalTranslation.x * Math.cos(radAngle).toFloat - totalTranslation.y * Math.sin(radAngle).toFloat,
-        y = totalTranslation.x * Math.sin(radAngle).toFloat + totalTranslation.y * Math.cos(radAngle).toFloat
-      )
+      val currentParticles = currentSetting.particles.map(_.copy())
+      val particleUpdateParameter = calculateParticleUpdateParameter(currentSetting, model)
 
       // Calculate particles position.
       updateParticles(
-        currentParticles,
-        totalTranslation,
-        totalAngle,
+        currentParticles.toArray,
+        particleUpdateParameter.translation,
+        particleUpdateParameter.angle,
         options.Wind,
         MovementThreshold * currentSetting.normalizationPosition.maximum,
         deltaTimeSeconds,
         AirResistance
       )
       // Update output parameters.
-      val loop = new Breaks
-      loop.breakable {
-        for (output <- currentSetting.outputs) {
-          val particleIndex = output.vertexIndex
 
-          if (particleIndex < 1 || particleIndex >= currentSetting.particles.size) {
-            loop.break()
-          }
+      val currentParticles2 = currentParticles.map(_.copy()).toArray
 
-          val translation = EuclideanVector(
-            x = currentParticles(particleIndex).position.x - currentParticles(particleIndex - 1).position.x,
-            y = currentParticles(particleIndex).position.y - currentParticles(particleIndex - 1).position.y
-          )
+      for (output <- currentSetting.outputs.takeWhile(_.hasValidVertexIndex(currentParticles2.length))) {
+        val particleIndex = output.vertexIndex
+        val translation = EuclideanVector(
+          x = currentParticles2(particleIndex).position.x - currentParticles2(particleIndex - 1).position.x,
+          y = currentParticles2(particleIndex).position.y - currentParticles2(particleIndex - 1).position.y
+        )
 
-          val outputValue = output.valueGetter(
-            translation,
-            currentParticles,
-            particleIndex,
-            output.isReflect,
-            options.Gravity
-          )
+        val outputValue = output.valueGetter(
+          translation,
+          currentParticles2,
+          particleIndex,
+          output.isReflect,
+          options.Gravity
+        )
 
-          operations ::= updateOutputParameterValue(
-            output.destination.id,
-            model.parameters(output.destination.id),
-            model.parameters(output.destination.id).current,
-            model.parameters(output.destination.id).min,
-            model.parameters(output.destination.id).max,
-            outputValue,
-            output
-          )
-        }
+        operations ::= updateOutputParameterValue(
+          output.destination.id,
+          model.parameters(output.destination.id),
+          model.parameters(output.destination.id).current,
+          model.parameters(output.destination.id).min,
+          model.parameters(output.destination.id).max,
+          outputValue,
+          output
+        )
       }
+      currentSetting.particles = currentParticles2.toList
 
     }
     operations.reverse
+  }
+
+  private def calculateParticleUpdateParameter(currentSetting: CubismPhysicsSubRig, model: Live2DModel): ParticleUpdateParameter = {
+    var particleUpdateParameter = ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0.0f)
+
+    // Load input parameters.
+    for (input <- currentSetting.inputs) {
+      val weight = input.weight / MaximumWeight
+
+      particleUpdateParameter = input.getNormalizedParameterValue(
+        particleUpdateParameter,
+        model.parameters(input.source.id).current,
+        model.parameters(input.source.id).min,
+        model.parameters(input.source.id).max,
+        model.parameters(input.source.id).default,
+        currentSetting.normalizationPosition,
+        currentSetting.normalizationAngle,
+        input.isReflect,
+        weight
+      )
+    }
+
+    val radAngle = Radian.degreesToRadian(-particleUpdateParameter.angle)
+    val totalTranslation = EuclideanVector(
+      x = particleUpdateParameter.translation.x * Math.cos(radAngle).toFloat - particleUpdateParameter.translation.y * Math.sin(radAngle).toFloat,
+      y = particleUpdateParameter.translation.x * Math.sin(radAngle).toFloat + particleUpdateParameter.translation.y * Math.cos(radAngle).toFloat
+    )
+
+    particleUpdateParameter.copy(translation = totalTranslation)
   }
 }

@@ -7,5 +7,5 @@ case class CubismPhysicsSubRig(
   normalizationAngle: CubismPhysicsNormalization,
   inputs: List[CubismPhysicsInput],
   outputs: List[CubismPhysicsOutput],
-  particles: List[CubismPhysicsParticle]
+  var particles: List[CubismPhysicsParticle]
 )
