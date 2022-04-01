@@ -90,7 +90,6 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
       vertexSetting.acceleration, vertexSetting.radius,
       initialPosition, position, lastPosition,
       EuclideanVector(0.0f, 1.0f),
-      EuclideanVector(0.0f, 0.0f),
       EuclideanVector(0.0f, 0.0f)
     )
   }

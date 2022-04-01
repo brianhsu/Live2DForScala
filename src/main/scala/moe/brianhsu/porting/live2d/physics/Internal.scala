@@ -1,7 +1,6 @@
 package moe.brianhsu.porting.live2d.physics
 
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Negative, Neutral, Positive, Sign}
-import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsSubRig, CubismPhysicsType, ParticleUpdateParameter, TargetType}
 
 
@@ -18,7 +17,6 @@ case class CubismPhysicsParticle(
   var position: EuclideanVector,                 ///< 現在の位置
   var lastPosition: EuclideanVector,             ///< 最後の位置
   var lastGravity: EuclideanVector,              ///< 最後の重力
-  var force: EuclideanVector,                    ///< 現在かかっている力
   var velocity: EuclideanVector                 ///< 現在の速度
 )
 

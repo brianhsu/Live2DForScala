@@ -4,10 +4,7 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, ParameterValue
 import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsOutput, CubismPhysicsRig, CubismPhysicsSubRig, ParticleUpdateParameter}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter}
-import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.CubismPhysics.{Options, updateParticles}
-
-import scala.util.control.Breaks
 
 object CubismPhysics {
 
@@ -22,7 +19,6 @@ object CubismPhysics {
     var currentGravity: EuclideanVector = EuclideanVector()
     var direction: EuclideanVector = EuclideanVector()
     var velocity: EuclideanVector = EuclideanVector()
-    var force: EuclideanVector = EuclideanVector()
     var newDirection: EuclideanVector = EuclideanVector()
 
     strand(0).position = totalTranslation
@@ -31,7 +27,7 @@ object CubismPhysics {
     currentGravity = Radian.radianToDirection(totalRadian).normalize()
 
     for (i <- 1 until strand.length) {
-      strand(i).force = (currentGravity * strand(i).acceleration) + windDirection
+      val initForce = (currentGravity * strand(i).acceleration) + windDirection
 
       strand(i).lastPosition = strand(i).position
 
@@ -55,7 +51,7 @@ object CubismPhysics {
         x = strand(i).velocity.x * delay,
         y = strand(i).velocity.y * delay
       )
-      force = strand(i).force * delay * delay
+      val force = initForce * delay * delay
 
       strand(i).position = strand(i).position + velocity + force
 
@@ -76,7 +72,6 @@ object CubismPhysics {
         strand(i).velocity *= strand(i).mobility
       }
 
-      strand(i).force = EuclideanVector(0.0f, 0.0f)
       strand(i).lastGravity = currentGravity
     }
 

@@ -6,7 +6,6 @@ import moe.brianhsu.live2d.enitiy.avatar.effect._
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
-import moe.brianhsu.porting.live2d.framework.math.MutableData
 import moe.brianhsu.porting.live2d.physics.{CubismPhysics, CubismPhysicsParticle, NormalizedPhysicsParameterValueGetter}
 import org.json4s._
 import org.json4s.native.JsonMethods._
@@ -86,7 +85,6 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
         position = EuclideanVector(0, 0),
         lastPosition = EuclideanVector(0.0f, 0.0f),
         lastGravity = EuclideanVector(0.0f, 0.0f),
-        force = EuclideanVector(0.0f, 0.0f),
         velocity = EuclideanVector(0.0f, 0.0f),
       )
 
@@ -99,7 +97,6 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
         position = EuclideanVector(1f, 15),
         lastPosition = EuclideanVector(0.0f, 0.0f),
         lastGravity = EuclideanVector(0.0f, 0.0f),
-        force = EuclideanVector(0.0f, 0.0f),
         velocity = EuclideanVector(0.0f, 0.0f),
       )
 
@@ -123,7 +120,6 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       strand1.position shouldBe EuclideanVector(0.0f, 0.0f)
       strand1.lastPosition shouldBe EuclideanVector(0.0f, 0.0f)
       strand1.lastGravity shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.force shouldBe EuclideanVector(0.0f, 0.0f)
       strand1.velocity shouldBe EuclideanVector(0.0f, 0.0f)
 
       strand2.initialPosition shouldBe EuclideanVector(0.0f, 0.0f)
@@ -134,7 +130,6 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       strand2.position shouldBe EuclideanVector(0.0f, 14.998851f)
       strand2.lastPosition shouldBe EuclideanVector(1.0f, 15.0f)
       strand2.lastGravity shouldBe EuclideanVector(0.0f, 1.0f)
-      strand2.force shouldBe EuclideanVector(0.0f, 0.0f)
       strand2.velocity shouldBe EuclideanVector(-0.118868865f, -1.3660143E-4f)
     }
 
@@ -148,7 +143,6 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
         position = EuclideanVector(0, 0),
         lastPosition = EuclideanVector(0.0f, 0.0f),
         lastGravity = EuclideanVector(0.0f, 0.0f),
-        force = EuclideanVector(0.0f, 0.0f),
         velocity = EuclideanVector(0.0f, 0.0f),
       )
 
@@ -161,7 +155,6 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
         position = EuclideanVector(1f, 15),
         lastPosition = EuclideanVector(0.0f, 0.0f),
         lastGravity = EuclideanVector(0.0f, 0.0f),
-        force = EuclideanVector(0.0f, 0.0f),
         velocity = EuclideanVector(0.0f, 0.0f),
       )
 
@@ -185,7 +178,6 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       strand1.position shouldBe EuclideanVector(0.0f, 0.0f)
       strand1.lastPosition shouldBe EuclideanVector(0.0f, 0.0f)
       strand1.lastGravity shouldBe EuclideanVector(0.0f, 0.0f)
-      strand1.force shouldBe EuclideanVector(0.0f, 0.0f)
       strand1.velocity shouldBe EuclideanVector(0.0f, 0.0f)
 
       strand2.initialPosition shouldBe EuclideanVector(0.0f, 0.0f)
@@ -196,7 +188,6 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       strand2.position shouldBe EuclideanVector(0.0f, -14.966778f)
       strand2.lastPosition shouldBe EuclideanVector(1.0f, 15.0f)
       strand2.lastGravity shouldBe EuclideanVector(0.0f, 1.0f)
-      strand2.force shouldBe EuclideanVector(0.0f, 0.0f)
       strand2.velocity shouldBe EuclideanVector(0.0f, 0.0f)
     }
 
