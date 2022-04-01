@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.math
 
-case class EuclideanVector(x: Float = 0, y: Float = 0) {
+case class EuclideanVector(x: Float, y: Float) {
 
   def +(that: EuclideanVector): EuclideanVector = {
     EuclideanVector(this.x + that.x, this.y + that.y)

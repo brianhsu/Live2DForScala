@@ -89,8 +89,8 @@ object CubismPhysics {
   }
 
   case class Options(
-    var Gravity: EuclideanVector = EuclideanVector(),          ///< 重力方向
-    var Wind: EuclideanVector = EuclideanVector()             ///< 風の方向
+    var Gravity: EuclideanVector = EuclideanVector(0.0f, 0.0f),          ///< 重力方向
+    var Wind: EuclideanVector = EuclideanVector(0.0f, 0.0f)             ///< 風の方向
   )
 
 }

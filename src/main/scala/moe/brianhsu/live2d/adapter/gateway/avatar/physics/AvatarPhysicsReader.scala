@@ -113,7 +113,8 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
       outputType,
       outputSetting.reflect,
       translationFunction,
-      scaleFunction
+      scaleFunction,
+      translationScale = EuclideanVector(0.0f, 0.0f)
     )
   }
 
