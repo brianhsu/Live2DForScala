@@ -1,11 +1,11 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.{UpdateOperation, FallbackParameterValueUpdate, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.AvatarMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
+import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueUpdate, ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 

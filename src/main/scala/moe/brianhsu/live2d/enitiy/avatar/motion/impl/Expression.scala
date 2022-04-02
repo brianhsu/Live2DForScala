@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{UpdateOperation, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.Expression.{Add, Multiply, Overwrite}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
+import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 object Expression {

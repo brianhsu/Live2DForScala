@@ -1,6 +1,6 @@
 package moe.brianhsu.utils.expectation
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{UpdateOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate, UpdateOperation}
 import org.json4s.{Formats, ShortTypeHints}
 import org.json4s.native.JsonMethods.parse
 import org.json4s.native.Serialization

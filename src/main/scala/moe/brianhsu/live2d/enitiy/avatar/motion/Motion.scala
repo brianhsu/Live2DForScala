@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.UpdateOperation
+import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateOperation
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 trait Motion {

@@ -5,6 +5,7 @@ import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsRead
 import moe.brianhsu.live2d.enitiy.avatar.effect._
 import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsNormalization, CubismPhysicsParticle, CubismPhysicsSubRig, ParticleUpdateParameter}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
 import moe.brianhsu.porting.live2d.physics.{CubismPhysics, NormalizedPhysicsParameterValueGetter}

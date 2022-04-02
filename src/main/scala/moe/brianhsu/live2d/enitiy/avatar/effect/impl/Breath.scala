@@ -1,6 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{UpdateOperation, Effect, ParameterValueAdd}
+import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
+import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueAdd, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 import scala.math.sin

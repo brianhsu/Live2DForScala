@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.effect.FaceDirectionCalculator
-import moe.brianhsu.live2d.enitiy.avatar.effect.ParameterValueAdd
+import moe.brianhsu.live2d.enitiy.avatar.updater.ParameterValueAdd
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen

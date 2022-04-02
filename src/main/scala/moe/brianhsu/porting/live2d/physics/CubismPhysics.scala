@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.physics
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{UpdateOperation, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsOutput, CubismPhysicsParticle, CubismPhysicsRig, CubismPhysicsSubRig, ParticleUpdateParameter}
+import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 

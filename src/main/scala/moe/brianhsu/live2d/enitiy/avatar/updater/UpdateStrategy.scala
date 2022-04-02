@@ -1,6 +1,5 @@
 package moe.brianhsu.live2d.enitiy.avatar.updater
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{UpdateOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 trait UpdateStrategy {

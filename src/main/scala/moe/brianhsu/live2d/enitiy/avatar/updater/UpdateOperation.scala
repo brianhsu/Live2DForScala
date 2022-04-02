@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.enitiy.avatar.effect
+package moe.brianhsu.live2d.enitiy.avatar.updater
 
 sealed trait UpdateOperation
 
