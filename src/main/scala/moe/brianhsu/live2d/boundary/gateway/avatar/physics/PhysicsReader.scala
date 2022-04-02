@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.boundary.gateway.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose
-import moe.brianhsu.porting.live2d.physics.CubismPhysics
+import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysics
 
 trait PhysicsReader {
   /**

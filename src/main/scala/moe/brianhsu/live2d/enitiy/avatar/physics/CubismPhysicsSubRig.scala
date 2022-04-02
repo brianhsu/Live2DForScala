@@ -1,6 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsSubRig.{AirResistance, MaximumWeight, MovementThreshold}
+import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
@@ -11,7 +12,7 @@ object CubismPhysicsSubRig {
 }
 
 case class CubismPhysicsSubRig(
-  normalizationPosition: CubismPhysicsNormalization, ///< 正規化された位置
+  normalizationPosition: CubismPhysicsNormalization,
   normalizationAngle: CubismPhysicsNormalization,
   inputs: List[CubismPhysicsInput],
   outputs: List[CubismPhysicsOutput],
@@ -23,18 +24,25 @@ case class CubismPhysicsSubRig(
 
     for (input <- inputs) {
       val weight = input.weight / MaximumWeight
+      val parameter = model.parameters(input.source.id)
 
-      particleUpdateParameter = input.getNormalizedParameterValue(
-        particleUpdateParameter,
-        model.parameters(input.source.id).current,
-        model.parameters(input.source.id).min,
-        model.parameters(input.source.id).max,
-        model.parameters(input.source.id).default,
-        normalizationPosition,
-        normalizationAngle,
-        input.isReflect,
-        weight
-      )
+      particleUpdateParameter = input.sourceType match {
+        case X =>
+          ParticleParameterUpdater.calculateNewX(
+            particleUpdateParameter, parameter,
+            normalizationPosition, input.isReflect, weight
+          )
+        case Y =>
+          ParticleParameterUpdater.calculateNewY(
+            particleUpdateParameter, parameter,
+            normalizationPosition, input.isReflect, weight
+          )
+        case Angle =>
+          ParticleParameterUpdater.calculateNewAngle(
+            particleUpdateParameter, parameter,
+            normalizationPosition, normalizationAngle, input.isReflect, weight
+          )
+      }
     }
 
     val radAngle = Radian.degreesToRadian(-particleUpdateParameter.angle)
@@ -46,7 +54,7 @@ case class CubismPhysicsSubRig(
     particleUpdateParameter.copy(translation = totalTranslation)
   }
 
-  def updateParticles(particleUpdateParameter: ParticleUpdateParameter,
+  def calculateNewParticleStatus(particleUpdateParameter: ParticleUpdateParameter,
                       windDirection: EuclideanVector,
                       deltaTimeSeconds: Float,
                       airResistance: Float = AirResistance): List[CubismPhysicsParticle] = {

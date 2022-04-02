@@ -1,7 +1,6 @@
-package moe.brianhsu.porting.live2d.physics
+package moe.brianhsu.live2d.enitiy.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsOutput, CubismPhysicsParticle, CubismPhysicsRig, CubismPhysicsSubRig, ParticleUpdateParameter}
 import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -15,7 +14,11 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, gravityDirection: EuclideanVec
 
     for (currentSetting <- physicsRig.settings) {
       val particleUpdateParameter = currentSetting.calculateParticleUpdateParameter(model)
-      val updatedParticles = currentSetting.updateParticles(particleUpdateParameter, windDirection, deltaTimeSeconds)
+      val updatedParticles = currentSetting.calculateNewParticleStatus(
+        particleUpdateParameter,
+        windDirection,
+        deltaTimeSeconds
+      )
 
       val operationsForSetting = currentSetting
         .outputs

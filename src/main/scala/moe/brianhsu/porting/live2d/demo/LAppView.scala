@@ -157,10 +157,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       updateStrategy <- updateStrategyHolder
     } {
       val pose = new AvatarPoseReader(avatar.avatarSettings).loadPose.getOrElse(new Pose)
-      updateStrategy.setFunctionalEffects(
+      updateStrategy.setEffects(
         //new Breath() ::
         //new EyeBlink(avatar.avatarSettings) ::
-        //faceDirection ::
+        faceDirection ::
         pose ::
         Nil
       )

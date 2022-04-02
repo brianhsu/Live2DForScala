@@ -1,13 +1,12 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.physics
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.physics.PhysicsReader
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsParameter, CubismPhysicsParticle, CubismPhysicsRig, CubismPhysicsSubRig, CubismPhysicsType, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysics, CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsParameter, CubismPhysicsParticle, CubismPhysicsRig, CubismPhysicsSubRig, CubismPhysicsType, TargetType}
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, Output, Setting, Vertex}
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
-import moe.brianhsu.porting.live2d.physics.{CubismPhysics, GetInputAngleFromNormalizedParameterValue, GetInputTranslationXFromNormalizedParameterValue, GetInputTranslationYFromNormalizedParameterValue}
 
 class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
   /**
@@ -106,19 +105,11 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
   }
 
   private def createInput(input: Input): CubismPhysicsInput = {
-    val inputType = CubismPhysicsType(input.`type`)
-    val normalizeFunction = inputType match {
-      case X => GetInputTranslationXFromNormalizedParameterValue
-      case Y => GetInputTranslationYFromNormalizedParameterValue
-      case Angle => GetInputAngleFromNormalizedParameterValue
-    }
-
     CubismPhysicsInput(
       CubismPhysicsParameter(input.source.id, TargetType.Parameter),
-      inputType,
+      CubismPhysicsType(input.`type`),
       input.weight,
-      input.reflect,
-      normalizeFunction
+      input.reflect
     )
   }
 
