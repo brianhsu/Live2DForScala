@@ -1,13 +1,13 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.physics
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.physics.PhysicsReader
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsParameter, CubismPhysicsParticle, CubismPhysicsRig, CubismPhysicsSubRig, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsParameter, CubismPhysicsParticle, CubismPhysicsRig, CubismPhysicsSubRig, CubismPhysicsType, TargetType}
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, Output, Setting, Vertex}
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
-import moe.brianhsu.porting.live2d.physics.{CubismPhysics, GetInputAngleFromNormalizedParameterValue, GetInputTranslationXFromNormalizedParameterValue, GetInputTranslationYFromNormalizedParameterValue, GetOutputAngle, GetOutputScaleAngle, GetOutputScaleTranslationX, GetOutputScaleTranslationY, GetOutputTranslationX, GetOutputTranslationY}
+import moe.brianhsu.porting.live2d.physics.{CubismPhysics, GetInputAngleFromNormalizedParameterValue, GetInputTranslationXFromNormalizedParameterValue, GetInputTranslationYFromNormalizedParameterValue}
 
 class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
   /**
@@ -90,13 +90,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
   }
 
   private def createOutput(outputSetting: Output): CubismPhysicsOutput = {
-    val (outputType, translationFunction, scaleFunction) = outputSetting.`type` match {
-      case "X" => (X, GetOutputTranslationX, GetOutputScaleTranslationX)
-      case "Y" => (Y, GetOutputTranslationY, GetOutputScaleTranslationY)
-      case "Angle" => (Angle, GetOutputAngle, GetOutputScaleAngle)
-      case _ => throw new UnsupportedOperationException("Unsupported output type")
-    }
-
+    val outputType = CubismPhysicsType(outputSetting.`type`)
     CubismPhysicsOutput(
       CubismPhysicsParameter(
         outputSetting.destination.id,
@@ -107,18 +101,16 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
       outputSetting.weight,
       outputType,
       outputSetting.reflect,
-      translationFunction,
-      scaleFunction,
       translationScale = EuclideanVector(0.0f, 0.0f)
     )
   }
 
   private def createInput(input: Input): CubismPhysicsInput = {
-    val (inputType, normalizeFunction) = input.`type` match {
-      case "X" => (X, GetInputTranslationXFromNormalizedParameterValue)
-      case "Y" => (Y, GetInputTranslationYFromNormalizedParameterValue)
-      case "Angle" => (Angle, GetInputAngleFromNormalizedParameterValue)
-      case _ => throw new UnsupportedOperationException("Unsupported input type")
+    val inputType = CubismPhysicsType(input.`type`)
+    val normalizeFunction = inputType match {
+      case X => GetInputTranslationXFromNormalizedParameterValue
+      case Y => GetInputTranslationYFromNormalizedParameterValue
+      case Angle => GetInputAngleFromNormalizedParameterValue
     }
 
     CubismPhysicsInput(
