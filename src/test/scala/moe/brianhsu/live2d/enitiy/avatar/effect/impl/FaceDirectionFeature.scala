@@ -30,7 +30,7 @@ class FaceDirectionFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       operations should contain theSameElementsInOrderAs List(
         ParameterValueAdd("ParamAngleX", 6.0f),
         ParameterValueAdd("ParamAngleY", 15.0f),
-        ParameterValueAdd("ParamAngleY", -3.0f),
+        ParameterValueAdd("ParamAngleZ", -3.0f),
         ParameterValueAdd("ParamBodyAngleX", 2.0f),
         ParameterValueAdd("ParamEyeBallX", 0.2f),
         ParameterValueAdd("ParamEyeBallY", 0.5f)
