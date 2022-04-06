@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOp
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-class CubismPhysics(physicsRig: CubismPhysicsRig, gravityDirection: EuclideanVector, windDirection: EuclideanVector) {
+class CubismPhysics(physicsRig: CubismPhysicsRig, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) {
 
   private val MaximumWeight = 100.0f
 

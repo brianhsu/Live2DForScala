@@ -2,6 +2,7 @@ package moe.brianhsu.live2d.enitiy.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsSubRig.{AirResistance, MaximumWeight, MovementThreshold}
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParticleUpdateParameter
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
@@ -20,7 +21,7 @@ case class CubismPhysicsSubRig(
 ) {
 
   def calculateParticleUpdateParameter(model: Live2DModel): ParticleUpdateParameter = {
-    var particleUpdateParameter = ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0.0f)
+    var particleUpdateParameter = data.ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0.0f)
 
     for (input <- inputs) {
       val weight = input.weight / MaximumWeight
@@ -28,20 +29,11 @@ case class CubismPhysicsSubRig(
 
       particleUpdateParameter = input.sourceType match {
         case X =>
-          ParticleParameterUpdater.calculateNewX(
-            particleUpdateParameter, parameter,
-            normalizationPosition, input.isReflect, weight
-          )
+          particleUpdateParameter.calculateNewX(parameter, normalizationPosition, input.isReflect, weight)
         case Y =>
-          ParticleParameterUpdater.calculateNewY(
-            particleUpdateParameter, parameter,
-            normalizationPosition, input.isReflect, weight
-          )
+          particleUpdateParameter.calculateNewY(parameter, normalizationPosition, input.isReflect, weight)
         case Angle =>
-          ParticleParameterUpdater.calculateNewAngle(
-            particleUpdateParameter, parameter,
-            normalizationPosition, normalizationAngle, input.isReflect, weight
-          )
+          particleUpdateParameter.calculateNewAngle(parameter, normalizationAngle, input.isReflect, weight)
       }
     }
 

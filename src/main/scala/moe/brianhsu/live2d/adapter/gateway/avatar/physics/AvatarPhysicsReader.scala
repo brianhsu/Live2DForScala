@@ -21,7 +21,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
   private def createCubismPhysics(physicsSetting: PhysicsSetting): CubismPhysics = {
     val gravityDirection = EuclideanVector(0.0f, -1.0f)
-    val windDirection = EuclideanVector(10.0f, 10.0f)
+    val windDirection = EuclideanVector(0.0f, 0.0f)
     new CubismPhysics(createRig(physicsSetting), gravityDirection, windDirection)
   }
 
