@@ -4,8 +4,8 @@ import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.effect._
 import moe.brianhsu.live2d.enitiy.avatar.physics
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParticleUpdateParameter, PhysicsNormalization}
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysics, CubismPhysicsParticle, CubismPhysicsSubRig}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParticleUpdateParameter, PhysicsNormalization, PhysicsParticle}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysics, CubismPhysicsSubRig}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
@@ -83,7 +83,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
   Feature("UpdateParticles") {
     Scenario("delay is not 0") {
-      val particle1 = CubismPhysicsParticle(
+      val particle1 = PhysicsParticle(
         mobility = 1,
         delay = 1,
         acceleration = 1,
@@ -95,7 +95,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
         velocity = EuclideanVector(0.0f, 0.0f),
       )
 
-      val particle2 = CubismPhysicsParticle(
+      val particle2 = physics.data.PhysicsParticle(
         mobility = 0.95f,
         delay = 0.8f,
         acceleration = 1.5f,
@@ -143,7 +143,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
     }
 
     Scenario("delay is 0") {
-      val particle1 = CubismPhysicsParticle(
+      val particle1 = physics.data.PhysicsParticle(
         mobility = 1,
         delay = 1,
         acceleration = 1,
@@ -155,7 +155,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
         velocity = EuclideanVector(0.0f, 0.0f),
       )
 
-      val particle2 = CubismPhysicsParticle(
+      val particle2 = physics.data.PhysicsParticle(
         mobility = 0.95f,
         delay = 0f,
         acceleration = 1.5f,

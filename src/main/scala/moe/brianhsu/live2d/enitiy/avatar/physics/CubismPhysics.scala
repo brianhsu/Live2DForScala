@@ -1,11 +1,12 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.{PhysicData, PhysicsOutput, PhysicsParticle}
 import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-class CubismPhysics(physicsRig: CubismPhysicsRig, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) {
+class CubismPhysics(physicsRig: PhysicData, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) {
 
   private val MaximumWeight = 100.0f
 
@@ -32,10 +33,10 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, var gravityDirection: Euclidea
     operations
   }
 
-  private def createUpdateOperation(output: CubismPhysicsOutput, particles: List[CubismPhysicsParticle], model: Live2DModel): UpdateOperation = {
+  private def createUpdateOperation(output: PhysicsOutput, particles: List[PhysicsParticle], model: Live2DModel): UpdateOperation = {
     val particleIndex = output.vertexIndex
     val translation = particles(particleIndex).position - particles(particleIndex - 1).position
-    val outputValue = output.outType match {
+    val outputValue = output.outputType match {
       case X => if (output.isReflect) -translation.x else translation.x
       case Y => if (output.isReflect) -translation.y else translation.y
       case Angle =>
@@ -55,7 +56,7 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, var gravityDirection: Euclidea
 
   }
 
-  private def calculateOutputAngle(translation: EuclideanVector, particles: List[CubismPhysicsParticle], particleIndex: Int, inputParentGravity: EuclideanVector): Float = {
+  private def calculateOutputAngle(translation: EuclideanVector, particles: List[PhysicsParticle], particleIndex: Int, inputParentGravity: EuclideanVector): Float = {
     val parentGravity = if (particleIndex >= 2) {
       particles(particleIndex - 1).position - particles(particleIndex - 2).position
     } else {
@@ -67,9 +68,9 @@ class CubismPhysics(physicsRig: CubismPhysicsRig, var gravityDirection: Euclidea
 
 
   private def calculateUpdateOperation(id: String, parameterCurrentValue: Float, parameterValueMinimum: Float, parameterValueMaximum: Float,
-    translation: Float, output: CubismPhysicsOutput): UpdateOperation = {
+    translation: Float, output: PhysicsOutput): UpdateOperation = {
 
-    val outputScale = output.outType match {
+    val outputScale = output.outputType match {
       case X => output.translationScale.x
       case Y => output.translationScale.y
       case Angle => output.angleScale

@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.enitiy.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsSubRig.{AirResistance, MaximumWeight, MovementThreshold}
 import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParticleUpdateParameter, PhysicsInput, PhysicsNormalization}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParticleUpdateParameter, PhysicsInput, PhysicsNormalization, PhysicsOutput, PhysicsParticle}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
@@ -16,8 +16,8 @@ case class CubismPhysicsSubRig(
                                 normalizationPosition: PhysicsNormalization,
                                 normalizationAngle: PhysicsNormalization,
                                 inputs: List[PhysicsInput],
-                                outputs: List[CubismPhysicsOutput],
-                                var particles: List[CubismPhysicsParticle]
+                                outputs: List[PhysicsOutput],
+                                var particles: List[PhysicsParticle]
 ) {
 
   def calculateParticleUpdateParameter(model: Live2DModel): ParticleUpdateParameter = {
@@ -49,9 +49,9 @@ case class CubismPhysicsSubRig(
   def calculateNewParticleStatus(particleUpdateParameter: ParticleUpdateParameter,
                       windDirection: EuclideanVector,
                       deltaTimeSeconds: Float,
-                      airResistance: Float = AirResistance): List[CubismPhysicsParticle] = {
+                      airResistance: Float = AirResistance): List[PhysicsParticle] = {
 
-    var resultList: List[CubismPhysicsParticle] = Nil
+    var resultList: List[PhysicsParticle] = Nil
     val initParticle = particles.head.copy(
       position = particleUpdateParameter.translation
     )
@@ -90,7 +90,7 @@ case class CubismPhysicsSubRig(
 
   }
 
-  private def calculateFinalPosition(previousParticle: CubismPhysicsParticle, currentParticle: CubismPhysicsParticle, newDirection: EuclideanVector): EuclideanVector = {
+  private def calculateFinalPosition(previousParticle: PhysicsParticle, currentParticle: PhysicsParticle, newDirection: EuclideanVector): EuclideanVector = {
     val thresholdValue = MovementThreshold * normalizationPosition.max
     val finalPosition = previousParticle.position + (newDirection * currentParticle.radius)
 
@@ -101,8 +101,8 @@ case class CubismPhysicsSubRig(
     }
   }
 
-  private def calculateNewDirection(currentParticle: CubismPhysicsParticle, previousParticle: CubismPhysicsParticle,
-    currentGravity: EuclideanVector, initForce: EuclideanVector, delay: Float, airResistance: Float): EuclideanVector = {
+  private def calculateNewDirection(currentParticle: PhysicsParticle, previousParticle: PhysicsParticle,
+                                    currentGravity: EuclideanVector, initForce: EuclideanVector, delay: Float, airResistance: Float): EuclideanVector = {
     val direction = EuclideanVector(
       x = currentParticle.position.x - previousParticle.position.x,
       y = currentParticle.position.y - previousParticle.position.y
