@@ -1,7 +1,8 @@
-package moe.brianhsu.live2d.enitiy.avatar.physics.data
+package moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.PhysicsEffect.{AirResistance, MaximumWeight, MovementThreshold}
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics.ParameterType.{Angle, X, Y}
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics.PhysicsEffect.{AirResistance, MaximumWeight, MovementThreshold}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
@@ -19,7 +20,7 @@ case class PhysicsEffect(normalizationPosition: PhysicsNormalization,
 ) {
 
   def calculateParticleUpdateParameter(model: Live2DModel): ParticleUpdateParameter = {
-    var particleUpdateParameter = ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0.0f)
+    var particleUpdateParameter = physics.ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0.0f)
 
     for (input <- inputs) {
       val weight = input.weight / MaximumWeight

@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.enitiy.avatar.physics.data
+package moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

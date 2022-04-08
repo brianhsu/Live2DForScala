@@ -1,17 +1,18 @@
-package moe.brianhsu.live2d.enitiy.avatar.physics
+package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.{PhysicsData, PhysicsEffect, PhysicsOutput, PhysicsParticle}
+import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics.ParameterType.{Angle, X, Y}
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics.{PhysicsData, PhysicsEffect, PhysicsOutput, PhysicsParticle}
 import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-class Physics(physicsData: PhysicsData, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) {
+class Physics(physicsData: PhysicsData, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) extends Effect {
 
   private val MaximumWeight = 100.0f
   private var currentParticlesMap: Map[PhysicsEffect, List[PhysicsParticle]] = Map.empty
 
-  def evaluate(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeSeconds: Float): List[UpdateOperation] = {
+  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[UpdateOperation] = {
     var operations: List[UpdateOperation] = Nil
 
     for (currentSetting <- physicsData.effects) {
@@ -21,7 +22,7 @@ class Physics(physicsData: PhysicsData, var gravityDirection: EuclideanVector, v
         currentParticles,
         particleUpdateParameter,
         windDirection,
-        deltaTimeSeconds
+        deltaTimeInSeconds
       )
 
       val operationsForSetting = currentSetting
@@ -68,7 +69,6 @@ class Physics(physicsData: PhysicsData, var gravityDirection: EuclideanVector, v
 
     Radian.directionToRadian(parentGravity, translation)
   }
-
 
   private def calculateUpdateOperation(id: String, parameterCurrentValue: Float, parameterValueMinimum: Float, parameterValueMaximum: Float,
     translation: Float, output: PhysicsOutput): UpdateOperation = {

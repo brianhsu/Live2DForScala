@@ -1,7 +1,6 @@
 package moe.brianhsu.live2d.boundary.gateway.avatar.physics
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose
-import moe.brianhsu.live2d.enitiy.avatar.physics.Physics
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Physics, Pose}
 
 trait PhysicsReader {
   /**

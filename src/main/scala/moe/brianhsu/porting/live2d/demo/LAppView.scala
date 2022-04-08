@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.demo
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPoseReader, FaceDirectionByMouse}
+import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, Pose}
@@ -156,14 +157,17 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       avatar <- avatarHolder
       updateStrategy <- updateStrategyHolder
     } {
-      val pose = new AvatarPoseReader(avatar.avatarSettings).loadPose.getOrElse(new Pose)
-      updateStrategy.setEffects(
-        //new Breath() ::
-        //new EyeBlink(avatar.avatarSettings) ::
-        faceDirection ::
-        pose ::
-        Nil
-      )
+      val poseHolder = new AvatarPoseReader(avatar.avatarSettings).loadPose
+      val physicsHolder = new AvatarPhysicsReader(avatar.avatarSettings).loadPhysics
+      val effects = List(
+        Some(new Breath()),
+        Some(new EyeBlink(avatar.avatarSettings)),
+        Some(faceDirection),
+        physicsHolder,
+        poseHolder
+      ).flatten
+
+      updateStrategy.setEffects(effects)
     }
   }
 
@@ -225,10 +229,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       case 's' => startMotion("tapBody", 1)
       case 'd' => startMotion("tapBody", 2)
       case 'f' => startMotion("tapBody", 3)
-      case 'z' => {
-        println("Z is pressed...")
-        DefaultStrategy.enablePhy = true
-      }
+      case 'z' => switchModel("src/main/resources/Haru")
       case 'x' => switchModel("src/test/resources/models/Mark")
       case 'c' => switchModel("src/test/resources/models/Rice")
       case 'v' => switchModel("src/test/resources/models/Natori")

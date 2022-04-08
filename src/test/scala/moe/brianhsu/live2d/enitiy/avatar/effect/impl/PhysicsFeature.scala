@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.enitiy.avatar.physics
+package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
@@ -48,7 +48,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
       dataPointList.foreach { dataPoint =>
         val model = createStubbedModel(dataPoint)
-        val operations = physics.evaluate(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
+        val operations = physics.calculateOperations(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
         operations.size shouldBe dataPoint.operations.size
         operations should contain theSameElementsInOrderAs dataPoint.operations
       }
@@ -69,7 +69,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
       dataPointList.foreach { dataPoint =>
         val model = createStubbedModel(dataPoint)
-        val operations = physics.evaluate(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
+        val operations = physics.calculateOperations(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
         operations.size shouldBe dataPoint.operations.size
         operations should contain theSameElementsInOrderAs dataPoint.operations
       }

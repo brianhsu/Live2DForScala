@@ -1,5 +1,6 @@
-package moe.brianhsu.live2d.enitiy.avatar.physics.data
+package moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.JavaVMParameter
 import org.scalatest.GivenWhenThen
@@ -61,7 +62,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       forAll(weightTable) { weight =>
         Given("Given an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
-        val particleUpdateParameter = ParticleUpdateParameter(
+        val particleUpdateParameter = physics.ParticleUpdateParameter(
           translation = originalTranslation,
           angle = 5.6f
         )
@@ -101,7 +102,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         Given("Given an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val originalAngle = 5.6f
-        val particleUpdateParameter = ParticleUpdateParameter(
+        val particleUpdateParameter = physics.ParticleUpdateParameter(
           translation = originalTranslation,
           angle = originalAngle
         )
@@ -142,7 +143,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         Given("Given an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val originalAngle = 5.6f
-        val particleUpdateParameter = ParticleUpdateParameter(
+        val particleUpdateParameter = physics.ParticleUpdateParameter(
           translation = originalTranslation,
           angle = originalAngle
         )
@@ -185,7 +186,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         Given("Given an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val originalAngle = 5.6f
-        val particleUpdateParameter = ParticleUpdateParameter(
+        val particleUpdateParameter = physics.ParticleUpdateParameter(
           translation = originalTranslation,
           angle = originalAngle
         )
@@ -226,7 +227,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         Given("Given an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val originalAngle = 5.6f
-        val particleUpdateParameter = ParticleUpdateParameter(
+        val particleUpdateParameter = physics.ParticleUpdateParameter(
           translation = originalTranslation,
           angle = originalAngle
         )
@@ -361,7 +362,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       )
 
       forAll(table) { (inputValue, parameterMinimum, parameterMaximum, normalizedMinimum, normalizedMaximum, normalizedDefault, isInverted, expectedResult) =>
-        val particleUpdateParameter = ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0)
+        val particleUpdateParameter = physics.ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0)
         val normalization = PhysicsNormalization(normalizedMinimum, normalizedMaximum, normalizedDefault)
         val parameter = new JavaVMParameter("id", min = parameterMinimum, max = parameterMaximum, default = 0, inputValue)
         val result = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted)

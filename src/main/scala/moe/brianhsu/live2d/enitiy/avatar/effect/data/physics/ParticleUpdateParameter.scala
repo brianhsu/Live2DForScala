@@ -1,6 +1,6 @@
-package moe.brianhsu.live2d.enitiy.avatar.physics.data
+package moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 
-import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Negative, Neutral, Positive, Sign}
+import moe.brianhsu.live2d.enitiy.math._
 import moe.brianhsu.live2d.enitiy.model.Parameter
 
 case class ParticleUpdateParameter(translation: EuclideanVector, angle: Float) {

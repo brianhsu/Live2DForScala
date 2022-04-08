@@ -1,8 +1,9 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.physics
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.physics.PhysicsReader
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParameterType, PhysicsData, PhysicsInput, PhysicsNormalization, PhysicsOutput, PhysicsParameter, PhysicsParticle, PhysicsEffect, TargetType}
-import moe.brianhsu.live2d.enitiy.avatar.physics.{Physics, data}
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics.{ParameterType, PhysicsData, PhysicsEffect, PhysicsInput, PhysicsNormalization, PhysicsOutput, PhysicsParameter, PhysicsParticle, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Physics
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, Output, Vertex}
@@ -28,7 +29,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
   private def createRig(json: PhysicsSetting): PhysicsData = {
 
-    val settings: List[data.PhysicsEffect] = json.physicsSettings.map { setting =>
+    val settings: List[PhysicsEffect] = json.physicsSettings.map { setting =>
       createSubRig(
         setting.normalization,
         setting.input.map(createInput),
@@ -37,7 +38,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
       )
     }
 
-    PhysicsData(
+    physics.PhysicsData(
       settings,
       EuclideanVector(
         json.meta.effectiveForces.gravity.x,
@@ -80,7 +81,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
     val lastPosition = initialPosition
 
-    PhysicsParticle(
+    physics.PhysicsParticle(
       vertexSetting.mobility, vertexSetting.delay,
       vertexSetting.acceleration, vertexSetting.radius,
       initialPosition, position, lastPosition,
@@ -91,7 +92,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
   private def createOutput(outputSetting: Output): PhysicsOutput = {
     val outputType = ParameterType(outputSetting.`type`)
-    PhysicsOutput(
+    physics.PhysicsOutput(
       PhysicsParameter(outputSetting.destination.id, TargetType.Parameter),
       outputType,
       outputSetting.vertexIndex,
@@ -114,9 +115,9 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
   private def createSubRig(normalization: Normalization,
                            inputsInSetting: List[PhysicsInput],
                            outputsInSetting: List[PhysicsOutput],
-                           particleInSetting: List[PhysicsParticle]): data.PhysicsEffect = {
+                           particleInSetting: List[PhysicsParticle]): PhysicsEffect = {
 
-    PhysicsEffect(
+    physics.PhysicsEffect(
       PhysicsNormalization(
         normalization.position.minimum,
         normalization.position.maximum,

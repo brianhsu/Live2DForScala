@@ -1,12 +1,12 @@
-package moe.brianhsu.live2d.enitiy.avatar.physics.data
+package moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 
-import moe.brianhsu.live2d.enitiy.avatar.physics
+import moe.brianhsu.live2d.enitiy.avatar.effect.data
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, Inside}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{GivenWhenThen, Inside}
 
 class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory with Inside {
   Feature("Calculate particle update parameter") {
@@ -197,7 +197,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
   Feature("Calculate new particles") {
     Scenario("delay is not 0") {
-      val particle1 = PhysicsParticle(
+      val particle1 = data.physics.PhysicsParticle(
         mobility = 1,
         delay = 1,
         acceleration = 1,
@@ -209,7 +209,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         velocity = EuclideanVector(0.0f, 0.0f),
       )
 
-      val particle2 = PhysicsParticle(
+      val particle2 = data.physics.PhysicsParticle(
         mobility = 0.95f,
         delay = 0.8f,
         acceleration = 1.5f,
@@ -230,7 +230,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
       val List(updatedParticle1, updateParticle2) = physicsEffect.calculateNewParticleStatus(
         particles,
-        ParticleUpdateParameter(EuclideanVector(0, 0), 0.0f),
+        data.physics.ParticleUpdateParameter(EuclideanVector(0, 0), 0.0f),
         EuclideanVector(0, 0),
         0.333f,
         0.1f
@@ -258,7 +258,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
     Scenario("delay is 0") {
-      val particle1 = physics.data.PhysicsParticle(
+      val particle1 = PhysicsParticle(
         mobility = 1,
         delay = 1,
         acceleration = 1,
@@ -270,7 +270,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         velocity = EuclideanVector(0.0f, 0.0f),
       )
 
-      val particle2 = physics.data.PhysicsParticle(
+      val particle2 = data.physics.PhysicsParticle(
         mobility = 0.95f,
         delay = 0f,
         acceleration = 1.5f,
@@ -291,7 +291,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
       val List(updatedParticle1, updateParticle2) = physicsEffect.calculateNewParticleStatus(
         particles,
-        physics.data.ParticleUpdateParameter(EuclideanVector(0, 0), 0.0f),
+        ParticleUpdateParameter(EuclideanVector(0, 0), 0.0f),
         windDirection = EuclideanVector(0, 0),
         deltaTimeSeconds = 0.0f,
         0.1f
@@ -322,7 +322,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     Scenario("A particle list contains multiple items") {
       Given("A particle list")
       val particles = List(
-        PhysicsParticle(
+        data.physics.PhysicsParticle(
           mobility = 0.1f, delay = 0.2f, acceleration = 0.3f, radius = 0.4f,
           initialPosition = EuclideanVector(0.5f, 0.6f),
           position = EuclideanVector(0.7f, 0.8f),
@@ -330,7 +330,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
           lastGravity = EuclideanVector(1.1f, 1.2f),
           velocity = EuclideanVector(1.3f, 1.4f)
         ),
-        PhysicsParticle(
+        data.physics.PhysicsParticle(
           mobility = 1.5f, delay = 1.6f, acceleration = 1.7f, radius = 1.8f,
           initialPosition = EuclideanVector(1.5f, 1.6f),
           position = EuclideanVector(1.7f, 1.8f),
@@ -338,7 +338,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
           lastGravity = EuclideanVector(1.1f, 1.2f),
           velocity = EuclideanVector(1.3f, 1.4f)
         ),
-        PhysicsParticle(
+        data.physics.PhysicsParticle(
           mobility = 2.1f, delay = 2.2f, acceleration = 2.3f, radius = 2.4f,
           initialPosition = EuclideanVector(2.5f, 2.6f),
           position = EuclideanVector(2.7f, 2.8f),
@@ -346,7 +346,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
           lastGravity = EuclideanVector(2.1f, 2.2f),
           velocity = EuclideanVector(2.3f, 2.4f)
         ),
-        PhysicsParticle(
+        data.physics.PhysicsParticle(
           mobility = 3.1f, delay = 3.2f, acceleration = 3.3f, radius = 3.4f,
           initialPosition = EuclideanVector(3.5f, 3.6f),
           position = EuclideanVector(3.7f, 3.8f),
@@ -365,7 +365,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       )
 
       When("Calculate new particle status")
-      val particleUpdateParameter = ParticleUpdateParameter(EuclideanVector(1.0f, 2.1f), 0.5f)
+      val particleUpdateParameter = data.physics.ParticleUpdateParameter(EuclideanVector(1.0f, 2.1f), 0.5f)
       val newParticles = physicsEffect.calculateNewParticleStatus(
         particles, particleUpdateParameter,
         windDirection = EuclideanVector(0.1f, 0.2f),
@@ -381,7 +381,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       And("the updated list should contains correct data")
 
       newParticles should contain theSameElementsInOrderAs List(
-        PhysicsParticle(
+        data.physics.PhysicsParticle(
           0.1f, 0.2f, 0.3f, 0.4f,
           EuclideanVector(0.5f, 0.6f),
           EuclideanVector(1.0f, 2.1f),
@@ -389,7 +389,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
           EuclideanVector(1.1f, 1.2f),
           EuclideanVector(1.3f, 1.4f)
         ),
-        PhysicsParticle(
+        data.physics.PhysicsParticle(
           1.5f, 1.6f, 1.7f, 1.8f,
           EuclideanVector(1.5f, 1.6f),
           EuclideanVector(1.179439f, 3.8910336f),
@@ -397,7 +397,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
           EuclideanVector(0.008726536f, 0.9999619f),
           EuclideanVector(-0.048851453f, 0.19623064f)
         ),
-        PhysicsParticle(
+        data.physics.PhysicsParticle(
           2.1f, 2.2f, 2.3f, 2.4f,
           EuclideanVector(2.5f, 2.6f),
           EuclideanVector(1.3886662f, 6.281896f),
@@ -405,7 +405,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
           EuclideanVector(0.008726536f, 0.9999619f),
           EuclideanVector(-0.12529807f, 0.33269548f)
         ),
-        PhysicsParticle(
+        data.physics.PhysicsParticle(
           3.1f, 3.2f, 3.3f, 3.4f,
           EuclideanVector(3.5f, 3.6f),
           EuclideanVector(1.6095365f, 9.674715f),
