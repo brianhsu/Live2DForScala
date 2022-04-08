@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.enitiy.avatar.physics
+package moe.brianhsu.live2d.enitiy.avatar.physics.data
 
 sealed trait TargetType
 

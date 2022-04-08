@@ -1,6 +1,5 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics.data
 
-import moe.brianhsu.live2d.enitiy.avatar.physics.TargetType
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

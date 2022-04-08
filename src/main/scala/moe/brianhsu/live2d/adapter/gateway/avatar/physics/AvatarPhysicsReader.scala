@@ -1,12 +1,11 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.physics
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.physics.PhysicsReader
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParameterType, PhysicData, PhysicsInput, PhysicsNormalization, PhysicsOutput, PhysicsParameter, PhysicsParticle}
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysics, CubismPhysicsSubRig, TargetType, data}
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParameterType, PhysicData, PhysicsInput, PhysicsNormalization, PhysicsOutput, PhysicsParameter, PhysicsParticle, PhysicsSetting, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysics, data}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, Output, Setting, Vertex}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSettingJson
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSettingJson.{Input, Normalization, Output, Vertex}
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 
 class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
@@ -20,15 +19,15 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
     avatarSettings.physics.map(x => createCubismPhysics(x))
   }
 
-  private def createCubismPhysics(physicsSetting: PhysicsSetting): CubismPhysics = {
+  private def createCubismPhysics(physicsSetting: PhysicsSettingJson): CubismPhysics = {
     val gravityDirection = EuclideanVector(0.0f, -1.0f)
     val windDirection = EuclideanVector(0.0f, 0.0f)
     new CubismPhysics(createRig(physicsSetting), gravityDirection, windDirection)
   }
 
-  private def createRig(json: PhysicsSetting): PhysicData = {
+  private def createRig(json: PhysicsSettingJson): PhysicData = {
 
-    val settings: List[CubismPhysicsSubRig] = json.physicsSettings.map { setting =>
+    val settings: List[data.PhysicsSetting] = json.physicsSettings.map { setting =>
       createSubRig(
         setting.normalization,
         setting.input.map(createInput),
@@ -37,7 +36,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
       )
     }
 
-    data.PhysicData(
+    PhysicData(
       settings,
       EuclideanVector(
         json.meta.effectiveForces.gravity.x,
@@ -80,7 +79,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
     val lastPosition = initialPosition
 
-    data.PhysicsParticle(
+    PhysicsParticle(
       vertexSetting.mobility, vertexSetting.delay,
       vertexSetting.acceleration, vertexSetting.radius,
       initialPosition, position, lastPosition,
@@ -91,15 +90,20 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
   private def createOutput(outputSetting: Output): PhysicsOutput = {
     val outputType = ParameterType(outputSetting.`type`)
-    data.PhysicsOutput(PhysicsParameter(
-                outputSetting.destination.id,
-                TargetType.Parameter
-              ), outputType, outputSetting.vertexIndex, translationScale = EuclideanVector(0.0f, 0.0f), outputSetting.scale, outputSetting.reflect, outputSetting.weight)
+    PhysicsOutput(
+      PhysicsParameter(outputSetting.destination.id, TargetType.Parameter),
+      outputType,
+      outputSetting.vertexIndex,
+      translationScale = EuclideanVector(0.0f, 0.0f),
+      outputSetting.scale,
+      outputSetting.reflect,
+      outputSetting.weight
+    )
   }
 
   private def createInput(input: Input): PhysicsInput = {
     PhysicsInput(
-      data.PhysicsParameter(input.source.id, TargetType.Parameter),
+      PhysicsParameter(input.source.id, TargetType.Parameter),
       ParameterType(input.`type`),
       input.weight,
       input.reflect
@@ -109,9 +113,9 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
   private def createSubRig(normalization: Normalization,
                            inputsInSetting: List[PhysicsInput],
                            outputsInSetting: List[PhysicsOutput],
-                           particleInSetting: List[PhysicsParticle]): CubismPhysicsSubRig = {
+                           particleInSetting: List[PhysicsParticle]): data.PhysicsSetting = {
 
-    CubismPhysicsSubRig(
+    PhysicsSetting(
       PhysicsNormalization(
         normalization.position.minimum,
         normalization.position.maximum,

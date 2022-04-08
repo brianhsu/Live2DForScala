@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json
 
 import moe.brianhsu.live2d.RichPath.convertFromPath
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, MotionSetting, PhysicsSetting, PoseSetting}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, MotionSetting, PhysicsSettingJson, PoseSetting}
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.model.{Group, ModelSetting}
 import moe.brianhsu.live2d.boundary.gateway.avatar.SettingsReader
 import org.json4s.native.JsonMethods.parse
@@ -193,13 +193,13 @@ class JsonSettingsReader(directory: String) extends SettingsReader {
    *
    * @return [[scala.util.Success]] containing optional physics settings, otherwise [[scala.util.Failure]] denoted the exception.
    */
-  private def parsePhysics(modelSetting: ModelSetting): Try[Option[PhysicsSetting]] = Try {
+  private def parsePhysics(modelSetting: ModelSetting): Try[Option[PhysicsSettingJson]] = Try {
     for {
       physics <- modelSetting.fileReferences.physics
       jsonFile <- Option(Paths.get(s"$directory/$physics")) if jsonFile.isReadableFile
       jsonFileContent <- jsonFile.readToString().toOption
     } yield {
-      parse(jsonFileContent).camelizeKeys.extract[PhysicsSetting]
+      parse(jsonFileContent).camelizeKeys.extract[PhysicsSettingJson]
     }
   }
 

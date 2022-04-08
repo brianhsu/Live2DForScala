@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar.settings.detail
 
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Meta, Setting}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSettingJson.{Meta, Setting}
 
-object PhysicsSetting {
+object PhysicsSettingJson {
   case class NormalizationValue(minimum: Float, default: Float, maximum: Float)
   case class Normalization(position: NormalizationValue, angle: NormalizationValue)
   case class Vertex(position: Point, mobility: Float, delay: Float, acceleration: Float, radius: Float)
@@ -24,4 +24,4 @@ object PhysicsSetting {
   )
 }
 
-case class PhysicsSetting(version: Int, meta: Meta, physicsSettings: List[Setting])
+case class PhysicsSettingJson(version: Int, meta: Meta, physicsSettings: List[Setting])

@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.settings
 
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PhysicsSetting, PoseSetting}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PhysicsSettingJson, PoseSetting}
 
 /**
  * Live2D Cubism Model Setting
@@ -19,13 +19,13 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, Hit
  * @param hitArea List of hit area definition for this avatar.
  */
 case class Settings(
-  mocFile: String,
-  textureFiles: List[String],
-  physics: Option[PhysicsSetting],
-  pose: Option[PoseSetting],
-  eyeBlinkParameterIds: List[String],
-  lipSyncParameterIds: List[String],
-  expressions: Map[String, ExpressionSetting],
-  motionGroups: Map[String, List[MotionSetting]],
-  hitArea: List[HitAreaSetting]
+                     mocFile: String,
+                     textureFiles: List[String],
+                     physics: Option[PhysicsSettingJson],
+                     pose: Option[PoseSetting],
+                     eyeBlinkParameterIds: List[String],
+                     lipSyncParameterIds: List[String],
+                     expressions: Map[String, ExpressionSetting],
+                     motionGroups: Map[String, List[MotionSetting]],
+                     hitArea: List[HitAreaSetting]
 )

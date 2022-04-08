@@ -1,27 +1,25 @@
-package moe.brianhsu.live2d.enitiy.avatar.physics
+package moe.brianhsu.live2d.enitiy.avatar.physics.data
 
-import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsSubRig.{AirResistance, MaximumWeight, MovementThreshold}
 import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParticleUpdateParameter, PhysicsInput, PhysicsNormalization, PhysicsOutput, PhysicsParticle}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.PhysicsSetting.{AirResistance, MaximumWeight, MovementThreshold}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-object CubismPhysicsSubRig {
+object PhysicsSetting {
   val MaximumWeight = 100.0f
   val MovementThreshold = 0.001f
   val AirResistance = 5.0f
 }
 
-case class CubismPhysicsSubRig(
-                                normalizationPosition: PhysicsNormalization,
-                                normalizationAngle: PhysicsNormalization,
-                                inputs: List[PhysicsInput],
-                                outputs: List[PhysicsOutput],
-                                var particles: List[PhysicsParticle]
+case class PhysicsSetting(normalizationPosition: PhysicsNormalization,
+                          normalizationAngle: PhysicsNormalization,
+                          inputs: List[PhysicsInput],
+                          outputs: List[PhysicsOutput],
+                          var particles: List[PhysicsParticle]
 ) {
 
   def calculateParticleUpdateParameter(model: Live2DModel): ParticleUpdateParameter = {
-    var particleUpdateParameter = data.ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0.0f)
+    var particleUpdateParameter = ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0.0f)
 
     for (input <- inputs) {
       val weight = input.weight / MaximumWeight
