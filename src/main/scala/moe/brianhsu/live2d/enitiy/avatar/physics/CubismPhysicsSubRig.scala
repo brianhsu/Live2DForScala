@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsSubRig.{AirResistance, MaximumWeight, MovementThreshold}
-import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParticleUpdateParameter
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParticleUpdateParameter, PhysicsInput, PhysicsNormalization}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
@@ -13,11 +13,11 @@ object CubismPhysicsSubRig {
 }
 
 case class CubismPhysicsSubRig(
-  normalizationPosition: CubismPhysicsNormalization,
-  normalizationAngle: CubismPhysicsNormalization,
-  inputs: List[CubismPhysicsInput],
-  outputs: List[CubismPhysicsOutput],
-  var particles: List[CubismPhysicsParticle]
+                                normalizationPosition: PhysicsNormalization,
+                                normalizationAngle: PhysicsNormalization,
+                                inputs: List[PhysicsInput],
+                                outputs: List[CubismPhysicsOutput],
+                                var particles: List[CubismPhysicsParticle]
 ) {
 
   def calculateParticleUpdateParameter(model: Live2DModel): ParticleUpdateParameter = {
@@ -91,7 +91,7 @@ case class CubismPhysicsSubRig(
   }
 
   private def calculateFinalPosition(previousParticle: CubismPhysicsParticle, currentParticle: CubismPhysicsParticle, newDirection: EuclideanVector): EuclideanVector = {
-    val thresholdValue = MovementThreshold * normalizationPosition.maximum
+    val thresholdValue = MovementThreshold * normalizationPosition.max
     val finalPosition = previousParticle.position + (newDirection * currentParticle.radius)
 
     if (Math.abs(finalPosition.x) < thresholdValue) {

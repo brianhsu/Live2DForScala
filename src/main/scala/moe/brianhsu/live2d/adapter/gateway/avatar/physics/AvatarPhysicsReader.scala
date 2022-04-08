@@ -1,8 +1,9 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.physics
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.physics.PhysicsReader
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysics, CubismPhysicsInput, CubismPhysicsNormalization, CubismPhysicsOutput, CubismPhysicsParameter, CubismPhysicsParticle, CubismPhysicsRig, CubismPhysicsSubRig, CubismPhysicsType, TargetType}
-import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsType.{Angle, X, Y}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParameterType, PhysicsInput, PhysicsNormalization, PhysicsParameter}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysics, CubismPhysicsOutput, CubismPhysicsParticle, CubismPhysicsRig, CubismPhysicsSubRig, TargetType, data}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, Output, Setting, Vertex}
@@ -89,9 +90,9 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
   }
 
   private def createOutput(outputSetting: Output): CubismPhysicsOutput = {
-    val outputType = CubismPhysicsType(outputSetting.`type`)
+    val outputType = ParameterType(outputSetting.`type`)
     CubismPhysicsOutput(
-      CubismPhysicsParameter(
+      PhysicsParameter(
         outputSetting.destination.id,
         TargetType.Parameter
       ),
@@ -104,27 +105,27 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
     )
   }
 
-  private def createInput(input: Input): CubismPhysicsInput = {
-    CubismPhysicsInput(
-      CubismPhysicsParameter(input.source.id, TargetType.Parameter),
-      CubismPhysicsType(input.`type`),
+  private def createInput(input: Input): PhysicsInput = {
+    PhysicsInput(
+      data.PhysicsParameter(input.source.id, TargetType.Parameter),
+      ParameterType(input.`type`),
       input.weight,
       input.reflect
     )
   }
 
   private def createSubRig(normalization: Normalization,
-                           inputsInSetting: List[CubismPhysicsInput],
+                           inputsInSetting: List[PhysicsInput],
                            outputsInSetting: List[CubismPhysicsOutput],
                            particleInSetting: List[CubismPhysicsParticle]): CubismPhysicsSubRig = {
 
     CubismPhysicsSubRig(
-      CubismPhysicsNormalization(
+      PhysicsNormalization(
         normalization.position.minimum,
         normalization.position.maximum,
         normalization.position.default
       ),
-      CubismPhysicsNormalization(
+      PhysicsNormalization(
         normalization.angle.minimum,
         normalization.angle.maximum,
         normalization.angle.default

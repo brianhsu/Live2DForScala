@@ -1,35 +1,34 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics.data
 
-import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsNormalization
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Negative, Neutral, Positive, Sign}
 import moe.brianhsu.live2d.enitiy.model.Parameter
 
 case class ParticleUpdateParameter(translation: EuclideanVector, angle: Float) {
-  def calculateNewAngle(parameter: Parameter, normalizationAngle: CubismPhysicsNormalization, isInverted: Boolean, weight: Float): ParticleUpdateParameter = {
+  def calculateNewAngle(parameter: Parameter, normalizationAngle: PhysicsNormalization, isInverted: Boolean, weight: Float): ParticleUpdateParameter = {
     val normalizedValue = normalizeParameterValue(parameter, normalizationAngle, isInverted) * weight
     this.copy(angle = this.angle + normalizedValue)
   }
 
-  def calculateNewX(parameter: Parameter, normalizationPosition: CubismPhysicsNormalization, isInverted: Boolean, weight: Float): ParticleUpdateParameter = {
+  def calculateNewX(parameter: Parameter, normalizationPosition: PhysicsNormalization, isInverted: Boolean, weight: Float): ParticleUpdateParameter = {
     val normalizedValue = normalizeParameterValue(parameter, normalizationPosition, isInverted) * weight
     val newTranslation = this.translation.copy(x = this.translation.x + normalizedValue)
     this.copy(translation = newTranslation)
   }
 
-  def calculateNewY(parameter: Parameter, normalizationPosition: CubismPhysicsNormalization, isInverted: Boolean, weight: Float): ParticleUpdateParameter = {
+  def calculateNewY(parameter: Parameter, normalizationPosition: PhysicsNormalization, isInverted: Boolean, weight: Float): ParticleUpdateParameter = {
     val normalizedValue = normalizeParameterValue(parameter, normalizationPosition, isInverted) * weight
     val newTranslation = this.translation.copy(y = this.translation.y + normalizedValue)
     this.copy(translation = newTranslation)
   }
 
   private[physics] def normalizeParameterValue(parameter: Parameter,
-                                               normalization: CubismPhysicsNormalization,
+                                               normalization: PhysicsNormalization,
                                                isInverted: Boolean): Float = {
     val maxValue = Math.max(parameter.max, parameter.min)
     val minValue = Math.min(parameter.max, parameter.min)
     val value = parameter.current.min(maxValue).max(minValue)
-    val minNormalizedValue = Math.min(normalization.minimum, normalization.maximum)
-    val maxNormalizedValue = Math.max(normalization.minimum, normalization.maximum)
+    val minNormalizedValue = Math.min(normalization.min, normalization.max)
+    val maxNormalizedValue = Math.max(normalization.min, normalization.max)
 
     val middleValue = calculateMiddleValue(minValue, maxValue)
     val paramValue = value - middleValue

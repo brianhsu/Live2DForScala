@@ -1,6 +1,5 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics.data
 
-import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsNormalization
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.JavaVMParameter
 import org.scalatest.GivenWhenThen
@@ -34,7 +33,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
         And("A normalization setting")
-        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+        val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("Calculate new angle")
         val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, false, weight)
@@ -71,7 +70,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
         And("A normalization setting")
-        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+        val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("Calculate new inverted angle")
         val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, true, weight)
@@ -111,7 +110,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
         And("A normalization setting")
-        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+        val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("Calculate new X")
         val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, false, weight)
@@ -152,7 +151,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
         And("A normalization setting")
-        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+        val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("Calculate new X")
         val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, true, weight)
@@ -195,7 +194,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
         And("A normalization setting")
-        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+        val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("Calculate new X")
         val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, false, weight)
@@ -236,7 +235,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
         And("A normalization setting")
-        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+        val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("Calculate new X")
         val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, true, weight)
@@ -363,7 +362,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
 
       forAll(table) { (inputValue, parameterMinimum, parameterMaximum, normalizedMinimum, normalizedMaximum, normalizedDefault, isInverted, expectedResult) =>
         val particleUpdateParameter = ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0)
-        val normalization = CubismPhysicsNormalization(normalizedMinimum, normalizedMaximum, normalizedDefault)
+        val normalization = PhysicsNormalization(normalizedMinimum, normalizedMaximum, normalizedDefault)
         val parameter = new JavaVMParameter("id", min = parameterMinimum, max = parameterMaximum, default = 0, inputValue)
         val result = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted)
         result shouldBe expectedResult
