@@ -115,6 +115,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       )
 
       val List(updatedParticle1, updateParticle2) = setting.calculateNewParticleStatus(
+        particles,
         ParticleUpdateParameter(EuclideanVector(0, 0), 0.0f),
         EuclideanVector(0, 0),
         0.333f,
@@ -175,6 +176,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       )
 
       val List(updatedParticle1, updateParticle2) = setting.calculateNewParticleStatus(
+        particles,
         physics.data.ParticleUpdateParameter(EuclideanVector(0, 0), 0.0f),
         windDirection = EuclideanVector(0, 0),
         deltaTimeSeconds = 0.0f,

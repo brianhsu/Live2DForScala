@@ -16,7 +16,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         PhysicsNormalization(0, 100, 50),
         inputs = Nil,
         outputs = Nil,
-        particles = Nil
+        initialParticles = Nil
       )
 
       And("A mocked Live2D Model")
@@ -46,7 +46,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         PhysicsNormalization(0, 100, 50),
         inputs = inputList,
         outputs = Nil,
-        particles = Nil
+        initialParticles = Nil
       )
 
       And("A mocked Live2D Model with mocked parameter")
@@ -82,7 +82,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         PhysicsNormalization(0, 100, 50),
         inputs = inputList,
         outputs = Nil,
-        particles = Nil
+        initialParticles = Nil
       )
 
       And("A mocked Live2D Model with mocked parameter")
@@ -118,7 +118,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         PhysicsNormalization(0, 100, 50),
         inputs = inputList,
         outputs = Nil,
-        particles = Nil
+        initialParticles = Nil
       )
 
       And("A mocked Live2D Model with mocked parameter")
@@ -166,7 +166,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         PhysicsNormalization(0, 100, 50),
         inputs = inputList,
         outputs = Nil,
-        particles = Nil
+        initialParticles = Nil
       )
 
       And("A mocked Live2D Model with mocked parameter")
@@ -192,6 +192,12 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       particleUpdateParameter.angle shouldBe -0.4444444f
     }
 
+  }
+
+  Feature("Calculate new particles") {
+    Scenario("Calculate new particles") {
+      pending
+    }
   }
 
 }

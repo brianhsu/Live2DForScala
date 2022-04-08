@@ -15,7 +15,7 @@ case class PhysicsEffect(normalizationPosition: PhysicsNormalization,
                          normalizationAngle: PhysicsNormalization,
                          inputs: List[PhysicsInput],
                          outputs: List[PhysicsOutput],
-                         var particles: List[PhysicsParticle]
+                         initialParticles: List[PhysicsParticle]
 ) {
 
   def calculateParticleUpdateParameter(model: Live2DModel): ParticleUpdateParameter = {
@@ -44,13 +44,14 @@ case class PhysicsEffect(normalizationPosition: PhysicsNormalization,
     particleUpdateParameter.copy(translation = totalTranslation)
   }
 
-  def calculateNewParticleStatus(particleUpdateParameter: ParticleUpdateParameter,
-                      windDirection: EuclideanVector,
-                      deltaTimeSeconds: Float,
-                      airResistance: Float = AirResistance): List[PhysicsParticle] = {
+  def calculateNewParticleStatus(currentParticles: List[PhysicsParticle],
+                                 particleUpdateParameter: ParticleUpdateParameter,
+                                 windDirection: EuclideanVector,
+                                 deltaTimeSeconds: Float,
+                                 airResistance: Float = AirResistance): List[PhysicsParticle] = {
 
     var resultList: List[PhysicsParticle] = Nil
-    val initParticle = particles.head.copy(
+    val initParticle = currentParticles.head.copy(
       position = particleUpdateParameter.translation
     )
 
@@ -60,7 +61,7 @@ case class PhysicsEffect(normalizationPosition: PhysicsNormalization,
 
     resultList ::= initParticle
 
-    for (currentParticle <- particles.drop(1)) {
+    for (currentParticle <- currentParticles.drop(1)) {
       val initForce = (currentGravity * currentParticle.acceleration) + windDirection
       val lastPosition = currentParticle.position
       val delay = currentParticle.delay * deltaTimeSeconds * 30.0f

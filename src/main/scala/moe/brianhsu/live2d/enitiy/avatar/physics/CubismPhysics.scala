@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.{PhysicsData, PhysicsOutput, PhysicsParticle}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.{PhysicsData, PhysicsEffect, PhysicsOutput, PhysicsParticle}
 import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -9,13 +9,16 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 class CubismPhysics(physicsRig: PhysicsData, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) {
 
   private val MaximumWeight = 100.0f
+  private var currentParticlesMap: Map[PhysicsEffect, List[PhysicsParticle]] = Map.empty
 
   def evaluate(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeSeconds: Float): List[UpdateOperation] = {
     var operations: List[UpdateOperation] = Nil
 
     for (currentSetting <- physicsRig.effects) {
       val particleUpdateParameter = currentSetting.calculateParticleUpdateParameter(model)
+      val currentParticles = currentParticlesMap.getOrElse(currentSetting, currentSetting.initialParticles)
       val updatedParticles = currentSetting.calculateNewParticleStatus(
+        currentParticles,
         particleUpdateParameter,
         windDirection,
         deltaTimeSeconds
@@ -27,7 +30,7 @@ class CubismPhysics(physicsRig: PhysicsData, var gravityDirection: EuclideanVect
         .map(output => createUpdateOperation(output, updatedParticles, model))
 
       operations ++= operationsForSetting
-      currentSetting.particles = updatedParticles
+      currentParticlesMap = currentParticlesMap.updated(currentSetting, updatedParticles)
     }
 
     operations
