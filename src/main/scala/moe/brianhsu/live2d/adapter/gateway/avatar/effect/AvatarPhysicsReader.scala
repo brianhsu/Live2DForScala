@@ -1,8 +1,8 @@
-package moe.brianhsu.live2d.adapter.gateway.avatar.physics
+package moe.brianhsu.live2d.adapter.gateway.avatar.effect
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.physics.PhysicsReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
-import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics.{ParameterType, PhysicsData, PhysicsEffect, PhysicsInput, PhysicsNormalization, PhysicsOutput, PhysicsParameter, PhysicsParticle, TargetType}
+import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics._
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Physics
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting

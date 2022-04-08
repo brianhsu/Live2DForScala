@@ -6,7 +6,7 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.{Curve, M
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting._
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail._
-import moe.brianhsu.utils.FilePathMatcher
+import moe.brianhsu.utils.matcher.FilePathMatcher
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}

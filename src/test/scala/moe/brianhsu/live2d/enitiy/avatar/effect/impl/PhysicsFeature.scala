@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
-import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
+import moe.brianhsu.live2d.adapter.gateway.avatar.effect.AvatarPhysicsReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater._
