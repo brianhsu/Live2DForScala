@@ -22,15 +22,17 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
 
   private def createCubismPhysics(physicsSetting: PhysicsSetting): Physics = {
     val effectiveForces = physicsSetting.meta.effectiveForces
-    val gravityDirection = EuclideanVector(effectiveForces.gravity.x, effectiveForces.gravity.y)
-    val windDirection = EuclideanVector(effectiveForces.wind.x, effectiveForces.wind.y)
-    new Physics(createRig(physicsSetting), gravityDirection, windDirection)
+    new Physics(
+      createPhysicData(physicsSetting),
+      gravityDirection = EuclideanVector(effectiveForces.gravity.x, effectiveForces.gravity.y),
+      windDirection = EuclideanVector(effectiveForces.wind.x, effectiveForces.wind.y)
+    )
   }
 
-  private def createRig(json: PhysicsSetting): PhysicsData = {
+  private def createPhysicData(json: PhysicsSetting): PhysicsData = {
 
-    val settings: List[PhysicsEffect] = json.physicsSettings.map { setting =>
-      createSubRig(
+    val effects: List[PhysicsEffect] = json.physicsSettings.map { setting =>
+      createPhysicEffect(
         setting.normalization,
         setting.input.map(createInput),
         setting.output.map(createOutput),
@@ -39,7 +41,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
     }
 
     physics.PhysicsData(
-      settings,
+      effects,
       EuclideanVector(
         json.meta.effectiveForces.gravity.x,
         json.meta.effectiveForces.gravity.y
@@ -112,7 +114,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
     )
   }
 
-  private def createSubRig(normalization: Normalization,
+  private def createPhysicEffect(normalization: Normalization,
                            inputsInSetting: List[PhysicsInput],
                            outputsInSetting: List[PhysicsOutput],
                            particleInSetting: List[PhysicsParticle]): PhysicsEffect = {

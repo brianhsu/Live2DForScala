@@ -3,16 +3,15 @@ package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting.Parameters
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.{Curve, Meta}
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, NormalizationValue, Output, PhysicsInfo, Point, Target, Vertex}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting._
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PhysicsSetting, PoseSetting}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail._
 import moe.brianhsu.utils.FilePathMatcher
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 
 import java.io.FileNotFoundException
-import javax.print.attribute.standard.Destination
 
 class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues with TryValues with FilePathMatcher {
   Feature("Read Live2D avatar settings") {

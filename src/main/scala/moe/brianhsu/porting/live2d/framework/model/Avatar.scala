@@ -1,15 +1,12 @@
 package moe.brianhsu.porting.live2d.framework.model
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
-import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Physics
 import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateOperation, UpdateStrategy}
+import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.framework.model.DefaultStrategy.enablePhy
 import org.slf4j.LoggerFactory
 object DefaultStrategy {
   var enablePhy: Boolean = false

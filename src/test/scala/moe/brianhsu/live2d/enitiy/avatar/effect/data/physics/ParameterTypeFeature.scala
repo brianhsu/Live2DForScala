@@ -35,7 +35,7 @@ class ParameterTypeFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       When("Get parameter type from it")
       Then("a UnsupportedOperationException exception should be thrown")
       an[UnsupportedOperationException] should be thrownBy {
-        val parameterType = ParameterType(typeInString)
+        ParameterType(typeInString)
       }
 
     }

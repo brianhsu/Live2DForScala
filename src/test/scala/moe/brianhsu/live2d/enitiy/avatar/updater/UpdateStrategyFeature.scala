@@ -1,6 +1,5 @@
 package moe.brianhsu.live2d.enitiy.avatar.updater
 
-import moe.brianhsu.live2d.enitiy.avatar.effect._
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter, Part}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
