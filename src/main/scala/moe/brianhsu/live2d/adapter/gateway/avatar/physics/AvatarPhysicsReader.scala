@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.adapter.gateway.avatar.physics
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.physics.PhysicsReader
 import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParameterType, PhysicsData, PhysicsInput, PhysicsNormalization, PhysicsOutput, PhysicsParameter, PhysicsParticle, PhysicsEffect, TargetType}
-import moe.brianhsu.live2d.enitiy.avatar.physics.{CubismPhysics, data}
+import moe.brianhsu.live2d.enitiy.avatar.physics.{Physics, data}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, Output, Vertex}
@@ -15,15 +15,15 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
    * @return `None` if there is no physics setting, or `Some[CubismPhysics]` contains
    *         the [[moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose]] effect.
    */
-  override def loadPhysics: Option[CubismPhysics] = {
+  override def loadPhysics: Option[Physics] = {
     avatarSettings.physics.map(x => createCubismPhysics(x))
   }
 
-  private def createCubismPhysics(physicsSetting: PhysicsSetting): CubismPhysics = {
+  private def createCubismPhysics(physicsSetting: PhysicsSetting): Physics = {
     val effectiveForces = physicsSetting.meta.effectiveForces
     val gravityDirection = EuclideanVector(effectiveForces.gravity.x, effectiveForces.gravity.y)
     val windDirection = EuclideanVector(effectiveForces.wind.x, effectiveForces.wind.y)
-    new CubismPhysics(createRig(physicsSetting), gravityDirection, windDirection)
+    new Physics(createRig(physicsSetting), gravityDirection, windDirection)
   }
 
   private def createRig(json: PhysicsSetting): PhysicsData = {
