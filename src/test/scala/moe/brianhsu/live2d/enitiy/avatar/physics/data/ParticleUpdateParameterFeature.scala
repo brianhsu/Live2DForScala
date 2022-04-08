@@ -2,12 +2,257 @@ package moe.brianhsu.live2d.enitiy.avatar.physics.data
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysicsNormalization
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
+import moe.brianhsu.live2d.enitiy.model.JavaVMParameter
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 
 class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TableDrivenPropertyChecks {
+
+  Feature("Calculate new angle") {
+    Scenario("Calculate new angle") {
+      val weightTable = Table(
+        ("weight"),
+        (0.1f),
+        (0.2f),
+        (0.3f),
+        (0.4f),
+        (0.5f),
+        (1.0f)
+      )
+
+      forAll(weightTable) { weight =>
+        Given("Given an exist ParticleUpdateParameter")
+        val originalTranslation = EuclideanVector(1.2f, 3.4f)
+        val particleUpdateParameter = ParticleUpdateParameter(
+          translation = originalTranslation,
+          angle = 5.6f
+        )
+
+        And("A Live2D model parameter")
+        val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
+
+        And("A normalization setting")
+        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+
+        When("Calculate new angle")
+        val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, false, weight)
+
+        Then("the translation should be the same")
+        newUpdateParameter.translation shouldBe originalTranslation
+
+        And("the angle should be the original angle plus normalization multiply weight")
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, false)
+        newUpdateParameter.angle shouldBe (5.6f + normalizedValue * weight)
+      }
+    }
+
+    Scenario("Calculate new inverted angle") {
+      val weightTable = Table(
+        ("weight"),
+        (0.1f),
+        (0.2f),
+        (0.3f),
+        (0.4f),
+        (0.5f),
+        (1.0f)
+      )
+
+      forAll(weightTable) { weight =>
+        Given("Given an exist ParticleUpdateParameter")
+        val originalTranslation = EuclideanVector(1.2f, 3.4f)
+        val particleUpdateParameter = ParticleUpdateParameter(
+          translation = originalTranslation,
+          angle = 5.6f
+        )
+
+        And("A Live2D model parameter")
+        val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
+
+        And("A normalization setting")
+        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+
+        When("Calculate new inverted angle")
+        val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, true, weight)
+
+        Then("the translation should be the same")
+        newUpdateParameter.translation shouldBe originalTranslation
+
+        And("the angle should be the original angle plus normalization multiply weight")
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, true)
+        newUpdateParameter.angle shouldBe (5.6f + normalizedValue * weight)
+      }
+    }
+  }
+
+  Feature("Calculate new X") {
+    Scenario("Calculate new X") {
+      val weightTable = Table(
+        ("weight"),
+        (0.1f),
+        (0.2f),
+        (0.3f),
+        (0.4f),
+        (0.5f),
+        (1.0f)
+      )
+
+      forAll(weightTable) { weight =>
+        Given("Given an exist ParticleUpdateParameter")
+        val originalTranslation = EuclideanVector(1.2f, 3.4f)
+        val originalAngle = 5.6f
+        val particleUpdateParameter = ParticleUpdateParameter(
+          translation = originalTranslation,
+          angle = originalAngle
+        )
+
+        And("A Live2D model parameter")
+        val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
+
+        And("A normalization setting")
+        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+
+        When("Calculate new X")
+        val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, false, weight)
+
+        Then("the angle should be the same")
+        newUpdateParameter.angle shouldBe originalAngle
+
+        Then("the Y should be the same")
+        newUpdateParameter.translation.y shouldBe originalTranslation.y
+
+        And("the X should be the original X plus normalization multiply weight")
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, false)
+        newUpdateParameter.translation.x shouldBe (originalTranslation.x + normalizedValue * weight)
+      }
+    }
+
+    Scenario("Calculate new inverted X") {
+      val weightTable = Table(
+        ("weight"),
+        (0.1f),
+        (0.2f),
+        (0.3f),
+        (0.4f),
+        (0.5f),
+        (1.0f)
+      )
+
+      forAll(weightTable) { weight =>
+        Given("Given an exist ParticleUpdateParameter")
+        val originalTranslation = EuclideanVector(1.2f, 3.4f)
+        val originalAngle = 5.6f
+        val particleUpdateParameter = ParticleUpdateParameter(
+          translation = originalTranslation,
+          angle = originalAngle
+        )
+
+        And("A Live2D model parameter")
+        val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
+
+        And("A normalization setting")
+        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+
+        When("Calculate new X")
+        val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, true, weight)
+
+        Then("the angle should be the same")
+        newUpdateParameter.angle shouldBe originalAngle
+
+        Then("the Y should be the same")
+        newUpdateParameter.translation.y shouldBe originalTranslation.y
+
+        And("the X should be the original X plus normalization multiply weight")
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, true)
+        newUpdateParameter.translation.x shouldBe (originalTranslation.x + normalizedValue * weight)
+      }
+    }
+  }
+
+  Feature("Calculate new Y") {
+    Scenario("Calculate new Y") {
+      val weightTable = Table(
+        ("weight"),
+        (0.1f),
+        (0.2f),
+        (0.3f),
+        (0.4f),
+        (0.5f),
+        (1.0f)
+      )
+
+      forAll(weightTable) { weight =>
+        Given("Given an exist ParticleUpdateParameter")
+        val originalTranslation = EuclideanVector(1.2f, 3.4f)
+        val originalAngle = 5.6f
+        val particleUpdateParameter = ParticleUpdateParameter(
+          translation = originalTranslation,
+          angle = originalAngle
+        )
+
+        And("A Live2D model parameter")
+        val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
+
+        And("A normalization setting")
+        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+
+        When("Calculate new X")
+        val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, false, weight)
+
+        Then("the angle should be the same")
+        newUpdateParameter.angle shouldBe originalAngle
+
+        Then("the X should be the same")
+        newUpdateParameter.translation.x shouldBe originalTranslation.x
+
+        And("the Y should be the original Y plus normalization multiply weight")
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, false)
+        newUpdateParameter.translation.y shouldBe (originalTranslation.y + normalizedValue * weight)
+      }
+    }
+
+    Scenario("Calculate new inverted Y") {
+      val weightTable = Table(
+        ("weight"),
+        (0.1f),
+        (0.2f),
+        (0.3f),
+        (0.4f),
+        (0.5f),
+        (1.0f)
+      )
+
+      forAll(weightTable) { weight =>
+        Given("Given an exist ParticleUpdateParameter")
+        val originalTranslation = EuclideanVector(1.2f, 3.4f)
+        val originalAngle = 5.6f
+        val particleUpdateParameter = ParticleUpdateParameter(
+          translation = originalTranslation,
+          angle = originalAngle
+        )
+
+        And("A Live2D model parameter")
+        val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
+
+        And("A normalization setting")
+        val normalization = CubismPhysicsNormalization(minimum = 1, maximum = 6, default = 3.0f)
+
+        When("Calculate new X")
+        val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, true, weight)
+
+        Then("the angle should be the same")
+        newUpdateParameter.angle shouldBe originalAngle
+
+        Then("the X should be the same")
+        newUpdateParameter.translation.x shouldBe originalTranslation.x
+
+        And("the Y should be the original Y plus normalization multiply weight")
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, true)
+        newUpdateParameter.translation.y shouldBe (originalTranslation.y + normalizedValue * weight)
+      }
+    }
+  }
 
   Feature("Calculate normalized value") {
     Scenario("Calculate normalized value with random input") {
@@ -119,10 +364,8 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       forAll(table) { (inputValue, parameterMinimum, parameterMaximum, normalizedMinimum, normalizedMaximum, normalizedDefault, isInverted, expectedResult) =>
         val particleUpdateParameter = ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0)
         val normalization = CubismPhysicsNormalization(normalizedMinimum, normalizedMaximum, normalizedDefault)
-        val result = particleUpdateParameter.normalizeParameterValue(
-          inputValue, parameterMinimum, parameterMaximum,
-          normalization, isInverted
-        )
+        val parameter = new JavaVMParameter("id", min = parameterMinimum, max = parameterMaximum, default = 0, inputValue)
+        val result = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted)
         result shouldBe expectedResult
       }
     }
