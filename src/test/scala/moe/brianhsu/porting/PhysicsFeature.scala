@@ -4,7 +4,7 @@ import moe.brianhsu.live2d.adapter.gateway.avatar.physics.AvatarPhysicsReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.effect._
 import moe.brianhsu.live2d.enitiy.avatar.physics
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParticleUpdateParameter, PhysicsNormalization, PhysicsParticle, PhysicsSetting}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.{ParticleUpdateParameter, PhysicsNormalization, PhysicsParticle, PhysicsEffect}
 import moe.brianhsu.live2d.enitiy.avatar.physics.CubismPhysics
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate, UpdateOperation}
@@ -108,7 +108,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       )
 
       val particles = List(particle1, particle2)
-      val setting = PhysicsSetting(
+      val setting = PhysicsEffect(
         PhysicsNormalization(0, 2000, 0),
         PhysicsNormalization(0, 1000, 0),
         Nil, Nil, particles
@@ -168,7 +168,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       )
 
       val particles = List(particle1, particle2)
-      val setting = PhysicsSetting(
+      val setting = PhysicsEffect(
         PhysicsNormalization(0, 2000, 0),
         PhysicsNormalization(0, 1000, 0),
         Nil, Nil, particles

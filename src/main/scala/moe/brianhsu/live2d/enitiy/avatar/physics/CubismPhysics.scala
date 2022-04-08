@@ -1,19 +1,19 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.{PhysicData, PhysicsOutput, PhysicsParticle}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.{PhysicsData, PhysicsOutput, PhysicsParticle}
 import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-class CubismPhysics(physicsRig: PhysicData, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) {
+class CubismPhysics(physicsRig: PhysicsData, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) {
 
   private val MaximumWeight = 100.0f
 
   def evaluate(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeSeconds: Float): List[UpdateOperation] = {
     var operations: List[UpdateOperation] = Nil
 
-    for (currentSetting <- physicsRig.settings) {
+    for (currentSetting <- physicsRig.effects) {
       val particleUpdateParameter = currentSetting.calculateParticleUpdateParameter(model)
       val updatedParticles = currentSetting.calculateNewParticleStatus(
         particleUpdateParameter,

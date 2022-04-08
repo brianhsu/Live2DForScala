@@ -3,9 +3,9 @@ package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.ExpressionSetting.Parameters
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting.{Curve, Meta}
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSettingJson.{Input, Normalization, NormalizationValue, Output, PhysicsInfo, Point, Target, Vertex}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PhysicsSetting.{Input, Normalization, NormalizationValue, Output, PhysicsInfo, Point, Target, Vertex}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.PoseSetting.Part
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PhysicsSettingJson, PoseSetting}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, HitAreaSetting, MotionSetting, PhysicsSetting, PoseSetting}
 import moe.brianhsu.utils.FilePathMatcher
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -56,9 +56,9 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       Then("the success loaded setting should have correct physics data")
       inside(settings) { case Settings(_, _, physics, _, _, _, _, _, _) =>
         val physicsSetting = physics.value
-        inside(physicsSetting) { case PhysicsSettingJson(version, meta, physicsSettings) =>
+        inside(physicsSetting) { case PhysicsSetting(version, meta, physicsSettings) =>
           version shouldBe 3
-          inside(meta) { case PhysicsSettingJson.Meta(physicsSettingCount, totalInputCount, totalOutputCount, vertexCount,
+          inside(meta) { case PhysicsSetting.Meta(physicsSettingCount, totalInputCount, totalOutputCount, vertexCount,
                                                   effectiveForces, physicsDictionary) =>
             physicsSettingCount shouldBe 9
             totalInputCount shouldBe 32

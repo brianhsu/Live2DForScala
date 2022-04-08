@@ -1,21 +1,21 @@
 package moe.brianhsu.live2d.enitiy.avatar.physics.data
 
 import moe.brianhsu.live2d.enitiy.avatar.physics.data.ParameterType.{Angle, X, Y}
-import moe.brianhsu.live2d.enitiy.avatar.physics.data.PhysicsSetting.{AirResistance, MaximumWeight, MovementThreshold}
+import moe.brianhsu.live2d.enitiy.avatar.physics.data.PhysicsEffect.{AirResistance, MaximumWeight, MovementThreshold}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-object PhysicsSetting {
+object PhysicsEffect {
   val MaximumWeight = 100.0f
   val MovementThreshold = 0.001f
   val AirResistance = 5.0f
 }
 
-case class PhysicsSetting(normalizationPosition: PhysicsNormalization,
-                          normalizationAngle: PhysicsNormalization,
-                          inputs: List[PhysicsInput],
-                          outputs: List[PhysicsOutput],
-                          var particles: List[PhysicsParticle]
+case class PhysicsEffect(normalizationPosition: PhysicsNormalization,
+                         normalizationAngle: PhysicsNormalization,
+                         inputs: List[PhysicsInput],
+                         outputs: List[PhysicsOutput],
+                         var particles: List[PhysicsParticle]
 ) {
 
   def calculateParticleUpdateParameter(model: Live2DModel): ParticleUpdateParameter = {
