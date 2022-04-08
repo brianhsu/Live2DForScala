@@ -12,14 +12,12 @@ import org.json4s.native.Serialization
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{GivenWhenThen, OptionValues, TryValues}
 
 import scala.io.Source
 import scala.util.Using
 
-class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues
-  with MockFactory with OptionValues with TableDrivenPropertyChecks {
+class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues with MockFactory with OptionValues {
   private implicit val formats: Formats = Serialization.formats(ShortTypeHints(
     List(
       classOf[ParameterValueAdd],
@@ -31,8 +29,8 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
     )
   ))
 
-  Feature("Read pose parts data from Live2D avatar settings") {
-    Scenario("s1") {
+  Feature("Calculate operations of Physics effect") {
+    Scenario("Calculate physics from Rice avatar") {
       Given("A folder path contains json files for Rice Live2D avatar model")
       val folderPath = "src/test/resources/models/Rice"
 
@@ -41,6 +39,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val physics = new AvatarPhysicsReader(settings).loadPhysics.value
 
+      And("Set wind direction to (10.0f, 10.0f)")
       physics.windDirection = EuclideanVector(10.0f, 10.0f)
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/physicsOperations.json")
@@ -48,13 +47,18 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
       dataPointList.foreach { dataPoint =>
         val model = createStubbedModel(dataPoint)
+
+        When("calculate the updated operations")
         val operations = physics.calculateOperations(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
+
+        Then("the result should match the record in log files")
         operations.size shouldBe dataPoint.operations.size
         operations should contain theSameElementsInOrderAs dataPoint.operations
       }
     }
-    Scenario("s2") {
-      Given("A folder path contains json files for Rice Live2D avatar model")
+
+    Scenario("Calculate physics from Hiyori avatar") {
+      Given("A folder path contains json files for Hiyori Live2D avatar model")
       val folderPath = "src/test/resources/models/Hiyori"
 
       When("Create a Physics effect from this Live2D avatar settings")
@@ -62,6 +66,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val physics = new AvatarPhysicsReader(settings).loadPhysics.value
 
+      And("Set wind direction to (10.0f, 10.0f)")
       physics.windDirection = EuclideanVector(10.0f, 10.0f)
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/HiyoriPhysic.json")
@@ -69,7 +74,11 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
       dataPointList.foreach { dataPoint =>
         val model = createStubbedModel(dataPoint)
+
+        When("calculate the updated operations")
         val operations = physics.calculateOperations(model, dataPoint.totalElapsedTimeInSeconds, dataPoint.deltaTimeSeconds)
+
+        Then("the result should match the record in log files")
         operations.size shouldBe dataPoint.operations.size
         operations should contain theSameElementsInOrderAs dataPoint.operations
       }
@@ -89,8 +98,8 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
     model
   }
 
-  case class CurrentParameter(current: Float, min: Float, max: Float, default: Float)
-  case class LogData(
+  private case class CurrentParameter(current: Float, min: Float, max: Float, default: Float)
+  private case class LogData(
     totalElapsedTimeInSeconds: Float,
     deltaTimeSeconds: Float,
     parameters: Map[String, CurrentParameter],
