@@ -19,13 +19,13 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, Hit
  * @param hitArea List of hit area definition for this avatar.
  */
 case class Settings(
-  mocFile: String,
-  textureFiles: List[String],
-  physics: Option[PhysicsSetting],
-  pose: Option[PoseSetting],
-  eyeBlinkParameterIds: List[String],
-  lipSyncParameterIds: List[String],
-  expressions: Map[String, ExpressionSetting],
-  motionGroups: Map[String, List[MotionSetting]],
-  hitArea: List[HitAreaSetting]
+                     mocFile: String,
+                     textureFiles: List[String],
+                     physics: Option[PhysicsSetting],
+                     pose: Option[PoseSetting],
+                     eyeBlinkParameterIds: List[String],
+                     lipSyncParameterIds: List[String],
+                     expressions: Map[String, ExpressionSetting],
+                     motionGroups: Map[String, List[MotionSetting]],
+                     hitArea: List[HitAreaSetting]
 )

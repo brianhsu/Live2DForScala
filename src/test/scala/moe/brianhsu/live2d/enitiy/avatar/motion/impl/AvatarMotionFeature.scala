@@ -4,7 +4,8 @@ import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
-import moe.brianhsu.utils.expectation.{ExpectedAvatarMotionOperation, Input}
+import moe.brianhsu.utils.expectation.ExpectedAvatarMotionOperation
+import moe.brianhsu.utils.expectation.ExpectedAvatarMotionOperation.Input
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

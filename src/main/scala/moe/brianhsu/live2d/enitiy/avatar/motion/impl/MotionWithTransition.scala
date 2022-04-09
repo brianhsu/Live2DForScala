@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.EffectOperation
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
+import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateOperation
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
@@ -24,7 +24,7 @@ class MotionWithTransition(val baseMotion: Motion) {
   def isFinished: Boolean = mIsFinished
   def isForceToFadeOut: Boolean = mIsForceToFadeOut
 
-  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
+  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[UpdateOperation] = {
     if (mIsFinished) {
       Nil
     } else {
@@ -90,7 +90,7 @@ class MotionWithTransition(val baseMotion: Motion) {
 
   private def createUpdateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float,
                                      startTimeInSeconds: Float, fadeInStartTimeInSeconds: Float,
-                                     endTimeInSeconds: Option[Float]): List[EffectOperation] = {
+                                     endTimeInSeconds: Option[Float]): List[UpdateOperation] = {
     val fadeIn: Float = calculateFadeIn(totalElapsedTimeInSeconds)
     val fadeOut: Float = calculateFadeOut(totalElapsedTimeInSeconds)
     val fadeWeight = weight * fadeIn * fadeOut

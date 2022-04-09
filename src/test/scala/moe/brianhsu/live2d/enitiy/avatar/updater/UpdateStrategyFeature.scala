@@ -1,6 +1,5 @@
 package moe.brianhsu.live2d.enitiy.avatar.updater
 
-import moe.brianhsu.live2d.enitiy.avatar.effect._
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter, Part}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
@@ -129,7 +128,7 @@ class UpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Match
 
   class DummyUpdateStrategy extends UpdateStrategy {
     override def update(frameTimeInfo: FrameTimeInfo): Unit = {}
-    override def executeOperations(model: Live2DModel, operations: List[EffectOperation]): Unit = {
+    override def executeOperations(model: Live2DModel, operations: List[UpdateOperation]): Unit = {
       super.executeOperations(model, operations)
     }
   }

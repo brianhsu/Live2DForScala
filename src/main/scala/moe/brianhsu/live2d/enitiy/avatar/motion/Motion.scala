@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.EffectOperation
+import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateOperation
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 trait Motion {
@@ -13,5 +13,5 @@ trait Motion {
   def calculateOperations(model: Live2DModel,
                           totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float,
                           startTimeInSeconds: Float, fadeInStartTimeInSeconds: Float,
-                          endTimeInSeconds: Option[Float]): List[EffectOperation]
+                          endTimeInSeconds: Option[Float]): List[UpdateOperation]
 }

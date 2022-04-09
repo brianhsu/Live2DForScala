@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.EffectOperation
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
 import moe.brianhsu.live2d.enitiy.avatar.motion.Motion
+import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateOperation
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 class MotionManager {
@@ -27,7 +27,7 @@ class MotionManager {
     motion
   }
 
-  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[EffectOperation] = {
+  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float, weight: Float): List[UpdateOperation] = {
 
     val operations = this.motionQueue.flatMap { _.calculateOperations(model, totalElapsedTimeInSeconds, deltaTimeInSeconds, weight) }
 

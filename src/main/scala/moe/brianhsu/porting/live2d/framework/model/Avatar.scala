@@ -7,8 +7,6 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManage
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.framework.model.DefaultStrategy.enablePhy
-import moe.brianhsu.porting.live2d.physics.CubismPhysics
 import org.slf4j.LoggerFactory
 object DefaultStrategy {
   var enablePhy: Boolean = false
@@ -20,14 +18,13 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   private var effects: List[Effect] = Nil
   private val expressionManager = new MotionManager
   private val newMotionManager = new MotionManager
-  private val physics = avatarSettings.physics.map(CubismPhysics.Create)
 
   newMotionManager.setEventCallbackForAllMotions((m: MotionWithTransition, e:MotionEvent) => {
     println("motion:" + m)
     println("motionEvent:" + e)
   })
 
-  def setFunctionalEffects(effects: List[Effect]): Unit = {
+  def setEffects(effects: List[Effect]): Unit = {
     this.effects = effects
   }
 
@@ -55,13 +52,8 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
   }
 
   private def startMotionWithNew(frameTimeInfo: FrameTimeInfo): Unit = {
-    if (newMotionManager.iaAllFinished) {
-      // Start Random Motion
-    } else {
-      val operations = newMotionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
-      executeOperations(model, operations)
-    }
-
+    val operations = newMotionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
+    executeOperations(model, operations)
   }
 
   override def update(frameTimeInfo: FrameTimeInfo): Unit = {
@@ -73,11 +65,6 @@ class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel
     val operations = effects.flatMap(_.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds))
 
     executeOperations(model, expressionsOperations ++ operations)
-    //executeOperations(model, operations)
-
-    if (enablePhy) {
-      physics.foreach(_.Evaluate(model, frameTimeInfo.deltaTimeInSeconds))
-    }
 
     model.update()
   }

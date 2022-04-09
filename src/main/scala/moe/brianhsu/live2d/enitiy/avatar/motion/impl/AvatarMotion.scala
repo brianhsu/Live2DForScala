@@ -1,11 +1,11 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueUpdate, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.AvatarMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
+import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueUpdate, ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
@@ -41,9 +41,9 @@ class AvatarMotion(motionData: MotionData,
                                    weight: Float,
                                    startTimeInSeconds: Float,
                                    fadeInStartTimeInSeconds: Float,
-                                   endTimeInSeconds: Option[Float]): List[EffectOperation] = {
+                                   endTimeInSeconds: Option[Float]): List[UpdateOperation] = {
 
-    var operations: List[EffectOperation] = Nil
+    var operations: List[UpdateOperation] = Nil
 
     val tmpFadeIn: Float = calculateTempFadeIn(totalElapsedTimeInSeconds, startTimeInSeconds)
     val tmpFadeOut: Float = calculateTempFadeOut(totalElapsedTimeInSeconds, endTimeInSeconds)

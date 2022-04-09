@@ -2,7 +2,8 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.data.PosePart
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose.{BackOpacityThreshold, Epsilon, Phi}
-import moe.brianhsu.live2d.enitiy.avatar.effect.{Effect, EffectOperation, FallbackParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
+import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueUpdate, PartOpacityUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 object Pose {
@@ -53,13 +54,13 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
    * @param totalElapsedTimeInSeconds   The total elapsed time since first frame in seconds
    * @param deltaTimeInSeconds          The elapsed time since last frame in seconds.
    */
-  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
+  def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[UpdateOperation] = {
 
     val actualDeltaTimeSeconds = if (deltaTimeInSeconds < 0.0f) 0 else deltaTimeInSeconds
-    val resetModelOperation: List[EffectOperation] = if (!isAlreadyInit) { resetParts() } else Nil
-    val fadeOperation: List[EffectOperation] = posePartGroups.flatMap(poseParts => doFade(model, actualDeltaTimeSeconds, poseParts))
+    val resetModelOperation: List[UpdateOperation] = if (!isAlreadyInit) { resetParts() } else Nil
+    val fadeOperation: List[UpdateOperation] = posePartGroups.flatMap(poseParts => doFade(model, actualDeltaTimeSeconds, poseParts))
     val resetAndFade = resetModelOperation ++ fadeOperation
-    val copyPartOpacityOperations: List[EffectOperation] = copyPartOpacitiesToLinkedParts(model, resetAndFade)
+    val copyPartOpacityOperations: List[UpdateOperation] = copyPartOpacitiesToLinkedParts(model, resetAndFade)
 
     isAlreadyInit = true
 
@@ -73,7 +74,7 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
    * @param   deltaTimeSeconds    How many time in seconds has been passed since last update.
    * @param   poseParts           The parts that should be updated.
    */
-  private def doFade(model: Live2DModel, deltaTimeSeconds: Float, poseParts: List[PosePart]): List[EffectOperation] = {
+  private def doFade(model: Live2DModel, deltaTimeSeconds: Float, poseParts: List[PosePart]): List[UpdateOperation] = {
     val visiblePartHolder = poseParts
       .find(partData => model.parameterWithFallback(partData.partId).current > Epsilon)
       .orElse(poseParts.headOption)
@@ -132,7 +133,7 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
    * @param model         The Live2D model.
    * @param resetAndFade  The reset and fade operations.
    */
-  private def copyPartOpacitiesToLinkedParts(model: Live2DModel, resetAndFade: List[EffectOperation]): List[PartOpacityUpdate] = {
+  private def copyPartOpacitiesToLinkedParts(model: Live2DModel, resetAndFade: List[UpdateOperation]): List[PartOpacityUpdate] = {
     for {
       pose: List[PosePart] <- posePartGroups
       posePartData <- pose
@@ -152,7 +153,7 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
    * @param partId    The specified partId.
    * @return          A boolean indicates if it's an update opacity operation for `partId`.
    */
-  private def isPartOpacityUpdateForSamePart(operation: EffectOperation, partId: String): Boolean = {
+  private def isPartOpacityUpdateForSamePart(operation: UpdateOperation, partId: String): Boolean = {
     operation.isInstanceOf[PartOpacityUpdate] &&
       operation.asInstanceOf[PartOpacityUpdate].partId == partId
   }
@@ -162,8 +163,8 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
    *
    * @note It will set the opacity to 1 for parameters with a non-zero initial opacity.
    */
-  private def resetParts(): List[EffectOperation] = {
-    val operationsForEachPose: List[List[EffectOperation]] = for {
+  private def resetParts(): List[UpdateOperation] = {
+    val operationsForEachPose: List[List[UpdateOperation]] = for {
       poseGroup <- posePartGroups
       posePartData <- poseGroup
       partId = posePartData.partId

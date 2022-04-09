@@ -1,9 +1,9 @@
 package moe.brianhsu.porting.live2d.demo
 
-import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPoseReader, FaceDirectionByMouse}
+import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader, FaceDirectionByMouse}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, Pose}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite._
@@ -33,7 +33,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private val frameTimeCalculator = new FrameTimeCalculator
   private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
 
-  private var avatarHolder: Try[Avatar] = new AvatarFileReader("/home/brianhsu/WorkRoom/CubismSDK/Samples/Resources/Rice").loadAvatar()
+  private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
   private var updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {
@@ -156,14 +156,17 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       avatar <- avatarHolder
       updateStrategy <- updateStrategyHolder
     } {
-      val pose = new AvatarPoseReader(avatar.avatarSettings).loadPose.getOrElse(new Pose)
-      updateStrategy.setFunctionalEffects(
-        //new Breath() ::
-        //new EyeBlink(avatar.avatarSettings) ::
-        //faceDirection ::
-        pose ::
-        Nil
-      )
+      val poseHolder = new AvatarPoseReader(avatar.avatarSettings).loadPose
+      val physicsHolder = new AvatarPhysicsReader(avatar.avatarSettings).loadPhysics
+      val effects = List(
+        Some(new Breath()),
+        Some(new EyeBlink(avatar.avatarSettings)),
+        Some(faceDirection),
+        physicsHolder,
+        poseHolder
+      ).flatten
+
+      updateStrategy.setEffects(effects)
     }
   }
 
@@ -225,10 +228,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       case 's' => startMotion("tapBody", 1)
       case 'd' => startMotion("tapBody", 2)
       case 'f' => startMotion("tapBody", 3)
-      case 'z' => {
-        println("Z is pressed...")
-        DefaultStrategy.enablePhy = true
-      }
+      case 'z' => switchModel("src/main/resources/Haru")
       case 'x' => switchModel("src/test/resources/models/Mark")
       case 'c' => switchModel("src/test/resources/models/Rice")
       case 'v' => switchModel("src/test/resources/models/Natori")

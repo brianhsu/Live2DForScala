@@ -47,6 +47,21 @@ class AvatarExpressionReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
       )
 
     }
+
+    Scenario("Load expression mapping from avatar without any expression") {
+      Given("A folder path contains json files for Mark Live2D avatar model")
+      val folderPath = "src/test/resources/models/Mark"
+
+      When("Create a expression map from this Live2D avatar settings")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val settings: Settings = jsonSettingsReader.loadSettings().success.value
+      val reader = new AvatarExpressionReader(settings)
+      val expressions: Map[String, Expression] = reader.loadExpressions
+
+      Then("the expressions map should be empty")
+      expressions.isEmpty shouldBe true
+    }
+
   }
 
 }

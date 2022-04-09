@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.Expression.{Add, Multiply, Overwrite}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
+import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 object Expression {
@@ -29,7 +29,7 @@ case class Expression(fadeInTimeInSeconds: Option[Float],
                                    weight: Float,
                                    startTimeInSeconds: Float,
                                    fadeInStartTimeInSeconds: Float,
-                                   endTimeInSeconds: Option[Float]): List[EffectOperation] = {
+                                   endTimeInSeconds: Option[Float]): List[UpdateOperation] = {
 
     parameters.map { parameter =>
       parameter.blendType match {

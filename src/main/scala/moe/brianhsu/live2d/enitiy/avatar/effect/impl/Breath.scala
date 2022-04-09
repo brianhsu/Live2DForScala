@@ -1,6 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, Effect, ParameterValueAdd}
+import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
+import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueAdd, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
 import scala.math.sin
@@ -19,7 +20,7 @@ object Breath {
 
 class Breath (parameters: List[Breath.Parameter] = Breath.defaultEffect) extends Effect {
 
-  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[EffectOperation] = {
+  override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[UpdateOperation] = {
     val perimeter = totalElapsedTimeInSeconds * 2.0f * Math.PI.toFloat
     parameters.map { parameter =>
       val value = parameter.offset + (parameter.peak * sin(perimeter / parameter.cycle).toFloat)

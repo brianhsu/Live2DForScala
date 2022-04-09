@@ -1,4 +1,4 @@
-package moe.brianhsu.utils
+package moe.brianhsu.utils.matcher
 
 import org.scalatest.matchers.{MatchResult, Matcher}
 

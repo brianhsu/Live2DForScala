@@ -3,8 +3,8 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 import com.sun.jna.{Memory, Pointer}
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.AvatarPoseReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.{EffectOperation, FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
+import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel, Part}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -44,12 +44,12 @@ class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with T
       val testDataFile = Source.fromFile("src/test/resources/expectation/pose.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
-      dataPointList.foreach { datPoint =>
-        pose.setInitStatusForTest(datPoint.isAlreadyInit)
+      dataPointList.foreach { dataPoint =>
+        pose.setInitStatusForTest(dataPoint.isAlreadyInit)
         val operations = pose.calculateOperations(
-          createStubbedModel(datPoint),
-          datPoint.totalElapsedTimeInSeconds,
-          datPoint.deltaTimeInSeconds
+          createStubbedModel(dataPoint),
+          dataPoint.totalElapsedTimeInSeconds,
+          dataPoint.deltaTimeInSeconds
         )
         operations should contain theSameElementsInOrderAs operations
       }
@@ -82,6 +82,6 @@ class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with T
                      isAlreadyInit: Boolean,
                      fallbackParameters: Map[String, Float],
                      partOpacities: Map[String, Float],
-                     operations: List[EffectOperation])
+                     operations: List[UpdateOperation])
 
 }

@@ -6,3 +6,4 @@ project/target
 *.swp
 .DS_Store
 .bsp/
+.attach*

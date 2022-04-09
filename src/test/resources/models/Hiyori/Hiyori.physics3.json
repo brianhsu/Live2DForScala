@@ -2,8 +2,8 @@
 	"Version": 3,
 	"Meta": {
 		"PhysicsSettingCount": 11,
-		"TotalInputCount": 34,
-		"TotalOutputCount": 35,
+		"TotalInputCount": 35,
+		"TotalOutputCount": 39,
 		"VertexCount": 58,
 		"EffectiveForces": {
 			"Gravity": {
@@ -78,6 +78,15 @@
 				{
 					"Source": {
 						"Target": "Parameter",
+						"Id": "ParamAngleY"
+					},
+					"Weight": 60,
+					"Type": "Y",
+					"Reflect": false
+				},
+				{
+					"Source": {
+						"Target": "Parameter",
 						"Id": "ParamAngleZ"
 					},
 					"Weight": 60,
@@ -113,7 +122,7 @@
 					"Scale": 1.522,
 					"Weight": 100,
 					"Type": "Angle",
-					"Reflect": false
+					"Reflect": true
 				}
 			],
 			"Vertices": [
@@ -201,6 +210,28 @@
 					"Scale": 2.061,
 					"Weight": 100,
 					"Type": "Angle",
+					"Reflect": false
+				},
+				{
+					"Destination": {
+						"Target": "Parameter",
+						"Id": "ParamBrowRY"
+					},
+					"VertexIndex": 1,
+					"Scale": 2.061,
+					"Weight": 100,
+					"Type": "Y",
+					"Reflect": false
+				},
+				{
+					"Destination": {
+						"Target": "Parameter",
+						"Id": "ParamBrowRX"
+					},
+					"VertexIndex": 1,
+					"Scale": 2.061,
+					"Weight": 100,
+					"Type": "X",
 					"Reflect": false
 				}
 			],
@@ -290,7 +321,30 @@
 					"Weight": 100,
 					"Type": "Angle",
 					"Reflect": false
+				},
+				{
+					"Destination": {
+						"Target": "Parameter",
+						"Id": "ParamBrowLY"
+					},
+					"VertexIndex": 1,
+					"Scale": 2.061,
+					"Weight": 100,
+					"Type": "Y",
+					"Reflect": true
+				},
+				{
+					"Destination": {
+						"Target": "Parameter",
+						"Id": "ParamBrowLX"
+					},
+					"VertexIndex": 1,
+					"Scale": 2.061,
+					"Weight": 100,
+					"Type": "X",
+					"Reflect": true
 				}
+
 			],
 			"Vertices": [
 				{
@@ -488,7 +542,7 @@
 					},
 					"VertexIndex": 1,
 					"Scale": 1.402,
-					"Weight": 100,
+					"Weight": 30,
 					"Type": "Angle",
 					"Reflect": false
 				}
@@ -1367,7 +1421,7 @@
 						"Target": "Parameter",
 						"Id": "Param_Angle_Rotation_1_ArtMesh55"
 					},
-					"VertexIndex": 1,
+					"VertexIndex": 0,
 					"Scale": 5,
 					"Weight": 100,
 					"Type": "Angle",
@@ -1378,7 +1432,7 @@
 						"Target": "Parameter",
 						"Id": "Param_Angle_Rotation_2_ArtMesh55"
 					},
-					"VertexIndex": 2,
+					"VertexIndex": 100,
 					"Scale": 5,
 					"Weight": 100,
 					"Type": "Angle",
@@ -1391,7 +1445,7 @@
 					},
 					"VertexIndex": 3,
 					"Scale": 10,
-					"Weight": 100,
+					"Weight": 50,
 					"Type": "Angle",
 					"Reflect": false
 				},
