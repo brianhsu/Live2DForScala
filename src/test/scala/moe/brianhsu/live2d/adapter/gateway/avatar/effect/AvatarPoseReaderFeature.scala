@@ -61,6 +61,20 @@ class AvatarPoseReaderFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       pose.fadeTimeInSeconds shouldBe 0.5
     }
 
+    Scenario("Load pose from avatar that does not utilize Pose") {
+      Given("A folder path contains json files for Mark Live2D avatar model")
+      val folderPath = "src/test/resources/models/Mark"
+
+      When("Create a Pose effect from this Live2D avatar settings")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val settings: Settings = jsonSettingsReader.loadSettings().success.value
+      val reader = new AvatarPoseReader(settings)
+      val pose = reader.loadPose
+
+      Then("the result should be a None")
+      pose shouldBe None
+    }
+
   }
 
 }

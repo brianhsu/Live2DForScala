@@ -40,7 +40,7 @@ class AvatarPhysicsReader(avatarSettings: Settings) extends PhysicsReader {
       )
     }
 
-    physics.PhysicsData(
+    PhysicsData(
       effects,
       EuclideanVector(
         json.meta.effectiveForces.gravity.x,

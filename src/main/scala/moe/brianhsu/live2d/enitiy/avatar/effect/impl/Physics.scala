@@ -7,7 +7,7 @@ import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOp
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 
-class Physics(physicsData: PhysicsData, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) extends Effect {
+case class Physics(physicsData: PhysicsData, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) extends Effect {
 
   private val MaximumWeight = 100.0f
   private var currentParticlesMap: Map[PhysicsEffect, List[PhysicsParticle]] = Map.empty
