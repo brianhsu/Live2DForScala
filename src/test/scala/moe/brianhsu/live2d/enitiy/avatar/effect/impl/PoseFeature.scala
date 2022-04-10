@@ -46,7 +46,7 @@ class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with T
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
       dataPointList.foreach { dataPoint =>
-        pose.setInitStatusForTest(dataPoint.isAlreadyInit)
+        pose.isAlreadyInit = dataPoint.isAlreadyInit
         val operations = pose.calculateOperations(
           createStubbedModel(dataPoint),
           dataPoint.totalElapsedTimeInSeconds,

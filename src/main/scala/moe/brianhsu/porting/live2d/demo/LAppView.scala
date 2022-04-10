@@ -120,7 +120,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
     val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
 
-    targetPointCalculator.setFaceTargetCoordinate(0.0f, 0.0f)
+    targetPointCalculator.updateFaceTargetCoordinate(0.0f, 0.0f)
     for {
       _ <- avatarHolder
       model <- modelHolder
@@ -137,7 +137,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
     val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
     val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
-    targetPointCalculator.setFaceTargetCoordinate(viewX, viewY)
+    targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)
   }
 
   private def initOpenGL(): Unit = {

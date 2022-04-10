@@ -21,7 +21,7 @@ class FaceDirectionByMouseFeature extends AnyFeatureSpec with GivenWhenThen with
 
       for (row <- testDataList) {
         totalElapsedTimeInSeconds += row.interval
-        targetPointCalculator.setFaceTargetCoordinate(row.viewX, row.viewY)
+        targetPointCalculator.updateFaceTargetCoordinate(row.viewX, row.viewY)
         targetPointCalculator.updateFrameTimeInfo(totalElapsedTimeInSeconds, row.interval)
         val (faceX, faceY) = targetPointCalculator.currentFaceCoordinate
 

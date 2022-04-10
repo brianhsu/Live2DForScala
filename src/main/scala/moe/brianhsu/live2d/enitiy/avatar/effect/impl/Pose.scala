@@ -47,7 +47,7 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
   /**
    * Is the parts in this model already be initialized
    */
-  private var isAlreadyInit = false
+  private[impl] var isAlreadyInit = false
 
   /**
    * Create operations to update model.
@@ -179,17 +179,4 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
 
     operationsForEachPose.flatten
   }
-
-
-  /**
-   * Set the status of initialization
-   *
-   * The should be only used in unit test.
-   *
-   * @param isAlreadyInit The init status from unit test data point.
-   */
-  private[impl] def setInitStatusForTest(isAlreadyInit: Boolean): Unit = {
-    this.isAlreadyInit = isAlreadyInit
-  }
-
 }
