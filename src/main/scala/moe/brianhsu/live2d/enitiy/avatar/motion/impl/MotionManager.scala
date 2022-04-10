@@ -10,7 +10,7 @@ class MotionManager {
   private var callbackHolder: Option[Callback] = None
 
   def currentMotions: List[MotionWithTransition] = motionQueue
-  def iaAllFinished: Boolean = this.motionQueue.forall(_.isFinished)
+  def isAllFinished: Boolean = this.motionQueue.forall(_.isFinished)
 
   def setEventCallbackForAllMotions(callback: Callback): Unit = {
     this.callbackHolder = Some(callback)

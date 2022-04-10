@@ -256,7 +256,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       val motionManager = new MotionManager
 
       Then("isAllFinished should be true")
-      motionManager.iaAllFinished shouldBe true
+      motionManager.isAllFinished shouldBe true
     }
 
     Scenario("All motion is not finished") {
@@ -277,7 +277,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       (() => motion3.isFinished).when().returns(false)
 
       Then("isAllFinished should be false")
-      motionManager.iaAllFinished shouldBe false
+      motionManager.isAllFinished shouldBe false
     }
 
     Scenario("Only some motion is finished") {
@@ -298,7 +298,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       (() => motion3.isFinished).when().returns(false)
 
       Then("isAllFinished should be false")
-      motionManager.iaAllFinished shouldBe false
+      motionManager.isAllFinished shouldBe false
     }
 
     Scenario("all motion is finished") {
@@ -319,7 +319,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       (() => motion3.isFinished).when().returns(true)
 
       Then("isAllFinished should be true")
-      motionManager.iaAllFinished shouldBe true
+      motionManager.isAllFinished shouldBe true
     }
 
   }
