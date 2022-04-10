@@ -1,75 +1,9 @@
 package moe.brianhsu.porting.live2d.framework.model
 
-import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
-import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
-import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.usecase.updater.UpdateStrategy
-import org.slf4j.LoggerFactory
-object DefaultStrategy {
-  var enablePhy: Boolean = false
-}
-class DefaultStrategy(avatarSettings: Settings, protected val model: Live2DModel) extends UpdateStrategy {
-
-  private val defaultLogger = LoggerFactory.getLogger(this.getClass)
-  private val expressions = new AvatarExpressionReader(avatarSettings).loadExpressions
-  private var effects: List[Effect] = Nil
-  private val expressionManager = new MotionManager
-  private val newMotionManager = new MotionManager
-
-  newMotionManager.setEventCallbackForAllMotions((m: MotionWithTransition, e:MotionEvent) => {
-    println("motion:" + m)
-    println("motionEvent:" + e)
-  })
-
-  def setEffects(effects: List[Effect]): Unit = {
-    this.effects = effects
-  }
-
-  def appendEffect(effect: Effect): Unit = {
-    this.effects = effects.appended(effect)
-  }
-
-  def removeEffect(effect: Effect): Unit = {
-    this.effects = effects.filterNot(_ == effect)
-  }
-
-  def startMotion(motionGroup: String, index: Int): Unit = {
-    val name = s"Motion(${motionGroup}_$index)"
-    val motionSettings = avatarSettings.motionGroups(motionGroup)(index)
-    val motion = AvatarMotion(motionSettings, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds)
-    defaultLogger.info(s"Start motion $name")
-    newMotionManager.startMotion(motion)
-  }
-
-  def setExpression(name: String): Unit = {
-    expressions.get(name).foreach { expressions =>
-      defaultLogger.info(s"Start $name expression")
-      this.expressionManager.startMotion(expressions)
-    }
-  }
-
-  private def startMotionWithNew(frameTimeInfo: FrameTimeInfo): Unit = {
-    val operations = newMotionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
-    executeOperations(model, operations)
-  }
-
-  override def update(frameTimeInfo: FrameTimeInfo): Unit = {
-    model.restoreParameters()
-    startMotionWithNew(frameTimeInfo)
-    model.snapshotParameters()
-
-    val expressionsOperations = expressionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
-    val operations = effects.flatMap(_.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds))
-
-    executeOperations(model, expressionsOperations ++ operations)
-
-    model.update()
-  }
-}
 
 /**
  * This class represent a complete Live 2D Cubism Avatar runtime model.
