@@ -1,34 +1,31 @@
-package moe.brianhsu.live2d.usecase.updater
+package moe.brianhsu.live2d.usecase.updater.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter, Part}
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-class UpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory {
+class ModelUpdaterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory {
 
   Feature("Update model according to command operation") {
     Scenario("The operation list is empty") {
-      Given("A dummy UpdateStrategy")
-      val strategy = new DummyUpdateStrategy
 
-      And("a mocked model do not expect any command")
+      Given("a mocked model do not expect any command")
       val model = mock[Live2DModel]
 
+      And("A ModelUpdater based on that model")
+      val strategy = new ModelUpdater(model)
+
       When("executeOperations with empty command list to that model")
-      strategy.executeOperations(model, Nil)
+      strategy.executeOperations(Nil)
 
       Then("it should do nothing")
     }
 
     Scenario("The operation contains multiple operations that access normal parameter") {
-      Given("A dummy UpdateStrategy")
-      val strategy = new DummyUpdateStrategy
-
-      And("a stubbed model with some stubbed parameters")
+      Given("a stubbed model with some stubbed parameters")
       val model = stub[Live2DModel]
       val mockedParameterId1 = stub[Parameter]
       val mockedParameterId2 = stub[Parameter]
@@ -40,9 +37,11 @@ class UpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Match
       )
       (() => model.parameters).when().returns(mockedParameters)
 
+      And("A ModelUpdater based on that model")
+      val updater = new ModelUpdater(model)
+
       When("executeOperations with a operation list to that model")
-      strategy.executeOperations(
-        model,
+      updater.executeOperations(
         List(
           ParameterValueAdd("id1", 0.1f, 0.2f),
           ParameterValueUpdate("id2", 0.3f, 0.4f),
@@ -65,19 +64,18 @@ class UpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Match
     }
 
     Scenario("The operation contains multiple operations that access fallback parameter") {
-      Given("A dummy UpdateStrategy")
-      val strategy = new DummyUpdateStrategy
-
-      And("a stubbed model with some stubbed parameters")
+      Given("a stubbed model with some stubbed parameters")
       val mockedParameterId1 = stub[Parameter]
       val mockedParameterId2 = stub[Parameter]
       val model = stub[Live2DModel]
       (model.parameterWithFallback _).when("id1").returns(mockedParameterId1)
       (model.parameterWithFallback _).when("id2").returns(mockedParameterId2)
 
+      And("A ModelUpdater based on that model")
+      val updater = new ModelUpdater(model)
+
       When("executeOperations with a operation list to that model")
-      strategy.executeOperations(
-        model,
+      updater.executeOperations(
         List(
           FallbackParameterValueAdd("id1", 0.1f, 0.2f),
           FallbackParameterValueUpdate("id2", 0.3f, 0.4f),
@@ -96,19 +94,18 @@ class UpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Match
     }
 
     Scenario("The operation contains multiple operations that access parts") {
-      Given("A dummy UpdateStrategy")
-      val strategy = new DummyUpdateStrategy
-
-      And("a stubbed model with some stubbed parts")
+      Given("a stubbed model with some stubbed parts")
       val mockedPart1 = stub[Part]
       val mockedPart2 = stub[Part]
       val parts = Map("id1" -> mockedPart1, "id2" -> mockedPart2)
       val model = stub[Live2DModel]
       (() => model.parts).when().returns(parts)
 
+      And("A ModelUpdater based on that model")
+      val updater = new ModelUpdater(model)
+
       When("executeOperations with a operation list to that model")
-      strategy.executeOperations(
-        model,
+      updater.executeOperations(
         List(
           PartOpacityUpdate("id1", 0.1f),
           PartOpacityUpdate("id2", 0.2f),
@@ -124,14 +121,6 @@ class UpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Match
         (mockedPart2.opacity_= _).verify(0.3f).once()
         (mockedPart1.opacity_= _).verify(0.4f).once()
       }
-    }
-
-  }
-
-  class DummyUpdateStrategy extends UpdateStrategy {
-    override def update(frameTimeInfo: FrameTimeInfo): Unit = {}
-    override def executeOperations(model: Live2DModel, operations: List[UpdateOperation]): Unit = {
-      super.executeOperations(model, operations)
     }
   }
 }

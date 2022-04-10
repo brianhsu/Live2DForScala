@@ -7,16 +7,28 @@ import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateStrategy
+import moe.brianhsu.live2d.usecase.updater.{UpdateStrategy, Updater}
 
-class BasicStrategy(avatarSettings: Settings,
-                    protected val model: Live2DModel,
-                    val expressionManager: MotionManager = new MotionManager,
-                    val motionManager: MotionManager = new MotionManager) extends UpdateStrategy {
+class BasicUpdateStrategy(val avatarSettings: Settings,
+                          val model: Live2DModel,
+                          val expressionReader: AvatarExpressionReader,
+                          val expressionManager: MotionManager,
+                          val motionManager: MotionManager,
+                          updater: Updater) extends UpdateStrategy {
 
-  private val expressions = new AvatarExpressionReader(avatarSettings).loadExpressions
 
+  private val expressions = expressionReader.loadExpressions
   var effects: List[Effect] = Nil
+
+  def this(avatarSettings: Settings, model: Live2DModel) = {
+    this(
+      avatarSettings, model,
+      new AvatarExpressionReader(avatarSettings),
+      expressionManager = new MotionManager,
+      motionManager = new MotionManager,
+      updater = new ModelUpdater(model)
+    )
+  }
 
   def startMotion(motionSetting: MotionSetting): MotionWithTransition = {
     val motion = AvatarMotion(motionSetting, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds)
@@ -42,12 +54,12 @@ class BasicStrategy(avatarSettings: Settings,
 
   private def executeMotionOperations(frameTimeInfo: FrameTimeInfo): Unit = {
     val operations = motionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
-    executeOperations(model, operations)
+    updater.executeOperations(operations)
   }
 
   private def executeExpressionOperations(frameTimeInfo: FrameTimeInfo): Unit = {
     val operations = expressionManager.calculateOperations(model, frameTimeInfo.totalElapsedTimeInSeconds, frameTimeInfo.deltaTimeInSeconds, 1)
-    executeOperations(model, operations)
+    updater.executeOperations(operations)
   }
 
   private def executeEffectsOperations(frameTimeInfo: FrameTimeInfo): Unit = {
@@ -58,7 +70,7 @@ class BasicStrategy(avatarSettings: Settings,
       operation
     }
 
-    executeOperations(model, operations)
+    updater.executeOperations(operations)
   }
 
   override def update(frameTimeInfo: FrameTimeInfo): Unit = {

@@ -6,7 +6,7 @@ import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.impl.BasicStrategy
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite._
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
@@ -38,9 +38,9 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
-  private var updateStrategyHolder: Try[BasicStrategy] = avatarHolder.map(a => {
-    a.updateStrategyHolder = Some(new BasicStrategy(a.avatarSettings, a.model))
-    a.updateStrategyHolder.get.asInstanceOf[BasicStrategy]
+  private var updateStrategyHolder: Try[BasicUpdateStrategy] = avatarHolder.map(a => {
+    a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
+    a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
   })
   private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, backgroundTexture, spriteShader)
   private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, powerTexture, spriteShader)
@@ -193,8 +193,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     this.modelHolder = avatarHolder.map(_.model)
     this.updateStrategyHolder = avatarHolder.map(a => {
       println("Create new update strategy")
-      a.updateStrategyHolder = Some(new BasicStrategy(a.avatarSettings, a.model))
-      a.updateStrategyHolder.get.asInstanceOf[BasicStrategy]
+      a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
+      a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
     })
     this.rendererHolder = modelHolder.map(model => new Renderer(model))
     setupAvatarEffects()
