@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.model
 
-import moe.brianhsu.live2d.RichPath.convertFromPath
+import moe.brianhsu.live2d.adapter.RichPath.convertFromPath
 import org.json4s.native.JsonMethods.parse
 import org.json4s.{DefaultFormats, Formats}
 

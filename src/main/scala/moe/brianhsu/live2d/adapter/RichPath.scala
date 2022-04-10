@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d
+package moe.brianhsu.live2d.adapter
 
 import java.nio.charset.{Charset, StandardCharsets}
 import java.nio.file.{Files, Path}
@@ -11,7 +11,7 @@ import scala.util.Try
  * @example
  *  {{{
  *    import java.nio.file.Paths
- *    import moe.brianhsu.live2d.RichPath._
+ *    import moe.brianhsu.live2d.adapter.RichPath._
  *
  *    val path = Paths.get("/usr/share/doc")
  *    val isReadableFile = path.isReadableFile
