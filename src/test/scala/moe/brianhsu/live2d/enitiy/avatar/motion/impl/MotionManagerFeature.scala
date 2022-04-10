@@ -69,7 +69,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
   }
 
   Feature("Set event callback for all MotionWithTransition in queue") {
-    Scenario("Set event callback") {
+    Scenario("Set event callback before motion started") {
       Given("several MotionWithTransition and a MotionManager")
       val motion1 = stub[MotionWithTransition]
       val motion2 = stub[MotionWithTransition]
@@ -79,7 +79,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
       When("set callback on manager")
       val mockedCallback = stub[EventCallback]
-      motionManger.setEventCallbackForAllMotions(Some(mockedCallback))
+      motionManger.eventCallbackHolder = Some(mockedCallback)
 
       And("start three motions")
       motionManger.startMotion(motion1)
@@ -94,10 +94,33 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       And("Last motion should not have any callback set")
       motion4.eventCallbackHolder shouldBe None
     }
+
+    Scenario("Set event callback after motion is started") {
+      Given("several MotionWithTransition and a MotionManager")
+      val motion1 = stub[MotionWithTransition]
+      val motion2 = stub[MotionWithTransition]
+      val motion3 = stub[MotionWithTransition]
+      val motionManger = new MotionManager
+
+      And("start three motions")
+      motionManger.startMotion(motion1)
+      motionManger.startMotion(motion2)
+      motionManger.startMotion(motion3)
+
+      When("set callback on manager")
+      val mockedCallback = stub[EventCallback]
+      motionManger.eventCallbackHolder = Some(mockedCallback)
+
+      Then("Three motion should all have a callback set")
+      motion1.eventCallbackHolder shouldBe Some(mockedCallback)
+      motion2.eventCallbackHolder shouldBe Some(mockedCallback)
+      motion3.eventCallbackHolder shouldBe Some(mockedCallback)
+    }
+
   }
 
   Feature("Set finish callback for all MotionWithTransition in queue") {
-    Scenario("Set finish callback") {
+    Scenario("Set finish callback before motion is started") {
       Given("several MotionWithTransition and a MotionManager")
       val motion1 = stub[MotionWithTransition]
       val motion2 = stub[MotionWithTransition]
@@ -107,7 +130,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
       When("set callback on manager")
       val mockedCallback = stub[FinishedCallback]
-      motionManger.setFinishCallbackForAllMotions(Some(mockedCallback))
+      motionManger.finishedCallbackHolder = Some(mockedCallback)
 
       And("start three motions")
       motionManger.startMotion(motion1)
@@ -122,6 +145,30 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       And("Last motion should not have any callback set")
       motion4.finishedCallbackHolder shouldBe None
     }
+
+    Scenario("Set finish callback after motion is started") {
+      Given("several MotionWithTransition and a MotionManager")
+      val motion1 = stub[MotionWithTransition]
+      val motion2 = stub[MotionWithTransition]
+      val motion3 = stub[MotionWithTransition]
+      val motionManger = new MotionManager
+
+
+      And("start three motions")
+      motionManger.startMotion(motion1)
+      motionManger.startMotion(motion2)
+      motionManger.startMotion(motion3)
+
+      When("set callback on manager")
+      val mockedCallback = stub[FinishedCallback]
+      motionManger.finishedCallbackHolder = Some(mockedCallback)
+
+      Then("Three motion should all have a callback set")
+      motion1.finishedCallbackHolder shouldBe Some(mockedCallback)
+      motion2.finishedCallbackHolder shouldBe Some(mockedCallback)
+      motion3.finishedCallbackHolder shouldBe Some(mockedCallback)
+    }
+
   }
 
   Feature("Force fade out previous motions") {

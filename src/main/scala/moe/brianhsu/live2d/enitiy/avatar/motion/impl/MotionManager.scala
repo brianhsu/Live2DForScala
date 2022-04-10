@@ -6,19 +6,24 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.usecase.updater.UpdateOperation
 
 class MotionManager {
+  private var mEventCallbackHolder: Option[EventCallback] = None
+  private var mFinishCallbackHolder: Option[FinishedCallback] = None
+
   private var motionQueue: List[MotionWithTransition] = Nil
-  private var eventCallbackHolder: Option[EventCallback] = None
-  private var finishCallbackHolder: Option[FinishedCallback] = None
 
   def currentMotions: List[MotionWithTransition] = motionQueue
   def isAllFinished: Boolean = this.motionQueue.forall(_.isFinished)
 
-  def setEventCallbackForAllMotions(callbackHolder: Option[EventCallback]): Unit = {
-    this.eventCallbackHolder = callbackHolder
+  def eventCallbackHolder: Option[EventCallback] = mEventCallbackHolder
+  def eventCallbackHolder_=(callbackHolder: Option[EventCallback]): Unit = {
+    this.mEventCallbackHolder = callbackHolder
+    this.currentMotions.foreach { _.eventCallbackHolder = callbackHolder }
   }
 
-  def setFinishCallbackForAllMotions(callbackHolder: Option[FinishedCallback]): Unit = {
-    this.finishCallbackHolder = callbackHolder
+  def finishedCallbackHolder: Option[FinishedCallback] = mFinishCallbackHolder
+  def finishedCallbackHolder_=(callbackHolder: Option[FinishedCallback]): Unit = {
+    this.mFinishCallbackHolder = callbackHolder
+    this.currentMotions.foreach { _.finishedCallbackHolder = callbackHolder }
   }
 
   def startMotion(motion: Motion): MotionWithTransition = {
@@ -26,8 +31,8 @@ class MotionManager {
   }
 
   def startMotion(motion: MotionWithTransition): MotionWithTransition = {
-    motion.eventCallbackHolder = eventCallbackHolder
-    motion.finishedCallbackHolder = finishCallbackHolder
+    motion.eventCallbackHolder = mEventCallbackHolder
+    motion.finishedCallbackHolder = mFinishCallbackHolder
 
     this.motionQueue.foreach(e => e.markAsForceFadeOut())
     this.motionQueue = this.motionQueue.appended(motion)
