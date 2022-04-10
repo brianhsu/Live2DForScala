@@ -4,6 +4,7 @@ import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, A
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
 import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
+import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
 import moe.brianhsu.porting.live2d.demo.sprite._
@@ -30,7 +31,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
   private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator
 
-  private val frameTimeCalculator = new FrameTimeCalculator
+  private val frameTimeCalculator = new SystemNanoTimeBasedFrameInfo
   private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
 
   private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
