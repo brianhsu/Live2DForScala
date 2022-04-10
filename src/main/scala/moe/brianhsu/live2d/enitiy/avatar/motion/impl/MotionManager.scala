@@ -8,10 +8,9 @@ import moe.brianhsu.live2d.usecase.updater.UpdateOperation
 class MotionManager {
   private var mEventCallbackHolder: Option[EventCallback] = None
   private var mFinishCallbackHolder: Option[FinishedCallback] = None
-
   private var motionQueue: List[MotionWithTransition] = Nil
+  private[impl] def currentMotions: List[MotionWithTransition] = motionQueue
 
-  def currentMotions: List[MotionWithTransition] = motionQueue
   def isAllFinished: Boolean = this.motionQueue.forall(_.isFinished)
 
   def eventCallbackHolder: Option[EventCallback] = mEventCallbackHolder

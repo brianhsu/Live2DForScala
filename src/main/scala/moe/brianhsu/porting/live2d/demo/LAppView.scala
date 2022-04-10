@@ -160,15 +160,13 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     } {
       val poseHolder = new AvatarPoseReader(avatar.avatarSettings).loadPose
       val physicsHolder = new AvatarPhysicsReader(avatar.avatarSettings).loadPhysics
-      val effects = List(
+      updateStrategy.effects = List(
         Some(new Breath()),
         Some(new EyeBlink(avatar.avatarSettings)),
         Some(faceDirection),
         physicsHolder,
         poseHolder
       ).flatten
-
-      updateStrategy.setEffects(effects)
     }
   }
 

@@ -81,12 +81,15 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       val mockedCallback = stub[EventCallback]
       motionManger.eventCallbackHolder = Some(mockedCallback)
 
+      Then("the eventCallbackHolder should be set")
+      motionManger.eventCallbackHolder shouldBe Some(mockedCallback)
+
       And("start three motions")
       motionManger.startMotion(motion1)
       motionManger.startMotion(motion2)
       motionManger.startMotion(motion3)
 
-      Then("First three motion should all have a callback set")
+      And("First three motion should all have a callback set")
       motion1.eventCallbackHolder shouldBe Some(mockedCallback)
       motion2.eventCallbackHolder shouldBe Some(mockedCallback)
       motion3.eventCallbackHolder shouldBe Some(mockedCallback)
@@ -111,7 +114,10 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       val mockedCallback = stub[EventCallback]
       motionManger.eventCallbackHolder = Some(mockedCallback)
 
-      Then("Three motion should all have a callback set")
+      Then("the eventCallbackHolder should be set")
+      motionManger.eventCallbackHolder shouldBe Some(mockedCallback)
+
+      And("Three motion should all have a callback set")
       motion1.eventCallbackHolder shouldBe Some(mockedCallback)
       motion2.eventCallbackHolder shouldBe Some(mockedCallback)
       motion3.eventCallbackHolder shouldBe Some(mockedCallback)
@@ -132,12 +138,15 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       val mockedCallback = stub[FinishedCallback]
       motionManger.finishedCallbackHolder = Some(mockedCallback)
 
+      Then("the finishedCallbackHolder should be set")
+      motionManger.finishedCallbackHolder shouldBe Some(mockedCallback)
+
       And("start three motions")
       motionManger.startMotion(motion1)
       motionManger.startMotion(motion2)
       motionManger.startMotion(motion3)
 
-      Then("First three motion should all have a callback set")
+      And("First three motion should all have a callback set")
       motion1.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion2.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion3.finishedCallbackHolder shouldBe Some(mockedCallback)
@@ -163,7 +172,10 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       val mockedCallback = stub[FinishedCallback]
       motionManger.finishedCallbackHolder = Some(mockedCallback)
 
-      Then("Three motion should all have a callback set")
+      Then("the finishedCallbackHolder should be set")
+      motionManger.finishedCallbackHolder shouldBe Some(mockedCallback)
+
+      And("Three motion should all have a callback set")
       motion1.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion2.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion3.finishedCallbackHolder shouldBe Some(mockedCallback)

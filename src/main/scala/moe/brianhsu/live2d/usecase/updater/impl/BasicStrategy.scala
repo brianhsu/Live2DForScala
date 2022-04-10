@@ -9,24 +9,14 @@ import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.usecase.updater.UpdateStrategy
 
-class BasicStrategy(avatarSettings: Settings, protected val model: Live2DModel) extends UpdateStrategy {
+class BasicStrategy(avatarSettings: Settings,
+                    protected val model: Live2DModel,
+                    val expressionManager: MotionManager = new MotionManager,
+                    val motionManager: MotionManager = new MotionManager) extends UpdateStrategy {
 
   private val expressions = new AvatarExpressionReader(avatarSettings).loadExpressions
-  private val expressionManager = new MotionManager
-  private val motionManager = new MotionManager
-  private var effects: List[Effect] = Nil
 
-  def setEffects(effects: List[Effect]): Unit = {
-    this.effects = effects
-  }
-
-  def appendEffect(effect: Effect): Unit = {
-    this.effects = effects.appended(effect)
-  }
-
-  def removeEffect(effect: Effect): Unit = {
-    this.effects = effects.filterNot(_ == effect)
-  }
+  var effects: List[Effect] = Nil
 
   def startMotion(motionSetting: MotionSetting): MotionWithTransition = {
     val motion = AvatarMotion(motionSetting, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds)
