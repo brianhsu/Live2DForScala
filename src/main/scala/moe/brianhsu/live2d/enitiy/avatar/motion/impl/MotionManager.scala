@@ -13,12 +13,12 @@ class MotionManager {
   def currentMotions: List[MotionWithTransition] = motionQueue
   def isAllFinished: Boolean = this.motionQueue.forall(_.isFinished)
 
-  def setEventCallbackForAllMotions(callback: EventCallback): Unit = {
-    this.eventCallbackHolder = Some(callback)
+  def setEventCallbackForAllMotions(callbackHolder: Option[EventCallback]): Unit = {
+    this.eventCallbackHolder = callbackHolder
   }
 
-  def setFinishCallbackForAllMotions(callback: FinishedCallback): Unit = {
-    this.finishCallbackHolder = Some(callback)
+  def setFinishCallbackForAllMotions(callbackHolder: Option[FinishedCallback]): Unit = {
+    this.finishCallbackHolder = callbackHolder
   }
 
   def startMotion(motion: Motion): MotionWithTransition = {
@@ -26,8 +26,8 @@ class MotionManager {
   }
 
   def startMotion(motion: MotionWithTransition): MotionWithTransition = {
-    this.eventCallbackHolder.foreach(motion.setEventCallback)
-    this.finishCallbackHolder.foreach(motion.setFinishedCallback)
+    motion.eventCallbackHolder = eventCallbackHolder
+    motion.finishedCallbackHolder = finishCallbackHolder
 
     this.motionQueue.foreach(e => e.markAsForceFadeOut())
     this.motionQueue = this.motionQueue.appended(motion)

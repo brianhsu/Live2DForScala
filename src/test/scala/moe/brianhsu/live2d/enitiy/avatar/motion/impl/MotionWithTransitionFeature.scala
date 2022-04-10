@@ -149,7 +149,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
       And("Set a event callback")
       val mockedCallback = stub[FinishedCallback]
-      transitionMotion.setFinishedCallback(mockedCallback)
+      transitionMotion.finishedCallbackHolder = Some(mockedCallback)
 
       When("calculate operations before event is finished")
       transitionMotion.calculateOperations(model, 0, 0, 1.0f)
@@ -183,7 +183,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
       And("Set a event callback")
       val mockedCallback = stub[FinishedCallback]
-      transitionMotion.setFinishedCallback(mockedCallback)
+      transitionMotion.finishedCallbackHolder = Some(mockedCallback)
 
       When("calculate operations that make event finished")
       transitionMotion.calculateOperations(model, 0, 0, 1.0f)
@@ -213,7 +213,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
       And("create a MotionWithTransition based on this motion and set event callback")
       val transitionMotion = new MotionWithTransition(baseMotion)
-      transitionMotion.setEventCallback(mockedCallback)
+      transitionMotion.eventCallbackHolder = Some(mockedCallback)
 
       And("calculate first two frame's operation at 0.0, 0.33f seconds")
       transitionMotion.calculateOperations(model, 0, 0, 1.0f)
@@ -237,7 +237,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
       And("create a MotionWithTransition based on this motion and set event callback")
       val transitionMotion = new MotionWithTransition(baseMotion)
-      transitionMotion.setEventCallback(mockedCallback)
+      transitionMotion.eventCallbackHolder = Some(mockedCallback)
 
       And("calculate first three frame's operation at 0.0, 0.33, 0.66 seconds")
       transitionMotion.calculateOperations(model, 0, 0, 1.0f)
@@ -262,7 +262,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
       And("create a MotionWithTransition based on this motion and set event callback")
       val transitionMotion = new MotionWithTransition(baseMotion)
-      transitionMotion.setEventCallback(mockedCallback)
+      transitionMotion.eventCallbackHolder = Some(mockedCallback)
 
       And("calculate first four frame's operation at 0.0, 0.33, 0.66, 0.99 seconds")
       transitionMotion.calculateOperations(model, 0, 0, 1.0f)

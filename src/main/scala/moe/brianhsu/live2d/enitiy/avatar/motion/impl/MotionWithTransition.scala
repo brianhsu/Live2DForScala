@@ -12,8 +12,8 @@ object MotionWithTransition {
 }
 
 class MotionWithTransition(val baseMotion: Motion) {
-  private var eventCallbackHolder: Option[EventCallback] = None
-  private var finishedCallbackHolder: Option[FinishedCallback] = None
+  var eventCallbackHolder: Option[EventCallback] = None
+  var finishedCallbackHolder: Option[FinishedCallback] = None
 
   private var mIsFinished: Boolean = false
   private var isStarted: Boolean = false
@@ -58,14 +58,6 @@ class MotionWithTransition(val baseMotion: Motion) {
 
       operations
     }
-  }
-
-  def setFinishedCallback(callback: FinishedCallback): Unit = {
-    this.finishedCallbackHolder = Some(callback)
-  }
-
-  def setEventCallback(callback: EventCallback): Unit = {
-    this.eventCallbackHolder = Some(callback)
   }
 
   def startFadeOut(totalElapsedTimeInSeconds: Float): Unit = {
