@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.renderer.opengl
 
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
 import moe.brianhsu.porting.live2d.renderer.opengl.OffscreenFrame.{colorBufferHolder, textureBufferHolder}
 
 case class BufferIds(textureBufferHolder: Option[Int], colorBufferHolder: Option[Int])
@@ -10,7 +10,7 @@ object OffscreenFrame {
   var textureBufferHolder: Option[Int] = None
 }
 
-class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)(implicit gl: OpenGL) {
+class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)(implicit gl: OpenGLBinding) {
 
   import gl._
 

@@ -1,8 +1,8 @@
-package moe.brianhsu.porting.live2d.adapter
+package moe.brianhsu.live2d.adapter.gateway.renderer
 
 import java.nio.{ByteBuffer, FloatBuffer}
 
-trait OpenGL {
+trait OpenGLBinding {
   def glGenTextures(n: Int, textures: Array[Int]): Unit
   def glBindTexture(target: Int, texture: Int): Unit
   def glTexImage2D(target: Int, level: Int, internalformat: Int, width: Int, height: Int, border: Int, format: Int, `type`: Int, pixels: ByteBuffer): Unit
@@ -20,7 +20,6 @@ trait OpenGL {
   def glShaderSource(shader: Int, count: Int, string: Array[String]): Unit
   def glGetProgramiv(program: Int, pname: Int, params: Array[Int]): Unit
   def glGetProgramInfoLog(program: Int, bufSize: Int, infoLog: ByteBuffer): Unit
-
   def glGetShaderiv(shader: Int, pname: Int, params: Array[Int]): Unit
   def glGetShaderInfoLog(shader: Int, bufSize: Int, infoLog: ByteBuffer): Unit
   def glGetAttribLocation(program: Int, name: String): Int
@@ -111,5 +110,4 @@ trait OpenGL {
   val GL_SRC_ALPHA: Int
   val GL_DEPTH_BUFFER_BIT: Int
   val GL_TRIANGLE_FAN: Int
-
 }

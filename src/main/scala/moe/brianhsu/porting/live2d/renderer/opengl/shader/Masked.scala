@@ -1,8 +1,8 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
 
-class Masked(implicit gl: OpenGL) extends AvatarShader {
+class Masked(implicit gl: OpenGLBinding) extends AvatarShader {
   override def vertexShaderSource: String = {
     "#version 120\n"+
       "attribute vec4 a_position;" +

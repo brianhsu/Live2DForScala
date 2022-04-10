@@ -1,9 +1,9 @@
 package moe.brianhsu.porting.live2d.demo.sprite
 
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.BaseShader
 
-class SpriteShader(implicit gl: OpenGL) extends BaseShader[SpriteShader] {
+class SpriteShader(implicit gl: OpenGLBinding) extends BaseShader[SpriteShader] {
   override def vertexShaderSource: String =
     """
       |#version 120

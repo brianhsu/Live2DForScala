@@ -1,10 +1,11 @@
 package moe.brianhsu.porting.live2d.demo.sprite
 
-import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
+import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
+import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfo
 import moe.brianhsu.porting.live2d.renderer.opengl.TextureManager.TextureInfo
 
 class BackgroundSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureInfo, shader: SpriteShader)
-                      (implicit private val gl: OpenGL) extends LAppSprite(drawCanvasInfo, textureInfo, shader) {
+                      (implicit private val gl: OpenGLBinding) extends LAppSprite(drawCanvasInfo, textureInfo, shader) {
 
   override protected def calculatePosition(): Position = {
 

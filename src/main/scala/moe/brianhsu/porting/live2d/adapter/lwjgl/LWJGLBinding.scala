@@ -1,12 +1,12 @@
 package moe.brianhsu.porting.live2d.adapter.lwjgl
 
 import com.jogamp.common.nio.Buffers
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
 import org.lwjgl.opengl._
 
 import java.nio.{ByteBuffer, ByteOrder, FloatBuffer}
 
-class LWJGLOpenGL extends OpenGL {
+class LWJGLBinding extends OpenGLBinding {
   override val GL_TEXTURE_2D: Int = GL11.GL_TEXTURE_2D
   override val GL_RGBA: Int = GL11.GL_RGBA
   override val GL_UNSIGNED_BYTE: Int = GL11.GL_UNSIGNED_BYTE

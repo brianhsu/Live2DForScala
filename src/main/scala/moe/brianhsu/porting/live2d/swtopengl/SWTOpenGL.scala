@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.swtopengl
 
-import moe.brianhsu.porting.live2d.adapter.lwjgl.{LWJGLOpenGL, SWTOpenGLCanvasInfo}
+import moe.brianhsu.live2d.adapter.gateway.renderer.swt.SWTOpenGLCanvasInfo
+import moe.brianhsu.porting.live2d.adapter.lwjgl.LWJGLBinding
 import moe.brianhsu.porting.live2d.demo.LAppView
 import org.eclipse.swt._
 import org.eclipse.swt.events.{KeyEvent, KeyListener, MouseEvent, MouseListener}
@@ -25,7 +26,7 @@ object SWTOpenGL {
     canvas.setCurrent()
     GL.createCapabilities()
 
-    implicit val gl = new LWJGLOpenGL
+    implicit val gl = new LWJGLBinding
     val canvasInfo = new SWTOpenGLCanvasInfo(canvas)
     val appView = new LAppView(canvasInfo)
 
