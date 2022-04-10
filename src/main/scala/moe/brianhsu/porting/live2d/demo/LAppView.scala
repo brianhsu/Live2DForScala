@@ -180,7 +180,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
   private def startExpression(name: String): Unit = {
     updateStrategyHolder.foreach { updateStrategy =>
-      updateStrategy.setExpression(name)
+      updateStrategy.startExpression(name)
     }
   }
 
