@@ -43,7 +43,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       And("Set wind direction to (10.0f, 10.0f)")
       physics.windDirection = EuclideanVector(10.0f, 10.0f)
 
-      val testDataFile = Source.fromFile("src/test/resources/expectation/physicsOperations.json")
+      val testDataFile = Source.fromFile("src/test/resources/expectation/physicOperations/markPhysicsOperations.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
       dataPointList.foreach { dataPoint =>
@@ -70,7 +70,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       And("Set wind direction to (10.0f, 10.0f)")
       physics.windDirection = EuclideanVector(10.0f, 10.0f)
 
-      val testDataFile = Source.fromFile("src/test/resources/expectation/HiyoriPhysic.json")
+      val testDataFile = Source.fromFile("src/test/resources/expectation/physicOperations/hiyoriPhysicsOperations.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
       dataPointList.foreach { dataPoint =>
