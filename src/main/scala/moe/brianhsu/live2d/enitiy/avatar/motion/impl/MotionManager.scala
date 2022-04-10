@@ -2,8 +2,8 @@ package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
 import moe.brianhsu.live2d.enitiy.avatar.motion.Motion
-import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateOperation
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
 
 class MotionManager {
   private var motionQueue: List[MotionWithTransition] = Nil

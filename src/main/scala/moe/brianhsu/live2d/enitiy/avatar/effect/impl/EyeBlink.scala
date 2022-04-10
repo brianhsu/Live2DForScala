@@ -2,8 +2,9 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation.ParameterValueUpdate
 
 import scala.util.Random
 

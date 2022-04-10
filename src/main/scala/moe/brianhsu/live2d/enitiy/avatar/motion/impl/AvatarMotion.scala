@@ -5,9 +5,10 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.AvatarMotion.{EffectNameEyeBlink, EffectNameLipSync}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueUpdate, ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{FallbackParameterValueUpdate, ParameterValueUpdate}
 
 object AvatarMotion {
   private val EffectNameEyeBlink = "EyeBlink"

@@ -67,11 +67,11 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val dataPointList = ExpectedAvatarMotionOperation.fromFile("src/test/resources/expectation/motionOperations/markIdel01Motion.json")
 
       dataPointList.foreach { case ExpectedAvatarMotionOperation(input, output) =>
-        //When("Calculate the operations from data point using motion")
+        When("Calculate the operations from data point using motion")
         val model = createStubbedModel(input)
         val operations = motion.calculateOperations(model, input.totalElapsedTimeInSeconds, input.deltaTimeInSeconds, input.weight, input.startTimeInSeconds, input.fadeInStartTimeInSeconds, input.endTimeInSeconds)
 
-        //Then("it should be the same as the result in recorded file")
+        Then("it should be the same as the result in recorded file")
         operations should contain theSameElementsInOrderAs output.operations
       }
     }

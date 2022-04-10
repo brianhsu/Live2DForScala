@@ -2,9 +2,9 @@ package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
-import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateOperation
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
 
 object MotionWithTransition {
   type Callback= (MotionWithTransition, MotionEvent) => Unit

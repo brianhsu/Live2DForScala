@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.Expression.{Add, Multiply, Overwrite, Parameter}
-import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

@@ -5,8 +5,9 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.avatar.motion.MotionEvent
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.updater.{FrameTimeInfo, UpdateStrategy}
+import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateStrategy
 import org.slf4j.LoggerFactory
 object DefaultStrategy {
   var enablePhy: Boolean = false
@@ -82,7 +83,7 @@ class Avatar(val avatarSettings: Settings, val model: Live2DModel) {
    * Update Live2D model parameters of this avatar according to time in seconds elapsed
    * from last update.
    *
-   * The actually update implementation will be controlled by [[moe.brianhsu.live2d.enitiy.avatar.updater.UpdateStrategy]] inside [[updateStrategyHolder]].
+   * The actually update implementation will be controlled by [[UpdateStrategy]] inside [[updateStrategyHolder]].
    *
    * @param frameTimeInfo The FrameTimeInfo object tells us how about frame time information.
    */

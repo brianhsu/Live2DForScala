@@ -2,8 +2,9 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.effect.FaceDirectionCalculator
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
-import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueAdd, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation.ParameterValueAdd
 
 class FaceDirection(directionCalculator: FaceDirectionCalculator) extends Effect {
 
@@ -15,8 +16,6 @@ class FaceDirection(directionCalculator: FaceDirectionCalculator) extends Effect
     List(
       ParameterValueAdd("ParamAngleX", dragX * 30),
       ParameterValueAdd("ParamAngleY", dragY * 30),
-
-      // FIXME: This should be ParamAngleZ
       ParameterValueAdd("ParamAngleZ", dragX * dragY * -30),
       ParameterValueAdd("ParamBodyAngleX", dragX * 10),
       ParameterValueAdd("ParamEyeBallX", dragX),

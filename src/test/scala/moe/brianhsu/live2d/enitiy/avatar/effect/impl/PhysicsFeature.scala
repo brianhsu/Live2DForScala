@@ -3,9 +3,10 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.AvatarPhysicsReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.updater._
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import org.json4s._
 import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization
