@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback}
 import moe.brianhsu.live2d.enitiy.avatar.motion.Motion
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
@@ -68,7 +68,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
   }
 
-  Feature("Set callback for all MotionWithTransition in queue") {
+  Feature("Set event callback for all MotionWithTransition in queue") {
     Scenario("Set event callback") {
       Given("several MotionWithTransition and a MotionManager")
       val motion1 = stub[MotionWithTransition]
@@ -78,7 +78,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       val motionManger = new MotionManager
 
       When("set callback on manager")
-      val mockedCallback = stub[Callback]
+      val mockedCallback = stub[EventCallback]
       motionManger.setEventCallbackForAllMotions(mockedCallback)
 
       And("start three motions")
@@ -93,6 +93,34 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
       And("Last motion should not have any callback set")
       (motion4.setEventCallback _).verify(mockedCallback).never()
+    }
+  }
+
+  Feature("Set finish callback for all MotionWithTransition in queue") {
+    Scenario("Set finish callback") {
+      Given("several MotionWithTransition and a MotionManager")
+      val motion1 = stub[MotionWithTransition]
+      val motion2 = stub[MotionWithTransition]
+      val motion3 = stub[MotionWithTransition]
+      val motion4 = stub[MotionWithTransition]
+      val motionManger = new MotionManager
+
+      When("set callback on manager")
+      val mockedCallback = stub[FinishedCallback]
+      motionManger.setFinishCallbackForAllMotions(mockedCallback)
+
+      And("start three motions")
+      motionManger.startMotion(motion1)
+      motionManger.startMotion(motion2)
+      motionManger.startMotion(motion3)
+
+      Then("First three motion should all have a callback set")
+      (motion1.setFinishedCallback _).verify(mockedCallback).once()
+      (motion2.setFinishedCallback _).verify(mockedCallback).once()
+      (motion3.setFinishedCallback _).verify(mockedCallback).once()
+
+      And("Last motion should not have any callback set")
+      (motion4.setFinishedCallback _).verify(mockedCallback).never()
     }
   }
 

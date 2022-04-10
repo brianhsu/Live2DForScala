@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{ParameterValueAdd, ParameterValueUpdate}
 import org.scalamock.scalatest.MockFactory
@@ -126,6 +126,78 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
     }
   }
 
+  Feature("Finished event and callback handling") {
+    Scenario("The motion is not finished") {
+      Given("A base Motion with 1 second duration and has fade in / fade out time as 1.5 / 2.0 second")
+      val baseMotion = stub[Motion]
+      (() => baseMotion.durationInSeconds).when().returning(Some(1))
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(1.5f))
+      (() => baseMotion.fadeOutTimeInSeconds).when().returning(Some(2.0f))
+
+      And("it will return Nil when first time it's operation being calculated")
+      (baseMotion.calculateOperations _).when(model, 0f, 0f, *, *, *, *).returning(Nil)
+
+      And("it will return a mocked list of operations at following frame")
+      val mockedOperations = List(ParameterValueAdd("id1", 0.1f), ParameterValueUpdate("id2", 0.2f))
+      (baseMotion.calculateOperations _).when(model, 0.33f, 0.33f, *, *, *, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 0.66f, 0.33f, *, *, *, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 0.99f, 0.33f, *, *, *, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 1.32f, 0.33f, *, *, *, *).returning(mockedOperations)
+
+      When("create a MotionWithTransition based on this motion")
+      val transitionMotion = new MotionWithTransition(baseMotion)
+
+      And("Set a event callback")
+      val mockedCallback = stub[FinishedCallback]
+      transitionMotion.setFinishedCallback(mockedCallback)
+
+      When("calculate operations before event is finished")
+      transitionMotion.calculateOperations(model, 0, 0, 1.0f)
+      transitionMotion.calculateOperations(model, 0.33f, 0.33f, 1.0f)
+      transitionMotion.calculateOperations(model, 0.66f, 0.33f, 1.0f)
+      transitionMotion.calculateOperations(model, 0.66f, 0.33f, 1.0f)
+
+      Then("the callback should not be called at all")
+      (mockedCallback.apply _).verify(*).never()
+    }
+
+    Scenario("The motion is finished and triggered event callback") {
+      Given("A base Motion with 1 second duration and has fade in / fade out time as 1.5 / 2.0 second")
+      val baseMotion = stub[Motion]
+      (() => baseMotion.durationInSeconds).when().returning(Some(1))
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(1.5f))
+      (() => baseMotion.fadeOutTimeInSeconds).when().returning(Some(2.0f))
+
+      And("it will return Nil when first time it's operation being calculated")
+      (baseMotion.calculateOperations _).when(model, 0f, 0f, *, *, *, *).returning(Nil)
+
+      And("it will return a mocked list of operations at following frame")
+      val mockedOperations = List(ParameterValueAdd("id1", 0.1f), ParameterValueUpdate("id2", 0.2f))
+      (baseMotion.calculateOperations _).when(model, 0.33f, 0.33f, *, *, *, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 0.66f, 0.33f, *, *, *, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 0.99f, 0.33f, *, *, *, *).returning(mockedOperations)
+      (baseMotion.calculateOperations _).when(model, 1.32f, 0.33f, *, *, *, *).returning(mockedOperations)
+
+      When("create a MotionWithTransition based on this motion")
+      val transitionMotion = new MotionWithTransition(baseMotion)
+
+      And("Set a event callback")
+      val mockedCallback = stub[FinishedCallback]
+      transitionMotion.setFinishedCallback(mockedCallback)
+
+      When("calculate operations that make event finished")
+      transitionMotion.calculateOperations(model, 0, 0, 1.0f)
+      transitionMotion.calculateOperations(model, 0.33f, 0.33f, 1.0f)
+      transitionMotion.calculateOperations(model, 0.66f, 0.33f, 1.0f)
+      transitionMotion.calculateOperations(model, 0.99f, 0.33f, 1.0f)
+      transitionMotion.calculateOperations(model, 1.32f, 0.33f, 1.0f)
+      transitionMotion.calculateOperations(model, 1.65f, 0.33f, 1.0f)
+
+      Then("the callback should not be called at all")
+      (mockedCallback.apply _).verify(*).once()
+    }
+  }
+
   Feature("Motion event and event callback handling") {
     Scenario("Not fire any events yet") {
       Given("A base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
@@ -137,7 +209,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (() => baseMotion.events).when().returning(eventList)
 
       And("a stubbed event callback")
-      val mockedCallback: Callback = stub[Callback]
+      val mockedCallback: EventCallback = stub[EventCallback]
 
       And("create a MotionWithTransition based on this motion and set event callback")
       val transitionMotion = new MotionWithTransition(baseMotion)
@@ -161,7 +233,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (() => baseMotion.events).when().returning(eventList)
 
       And("a stubbed event callback")
-      val mockedCallback: Callback = stub[Callback]
+      val mockedCallback: EventCallback = stub[EventCallback]
 
       And("create a MotionWithTransition based on this motion and set event callback")
       val transitionMotion = new MotionWithTransition(baseMotion)
@@ -186,7 +258,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       (() => baseMotion.events).when().returning(eventList)
 
       And("a stubbed event callback")
-      val mockedCallback: Callback = stub[Callback]
+      val mockedCallback: EventCallback = stub[EventCallback]
 
       And("create a MotionWithTransition based on this motion and set event callback")
       val transitionMotion = new MotionWithTransition(baseMotion)
