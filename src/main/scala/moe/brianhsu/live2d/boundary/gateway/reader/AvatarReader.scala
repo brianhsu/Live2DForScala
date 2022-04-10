@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.boundary.gateway.reader
 
-import moe.brianhsu.porting.live2d.framework.model.Avatar
+import moe.brianhsu.live2d.enitiy.avatar.Avatar
 
 import scala.util.Try
 

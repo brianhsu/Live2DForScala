@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.adapter.gateway.reader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
 import moe.brianhsu.live2d.boundary.gateway.reader.AvatarReader
-import moe.brianhsu.porting.live2d.framework.model.Avatar
+import moe.brianhsu.live2d.enitiy.avatar.Avatar
 
 import scala.util.Try
 

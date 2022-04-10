@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.adapter.gateway.reader
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
-import moe.brianhsu.porting.live2d.framework.model.Avatar
+import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import org.json4s.MappingException
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

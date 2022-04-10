@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.framework.model
+package moe.brianhsu.live2d.enitiy.avatar
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
@@ -9,7 +9,7 @@ import moe.brianhsu.live2d.usecase.updater.UpdateStrategy
  * This class represent a complete Live 2D Cubism Avatar runtime model.
  *
  */
-class Avatar(val avatarSettings: Settings, val model: Live2DModel) {
+case class Avatar(avatarSettings: Settings, model: Live2DModel) {
 
   var updateStrategyHolder: Option[UpdateStrategy] = None
 
