@@ -8,7 +8,7 @@ import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
-import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, MocInfo, Parameter, Part}
+import moe.brianhsu.live2d.enitiy.model.{ModelCanvasInfo, MocInfo, Parameter, Part}
 import moe.brianhsu.live2d.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 
 import scala.util.Try
@@ -82,7 +82,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
    *
    * @return  The canvas info
    */
-  override lazy val canvasInfo: CanvasInfo = createCanvasInfo()
+  override lazy val canvasInfo: ModelCanvasInfo = createCanvasInfo()
 
   /**
    * This method will access all lazy member fields that load data from the CubismCore C Library,
@@ -116,7 +116,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
 
     core.cubismAPI.csmReadCanvasInfo(this.cubismModel, outSizeInPixel, outOriginInPixel, outPixelPerUnit)
 
-    CanvasInfo(
+    ModelCanvasInfo(
       outSizeInPixel.getX, outSizeInPixel.getY,
       (outOriginInPixel.getX, outOriginInPixel.getY),
       outPixelPerUnit.getValue

@@ -8,7 +8,7 @@ package moe.brianhsu.live2d.enitiy.model
  * @param originInPixel The (X, Y) coordinate of the origin in pixels.
  * @param pixelPerUnit  How many pixels per unit.
  */
-case class CanvasInfo(widthInPixel: Float, heightInPixel: Float, originInPixel: (Float, Float), pixelPerUnit: Float) {
+case class ModelCanvasInfo(widthInPixel: Float, heightInPixel: Float, originInPixel: (Float, Float), pixelPerUnit: Float) {
 
   assert(pixelPerUnit > 0, "pixelPerUnit should > 0")
 

@@ -3,20 +3,22 @@ package moe.brianhsu.porting.live2d.demo
 import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader, FaceDirectionByMouse}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
+import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.enitiy.opengl.{DrawCanvasInfo, OpenGLBinding}
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation}
+import moe.brianhsu.live2d.usecase.renderer.viewport.ViewOrientation.{Horizontal, Vertical}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
-import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
-import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
+import moe.brianhsu.porting.live2d.framework.math.ViewPortMatrixCalculator
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
 import scala.util.Try
 
-class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGLBinding) {
+class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL: OpenGLBinding) {
 
   import openGL._
 
@@ -30,7 +32,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private lazy val powerTexture = manager.loadTexture("src/main/resources/texture/close.png")
   private lazy val gearTexture = manager.loadTexture("src/main/resources/texture/icon_gear.png")
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
-  private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator
+  private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator(drawCanvasInfo)
 
   private val frameTimeCalculator = new SystemNanoTimeBasedFrameInfo
   private implicit val cubismCore: JnaNativeCubismAPILoader = new JnaNativeCubismAPILoader()
@@ -73,14 +75,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       renderer <- rendererHolder
     } {
 
-      // TODO:
-      // There should be a better way to get width / height
-      val projection = projectionMatrixCalculator.calculateProjection(
-        model.canvasInfo,
-        drawCanvasInfo.currentCanvasWidth, drawCanvasInfo.currentCanvasHeight,
+      val projection = projectionMatrixCalculator.calculate(
         viewPortMatrixCalculator.getViewMatrix,
-        updateModelMatrix(model),
-        isForceUpdate
+        isForceUpdate,
+        updateModelMatrix(model)
       )
 
       avatar.update(this.frameTimeCalculator)

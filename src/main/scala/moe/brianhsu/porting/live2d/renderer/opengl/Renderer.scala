@@ -6,6 +6,7 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.enitiy.model.drawable.VertexInfo
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.{ClippingContext, ClippingManager}
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.ShaderRenderer
 
@@ -16,7 +17,7 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
 
   import gl._
 
-  private var projection: Option[GeneralMatrix] = None
+  private var projection: Option[ProjectionMatrix] = None
   private val textureManager = TextureManager.getInstance
   private val shaderRenderer = ShaderRenderer.getInstance
   private val profile = Profile.getInstance
@@ -45,11 +46,11 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
     this.isCulling = isCulling
   }
 
-  def setProjection(projection: GeneralMatrix): Unit = {
+  private def setProjection(projection: ProjectionMatrix): Unit = {
     this.projection = Some(projection)
   }
 
-  def draw(avatar: Avatar, projection: GeneralMatrix): Unit = {
+  def draw(avatar: Avatar, projection: ProjectionMatrix): Unit = {
     this.setProjection(avatar.model.modelMatrix * projection)
     this.profile.save()
     this.drawModel()
@@ -89,7 +90,7 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
       vertexInfo.uvArrayDirectBuffer,
       colorBlendMode,
       modelColorRGBA,
-      projection.getOrElse(new GeneralMatrix),
+      projection.getOrElse(new ProjectionMatrix),
       invertedMask
     )
 

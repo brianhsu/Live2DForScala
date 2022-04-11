@@ -1,10 +1,11 @@
 package moe.brianhsu.porting.live2d.demo.sprite
 
+import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.math.Rectangle
-import moe.brianhsu.live2d.enitiy.opengl.{DrawCanvasInfo, OpenGLBinding}
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.porting.live2d.renderer.opengl.TextureManager.TextureInfo
 
-abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureInfo, shader: SpriteShader)
+abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo, shader: SpriteShader)
                          (implicit private val gl: OpenGLBinding) {
 
   case class Position(originX: Float, originY: Float, width: Float, height: Float)

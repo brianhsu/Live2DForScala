@@ -1,5 +1,6 @@
-package moe.brianhsu.live2d.adapter.gateway.opengl.swt
+package moe.brianhsu.live2d.adapter.gateway.renderer.swt
 
+import moe.brianhsu.live2d.adapter.gateway.renderer.swt.SWTOpenGLCanvasInfoReader
 import org.eclipse.swt.SWT
 import org.eclipse.swt.graphics.{Point, Rectangle}
 import org.eclipse.swt.opengl.{GLCanvas, GLData}
@@ -19,7 +20,7 @@ class SWTOpenGLCanvasInfoFeature extends AnyFeatureSpec with Matchers with Given
       }
 
       And("A SWTOpenGLCanvasInfo based on that canvas")
-      val canvasInfo = new SWTOpenGLCanvasInfo(canvas)
+      val canvasInfo = new SWTOpenGLCanvasInfoReader(canvas)
 
       Then("it should have correct properties")
       canvasInfo.currentCanvasWidth shouldBe 789

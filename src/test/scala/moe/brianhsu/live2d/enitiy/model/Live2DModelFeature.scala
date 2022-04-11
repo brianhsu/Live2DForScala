@@ -14,7 +14,7 @@ import scala.util.{Success, Try}
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory
   with TableDrivenPropertyChecks {
 
-  private val mockedCanvasInfo = CanvasInfo(1980, 1020, (0, 0), 1)
+  private val mockedCanvasInfo = ModelCanvasInfo(1980, 1020, (0, 0), 1)
   Feature("Use containMaskedDrawables to get whether drawable has mask or not") {
     Scenario("No drawable at all") {
       Given("A model without any drawable")
@@ -153,14 +153,14 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val mockedParameters: Map[String, Parameter] = Map("p1" -> stub[Parameter])
       val mockedParts: Map[String, Part] = Map("p1" -> stub[Part])
       val mockedDrawables: Map[String, Drawable] = Map("d1" -> stub[Drawable])
-      val mockedCanvasInfo: CanvasInfo = CanvasInfo(1920, 1080, (0, 0), 1)
+      val mockedCanvasInfo: ModelCanvasInfo = ModelCanvasInfo(1920, 1080, (0, 0), 1)
 
       val mockedBackend = new ModelBackend {
         override def textureFiles: List[String] = mockedTextureFiles
         override def parameters: Map[String, Parameter] = mockedParameters
         override def parts: Map[String, Part] = mockedParts
         override def drawables: Map[String, Drawable] = mockedDrawables
-        override def canvasInfo: CanvasInfo = mockedCanvasInfo
+        override def canvasInfo: ModelCanvasInfo = mockedCanvasInfo
         override def validatedBackend: Try[ModelBackend] = Success(this)
         override def update(): Unit = {}
       }
@@ -310,7 +310,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
   Feature("Hit test for hit area") {
     Scenario("The provided coordinate is inside the drawable boundary") {
       Given("A Live2D Model with a drawable for hit test")
-      val canvasInfo = CanvasInfo(
+      val canvasInfo = ModelCanvasInfo(
         widthInPixel = 2400, heightInPixel = 4500,
         originInPixel = (1200, 2250), pixelPerUnit = 2400
       )
@@ -338,7 +338,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
       forAll(invalidCombos) { (side, pointX, pointY) =>
         Given("A Live2D Model with a drawable for hit test")
-        val canvasInfo = CanvasInfo(
+        val canvasInfo = ModelCanvasInfo(
           widthInPixel = 2400, heightInPixel = 4500,
           originInPixel = (1200, 2250), pixelPerUnit = 2400
         )
@@ -399,7 +399,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     override val parameters: Map[String, Parameter] = Map.empty,
     override val parts: Map[String, Part] = Map.empty,
     override val drawables: Map[String, Drawable] = Map.empty,
-    override val canvasInfo: CanvasInfo = mockedCanvasInfo
+    override val canvasInfo: ModelCanvasInfo = mockedCanvasInfo
   ) extends ModelBackend {
     var updatedCount: Int = 0
     override def validatedBackend: Try[ModelBackend] = Success(this)

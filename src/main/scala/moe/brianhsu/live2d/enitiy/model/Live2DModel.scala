@@ -51,7 +51,7 @@ class Live2DModel(modelBackend: ModelBackend) {
    *
    * @return The canvas info
    */
-  def canvasInfo: CanvasInfo = modelBackend.canvasInfo
+  def canvasInfo: ModelCanvasInfo = modelBackend.canvasInfo
 
   /**
    * Drawable sorted by index

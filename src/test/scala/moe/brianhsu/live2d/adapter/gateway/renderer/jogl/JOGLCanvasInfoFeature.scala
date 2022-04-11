@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.adapter.gateway.opengl.jogl
+package moe.brianhsu.live2d.adapter.gateway.renderer.jogl
 
 import com.jogamp.opengl.awt.GLCanvas
 import org.scalamock.scalatest.MixedMockFactory
@@ -18,7 +18,7 @@ class JOGLCanvasInfoFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       }
 
       And("A JOGLCanvasInfo based on that canvas")
-      val canvasInfo = new JOGLCanvasInfo(canvas)
+      val canvasInfo = new JOGLCanvasInfoReader(canvas)
 
       Then("it should have correct properties")
       canvasInfo.currentCanvasWidth shouldBe 123

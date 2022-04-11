@@ -1,15 +1,15 @@
-package moe.brianhsu.live2d.enitiy.math.matrix
+package moe.brianhsu.live2d.usecase.renderer.viewport.matrix
 
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
+class ViewPortMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("The basic attributes") {
     Scenario("Access the basic attributes") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 3.9171844f, 2.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -41,7 +41,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
     Scenario("Calculate transformed X") {
       Given("A matrix that scale X with 1.5")
       And("translate X with 2.5")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 3.9171844f, 2.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -64,7 +64,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
     Scenario("Invert the transformed X to origin X") {
       Given("A matrix that scale X with 1.5")
       And("translate X with 2.5")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 3.9171844f, 2.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -89,7 +89,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
     Scenario("Calculate transformed X") {
       Given("A matrix that scale Y with 1.5")
       And("translate Y with 2.5")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 3.9171844f, 2.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -112,7 +112,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
     Scenario("Invert the transformed Y to origin Y") {
       Given("A matrix that scale Y with 1.5")
       And("translate Y with 2.5")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 3.9171844f, 2.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -137,7 +137,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
   Feature("Multiple with another matrix") {
     Scenario("Multiple by an identity matrix") {
       Given("An identity matrix")
-      val identityMatrix = new ViewMatrix(
+      val identityMatrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 3.9171844f, 2.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -145,7 +145,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       )
 
       And("a view matrix")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 3.9171844f, 2.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -172,7 +172,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
 
     Scenario("Multiple two normal matrix") {
       Given("Two view matrix")
-      val matrix1 = new ViewMatrix(
+      val matrix1 = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 3.9171844f, 2.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 3.0f,
@@ -184,7 +184,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
           4.3f, 5.4f, 6.5f, 7.6f
         )
       )
-      val matrix2 = new ViewMatrix(
+      val matrix2 = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 3.9171844f, 2.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -214,7 +214,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
   Feature("Create updated matrix instance by adjust translate") {
     Scenario("Within the left / right / top / bottom boundary") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 4.0f, 4.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -241,7 +241,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
 
     Scenario("under left boundary") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(1.4f, 1.9585922f, 4.0f, 4.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -268,7 +268,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
 
     Scenario("exceed right boundary") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(1f, 1.9585922f, 4.0f, 4.0f),
         maxRectangle = Rectangle(0.1f, 2.0f, 100f, 4.0f),
         minScale = 2.0f,
@@ -295,7 +295,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
 
     Scenario("under top boundary") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(1.4f, 3.0f, 4.0f, 4.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -322,7 +322,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
 
     Scenario("exceed bottom boundary") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 4.0f, 1.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -351,7 +351,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
   Feature("Create updated matrix instance by adjust translate") {
     Scenario("The target scale is inside range of minScale to maxScale") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 4.0f, 1.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 0.1f,
@@ -378,7 +378,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
 
     Scenario("The target scale is under minScale and original scale is zero") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 4.0f, 1.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -406,7 +406,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
 
     Scenario("The target scale is under minScale and original scale is NOT zero") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 4.0f, 1.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,
@@ -434,7 +434,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
 
     Scenario("The target scale exceed maxScale and original scale is zero") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 4.0f, 1.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = -3.0f,
@@ -461,7 +461,7 @@ class ViewMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
     }
     Scenario("The target scale exceed maxScale and original scale is NOT zero") {
       Given("A model matrix with predefined elements")
-      val matrix = new ViewMatrix(
+      val matrix = new ViewPortMatrix(
         screenRectangle = Rectangle(-1.9585922f, 1.9585922f, 4.0f, 1.0f),
         maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
         minScale = 2.0f,

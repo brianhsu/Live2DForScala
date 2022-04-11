@@ -1,6 +1,7 @@
-package moe.brianhsu.live2d.enitiy.math.matrix
+package moe.brianhsu.live2d.usecase.renderer.viewport.matrix
 
 import moe.brianhsu.live2d.enitiy.math.Rectangle
+import moe.brianhsu.live2d.enitiy.math.matrix.Matrix4x4
 
 /**
  * The 4x4 matrix to change the camera position.
@@ -11,9 +12,9 @@ import moe.brianhsu.live2d.enitiy.math.Rectangle
  * @param maxScale        The max scale rate.
  * @param elements        The elements of the matrix.
  */
-class ViewMatrix(screenRectangle: Rectangle, maxRectangle: Rectangle, minScale: Float, maxScale: Float, override val elements: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4 {
+class ViewPortMatrix(screenRectangle: Rectangle, maxRectangle: Rectangle, minScale: Float, maxScale: Float, override val elements: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4 {
 
-  type T = ViewMatrix
+  type T = ViewPortMatrix
 
   private def adjustAccordingToScreenLeft(x: Float): Float = {
     if (xScalar * maxRectangle.leftX + (xOffset + x) > screenRectangle.leftX) {
@@ -54,7 +55,7 @@ class ViewMatrix(screenRectangle: Rectangle, maxRectangle: Rectangle, minScale: 
    * @param y The offset of Y-axis.
    * @return  The updated matrix contains new offset.
    */
-  def adjustTranslate(x: Float, y: Float): ViewMatrix = {
+  def adjustTranslate(x: Float, y: Float): ViewPortMatrix = {
     val xForTranslate = adjustAccordingToScreenRight(adjustAccordingToScreenLeft(x))
     val yForTranslate = adjustAccordingToScreenBottom(adjustAccordingToScreenTop(y))
     val tr1 = Array[Float](
@@ -75,7 +76,7 @@ class ViewMatrix(screenRectangle: Rectangle, maxRectangle: Rectangle, minScale: 
    * @param scale The scale rate.
    * @return      The updated matrix.
    */
-  def adjustScale(cx: Float, cy: Float, scale: Float): ViewMatrix = {
+  def adjustScale(cx: Float, cy: Float, scale: Float): ViewPortMatrix = {
 
     val targetScale = scale * xScalar
     val adjustedScale: Float = if (targetScale < this.minScale) {
@@ -121,7 +122,7 @@ class ViewMatrix(screenRectangle: Rectangle, maxRectangle: Rectangle, minScale: 
     }
   }
 
-  override protected def buildFrom(elements: Array[Float]): ViewMatrix = {
-    new ViewMatrix(screenRectangle, maxRectangle, minScale, maxScale, elements)
+  override protected def buildFrom(elements: Array[Float]): ViewPortMatrix = {
+    new ViewPortMatrix(screenRectangle, maxRectangle, minScale, maxScale, elements)
   }
 }

@@ -1,6 +1,6 @@
-package moe.brianhsu.live2d.enitiy.opengl
+package moe.brianhsu.live2d.boundary.gateway.renderer
 
-trait DrawCanvasInfo {
+trait DrawCanvasInfoReader {
   def currentCanvasWidth: Int
 
   def currentCanvasHeight: Int
