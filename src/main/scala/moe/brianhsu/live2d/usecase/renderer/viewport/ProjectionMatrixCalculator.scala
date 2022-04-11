@@ -12,8 +12,9 @@ class ProjectionMatrixCalculator(drawCanvasInfoReader: DrawCanvasInfoReader) {
   private var previousViewPortMatrixHolder: Option[ViewPortMatrix] = None
   private var currentProjectionHolder: Option[ProjectionMatrix] = None
 
-  def calculate(viewPortMatrix: ViewPortMatrix, forceUpdate: Boolean = false, onUpdated: ViewOrientation => Unit): ProjectionMatrix  = {
+  def calculate(viewPortMatrix: ViewPortMatrix, isForceUpdate: Boolean = false, onUpdated: ViewOrientation => Unit): ProjectionMatrix  = {
 
+    println(viewPortMatrix)
     val drawCanvasWidth = drawCanvasInfoReader.currentCanvasWidth
     val drawCanvasHeight = drawCanvasInfoReader.currentCanvasHeight
 
@@ -22,7 +23,7 @@ class ProjectionMatrixCalculator(drawCanvasInfoReader: DrawCanvasInfoReader) {
         !previousViewPortMatrixHolder.contains(viewPortMatrix) ||
         !previousDrawCanvasWidthHolder.contains(drawCanvasWidth) ||
         !previousDrawCanvasHeightHolder.contains(drawCanvasHeight) ||
-        forceUpdate
+        isForceUpdate
 
     if (shouldUpdate) {
       val viewOrientation = ViewOrientation(drawCanvasInfoReader)

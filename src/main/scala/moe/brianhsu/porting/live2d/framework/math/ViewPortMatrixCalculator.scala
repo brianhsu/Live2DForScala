@@ -3,9 +3,9 @@ package moe.brianhsu.porting.live2d.framework.math
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ViewPortMatrix
+import moe.brianhsu.porting.live2d.framework.math.ViewPortMatrixCalculator.{ViewLogicalLeft, ViewLogicalMaxBottom, ViewLogicalMaxLeft, ViewLogicalMaxRight, ViewLogicalMaxTop, ViewLogicalRight, ViewMaxScale, ViewMinScale, ViewScale}
 
-class ViewPortMatrixCalculator {
-
+object ViewPortMatrixCalculator {
   private val ViewScale = 1.0f
   private val ViewMaxScale = 2.0f
   private val ViewMinScale = 0.8f
@@ -15,6 +15,10 @@ class ViewPortMatrixCalculator {
   private val ViewLogicalMaxRight = 2.0f
   private val ViewLogicalMaxTop = -2.0f
   private val ViewLogicalMaxBottom = 2.0f
+}
+
+class ViewPortMatrixCalculator {
+
 
   private var deviceToScreen: GeneralMatrix = new GeneralMatrix
   private var viewMatrix: ViewPortMatrix = new ViewPortMatrix(Rectangle(), Rectangle(), 0, 0)
@@ -42,11 +46,17 @@ class ViewPortMatrixCalculator {
   }
 
   private def updateViewMatrix(left: Float, right: Float, top: Float, bottom: Float): Unit = {
-    this.viewMatrix = new ViewPortMatrix(Rectangle(left, right, right - left, bottom - top), Rectangle(
-            ViewLogicalMaxLeft, ViewLogicalMaxRight,
-            ViewLogicalMaxRight - ViewLogicalMaxLeft,
-            ViewLogicalMaxBottom - ViewLogicalMaxTop
-          ), ViewMinScale, ViewMaxScale).scale(ViewScale, ViewScale)
+    this.viewMatrix = new ViewPortMatrix(
+      Rectangle(left, right, right - left, bottom - top),
+      Rectangle(
+        ViewLogicalMaxLeft,
+        ViewLogicalMaxRight,
+        ViewLogicalMaxRight - ViewLogicalMaxLeft,
+        ViewLogicalMaxBottom - ViewLogicalMaxTop
+      ),
+      ViewMinScale,
+      ViewMaxScale
+    ).scale(ViewScale, ViewScale)
   }
 
   private def updateDeviceToScreen(left: Float, right: Float, top: Float, bottom: Float): Unit = {
