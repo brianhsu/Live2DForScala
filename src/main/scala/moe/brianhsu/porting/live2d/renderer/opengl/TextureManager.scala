@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.renderer.opengl
 
 import TextureManager.TextureInfo
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
 import java.io.File
 import java.nio.{ByteBuffer, ByteOrder}
@@ -10,9 +10,9 @@ import javax.imageio.ImageIO
 object TextureManager {
   case class TextureInfo(textureId: Int, width: Int, height: Int)
 
-  private var manager: Map[OpenGL, TextureManager] = Map.empty
+  private var manager: Map[OpenGLBinding, TextureManager] = Map.empty
 
-  def getInstance(implicit gl: OpenGL): TextureManager = {
+  def getInstance(implicit gl: OpenGLBinding): TextureManager = {
     manager.get(gl) match {
       case Some(manager) => manager
       case None =>
@@ -23,7 +23,7 @@ object TextureManager {
 
 }
 
-class TextureManager private (implicit gl: OpenGL) {
+class TextureManager private (implicit gl: OpenGLBinding) {
 
   import gl._
 

@@ -1,16 +1,19 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
-import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateOperation
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
 
 object MotionWithTransition {
-  type Callback= (MotionWithTransition, MotionEvent) => Unit
+  type FinishedCallback = MotionWithTransition => Unit
+  type EventCallback = (MotionWithTransition, MotionEvent) => Unit
 }
 
 class MotionWithTransition(val baseMotion: Motion) {
+  var eventCallbackHolder: Option[EventCallback] = None
+  var finishedCallbackHolder: Option[FinishedCallback] = None
 
   private var mIsFinished: Boolean = false
   private var isStarted: Boolean = false
@@ -18,7 +21,6 @@ class MotionWithTransition(val baseMotion: Motion) {
   private var fadeInStartTimeInSeconds: Float = 0.0f
   private var endTimeInSeconds: Option[Float] = None
   private var mIsForceToFadeOut: Boolean = false
-  private var eventCallbackHolder: Option[Callback] = None
   private var lastEventCheckTimeInSeconds: Float = 0
 
   def isFinished: Boolean = mIsFinished
@@ -49,18 +51,13 @@ class MotionWithTransition(val baseMotion: Motion) {
             this.fadeInStartTimeInSeconds = totalElapsedTimeInSeconds
           }
         } else {
-          // TODO: Motion Finished callback
-          println(s"Motion $this finished")
+          finishedCallbackHolder.foreach(_.apply(this))
         }
       }
       this.mIsFinished = this.endTimeInSeconds.exists(_ < totalElapsedTimeInSeconds)
 
       operations
     }
-  }
-
-  def setEventCallback(callback: Callback): Unit = {
-    this.eventCallbackHolder = Some(callback)
   }
 
   def startFadeOut(totalElapsedTimeInSeconds: Float): Unit = {

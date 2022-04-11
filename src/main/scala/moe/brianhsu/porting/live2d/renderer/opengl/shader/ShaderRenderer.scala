@@ -2,16 +2,16 @@ package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureColor}
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingContext
 
 import java.nio.ByteBuffer
 
 object ShaderRenderer {
-  private var shaderRendererHolder: Map[OpenGL, ShaderRenderer] = Map.empty
+  private var shaderRendererHolder: Map[OpenGLBinding, ShaderRenderer] = Map.empty
 
-  def getInstance(implicit gl: OpenGL): ShaderRenderer = {
+  def getInstance(implicit gl: OpenGLBinding): ShaderRenderer = {
     shaderRendererHolder.get(gl) match {
       case Some(renderer) => renderer
       case None =>
@@ -21,7 +21,7 @@ object ShaderRenderer {
   }
 }
 
-class ShaderRenderer private (implicit gl: OpenGL) {
+class ShaderRenderer private (implicit gl: OpenGLBinding) {
 
   import gl._
 

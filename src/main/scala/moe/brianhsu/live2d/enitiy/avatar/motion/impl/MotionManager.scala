@@ -1,19 +1,28 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.Callback
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback}
 import moe.brianhsu.live2d.enitiy.avatar.motion.Motion
-import moe.brianhsu.live2d.enitiy.avatar.updater.UpdateOperation
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
 
 class MotionManager {
+  private var mEventCallbackHolder: Option[EventCallback] = None
+  private var mFinishCallbackHolder: Option[FinishedCallback] = None
   private var motionQueue: List[MotionWithTransition] = Nil
-  private var callbackHolder: Option[Callback] = None
+  private[impl] def currentMotions: List[MotionWithTransition] = motionQueue
 
-  def currentMotions: List[MotionWithTransition] = motionQueue
-  def iaAllFinished: Boolean = this.motionQueue.forall(_.isFinished)
+  def isAllFinished: Boolean = this.motionQueue.forall(_.isFinished)
 
-  def setEventCallbackForAllMotions(callback: Callback): Unit = {
-    this.callbackHolder = Some(callback)
+  def eventCallbackHolder: Option[EventCallback] = mEventCallbackHolder
+  def eventCallbackHolder_=(callbackHolder: Option[EventCallback]): Unit = {
+    this.mEventCallbackHolder = callbackHolder
+    this.currentMotions.foreach { _.eventCallbackHolder = callbackHolder }
+  }
+
+  def finishedCallbackHolder: Option[FinishedCallback] = mFinishCallbackHolder
+  def finishedCallbackHolder_=(callbackHolder: Option[FinishedCallback]): Unit = {
+    this.mFinishCallbackHolder = callbackHolder
+    this.currentMotions.foreach { _.finishedCallbackHolder = callbackHolder }
   }
 
   def startMotion(motion: Motion): MotionWithTransition = {
@@ -21,7 +30,9 @@ class MotionManager {
   }
 
   def startMotion(motion: MotionWithTransition): MotionWithTransition = {
-    this.callbackHolder.foreach(motion.setEventCallback)
+    motion.eventCallbackHolder = mEventCallbackHolder
+    motion.finishedCallbackHolder = mFinishCallbackHolder
+
     this.motionQueue.foreach(e => e.markAsForceFadeOut())
     this.motionQueue = this.motionQueue.appended(motion)
     motion

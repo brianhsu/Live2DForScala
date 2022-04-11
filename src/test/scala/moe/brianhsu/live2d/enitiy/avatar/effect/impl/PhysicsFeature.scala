@@ -3,9 +3,10 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.AvatarPhysicsReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.updater._
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import org.json4s._
 import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization
@@ -42,7 +43,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       And("Set wind direction to (10.0f, 10.0f)")
       physics.windDirection = EuclideanVector(10.0f, 10.0f)
 
-      val testDataFile = Source.fromFile("src/test/resources/expectation/physicsOperations.json")
+      val testDataFile = Source.fromFile("src/test/resources/expectation/physicOperations/markPhysicsOperations.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
       dataPointList.foreach { dataPoint =>
@@ -69,7 +70,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       And("Set wind direction to (10.0f, 10.0f)")
       physics.windDirection = EuclideanVector(10.0f, 10.0f)
 
-      val testDataFile = Source.fromFile("src/test/resources/expectation/HiyoriPhysic.json")
+      val testDataFile = Source.fromFile("src/test/resources/expectation/physicOperations/hiyoriPhysicsOperations.json")
       val dataPointList = Using.resource(testDataFile) { _.getLines().toList.map(parseLog) }
 
       dataPointList.foreach { dataPoint =>

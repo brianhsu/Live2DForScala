@@ -1,12 +1,12 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
 import java.nio.ByteBuffer
 import scala.util.Try
 
 
-abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGL) { self: T =>
+abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGLBinding) { self: T =>
 
   import gl._
 

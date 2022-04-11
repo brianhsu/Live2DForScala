@@ -4,10 +4,10 @@ import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
-class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implicit gl: OpenGL) {
+class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implicit gl: OpenGLBinding) {
 
   val clippingMaskBufferSize: Int = 256 ///< クリッピングマスクのバッファサイズ（初期値:256）
 

@@ -245,16 +245,13 @@ class FaceDirectionByMouse(frameRate: Int) extends FaceDirectionCalculator {
    * User should pass in the invertTransformX / invertTransformY coordinate of view matrix
    * calculate from current mouse position.
    *
-   * I'm not really familiar with all these matrix / view port thing and only port
-   * and refactor from the origin Cusbism Live2D SDK.
-   *
    * So please refer to the [[moe.brianhsu.porting.live2d.demo.LAppView.onMouseDragged]] for detail usage, and figure
    * it out on your own.
    *
    * @param x The invertTransformX coordinate that calculate from current mouse position using viewMatrix.
    * @param y The invertTransformY coordinate that calculate from current mouse position using viewMatrix.
    */
-  def setFaceTargetCoordinate(x: Float, y: Float): Unit = {
+  def updateFaceTargetCoordinate(x: Float, y: Float): Unit = {
     this.faceTargetX = x
     this.faceTargetY = y
   }

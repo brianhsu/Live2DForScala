@@ -3,8 +3,10 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 import moe.brianhsu.live2d.enitiy.avatar.effect.data.PosePart
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose.{BackOpacityThreshold, Epsilon, Phi}
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
-import moe.brianhsu.live2d.enitiy.avatar.updater.{FallbackParameterValueUpdate, PartOpacityUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{FallbackParameterValueUpdate, PartOpacityUpdate}
+
 
 object Pose {
   /**
@@ -45,7 +47,7 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
   /**
    * Is the parts in this model already be initialized
    */
-  private var isAlreadyInit = false
+  private[impl] var isAlreadyInit = false
 
   /**
    * Create operations to update model.
@@ -177,17 +179,4 @@ case class Pose(posePartGroups: List[List[PosePart]] = Nil,
 
     operationsForEachPose.flatten
   }
-
-
-  /**
-   * Set the status of initialization
-   *
-   * The should be only used in unit test.
-   *
-   * @param isAlreadyInit The init status from unit test data point.
-   */
-  private[impl] def setInitStatusForTest(isAlreadyInit: Boolean): Unit = {
-    this.isAlreadyInit = isAlreadyInit
-  }
-
 }

@@ -1,11 +1,11 @@
 package moe.brianhsu.porting.live2d.renderer.opengl
 
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
 object Profile {
-  private var profile: Map[OpenGL, Profile] = Map.empty
+  private var profile: Map[OpenGLBinding, Profile] = Map.empty
 
-  def getInstance(implicit gl: OpenGL): Profile = {
+  def getInstance(implicit gl: OpenGLBinding): Profile = {
     profile.get(gl) match {
       case Some(profile) => profile
       case None =>
@@ -16,7 +16,7 @@ object Profile {
 
 }
 
-class Profile private (implicit gl: OpenGL) {
+class Profile private (implicit gl: OpenGLBinding) {
 
   import gl._
 

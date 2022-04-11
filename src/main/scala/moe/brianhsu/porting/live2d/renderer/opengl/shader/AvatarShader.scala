@@ -1,8 +1,8 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
-import moe.brianhsu.porting.live2d.adapter.OpenGL
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
-abstract class AvatarShader(implicit gl: OpenGL) extends BaseShader[AvatarShader] {
+abstract class AvatarShader(implicit gl: OpenGLBinding) extends BaseShader[AvatarShader] {
   val attributePositionLocation: Int = gl.glGetAttribLocation(shaderProgram, "a_position")
   val attributeTexCoordLocation: Int = gl.glGetAttribLocation(shaderProgram, "a_texCoord")
   val samplerTexture0Location: Int = gl.glGetUniformLocation(shaderProgram, "s_texture0")

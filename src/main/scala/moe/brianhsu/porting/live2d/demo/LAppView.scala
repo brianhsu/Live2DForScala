@@ -1,20 +1,22 @@
 package moe.brianhsu.porting.live2d.demo
 
+import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader, FaceDirectionByMouse}
-import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
-import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
+import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
+import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
+import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.adapter.{DrawCanvasInfo, OpenGL}
+import moe.brianhsu.live2d.enitiy.opengl.{DrawCanvasInfo, OpenGLBinding}
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
 import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
-import moe.brianhsu.porting.live2d.framework.model.{Avatar, DefaultStrategy}
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
 import scala.util.Try
 
-class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGL) {
+class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGLBinding) {
 
   import openGL._
 
@@ -30,15 +32,15 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
   private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator
 
-  private val frameTimeCalculator = new FrameTimeCalculator
-  private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
+  private val frameTimeCalculator = new SystemNanoTimeBasedFrameInfo
+  private implicit val cubismCore: JnaNativeCubismAPILoader = new JnaNativeCubismAPILoader()
 
   private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
-  private var updateStrategyHolder: Try[DefaultStrategy] = avatarHolder.map(a => {
-    a.updateStrategyHolder = Some(new DefaultStrategy(a.avatarSettings, a.model))
-    a.updateStrategyHolder.get.asInstanceOf[DefaultStrategy]
+  private var updateStrategyHolder: Try[BasicUpdateStrategy] = avatarHolder.map(a => {
+    a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
+    a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
   })
   private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, backgroundTexture, spriteShader)
   private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, powerTexture, spriteShader)
@@ -118,7 +120,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
     val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
 
-    targetPointCalculator.setFaceTargetCoordinate(0.0f, 0.0f)
+    targetPointCalculator.updateFaceTargetCoordinate(0.0f, 0.0f)
     for {
       _ <- avatarHolder
       model <- modelHolder
@@ -135,7 +137,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
     val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
     val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
-    targetPointCalculator.setFaceTargetCoordinate(viewX, viewY)
+    targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)
   }
 
   private def initOpenGL(): Unit = {
@@ -158,15 +160,13 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     } {
       val poseHolder = new AvatarPoseReader(avatar.avatarSettings).loadPose
       val physicsHolder = new AvatarPhysicsReader(avatar.avatarSettings).loadPhysics
-      val effects = List(
+      updateStrategy.effects = List(
         Some(new Breath()),
         Some(new EyeBlink(avatar.avatarSettings)),
         Some(faceDirection),
         physicsHolder,
         poseHolder
       ).flatten
-
-      updateStrategy.setEffects(effects)
     }
   }
 
@@ -178,7 +178,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
   private def startExpression(name: String): Unit = {
     updateStrategyHolder.foreach { updateStrategy =>
-      updateStrategy.setExpression(name)
+      updateStrategy.startExpression(name)
     }
   }
 
@@ -193,8 +193,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
     this.modelHolder = avatarHolder.map(_.model)
     this.updateStrategyHolder = avatarHolder.map(a => {
       println("Create new update strategy")
-      a.updateStrategyHolder = Some(new DefaultStrategy(a.avatarSettings, a.model))
-      a.updateStrategyHolder.get.asInstanceOf[DefaultStrategy]
+      a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
+      a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
     })
     this.rendererHolder = modelHolder.map(model => new Renderer(model))
     setupAvatarEffects()

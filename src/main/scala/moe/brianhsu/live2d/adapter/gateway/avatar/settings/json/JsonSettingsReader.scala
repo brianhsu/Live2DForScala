@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.adapter.gateway.avatar.settings.json
 
-import moe.brianhsu.live2d.RichPath.convertFromPath
+import moe.brianhsu.live2d.adapter.RichPath.convertFromPath
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.{ExpressionSetting, MotionSetting, PhysicsSetting, PoseSetting}
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.model.{Group, ModelSetting}

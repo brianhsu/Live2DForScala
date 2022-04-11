@@ -3,9 +3,10 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics.ParameterType.{Angle, X, Y}
 import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics.{PhysicsData, PhysicsEffect, PhysicsOutput, PhysicsParticle}
-import moe.brianhsu.live2d.enitiy.avatar.updater.{ParameterValueUpdate, UpdateOperation}
 import moe.brianhsu.live2d.enitiy.math.{EuclideanVector, Radian}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation
+import moe.brianhsu.live2d.usecase.updater.UpdateOperation.ParameterValueUpdate
 
 case class Physics(physicsData: PhysicsData, var gravityDirection: EuclideanVector, var windDirection: EuclideanVector) extends Effect {
 

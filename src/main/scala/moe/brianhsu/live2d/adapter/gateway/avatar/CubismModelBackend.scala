@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.adapter.gateway.avatar
 
 import com.sun.jna.ptr.FloatByReference
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
-import moe.brianhsu.live2d.boundary.gateway.core.CubismCore
+import moe.brianhsu.live2d.boundary.gateway.core.NativeCubismAPILoader
 import moe.brianhsu.live2d.enitiy.core.CsmCoordinate
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
@@ -23,7 +23,7 @@ import scala.util.Try
  * @param mocInfo   The moc file information
  * @param core      The core library of Cubism
  */
-class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[String])(implicit core: CubismCore) extends ModelBackend {
+class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[String])(implicit core: NativeCubismAPILoader) extends ModelBackend {
 
   private lazy val revivedMoc: CPointerToMoc = reviveMoc()
   private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.revivedMoc)
