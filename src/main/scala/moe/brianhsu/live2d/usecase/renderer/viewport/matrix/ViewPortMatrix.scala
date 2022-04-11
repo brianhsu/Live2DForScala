@@ -33,16 +33,16 @@ class ViewPortMatrix(screenRectangle: Rectangle, maxRectangle: Rectangle, minSca
   }
 
   private def adjustAccordingToScreenTop(y: Float): Float = {
-    if (yScalar * this.maxRectangle.topY + (yOffset + y) > this.screenRectangle.topY) {
-      this.screenRectangle.topY - yScalar * this.maxRectangle.topY - yOffset
+    if (yScalar * this.maxRectangle.bottomY + (yOffset + y) > this.screenRectangle.bottomY) {
+      this.screenRectangle.bottomY - yScalar * this.maxRectangle.bottomY - yOffset
     } else {
       y
     }
   }
 
   private def adjustAccordingToScreenBottom(y: Float): Float = {
-    if (yScalar * this.maxRectangle.bottomY + (yOffset + y) < this.screenRectangle.bottomY) {
-      this.screenRectangle.bottomY - yScalar * this.maxRectangle.bottomY - yOffset
+    if (yScalar * this.maxRectangle.topY + (yOffset + y) < this.screenRectangle.topY) {
+      this.screenRectangle.topY - yScalar * this.maxRectangle.topY - yOffset
     } else {
       y
     }

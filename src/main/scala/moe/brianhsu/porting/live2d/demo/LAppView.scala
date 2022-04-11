@@ -9,11 +9,10 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDire
 import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation}
+import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.renderer.viewport.ViewOrientation.{Horizontal, Vertical}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
-import moe.brianhsu.porting.live2d.framework.math.ViewPortMatrixCalculator
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
 import scala.util.Try
@@ -76,7 +75,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
     } {
 
       val projection = projectionMatrixCalculator.calculate(
-        viewPortMatrixCalculator.getViewMatrix,
+        viewPortMatrixCalculator.viewPortMatrix,
         isForceUpdate,
         updateModelMatrix(model)
       )
@@ -113,28 +112,30 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   }
 
   def onMouseReleased(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformedX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
-    val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
-    val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
+    val transformedX = viewPortMatrixCalculator.deviceToScreen.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.deviceToScreen.transformedY(y.toFloat)
+
 
     targetPointCalculator.updateFaceTargetCoordinate(0.0f, 0.0f)
     for {
       _ <- avatarHolder
       model <- modelHolder
     } {
-      val isHead = model.isHit("HitArea", viewX, viewY)
-      val isBody = model.isHit("HitArea2", viewX, viewY)
 
-      println(s"isHead = $isHead, isBody = $isBody")
+      val isHead = model.isHit("HitArea", transformedX, transformedY)
+      val isBody = model.isHit("HitArea2", transformedX, transformedY)
+      val isPower = powerSprite.isHit(x.toFloat, y.toFloat)
+      val isGear = gearSprite.isHit(x.toFloat, y.toFloat)
+
+      println(s"isHead = $isHead, isBody = $isBody, isGear = $isGear, isPower = $isPower")
     }
   }
 
   def onMouseDragged(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformedX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
-    val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
-    val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
+    val transformedX = viewPortMatrixCalculator.deviceToScreen.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.deviceToScreen.transformedY(y.toFloat)
+    val viewX = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedX(transformedX)
+    val viewY = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedY(transformedY)
     targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)
   }
 

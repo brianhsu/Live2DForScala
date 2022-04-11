@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.porting.live2d.renderer.opengl.TextureManager.TextureInfo
 
-abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo, shader: SpriteShader)
+abstract class LAppSprite(drawCanvasInfoReader: DrawCanvasInfoReader, textureInfo: TextureInfo, shader: SpriteShader)
                          (implicit private val gl: OpenGLBinding) {
 
   case class Position(originX: Float, originY: Float, width: Float, height: Float)
@@ -36,8 +36,8 @@ abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: Tex
   }
 
   def render(): Unit = {
-    val maxWidth = drawCanvasInfo.currentCanvasWidth
-    val maxHeight = drawCanvasInfo.currentCanvasHeight
+    val maxWidth = drawCanvasInfoReader.currentCanvasWidth
+    val maxHeight = drawCanvasInfoReader.currentCanvasHeight
 
     gl.glEnable(GL_TEXTURE_2D)
 
@@ -53,10 +53,10 @@ abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: Tex
     gl.glUniform1i(textureLocation, 0)
 
     val positionVertex = Array(
-      (rect.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f),
-      (rect.leftX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f),
+      (rect.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.topY - maxHeight * 0.5f) / (maxHeight * 0.5f),
       (rect.leftX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.topY - maxHeight * 0.5f) / (maxHeight * 0.5f),
-      (rect.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.topY - maxHeight * 0.5f) / (maxHeight * 0.5f)
+      (rect.leftX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f),
+      (rect.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f)
     )
 
     val buffer1 = gl.newDirectFloatBuffer(positionVertex)
@@ -70,4 +70,12 @@ abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: Tex
     gl.glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
   }
 
+  def isHit(pointX: Float, pointY: Float): Boolean = {
+    val invertedY = drawCanvasInfoReader.currentCanvasHeight - pointY
+
+    pointX >= rect.leftX &&
+      pointX <= rect.rightX &&
+      invertedY >= rect.bottomY &&
+      invertedY <= rect.topY
+  }
 }

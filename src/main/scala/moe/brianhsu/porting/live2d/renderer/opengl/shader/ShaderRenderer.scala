@@ -98,9 +98,9 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
     gl.glUniform4f(
       shader.uniformBaseColorLocation,
       rect.leftX * 2.0f - 1.0f,
-      rect.topY * 2.0f - 1.0f,
+      rect.bottomY * 2.0f - 1.0f,
       rect.rightX * 2.0f - 1.0f,
-      rect.bottomY * 2.0f - 1.0f
+      rect.topY * 2.0f - 1.0f
     )
 
     setGlBlend(Blending(GL_ZERO, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA))
