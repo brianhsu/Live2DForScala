@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.swtopengl
 
-import moe.brianhsu.live2d.adapter.gateway.renderer.swt.SWTOpenGLCanvasInfo
+import moe.brianhsu.live2d.adapter.gateway.opengl.swt.SWTOpenGLCanvasInfo
 import moe.brianhsu.porting.live2d.adapter.lwjgl.LWJGLBinding
 import moe.brianhsu.porting.live2d.demo.LAppView
 import org.eclipse.swt._

@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.adapter.lwjgl
 
 import com.jogamp.common.nio.Buffers
-import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import org.lwjgl.opengl._
 
 import java.nio.{ByteBuffer, ByteOrder, FloatBuffer}

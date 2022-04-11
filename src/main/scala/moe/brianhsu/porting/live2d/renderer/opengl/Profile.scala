@@ -1,6 +1,6 @@
 package moe.brianhsu.porting.live2d.renderer.opengl
 
-import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
 object Profile {
   private var profile: Map[OpenGLBinding, Profile] = Map.empty

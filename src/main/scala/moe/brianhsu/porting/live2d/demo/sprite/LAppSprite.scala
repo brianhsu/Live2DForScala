@@ -1,8 +1,7 @@
 package moe.brianhsu.porting.live2d.demo.sprite
 
-import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
-import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfo
 import moe.brianhsu.live2d.enitiy.math.Rectangle
+import moe.brianhsu.live2d.enitiy.opengl.{DrawCanvasInfo, OpenGLBinding}
 import moe.brianhsu.porting.live2d.renderer.opengl.TextureManager.TextureInfo
 
 abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureInfo, shader: SpriteShader)

@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.demo
 
 import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
-import moe.brianhsu.live2d.adapter.gateway.renderer.jogl.{JOGLCanvasInfo, JavaOpenGLBinding}
+import moe.brianhsu.live2d.adapter.gateway.opengl.jogl.{JOGLCanvasInfo, JavaOpenGLBinding}
 
 import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent, MouseWheelEvent}
 import java.util.concurrent.{ScheduledThreadPoolExecutor, TimeUnit}

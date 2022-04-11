@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.renderer.opengl
 
 import TextureManager.TextureInfo
-import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
 import java.io.File
 import java.nio.{ByteBuffer, ByteOrder}

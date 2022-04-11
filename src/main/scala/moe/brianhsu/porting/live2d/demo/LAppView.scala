@@ -1,14 +1,13 @@
 package moe.brianhsu.porting.live2d.demo
 
+import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader, FaceDirectionByMouse}
-import moe.brianhsu.live2d.adapter.gateway.core.JnaCubismCore
-import moe.brianhsu.live2d.adapter.gateway.reader.AvatarFileReader
-import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
-import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfo
+import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.enitiy.opengl.{DrawCanvasInfo, OpenGLBinding}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
 import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
@@ -34,7 +33,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator
 
   private val frameTimeCalculator = new SystemNanoTimeBasedFrameInfo
-  private implicit val cubismCore: JnaCubismCore = new JnaCubismCore()
+  private implicit val cubismCore: JnaNativeCubismAPILoader = new JnaNativeCubismAPILoader()
 
   private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)

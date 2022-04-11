@@ -1,10 +1,10 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.clipping
 
-import moe.brianhsu.live2d.adapter.gateway.renderer.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
 
 class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implicit gl: OpenGLBinding) {
