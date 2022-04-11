@@ -1,15 +1,14 @@
 package moe.brianhsu.live2d.adapter.gateway.opengl.jogl
 
 import com.jogamp.common.nio.Buffers
-import com.jogamp.opengl.fixedfunc.GLMatrixFunc
 import com.jogamp.opengl.{GL, GL2, GL2ES1, GL2ES2}
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
 import java.nio.{ByteBuffer, FloatBuffer, IntBuffer}
 
-class JavaOpenGLBinding(gl: GL, gl2: GL2, gl2es1: GL2ES1, gl2es2: GL2ES2, gLMatrixFunc: GLMatrixFunc) extends OpenGLBinding {
+class JavaOpenGLBinding(gl: GL, gl2: GL2, gl2es1: GL2ES1, gl2es2: GL2ES2) extends OpenGLBinding {
 
-  def this(gl2: GL2) = this(gl2, gl2, gl2, gl2, gl2)
+  def this(gl2: GL2) = this(gl2, gl2, gl2, gl2)
 
   override val GL_TEXTURE_2D: Int = GL.GL_TEXTURE_2D
   override val GL_RGBA: Int = GL.GL_RGBA
@@ -128,6 +127,10 @@ class JavaOpenGLBinding(gl: GL, gl2: GL2, gl2es1: GL2ES1, gl2es2: GL2ES2, gLMatr
 
   override def glGetIntegerv(pname: Int, params: Array[Int]): Unit = {
     gl.glGetIntegerv(pname, params, 0)
+  }
+
+  override def glGetIntegerv(pname: Int, params: Array[Int], params_offset: Int): Unit = {
+    gl.glGetIntegerv(pname, params, params_offset)
   }
 
   override def glGenFramebuffers(n: Int, framebuffers: Array[Int]): Unit = {
@@ -272,11 +275,6 @@ class JavaOpenGLBinding(gl: GL, gl2: GL2, gl2es1: GL2ES1, gl2es2: GL2ES2, gLMatr
                                      stride: Int, ptr: FloatBuffer): Unit = {
     gl2.glVertexAttribPointer(index, size, `type`, normalized, stride, ptr)
   }
-
-  override def glGetIntegerv(pname: Int, params: Array[Int], params_offset: Int): Unit = {
-    gLMatrixFunc.glGetIntegerv(pname, params, params_offset)
-  }
-
 
 
 

@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.adapter.lwjgl
+package moe.brianhsu.live2d.adapter.gateway.opengl.lwjgl
 
 import com.jogamp.common.nio.Buffers
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
