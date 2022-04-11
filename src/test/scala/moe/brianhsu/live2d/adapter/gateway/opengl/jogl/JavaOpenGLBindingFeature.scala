@@ -1,10 +1,12 @@
 package moe.brianhsu.live2d.adapter.gateway.opengl.jogl
 
-import com.jogamp.opengl.{DebugGL4bc, GL, GL2, GL2ES2, GL4bc}
+import com.jogamp.opengl.{GL, GL2ES1, GL2ES2}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+
+import java.nio.{Buffer, ByteBuffer, IntBuffer}
 
 class JavaOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory {
   Feature("OpenGL constant") {
@@ -97,6 +99,532 @@ class JavaOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
 
       Then("t1he stubbed GL object should receive the delegated call")
       (stubbedGL.glBindTexture _).verify(0, 1).once()
+    }
+
+    Scenario("glTexImage2D") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glTexImage2D")
+      val byteBuffer = ByteBuffer.allocate(1)
+      binding.glTexImage2D(0, 1, 2, 3, 4, 5, 6, 7, byteBuffer)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glTexImage2D: (Int, Int, Int, Int, Int, Int, Int, Int, Buffer) => Unit)
+        .verify(0, 1, 2, 3, 4, 5, 6, 7, byteBuffer)
+        .once()
+    }
+
+    Scenario("glGenerateMipmap") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glGenerateMipmap")
+      binding.glGenerateMipmap(0)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glGenerateMipmap _).verify(0).once()
+    }
+
+    Scenario("glTexParameteri") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glTexParameteri")
+      binding.glTexParameteri(0, 1, 2)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glTexParameteri _).verify(0, 1, 2).once()
+    }
+
+    Scenario("glViewport") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glViewport")
+      binding.glViewport(0, 1, 2, 3)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glViewport _).verify(0, 1, 2, 3).once()
+    }
+
+    Scenario("glActiveTexture") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glActiveTexture")
+      binding.glActiveTexture(0)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glActiveTexture _).verify(0).once()
+    }
+
+    Scenario("glBlendFuncSeparate") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glBlendFuncSeparate")
+      binding.glBlendFuncSeparate(0, 1, 2, 3)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glBlendFuncSeparate _).verify(0, 1, 2, 3).once()
+    }
+
+    Scenario("glIsEnabled") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glIsEnabled")
+      binding.glIsEnabled(0)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glIsEnabled _).verify(0).once()
+    }
+
+    Scenario("glGetBooleanv") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glGetBooleanv")
+      val data = Array[Byte](0)
+      binding.glGetBooleanv(0, data)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glGetBooleanv: (Int, Array[Byte], Int) => Unit).verify(0, data, 0).once()
+    }
+
+    Scenario("glEnable") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glEnable")
+      binding.glEnable(0)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glEnable _).verify(0).once()
+    }
+
+    Scenario("glDisable") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glDisable")
+      binding.glDisable(0)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glDisable _).verify(0).once()
+    }
+
+    Scenario("glFrontFace") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glFrontFace")
+      binding.glFrontFace(0)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glFrontFace _).verify(0).once()
+    }
+
+    Scenario("glColorMask") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glColorMask")
+      binding.glColorMask(red = true, green = false, blue = true, alpha = false)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glColorMask _).verify(true, false, true, false).once()
+    }
+
+    Scenario("glBindBuffer") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glBindBuffer")
+      binding.glBindBuffer(0, 1)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glBindBuffer _).verify(0, 1).once()
+    }
+
+    Scenario("glGetIntegerv") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glGetIntegerv")
+      val params = Array[Int](0)
+      binding.glGetIntegerv(0, params)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glGetIntegerv: (Int, Array[Int], Int) => Unit).verify(0, params, 0).once()
+    }
+
+    Scenario("glGenFramebuffers") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glGenFramebuffers")
+      val params = Array[Int](0)
+      binding.glGenFramebuffers(0, params)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glGenFramebuffers: (Int, Array[Int], Int) => Unit).verify(0, params, 0).once()
+    }
+
+    Scenario("glBindFramebuffer") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glBindFramebuffer")
+      binding.glBindFramebuffer(0, 1)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glBindFramebuffer _).verify(0, 1).once()
+    }
+
+    Scenario("glFramebufferTexture2D") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glFramebufferTexture2D")
+      binding.glFramebufferTexture2D(0, 1, 2, 3, 4)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glFramebufferTexture2D _).verify(0, 1, 2, 3, 4).once()
+    }
+
+    Scenario("glClearColor") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glClearColor")
+      binding.glClearColor(0.1f, 0.2f, 0.3f, 0.4f)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glClearColor _).verify(0.1f, 0.2f, 0.3f, 0.4f).once()
+    }
+
+    Scenario("glClear") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glClear")
+      binding.glClear(0)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glClear _).verify(0).once()
+    }
+
+    Scenario("glDeleteTextures") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glDeleteTextures")
+      val textures = Array[Int](0)
+      binding.glDeleteTextures(0, textures)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glDeleteTextures: (Int, Array[Int], Int) => Unit)
+        .verify(0, textures, 0)
+        .once()
+    }
+
+    Scenario("glDeleteFramebuffers") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glDeleteFramebuffers")
+      val textures = Array[Int](0)
+      binding.glDeleteFramebuffers(0, textures)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glDeleteFramebuffers: (Int, Array[Int], Int) => Unit)
+        .verify(0, textures, 0)
+        .once()
+    }
+
+    Scenario("glBlendFunc") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glBlendFunc")
+      binding.glBlendFunc(0, 1)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glBlendFunc _).verify(0, 1).once()
+    }
+
+    Scenario("glDrawArrays") {
+      Given("a mocked GL object")
+      val stubbedGL = stub[GL]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(stubbedGL, null, null, null, null)
+
+      When("call glDrawArrays")
+      binding.glDrawArrays(0, 1, 2)
+
+      Then("t1he stubbed GL object should receive the delegated call")
+      (stubbedGL.glDrawArrays _).verify(0, 1, 2).once()
+    }
+
+    Scenario("glDrawElements") {
+      Given("a mocked GL2ES1 object")
+      val stubbedGL2ES1 = stub[GL2ES1]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, stubbedGL2ES1, null, null)
+
+      When("call glDrawArrays")
+      val buffer = ByteBuffer.allocate(1)
+      binding.glDrawElements(0, 1, 2, buffer)
+
+      Then("t1he stubbed GL2ES1 object should receive the delegated call")
+      (stubbedGL2ES1.glDrawElements: (Int, Int, Int, Buffer) => Unit).verify(0, 1, 2, buffer).once()
+    }
+
+    Scenario("glUseProgram") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glUseProgram")
+      binding.glUseProgram(0)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glUseProgram _).verify(0).once()
+    }
+
+    Scenario("glCompileShader") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glCompileShader")
+      binding.glCompileShader(0)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glCompileShader _).verify(0).once()
+    }
+
+    Scenario("glDeleteProgram") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glDeleteProgram")
+      binding.glDeleteProgram(0)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glDeleteProgram _).verify(0).once()
+    }
+
+    Scenario("glCreateProgram") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glDeleteProgram")
+      binding.glCreateProgram()
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glCreateProgram _).verify().once()
+    }
+
+    Scenario("glAttachShader") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glAttachShader")
+      binding.glAttachShader(0, 1)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glAttachShader _).verify(0, 1).once()
+    }
+
+    Scenario("glDetachShader") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glDetachShader")
+      binding.glDetachShader(0, 1)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glDetachShader _).verify(0, 1).once()
+    }
+
+    Scenario("glDeleteShader") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glDeleteShader")
+      binding.glDeleteShader(0)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glDeleteShader _).verify(0).once()
+    }
+
+    Scenario("glLinkProgram") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glLinkProgram")
+      binding.glLinkProgram(0)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glLinkProgram _).verify(0).once()
+    }
+
+    Scenario("glCreateShader") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glCreateShader")
+      binding.glCreateShader(0)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glCreateShader _).verify(0).once()
+    }
+
+    Scenario("glShaderSource") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glShaderSource")
+      val source = Array[String]("sourceCode")
+      binding.glShaderSource(0, 1, source)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glShaderSource: (Int, Int, Array[String], Array[Int], Int) => Unit)
+        .verify(0, 1, source, null, 0)
+        .once()
+    }
+
+    Scenario("glGetProgramiv") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glGetProgramiv")
+      val params = Array[Int](0)
+      binding.glGetProgramiv(0, 1, params)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glGetProgramiv: (Int, Int, Array[Int], Int) => Unit)
+        .verify(0, 1, params, 0)
+        .once()
+    }
+
+    Scenario("glGetProgramInfoLog") {
+      Given("a mocked GL object")
+      val stubbedGL2ES2 = stub[GL2ES2]
+
+      And("a JavaOpenGL binding")
+      val binding = new JavaOpenGLBinding(null, null, null, stubbedGL2ES2, null)
+
+      When("call glGetProgramInfoLog")
+      val buffer = ByteBuffer.allocate(1)
+      binding.glGetProgramInfoLog(0, 1, buffer)
+
+      Then("t1he stubbed GL2ES2 object should receive the delegated call")
+      (stubbedGL2ES2.glGetProgramInfoLog: (Int, Int, IntBuffer, ByteBuffer) => Unit)
+        .verify(0, 1, *, buffer)
+        .once()
     }
 
   }

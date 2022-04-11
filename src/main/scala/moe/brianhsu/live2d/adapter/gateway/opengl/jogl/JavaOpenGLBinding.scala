@@ -7,7 +7,7 @@ import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
 import java.nio.{ByteBuffer, FloatBuffer, IntBuffer}
 
-class JavaOpenGLBinding(gl: GL, gl2: GL2, gl2es2: GL2ES2, gl2es1: GL2ES1, gLMatrixFunc: GLMatrixFunc) extends OpenGLBinding {
+class JavaOpenGLBinding(gl: GL, gl2: GL2, gl2es1: GL2ES1, gl2es2: GL2ES2, gLMatrixFunc: GLMatrixFunc) extends OpenGLBinding {
 
   def this(gl2: GL2) = this(gl2, gl2, gl2, gl2, gl2)
 
