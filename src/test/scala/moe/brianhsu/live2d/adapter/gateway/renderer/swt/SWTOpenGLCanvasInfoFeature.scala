@@ -1,8 +1,7 @@
 package moe.brianhsu.live2d.adapter.gateway.renderer.swt
 
-import moe.brianhsu.live2d.adapter.gateway.renderer.swt.SWTOpenGLCanvasInfoReader
 import org.eclipse.swt.SWT
-import org.eclipse.swt.graphics.{Point, Rectangle}
+import org.eclipse.swt.graphics.Rectangle
 import org.eclipse.swt.opengl.{GLCanvas, GLData}
 import org.eclipse.swt.widgets.Shell
 import org.scalamock.scalatest.MixedMockFactory
@@ -16,7 +15,6 @@ class SWTOpenGLCanvasInfoFeature extends AnyFeatureSpec with Matchers with Given
       Given("A stubbed SWT OpenGL Canvas")
       val canvas = new GLCanvas(new Shell(), SWT.NONE, stub[GLData]) {
         override def getBounds: Rectangle = new Rectangle(123, 456, 789, 987)
-        override def getSize: Point = new Point(654, 321)
       }
 
       And("A SWTOpenGLCanvasInfo based on that canvas")
@@ -25,8 +23,6 @@ class SWTOpenGLCanvasInfoFeature extends AnyFeatureSpec with Matchers with Given
       Then("it should have correct properties")
       canvasInfo.currentCanvasWidth shouldBe 789
       canvasInfo.currentCanvasHeight shouldBe 987
-      canvasInfo.currentSurfaceWidth shouldBe 654
-      canvasInfo.currentSurfaceHeight shouldBe 321
     }
   }
 

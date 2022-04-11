@@ -9,8 +9,8 @@ class BackgroundSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: Textur
 
   override protected def calculatePosition(): Position = {
 
-    val windowWidth = drawCanvasInfo.currentSurfaceWidth
-    val windowHeight = drawCanvasInfo.currentSurfaceHeight
+    val windowWidth = drawCanvasInfo.currentCanvasWidth
+    val windowHeight = drawCanvasInfo.currentCanvasHeight
     Position(
       windowWidth / 2.0f, windowHeight / 2.0f,
       textureInfo.width * 2.0f, windowHeight * 0.95f

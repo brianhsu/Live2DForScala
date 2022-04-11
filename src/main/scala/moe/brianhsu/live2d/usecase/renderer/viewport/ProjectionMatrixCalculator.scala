@@ -14,7 +14,6 @@ class ProjectionMatrixCalculator(drawCanvasInfoReader: DrawCanvasInfoReader) {
 
   def calculate(viewPortMatrix: ViewPortMatrix, isForceUpdate: Boolean = false, onUpdated: ViewOrientation => Unit): ProjectionMatrix  = {
 
-    println(viewPortMatrix)
     val drawCanvasWidth = drawCanvasInfoReader.currentCanvasWidth
     val drawCanvasHeight = drawCanvasInfoReader.currentCanvasHeight
 

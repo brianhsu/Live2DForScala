@@ -6,6 +6,4 @@ import org.eclipse.swt.opengl.GLCanvas
 class SWTOpenGLCanvasInfoReader(canvas: GLCanvas) extends DrawCanvasInfoReader {
   override def currentCanvasWidth: Int = canvas.getBounds.width
   override def currentCanvasHeight: Int = canvas.getBounds.height
-  override def currentSurfaceWidth: Int = canvas.getSize.x
-  override def currentSurfaceHeight: Int = canvas.getSize.y
 }

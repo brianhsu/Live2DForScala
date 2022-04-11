@@ -154,8 +154,6 @@ class ProjectionMatrixCalculatorFeature extends featurespec.FixtureAnyFeatureSpe
   }
 
   class StubbedDrawCanvasInfoReader(var canvasWidth: Int, var canvasHeight: Int) extends DrawCanvasInfoReader {
-    override def currentSurfaceWidth: Int = 1024
-    override def currentSurfaceHeight: Int = 768
     override def currentCanvasWidth: Int = canvasWidth
     override def currentCanvasHeight: Int = canvasHeight
   }

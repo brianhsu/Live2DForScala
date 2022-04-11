@@ -36,8 +36,8 @@ abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: Tex
   }
 
   def render(): Unit = {
-    val maxWidth = drawCanvasInfo.currentSurfaceWidth
-    val maxHeight = drawCanvasInfo.currentSurfaceHeight
+    val maxWidth = drawCanvasInfo.currentCanvasWidth
+    val maxHeight = drawCanvasInfo.currentCanvasHeight
 
     gl.glEnable(GL_TEXTURE_2D)
 

@@ -8,7 +8,7 @@ class PowerSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo
                  (implicit private val gl: OpenGLBinding) extends LAppSprite(drawCanvasInfo, textureInfo, shader) {
 
   override protected def calculatePosition(): Position = {
-    val windowWidth = drawCanvasInfo.currentSurfaceWidth
+    val windowWidth = drawCanvasInfo.currentCanvasWidth
     Position(
       windowWidth - textureInfo.width * 0.5f,
       textureInfo.height * 0.5f,
