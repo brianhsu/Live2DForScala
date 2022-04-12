@@ -3,7 +3,8 @@ package moe.brianhsu.porting.live2d.renderer.opengl.shader
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
-import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureColor}
+import moe.brianhsu.live2d.usecase.renderer.viewport.texture.TextureColor
+import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingContext
 
 import java.nio.ByteBuffer
@@ -78,7 +79,7 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
 
     //座標変換
     gl.glUniformMatrix4fv(shader.uniformMatrixLocation, 1, transpose = false, projection.elements)
-    gl.glUniform4f(shader.uniformBaseColorLocation, baseColor.r, baseColor.g, baseColor.b, baseColor.a)
+    gl.glUniform4f(shader.uniformBaseColorLocation, baseColor.red, baseColor.green, baseColor.blue, baseColor.alpha)
     setGlBlend(blending)
   }
 
@@ -108,7 +109,7 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
 
   def setGlColorChannel(context: ClippingContext, shader: AvatarShader): Unit = {
     val colorChannel = context.getChannelColor
-    gl.glUniform4f(shader.uniformChannelFlagLocation, colorChannel.r, colorChannel.g, colorChannel.b, colorChannel.a)
+    gl.glUniform4f(shader.uniformChannelFlagLocation, colorChannel.red, colorChannel.green, colorChannel.blue, colorChannel.alpha)
 
   }
 

@@ -24,11 +24,7 @@ abstract class LAppSprite(drawCanvasInfoReader: DrawCanvasInfoReader, textureInf
   private def createRectangle() = {
     val position = calculatePosition()
 
-    Rectangle(
-      position.originX - position.width * 0.5f,
-      position.originY - position.height * 0.5f,
-      position.width, position.height
-    )
+    Rectangle(position.originX, position.originY, position.width, position.height)
   }
 
   def resize(): Unit = {

@@ -10,8 +10,8 @@ class PowerSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo
   override protected def calculatePosition(): Position = {
     val windowWidth = drawCanvasInfo.currentCanvasWidth
     Position(
-      windowWidth - textureInfo.width * 0.5f,
-      textureInfo.height * 0.5f,
+      windowWidth - textureInfo.width,
+      textureInfo.height * 0.25f,
       textureInfo.width.toFloat,
       textureInfo.height.toFloat
     )

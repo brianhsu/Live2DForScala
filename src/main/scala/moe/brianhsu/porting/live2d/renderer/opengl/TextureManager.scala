@@ -3,6 +3,7 @@ package moe.brianhsu.porting.live2d.renderer.opengl
 import TextureManager.TextureInfo
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
+import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.imageio.ImageIO
@@ -63,13 +64,23 @@ class TextureManager private (implicit gl: OpenGLBinding) {
 
   private def readBitmapFromFile(filename: String): ImageBitmap = {
     val image = ImageIO.read(new File(filename))
-    val bitmap = image.getRaster.getPixels(0, 0, image.getWidth, image.getHeight, null: Array[Int]).map(_.toByte)
+    val bitmap = image.getType match {
+      case BufferedImage.TYPE_4BYTE_ABGR => image.getRaster.getPixels(0, 0, image.getWidth, image.getHeight, null: Array[Int]).map(_.toByte)
+      case _ => createRGBABuffer(image)
+    }
+
     val buffer = ByteBuffer.allocateDirect(bitmap.length)
       .order(ByteOrder.nativeOrder())
       .put(bitmap)
       .rewind()
 
     ImageBitmap(image.getWidth, image.getHeight, buffer)
+  }
+
+  private def createRGBABuffer(image: BufferedImage): Array[Byte] = {
+    val newImage = new BufferedImage(image.getWidth, image.getHeight, BufferedImage.TYPE_4BYTE_ABGR)
+    newImage.createGraphics().drawImage(image, 0, 0, image.getWidth, image.getHeight, null)
+    newImage.getRaster.getPixels(0, 0, newImage.getWidth, newImage.getHeight, null: Array[Int]).map(_.toByte)
   }
 
 }
