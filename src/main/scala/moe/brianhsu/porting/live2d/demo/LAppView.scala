@@ -112,8 +112,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   }
 
   def onMouseReleased(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.deviceToScreen.transformedX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.deviceToScreen.transformedY(y.toFloat)
+    val transformedX = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
 
 
     targetPointCalculator.updateFaceTargetCoordinate(0.0f, 0.0f)
@@ -132,8 +132,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   }
 
   def onMouseDragged(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.deviceToScreen.transformedX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.deviceToScreen.transformedY(y.toFloat)
+    val transformedX = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
     val viewX = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedX(transformedX)
     val viewY = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedY(transformedY)
     targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)

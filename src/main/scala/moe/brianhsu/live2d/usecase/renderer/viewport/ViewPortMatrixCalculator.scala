@@ -19,11 +19,11 @@ object ViewPortMatrixCalculator {
 
 class ViewPortMatrixCalculator {
   private var mDeviceToScreen: GeneralMatrix = new GeneralMatrix
-  private var mViewPortMatrix: ViewPortMatrix = new ViewPortMatrix(Rectangle(), Rectangle(), 0, 0)
+  private var mViewPortMatrix: ViewPortMatrix = ViewPortMatrix(Rectangle(), Rectangle(), 0, 0)
   private var drawCanvasWidth: Int = 0
   private var drawCanvasHeight: Int = 0
 
-  def deviceToScreen: GeneralMatrix = mDeviceToScreen
+  def drawCanvasToModelMatrix: GeneralMatrix = mDeviceToScreen
   def viewPortMatrix: ViewPortMatrix = mViewPortMatrix
 
   def updateViewPort(width: Int, height: Int): Unit = {
@@ -44,7 +44,7 @@ class ViewPortMatrixCalculator {
   }
 
   private def calculateViewMatrix(left: Float, right: Float, top: Float, bottom: Float): ViewPortMatrix = {
-    new ViewPortMatrix(
+    ViewPortMatrix(
       Rectangle(left, right, right - left, bottom - top),
       Rectangle(
         ViewLogicalMaxLeft,
@@ -58,17 +58,20 @@ class ViewPortMatrixCalculator {
   }
 
   private def calculateDeviceToScreen(left: Float, right: Float, top: Float, bottom: Float): GeneralMatrix = {
-    val (scaleRelativeX, scaleRelativeY) = if (drawCanvasWidth > drawCanvasHeight) {
-      val screenW: Float = (right - left).abs
-      (screenW / drawCanvasWidth, -screenW / drawCanvasWidth)
-    } else {
-      val screenH: Float = (bottom - top).abs
-      (screenH / drawCanvasHeight, -screenH / drawCanvasHeight)
-    }
+    val (scaleRelativeX, scaleRelativeY) = calculateRelativeScale(left, right, top, bottom)
 
     (new GeneralMatrix)
       .scaleRelative(scaleRelativeX, scaleRelativeY)
       .translateRelative(-drawCanvasWidth * 0.5f, -drawCanvasHeight * 0.5f)
   }
 
+  private def calculateRelativeScale(left: Float, right: Float, top: Float, bottom: Float) = {
+    if (drawCanvasWidth > drawCanvasHeight) {
+      val screenW: Float = (right - left).abs
+      (screenW / drawCanvasWidth, -screenW / drawCanvasWidth)
+    } else {
+      val screenH: Float = (bottom - top).abs
+      (screenH / drawCanvasHeight, -screenH / drawCanvasHeight)
+    }
+  }
 }

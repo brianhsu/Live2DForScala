@@ -12,7 +12,7 @@ import moe.brianhsu.live2d.enitiy.math.matrix.Matrix4x4
  * @param maxScale        The max scale rate.
  * @param elements        The elements of the matrix.
  */
-class ViewPortMatrix(screenRectangle: Rectangle, maxRectangle: Rectangle, minScale: Float, maxScale: Float, override val elements: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4 {
+case class ViewPortMatrix(screenRectangle: Rectangle, maxRectangle: Rectangle, minScale: Float, maxScale: Float, override val elements: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4 {
 
   type T = ViewPortMatrix
 

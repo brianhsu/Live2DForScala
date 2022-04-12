@@ -7,8 +7,8 @@ package moe.brianhsu.live2d.enitiy.math.matrix
  * @param canvasHeight  The height of canvas.
  * @param elements      The elements of this matrix.
  */
-class ModelMatrix(val canvasWidth: Float, val canvasHeight: Float,
-                  override val elements: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4 {
+case class ModelMatrix(canvasWidth: Float, canvasHeight: Float,
+                       override val elements: Array[Float] = Matrix4x4.createIdentity()) extends Matrix4x4 {
 
   type T = ModelMatrix
 
