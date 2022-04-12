@@ -59,7 +59,7 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
       case MultiplicativeBlend => Blending(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE)
     }
 
-    gl.glUseProgram(shader.shaderProgram)
+    shader.useProgram()
 
     setGlVertexInfo(vertexArray, uvArray, shader)
 
@@ -84,9 +84,7 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
   }
 
   private def renderMask(context: ClippingContext, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer): Unit = {
-    val shader = setupMaskShader
-
-    gl.glUseProgram(shader.shaderProgram)
+    val shader = setupMaskShader.useProgram()
 
     setGlTexture(GL_TEXTURE0, textureId, shader.samplerTexture0Location, 0)
     setGlVertexInfo(vertexArray, uvArray, shader)

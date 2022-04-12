@@ -12,10 +12,10 @@ abstract class LAppSprite(drawCanvasInfoReader: DrawCanvasInfoReader, textureInf
 
   import gl._
 
-  private val positionLocation = gl.glGetAttribLocation(shader.shaderProgram, "position")
-  private val uvLocation = gl.glGetAttribLocation(shader.shaderProgram, "uv")
-  private val textureLocation = gl.glGetUniformLocation(shader.shaderProgram, "texture")
-  private val colorLocation = gl.glGetUniformLocation(shader.shaderProgram, "baseColor")
+  private val positionLocation = shader.positionLocation
+  private val uvLocation = shader.uvLocation
+  private val textureLocation = shader.textureLocation
+  private val colorLocation = shader.baseColorLocation
   private val spriteColor = (1.0f, 1.0f, 1.0f, 1.0f)
   private var rect = createRectangle()
 

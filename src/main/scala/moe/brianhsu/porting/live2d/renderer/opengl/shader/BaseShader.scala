@@ -10,10 +10,15 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGLBinding) { self
 
   import gl._
 
-  def vertexShaderSource: String
-  def fragmentShaderSource: String
+  protected def vertexShaderSource: String
+  protected def fragmentShaderSource: String
 
-  val shaderProgram: Int = createShaderProgram()
+  protected val shaderProgram: Int = createShaderProgram()
+
+  def positionLocation = gl.glGetAttribLocation(shaderProgram, "position")
+  def uvLocation = gl.glGetAttribLocation(shaderProgram, "uv")
+  def textureLocation = gl.glGetUniformLocation(shaderProgram, "texture")
+  def baseColorLocation = gl.glGetUniformLocation(shaderProgram, "baseColor")
 
   def useProgram(): T = {
     gl.glUseProgram(shaderProgram)
