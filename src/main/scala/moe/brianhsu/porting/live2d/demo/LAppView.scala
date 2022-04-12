@@ -9,12 +9,13 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDire
 import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.texture.TextureManager
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
-import moe.brianhsu.live2d.usecase.renderer.viewport.ViewOrientation.{Horizontal, Vertical}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
-import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
+import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 
+import scala.annotation.unused
 import scala.util.Try
 
 class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL: OpenGLBinding) {
@@ -84,12 +85,11 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
       renderer.draw(avatar, projection)
     }
 
-    def updateModelMatrix(model: Live2DModel)(viewOrientation: ViewOrientation): Unit = {
-      val updatedMatrix = viewOrientation match {
-        case Horizontal => model.modelMatrix.scaleToHeight(zoom).left(offsetX).top(offsetY)
-        case Vertical => model.modelMatrix.scaleToWidth(zoom).left(offsetX).top(offsetY)
-      }
-      model.modelMatrix = updatedMatrix
+    def updateModelMatrix(model: Live2DModel)(@unused viewOrientation: ViewOrientation): Unit = {
+      model.modelMatrix = model.modelMatrix
+        .scaleToHeight(zoom)
+        .left(offsetX)
+        .top(offsetY)
     }
 
   }

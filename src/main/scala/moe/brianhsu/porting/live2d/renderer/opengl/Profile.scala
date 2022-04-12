@@ -115,7 +115,7 @@ class Profile private (implicit gl: OpenGLBinding) {
     gl.glBlendFuncSeparate(lastBlending(0), lastBlending(1), lastBlending(2), lastBlending(3))
   }
 
-  def setGlEnableVertexAttribArray(index: Int, enabled: Boolean): Unit = {
+  private def setGlEnableVertexAttribArray(index: Int, enabled: Boolean): Unit = {
     if (enabled) {
       gl.glEnableVertexAttribArray(index)
     } else {
@@ -123,7 +123,7 @@ class Profile private (implicit gl: OpenGLBinding) {
     }
   }
 
-  def setGlEnable(index: Int, enabled: Boolean): Unit = {
+  private def setGlEnable(index: Int, enabled: Boolean): Unit = {
     if (enabled) {
       gl.glEnable(index)
     } else {

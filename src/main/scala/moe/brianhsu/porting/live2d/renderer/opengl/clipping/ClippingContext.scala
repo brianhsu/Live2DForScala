@@ -4,7 +4,7 @@ import ClippingContext.channelColors
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.live2d.usecase.renderer.viewport.texture.TextureColor
+import moe.brianhsu.live2d.usecase.renderer.texture.TextureColor
 
 object ClippingContext {
   private val channelColors = Array(

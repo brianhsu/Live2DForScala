@@ -1,7 +1,6 @@
-package moe.brianhsu.live2d.usecase.renderer
+package moe.brianhsu.live2d.usecase.renderer.viewport
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
-import moe.brianhsu.live2d.usecase.renderer.viewport.ViewOrientation
 import moe.brianhsu.live2d.usecase.renderer.viewport.ViewOrientation.{Horizontal, Vertical}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen

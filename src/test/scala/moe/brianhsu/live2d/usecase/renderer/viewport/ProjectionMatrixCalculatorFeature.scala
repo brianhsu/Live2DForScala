@@ -1,13 +1,12 @@
-package moe.brianhsu.live2d.usecase.renderer
+package moe.brianhsu.live2d.usecase.renderer.viewport
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.usecase.renderer.viewport.ViewOrientation.{Horizontal, Vertical}
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ViewPortMatrix
-import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, Outcome, featurespec}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{GivenWhenThen, Outcome, featurespec}
 
 class ProjectionMatrixCalculatorFeature extends featurespec.FixtureAnyFeatureSpec with GivenWhenThen with Matchers with MockFactory {
 

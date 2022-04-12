@@ -2,8 +2,8 @@ package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
-import moe.brianhsu.live2d.usecase.renderer.viewport.texture.TextureColor
 import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingContext
 

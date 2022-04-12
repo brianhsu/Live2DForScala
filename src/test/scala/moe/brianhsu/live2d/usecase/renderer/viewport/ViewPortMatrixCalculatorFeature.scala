@@ -1,12 +1,11 @@
-package moe.brianhsu.live2d.usecase.renderer
+package moe.brianhsu.live2d.usecase.renderer.viewport
 
 import moe.brianhsu.live2d.enitiy.math.Rectangle
-import moe.brianhsu.live2d.usecase.renderer.viewport.ViewPortMatrixCalculator
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ViewPortMatrix
-import org.scalatest.{GivenWhenThen, Inside}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatest.{GivenWhenThen, Inside}
 
 class ViewPortMatrixCalculatorFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with TableDrivenPropertyChecks {
   private val IdentityMatrix = Array(
