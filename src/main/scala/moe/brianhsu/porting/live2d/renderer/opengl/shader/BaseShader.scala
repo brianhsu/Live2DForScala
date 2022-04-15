@@ -1,12 +1,23 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.porting.live2d.renderer.opengl.shader.BaseShader.ShaderCleaner
 
+import java.lang.ref.Cleaner
 import java.nio.ByteBuffer
 import scala.util.Try
 
+object BaseShader {
+  val cleaner = Cleaner.create()
+  class ShaderCleaner(shaderName: String, shaderProgramId: Int)(implicit gl: OpenGLBinding) extends Runnable {
+    override def run(): Unit = {
+      System.out.println(s"Cleanup shaderProgramId: $shaderProgramId of shaderName: $shaderName")
+      gl.glDeleteProgram(shaderProgramId)
+    }
+  }
+}
 
-abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGLBinding) { self: T =>
+abstract class BaseShader(implicit gl: OpenGLBinding) {
 
   import gl._
 
@@ -15,19 +26,12 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGLBinding) { self
 
   protected val shaderProgram: Int = createShaderProgram()
 
-  def positionLocation = gl.glGetAttribLocation(shaderProgram, "position")
-  def uvLocation = gl.glGetAttribLocation(shaderProgram, "uv")
-  def textureLocation = gl.glGetUniformLocation(shaderProgram, "texture")
-  def baseColorLocation = gl.glGetUniformLocation(shaderProgram, "baseColor")
+  def positionLocation: Int = gl.glGetAttribLocation(shaderProgram, "position")
+  def uvLocation: Int = gl.glGetAttribLocation(shaderProgram, "uv")
+  def textureLocation: Int = gl.glGetUniformLocation(shaderProgram, "texture")
+  def baseColorLocation: Int = gl.glGetUniformLocation(shaderProgram, "baseColor")
 
-  def useProgram(): T = {
-    gl.glUseProgram(shaderProgram)
-    this
-  }
-
-  override def finalize(): Unit = {
-   gl.glDeleteProgram(shaderProgram)
-  }
+  def useProgram(): Unit = gl.glUseProgram(shaderProgram)
 
   private def createShaderProgram(): Int = {
     val shaderProgram = gl.glCreateProgram()
@@ -46,6 +50,7 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGLBinding) { self
     fragmentShaderHolder.failed.foreach(throw _)
     linkedProgram.failed.foreach(throw _)
 
+    BaseShader.cleaner.register(this, new ShaderCleaner(this.toString, shaderProgram))
     shaderProgram
   }
 
@@ -59,6 +64,7 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGLBinding) { self
     getProgramErrorLog(programId) match {
       case None => programId
       case Some(log) =>
+        gl.glDeleteProgram(programId)
         throw new Exception(s"Cannot link shader program, error log=$log")
     }
   }
@@ -69,13 +75,12 @@ abstract class BaseShader[T <: BaseShader[T]](implicit gl: OpenGLBinding) { self
     gl.glShaderSource(shaderId, 1, Array(shaderSourceCode))
     gl.glCompileShader(shaderId)
 
-    getShaderErrorLog(shaderId).foreach { log =>
-      println(s"Compile Error Log: $log")
-      gl.glDeleteShader(shaderId)
-      throw new Exception(s"Cannot compile shader, error log=$log")
+    getShaderErrorLog(shaderId) match {
+      case None => shaderId
+      case Some(log) =>
+        gl.glDeleteShader(shaderId)
+        throw new Exception(s"Cannot compile shader, error log=$log")
     }
-
-    shaderId
   }
 
   private def byteBufferToString(byteBuffer: ByteBuffer, size: Int): String = {

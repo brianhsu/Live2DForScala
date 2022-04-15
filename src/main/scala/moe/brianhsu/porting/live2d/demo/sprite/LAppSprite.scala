@@ -35,6 +35,7 @@ abstract class LAppSprite(drawCanvasInfoReader: DrawCanvasInfoReader, textureInf
     val maxWidth = drawCanvasInfoReader.currentCanvasWidth
     val maxHeight = drawCanvasInfoReader.currentCanvasHeight
 
+    shader.useProgram()
     gl.glEnable(GL_TEXTURE_2D)
 
     val uvVertex = Array(

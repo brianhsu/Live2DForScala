@@ -25,7 +25,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   private var zoom: Float = 2.0f
   private var offsetX: Float = 0.0f
   private var offsetY: Float = 0.0f
-  private val spriteShader: SpriteShader = new SpriteShader().useProgram()
+  private val spriteShader: SpriteShader = new SpriteShader()//.useProgram()
+  println("spriteSharder:" + spriteShader)
   private val manager = TextureManager.getInstance
 
   private lazy val backgroundTexture = manager.loadTexture("src/main/resources/texture/back_class_normal.png")

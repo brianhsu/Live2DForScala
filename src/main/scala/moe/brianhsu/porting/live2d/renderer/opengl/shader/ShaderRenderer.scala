@@ -84,7 +84,9 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
   }
 
   private def renderMask(context: ClippingContext, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer): Unit = {
-    val shader = setupMaskShader.useProgram()
+    val shader = setupMaskShader
+
+    shader.useProgram()
 
     setGlTexture(GL_TEXTURE0, textureId, shader.samplerTexture0Location, 0)
     setGlVertexInfo(vertexArray, uvArray, shader)
