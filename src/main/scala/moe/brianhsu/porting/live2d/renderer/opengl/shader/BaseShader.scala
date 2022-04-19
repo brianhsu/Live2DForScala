@@ -1,15 +1,14 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
-import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, ShaderCompiler}
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.BaseShader.ShaderCleaner
 
 import java.lang.ref.Cleaner
-import java.nio.ByteBuffer
 import scala.util.Try
 
 object BaseShader {
-  val cleaner = Cleaner.create()
-  class ShaderCleaner(shaderName: String, shaderProgramId: Int)(implicit gl: OpenGLBinding) extends Runnable {
+  private val cleaner = Cleaner.create()
+  class ShaderCleaner(shaderName: String, shaderProgramId: Int)(gl: OpenGLBinding) extends Runnable {
     override def run(): Unit = {
       System.out.println(s"Cleanup shaderProgramId: $shaderProgramId of shaderName: $shaderName")
       gl.glDeleteProgram(shaderProgramId)
@@ -17,7 +16,10 @@ object BaseShader {
   }
 }
 
-abstract class BaseShader(implicit gl: OpenGLBinding) {
+abstract class BaseShader(gl: OpenGLBinding, shaderCompiler: ShaderCompiler) {
+
+
+  def this(gl: OpenGLBinding) = this(gl, new ShaderCompiler(gl))
 
   import gl._
 
@@ -50,7 +52,7 @@ abstract class BaseShader(implicit gl: OpenGLBinding) {
     fragmentShaderHolder.failed.foreach(throw _)
     linkedProgram.failed.foreach(throw _)
 
-    BaseShader.cleaner.register(this, new ShaderCleaner(this.toString, shaderProgram))
+    BaseShader.cleaner.register(this, new ShaderCleaner(this.toString, shaderProgram)(gl))
     shaderProgram
   }
 
@@ -61,7 +63,7 @@ abstract class BaseShader(implicit gl: OpenGLBinding) {
 
   private def linkProgram(programId: Int): Try[Int] = Try {
     gl.glLinkProgram(programId)
-    getProgramErrorLog(programId) match {
+    shaderCompiler.readShaderLinkError(programId) match {
       case None => programId
       case Some(log) =>
         gl.glDeleteProgram(programId)
@@ -75,42 +77,11 @@ abstract class BaseShader(implicit gl: OpenGLBinding) {
     gl.glShaderSource(shaderId, 1, Array(shaderSourceCode))
     gl.glCompileShader(shaderId)
 
-    getShaderErrorLog(shaderId) match {
+    shaderCompiler.readShaderCompileError(shaderId) match {
       case None => shaderId
       case Some(log) =>
         gl.glDeleteShader(shaderId)
         throw new Exception(s"Cannot compile shader, error log=$log")
-    }
-  }
-
-  private def byteBufferToString(byteBuffer: ByteBuffer, size: Int): String = {
-    (0 until size).map(i => byteBuffer.get(i).toChar).mkString
-  }
-
-  private def getProgramErrorLog(programId: Int): Option[String] = {
-    val logLengthHolder = Array(Int.MinValue)
-    gl.glGetProgramiv(programId, GL_INFO_LOG_LENGTH, logLengthHolder)
-    val logLength = logLengthHolder(0)
-    logLength match {
-      case 0 => None
-      case _ =>
-        val logBuffer = ByteBuffer.allocateDirect(logLength)
-        gl.glGetProgramInfoLog(programId, logLength, logBuffer)
-        Some(byteBufferToString(logBuffer, logLength))
-    }
-  }
-
-  private def getShaderErrorLog(shaderId: Int): Option[String] = {
-    val logLengthHolder = Array(Int.MinValue)
-    gl.glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, logLengthHolder)
-    val logLength = logLengthHolder(0)
-
-    logLength match {
-      case 0 => None
-      case _ =>
-        val logBuffer = ByteBuffer.allocateDirect(logLength)
-        gl.glGetShaderInfoLog(shaderId, logLength, logBuffer)
-        Some(byteBufferToString(logBuffer, logLength))
     }
   }
 

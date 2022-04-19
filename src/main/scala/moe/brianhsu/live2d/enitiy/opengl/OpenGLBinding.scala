@@ -109,38 +109,6 @@ trait OpenGLBinding {
 
   def glViewport(x: Int, y: Int, w: Int, h: Int): Unit
 
-  def readShaderCompileError(shaderId: Int): Option[String] = {
-    val logLengthHolder = Array(Int.MinValue)
-    glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, logLengthHolder)
-    val logLength = logLengthHolder(0)
-
-    logLength match {
-      case 0 => None
-      case _ =>
-        val logBuffer = ByteBuffer.allocateDirect(logLength)
-        glGetShaderInfoLog(shaderId, logLength, logBuffer)
-        Some(byteBufferToString(logBuffer, logLength))
-    }
-  }
-
-  def readProgramErrorLog(programId: Int): Option[String] = {
-    val logLengthHolder = Array(Int.MinValue)
-    glGetProgramiv(programId, GL_INFO_LOG_LENGTH, logLengthHolder)
-    val logLength = logLengthHolder(0)
-    logLength match {
-      case 0 => None
-      case _ =>
-        val logBuffer = ByteBuffer.allocateDirect(logLength)
-        glGetProgramInfoLog(programId, logLength, logBuffer)
-        Some(byteBufferToString(logBuffer, logLength))
-    }
-  }
-
-  private def byteBufferToString(byteBuffer: ByteBuffer, size: Int): String = {
-    (0 until size)
-      .map(byteBuffer.get(_).toChar)
-      .mkString
-  }
 
   def GL_TEXTURE_2D: Int
   def GL_RGBA: Int
