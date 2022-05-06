@@ -1,8 +1,36 @@
-package moe.brianhsu.live2d.enitiy.opengl
+package moe.brianhsu.live2d.enitiy.opengl.shader
+
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.exception.{ShaderCompileException, ShaderLinkException}
 
 import java.nio.ByteBuffer
+import scala.util.Try
 
 class ShaderCompiler(gl: OpenGLBinding) {
+
+  def compile(shaderType: Int, shaderSourceCode: String): Try[Int] = Try {
+    val shaderId = gl.glCreateShader(shaderType)
+
+    gl.glShaderSource(shaderId, 1, Array(shaderSourceCode))
+    gl.glCompileShader(shaderId)
+
+    readShaderCompileError(shaderId) match {
+      case None => shaderId
+      case Some(log) =>
+        gl.glDeleteShader(shaderId)
+        throw new ShaderCompileException(shaderId, log)
+    }
+  }
+
+  def link(programId: Int): Try[Int] = Try {
+    gl.glLinkProgram(programId)
+    readShaderLinkError(programId) match {
+      case None => programId
+      case Some(log) =>
+        gl.glDeleteProgram(programId)
+        throw new ShaderLinkException(programId, log)
+    }
+  }
 
   def readShaderCompileError(shaderId: Int): Option[String] = {
     val logLengthHolder = Array(Int.MinValue)

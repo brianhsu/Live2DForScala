@@ -1,12 +1,130 @@
-package moe.brianhsu.live2d.enitiy.opengl
+package moe.brianhsu.live2d.enitiy.opengl.shader
 
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.exception.{ShaderCompileException, ShaderLinkException}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, OptionValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{GivenWhenThen, OptionValues, TryValues}
 
-class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory with OptionValues {
+class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory with OptionValues with TryValues {
   private val GL_INFO_LOG_LENGTH = 1
+
+  Feature("Link program") {
+    Scenario("Link successfully") {
+      Given("a mocked program ID")
+      val programId = 123
+
+      And("a stubbed OpenGL binding")
+      val gl = stub[OpenGLBinding]
+
+      And("a ShaderCompile based on that and does not have error when read link log")
+      val compiler = new ShaderCompiler(gl) {
+        override def readShaderLinkError(programId: Int): Option[String] = None
+      }
+
+      When("Link a program")
+      val result = compiler.link(programId)
+
+      Then("it should be a success and contain the programId")
+      result.success.value shouldBe programId
+    }
+
+    Scenario("There is an error when link") {
+      Given("a mocked program ID")
+      val programId = 123
+
+      And("a stubbed OpenGL binding")
+      val gl = stub[OpenGLBinding]
+
+      And("a ShaderCompile based on that and have error when read link log")
+      val compiler = new ShaderCompiler(gl) {
+        override def readShaderLinkError(programId: Int): Option[String] = Some("Link Error")
+      }
+
+      When("Link a program")
+      val result = compiler.link(programId)
+
+      Then("it should be a failure and contain the exception")
+      result.failure.exception shouldBe a[ShaderLinkException]
+      result.failure.exception.asInstanceOf[ShaderLinkException].programId shouldBe programId
+
+      And("OpenGL binding should be called to link program")
+      (gl.glLinkProgram _).verify(programId).once()
+    }
+  }
+
+  Feature("Compile program") {
+    Scenario("Compile successfully") {
+      Given("a mocked shader ID")
+      val mockedShaderId = 123
+      val mockedShaderType = 456
+
+      And("a stubbed OpenGL binding")
+      val gl = stub[OpenGLBinding]
+      (gl.glCreateShader _).when(mockedShaderType).returns(mockedShaderId)
+
+      And("a ShaderCompile based on that and does not have error when read compile log")
+      val compiler = new ShaderCompiler(gl) {
+        override def readShaderCompileError(shaderId: Int): Option[String] = None
+      }
+
+      When("Compile a program")
+      val result = compiler.compile(mockedShaderType, "ShaderSourceCode")
+
+      Then("it should be a success and contain the shaderId")
+      result.success.value shouldBe mockedShaderId
+
+      And("OpenGL binding should be called to compile program")
+      inSequence {
+        (gl.glCreateShader _).verify(mockedShaderType).once()
+        (gl.glShaderSource _).verify(where { (shaderId, count, sourceCode) =>
+          shaderId shouldBe mockedShaderId
+          count shouldBe 1
+          sourceCode should contain theSameElementsInOrderAs List("ShaderSourceCode")
+          true
+        }).once()
+        (gl.glCompileShader _).verify(mockedShaderId).once()
+      }
+
+
+    }
+
+    Scenario("There is an error when compile") {
+      Given("a mocked shader ID")
+      val mockedShaderId = 123
+      val mockedShaderType = 456
+
+      And("a stubbed OpenGL binding")
+      val gl = stub[OpenGLBinding]
+      (gl.glCreateShader _).when(mockedShaderType).returns(mockedShaderId)
+
+      And("a ShaderCompile based on that and does not have error when read compile log")
+      val compiler = new ShaderCompiler(gl) {
+        override def readShaderCompileError(shaderId: Int): Option[String] = Some("Shader Compile Error")
+      }
+
+      When("Compile a program")
+      val result = compiler.compile(mockedShaderType, "ShaderSourceCode")
+
+      Then("it should be a failure and contain the exception")
+      result.failure.exception shouldBe a[ShaderCompileException]
+      result.failure.exception.asInstanceOf[ShaderCompileException].shaderId shouldBe mockedShaderId
+
+      And("OpenGL binding should be called to compile program")
+      inSequence {
+        (gl.glCreateShader _).verify(mockedShaderType).once()
+        (gl.glShaderSource _).verify(where { (shaderId, count, sourceCode) =>
+          shaderId shouldBe mockedShaderId
+          count shouldBe 1
+          sourceCode should contain theSameElementsInOrderAs List("ShaderSourceCode")
+          true
+        }).once()
+        (gl.glCompileShader _).verify(mockedShaderId).once()
+      }
+
+    }
+  }
 
   Feature("Read shader program compile error log") {
     Scenario("Cannot get log length") {
