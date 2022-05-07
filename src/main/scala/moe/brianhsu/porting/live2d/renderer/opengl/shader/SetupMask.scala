@@ -1,6 +1,7 @@
 package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.shader.AvatarShader
 
 class SetupMask(implicit gl: OpenGLBinding) extends AvatarShader {
   override def vertexShaderSource: String = {
