@@ -16,9 +16,11 @@ before_script:
 test:
   script:
     # Execute your project's tests
-    - sbt clean coverage test coverageReport
+    - sbt clean coverage "testOnly -- -l moe.brianhsu.utils.tag.CanvasInfoRelated" coverageReport
   coverage: '/Statement coverage.: \d+\.\d+/'      
   artifacts:
     reports:
-      cobertura: target/scala-2.13/coverage-report/cobertura.xml
-      
+      junit: target/test-reports/*.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: target/scala-2.13/coverage-report/cobertura.xml
