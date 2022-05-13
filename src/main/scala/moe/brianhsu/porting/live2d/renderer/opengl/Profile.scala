@@ -35,12 +35,12 @@ class Profile private (implicit gl: OpenGLBinding) {
   private val lastFrontFace: Array[Int] = new Array(1)
   private val lastColorMask: Array[Byte] = new Array(4)
   private val lastBlending: Array[Int] = new Array(4)
-  private val lastFBO: Array[Int] = new Array(1)
-  private val lastViewport: Array[Int] = new Array(4)
+  private val mFrameBufferBindingPointer: Array[Int] = new Array(1)
+  private val mLastViewPortPointer: Array[Int] = new Array(4)
 
-  def getLastFBO: Int = lastFBO(0)
+  def lastFrameBufferBinding: Int = mFrameBufferBindingPointer(0)
 
-  def gatLastViewPort: Array[Int] = lastViewport
+  def lastViewPort: Array[Int] = mLastViewPortPointer
 
   def save(): Unit = {
     gl.glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBufferBinding, 0)
@@ -74,8 +74,8 @@ class Profile private (implicit gl: OpenGLBinding) {
     gl.glGetIntegerv(GL_BLEND_SRC_ALPHA, lastBlending, 2)
     gl.glGetIntegerv(GL_BLEND_DST_ALPHA, lastBlending, 3)
 
-    gl.glGetIntegerv(GL_FRAMEBUFFER_BINDING, lastFBO, 0)
-    gl.glGetIntegerv(GL_VIEWPORT, lastViewport)
+    gl.glGetIntegerv(GL_FRAMEBUFFER_BINDING, mFrameBufferBindingPointer, 0)
+    gl.glGetIntegerv(GL_VIEWPORT, mLastViewPortPointer)
   }
 
   def restore(): Unit = {
