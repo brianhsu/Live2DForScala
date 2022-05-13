@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.boundary.gateway.avatar
 
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.live2d.enitiy.model.{CanvasInfo, Parameter, Part}
+import moe.brianhsu.live2d.enitiy.model.{ModelCanvasInfo, Parameter, Part}
 
 import scala.util.Try
 
@@ -40,7 +40,7 @@ trait ModelBackend {
    *
    * @return  The canvas info
    */
-  def canvasInfo: CanvasInfo
+  def canvasInfo: ModelCanvasInfo
 
   /**
    * This method will access all lazy member fields that load data from the CubismCore C Library,

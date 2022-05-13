@@ -14,8 +14,8 @@ class RectangleFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
       Then("it should have correct boundary attributes")
       rectangle.leftX shouldBe 1.0f
       rectangle.rightX shouldBe 4.0f
-      rectangle.topY shouldBe 2.0f
-      rectangle.bottomY shouldBe 6.0f
+      rectangle.bottomY shouldBe 2.0f
+      rectangle.topY shouldBe 6.0f
 
       And("correct size")
       rectangle.width shouldBe 3.0f
@@ -35,8 +35,8 @@ class RectangleFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
       Then("expended rectangle should have correct attributes")
       expended.leftX shouldBe -6.0f
       expended.rightX shouldBe 11.0f
-      expended.topY shouldBe -7.0f
-      expended.bottomY shouldBe 15.0f
+      expended.bottomY shouldBe -7.0f
+      expended.topY shouldBe 15.0f
       expended.width shouldBe 17.0f
       expended.height shouldBe 22.0f
     }

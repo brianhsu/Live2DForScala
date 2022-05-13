@@ -8,7 +8,7 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types._
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, CanvasInfo, MocInfo, Part}
+import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, ModelCanvasInfo, MocInfo, Part}
 import moe.brianhsu.live2d.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.utils.MockedNativeCubismAPILoader
 import moe.brianhsu.utils.expectation.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableIndex, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter}
@@ -58,7 +58,7 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       val canvasInfo = model.canvasInfo
 
       Then("it should return the correct canvas info")
-      inside(canvasInfo) { case CanvasInfo(widthInPixel, heightInPixel, (originX, originY), pixelPerUnit) =>
+      inside(canvasInfo) { case ModelCanvasInfo(widthInPixel, heightInPixel, (originX, originY), pixelPerUnit) =>
         widthInPixel shouldBe 2400
         heightInPixel shouldBe 4500
         originX shouldBe 1200

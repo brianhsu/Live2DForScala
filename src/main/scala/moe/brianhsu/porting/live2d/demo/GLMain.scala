@@ -2,7 +2,8 @@ package moe.brianhsu.porting.live2d.demo
 
 import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
-import moe.brianhsu.live2d.adapter.gateway.opengl.jogl.{JOGLCanvasInfo, JavaOpenGLBinding}
+import moe.brianhsu.live2d.adapter.gateway.opengl.jogl.JavaOpenGLBinding
+import moe.brianhsu.live2d.adapter.gateway.renderer.jogl.JOGLCanvasInfoReader
 
 import java.awt.event.{KeyEvent, KeyListener, MouseAdapter, MouseEvent, MouseWheelEvent}
 import java.util.concurrent.{ScheduledThreadPoolExecutor, TimeUnit}
@@ -47,7 +48,7 @@ class GLMain(canvas: GLCanvas) extends MouseAdapter with GLEventListener with Ke
 
   private var animator: Option[FixedFPSAnimator] = None
   private var view: Option[LAppView] = None
-  private val canvasInfo = new JOGLCanvasInfo(canvas)
+  private val canvasInfo = new JOGLCanvasInfoReader(canvas)
 
   override def init(drawable: GLAutoDrawable): Unit = {
     implicit val openGL: JavaOpenGLBinding = new JavaOpenGLBinding(drawable.getGL.getGL2)

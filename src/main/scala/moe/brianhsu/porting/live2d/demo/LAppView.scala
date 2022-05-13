@@ -3,34 +3,37 @@ package moe.brianhsu.porting.live2d.demo
 import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader, FaceDirectionByMouse}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
+import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.enitiy.opengl.{DrawCanvasInfo, OpenGLBinding}
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.texture.TextureManager
+import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
-import moe.brianhsu.porting.live2d.framework.math.ProjectionMatrixCalculator.{Horizontal, Vertical, ViewOrientation}
-import moe.brianhsu.porting.live2d.framework.math.{ProjectionMatrixCalculator, ViewPortMatrixCalculator}
-import moe.brianhsu.porting.live2d.renderer.opengl.{Renderer, TextureManager}
+import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 
+import scala.annotation.unused
 import scala.util.Try
 
-class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: OpenGLBinding) {
+class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL: OpenGLBinding) {
 
   import openGL._
 
   private var zoom: Float = 2.0f
   private var offsetX: Float = 0.0f
   private var offsetY: Float = 0.0f
-  private val spriteShader: SpriteShader = new SpriteShader().useProgram()
+  private val spriteShader: SpriteShader = new SpriteShader()//.useProgram()
+  println("spriteSharder:" + spriteShader)
   private val manager = TextureManager.getInstance
 
   private lazy val backgroundTexture = manager.loadTexture("src/main/resources/texture/back_class_normal.png")
   private lazy val powerTexture = manager.loadTexture("src/main/resources/texture/close.png")
   private lazy val gearTexture = manager.loadTexture("src/main/resources/texture/icon_gear.png")
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
-  private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator
+  private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator(drawCanvasInfo)
 
   private val frameTimeCalculator = new SystemNanoTimeBasedFrameInfo
   private implicit val cubismCore: JnaNativeCubismAPILoader = new JnaNativeCubismAPILoader()
@@ -73,26 +76,21 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       renderer <- rendererHolder
     } {
 
-      // TODO:
-      // There should be a better way to get width / height
-      val projection = projectionMatrixCalculator.calculateProjection(
-        model.canvasInfo,
-        drawCanvasInfo.currentCanvasWidth, drawCanvasInfo.currentCanvasHeight,
-        viewPortMatrixCalculator.getViewMatrix,
-        updateModelMatrix(model),
-        isForceUpdate
+      val projection = projectionMatrixCalculator.calculate(
+        viewPortMatrixCalculator.viewPortMatrix,
+        isForceUpdate,
+        updateModelMatrix(model)
       )
 
       avatar.update(this.frameTimeCalculator)
       renderer.draw(avatar, projection)
     }
 
-    def updateModelMatrix(model: Live2DModel)(viewOrientation: ViewOrientation): Unit = {
-      val updatedMatrix = viewOrientation match {
-        case Horizontal => model.modelMatrix.scaleToHeight(zoom).left(offsetX).top(offsetY)
-        case Vertical => model.modelMatrix.scaleToWidth(zoom).left(offsetX).top(offsetY)
-      }
-      model.modelMatrix = updatedMatrix
+    def updateModelMatrix(model: Live2DModel)(@unused viewOrientation: ViewOrientation): Unit = {
+      model.modelMatrix = model.modelMatrix
+        .scaleToHeight(zoom)
+        .left(offsetX)
+        .top(offsetY)
     }
 
   }
@@ -106,7 +104,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
       drawCanvasInfo.currentCanvasHeight
     )
 
-    openGL.glViewport(0, 0, drawCanvasInfo.currentSurfaceWidth, drawCanvasInfo.currentSurfaceHeight)
+    openGL.glViewport(0, 0, drawCanvasInfo.currentCanvasWidth, drawCanvasInfo.currentCanvasHeight)
     backgroundSprite.resize()
     powerSprite.resize()
     gearSprite.resize()
@@ -115,28 +113,30 @@ class LAppView(drawCanvasInfo: DrawCanvasInfo)(private implicit val openGL: Open
   }
 
   def onMouseReleased(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformedX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
-    val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
-    val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
+    val transformedX = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
+
 
     targetPointCalculator.updateFaceTargetCoordinate(0.0f, 0.0f)
     for {
       _ <- avatarHolder
       model <- modelHolder
     } {
-      val isHead = model.isHit("HitArea", viewX, viewY)
-      val isBody = model.isHit("HitArea2", viewX, viewY)
 
-      println(s"isHead = $isHead, isBody = $isBody")
+      val isHead = model.isHit("HitArea", transformedX, transformedY)
+      val isBody = model.isHit("HitArea2", transformedX, transformedY)
+      val isPower = powerSprite.isHit(x.toFloat, y.toFloat)
+      val isGear = gearSprite.isHit(x.toFloat, y.toFloat)
+
+      println(s"isHead = $isHead, isBody = $isBody, isGear = $isGear, isPower = $isPower")
     }
   }
 
   def onMouseDragged(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.getDeviceToScreen.transformedX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.getDeviceToScreen.transformedY(y.toFloat)
-    val viewX = viewPortMatrixCalculator.getViewMatrix.invertedTransformedX(transformedX)
-    val viewY = viewPortMatrixCalculator.getViewMatrix.invertedTransformedY(transformedY)
+    val transformedX = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedX(x.toFloat)
+    val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
+    val viewX = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedX(transformedX)
+    val viewY = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedY(transformedY)
     targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)
   }
 

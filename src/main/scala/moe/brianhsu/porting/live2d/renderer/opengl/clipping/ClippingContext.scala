@@ -4,7 +4,7 @@ import ClippingContext.channelColors
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.porting.live2d.renderer.opengl.TextureColor
+import moe.brianhsu.live2d.usecase.renderer.texture.TextureColor
 
 object ClippingContext {
   private val channelColors = Array(
@@ -61,9 +61,9 @@ class ClippingContext(val maskDrawable: List[Drawable], val clippedDrawables: Li
   private def calcDrawMatrix(layoutBoundsOnTex01: Rectangle, tmpBoundsOnModel: Rectangle,
                              scaleX: Float, scaleY: Float): GeneralMatrix = {
     new GeneralMatrix()
-      .translateRelative(layoutBoundsOnTex01.leftX, layoutBoundsOnTex01.topY)
+      .translateRelative(layoutBoundsOnTex01.leftX, layoutBoundsOnTex01.bottomY)
       .scaleRelative(scaleX, scaleY)
-      .translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.topY)
+      .translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.bottomY)
   }
 
   private def calcMaskMatrix(layoutBoundsOnTex01: Rectangle, tmpBoundsOnModel: Rectangle,
@@ -72,9 +72,9 @@ class ClippingContext(val maskDrawable: List[Drawable], val clippedDrawables: Li
     new GeneralMatrix()
       .translateRelative(-1.0f, -1.0f)
       .scaleRelative(2.0f, 2.0f)
-      .translateRelative(layoutBoundsOnTex01.leftX, layoutBoundsOnTex01.topY)
+      .translateRelative(layoutBoundsOnTex01.leftX, layoutBoundsOnTex01.bottomY)
       .scaleRelative(scaleX, scaleY)
-      .translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.topY)
+      .translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.bottomY)
   }
 
   def calcClippedDrawTotalBounds(): Unit = {

@@ -1,20 +1,21 @@
 package moe.brianhsu.porting.live2d.demo.sprite
 
+import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.math.Rectangle
-import moe.brianhsu.live2d.enitiy.opengl.{DrawCanvasInfo, OpenGLBinding}
-import moe.brianhsu.porting.live2d.renderer.opengl.TextureManager.TextureInfo
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.texture.TextureInfo
 
-abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureInfo, shader: SpriteShader)
+abstract class LAppSprite(drawCanvasInfoReader: DrawCanvasInfoReader, textureInfo: TextureInfo, shader: SpriteShader)
                          (implicit private val gl: OpenGLBinding) {
 
   case class Position(originX: Float, originY: Float, width: Float, height: Float)
 
   import gl._
 
-  private val positionLocation = gl.glGetAttribLocation(shader.shaderProgram, "position")
-  private val uvLocation = gl.glGetAttribLocation(shader.shaderProgram, "uv")
-  private val textureLocation = gl.glGetUniformLocation(shader.shaderProgram, "texture")
-  private val colorLocation = gl.glGetUniformLocation(shader.shaderProgram, "baseColor")
+  private val positionLocation = shader.positionLocation
+  private val uvLocation = shader.uvLocation
+  private val textureLocation = shader.textureLocation
+  private val colorLocation = shader.baseColorLocation
   private val spriteColor = (1.0f, 1.0f, 1.0f, 1.0f)
   private var rect = createRectangle()
 
@@ -23,11 +24,7 @@ abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureIn
   private def createRectangle() = {
     val position = calculatePosition()
 
-    Rectangle(
-      position.originX - position.width * 0.5f,
-      position.originY - position.height * 0.5f,
-      position.width, position.height
-    )
+    Rectangle(position.originX, position.originY, position.width, position.height)
   }
 
   def resize(): Unit = {
@@ -35,9 +32,10 @@ abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureIn
   }
 
   def render(): Unit = {
-    val maxWidth = drawCanvasInfo.currentSurfaceWidth
-    val maxHeight = drawCanvasInfo.currentSurfaceHeight
+    val maxWidth = drawCanvasInfoReader.currentCanvasWidth
+    val maxHeight = drawCanvasInfoReader.currentCanvasHeight
 
+    shader.useProgram()
     gl.glEnable(GL_TEXTURE_2D)
 
     val uvVertex = Array(
@@ -52,10 +50,10 @@ abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureIn
     gl.glUniform1i(textureLocation, 0)
 
     val positionVertex = Array(
-      (rect.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f),
-      (rect.leftX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f),
+      (rect.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.topY - maxHeight * 0.5f) / (maxHeight * 0.5f),
       (rect.leftX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.topY - maxHeight * 0.5f) / (maxHeight * 0.5f),
-      (rect.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.topY - maxHeight * 0.5f) / (maxHeight * 0.5f)
+      (rect.leftX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f),
+      (rect.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (rect.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f)
     )
 
     val buffer1 = gl.newDirectFloatBuffer(positionVertex)
@@ -69,4 +67,12 @@ abstract class LAppSprite(drawCanvasInfo: DrawCanvasInfo, textureInfo: TextureIn
     gl.glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
   }
 
+  def isHit(pointX: Float, pointY: Float): Boolean = {
+    val invertedY = drawCanvasInfoReader.currentCanvasHeight - pointY
+
+    pointX >= rect.leftX &&
+      pointX <= rect.rightX &&
+      invertedY >= rect.bottomY &&
+      invertedY <= rect.topY
+  }
 }
