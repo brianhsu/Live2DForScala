@@ -7,8 +7,7 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
 class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory {
-
-
+  
   Feature("Access avatar shader location") {
     Scenario("attributePositionLocation") {
       Given("a mocked programId and position location")
