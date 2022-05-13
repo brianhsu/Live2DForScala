@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.shader.AvatarShader
+import moe.brianhsu.live2d.usecase.renderer.shader.{AvatarShader, InvertedMaskedShader, MaskedShader, NormalShader, SetupMaskShader}
 import moe.brianhsu.live2d.usecase.renderer.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
 import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
@@ -27,10 +27,10 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
 
   import gl._
 
-  private val setupMaskShader = new SetupMask
-  private val normalShader = new Normal
-  private val maskedShader = new Masked
-  private val invertedMaskedShader = new InvertedMasked
+  private val setupMaskShader = new SetupMaskShader
+  private val normalShader = new NormalShader
+  private val maskedShader = new MaskedShader
+  private val invertedMaskedShader = new InvertedMaskedShader
 
   case class Blending(srcColor: Int, dstColor: Int, srcAlpha: Int, dstAlpha: Int)
 
