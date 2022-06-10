@@ -38,4 +38,47 @@ class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen wit
       thisProfile should not be theSameInstanceAs (thatProfile)
     }
   }
+
+  Feature("Save profile") {
+    Scenario("Save profile") {
+      Given("Given a stubbed OpenGL binding and a Profile")
+      val binding = createStubbedOpenGLBinding()
+      val profile = Profile.getInstance(binding)
+
+      When("When save")
+      profile.save()
+
+      Then("it should enable texture")
+      (binding.glActiveTexture _).verify(binding.GL_TEXTURE1).once()
+      (binding.glActiveTexture _).verify(binding.GL_TEXTURE0).once()
+
+    }
+  }
+
+  private def createStubbedOpenGLBinding(): OpenGLBinding = {
+    val binding = stub[OpenGLBinding]
+
+    (() => binding.GL_ARRAY_BUFFER_BINDING).when().returns(1)
+    (() => binding.GL_ELEMENT_ARRAY_BUFFER_BINDING).when().returns(2)
+    (() => binding.GL_CURRENT_PROGRAM).when().returns(3)
+    (() => binding.GL_ACTIVE_TEXTURE).when().returns(4)
+    (() => binding.GL_TEXTURE1).when().returns(5)
+    (() => binding.GL_TEXTURE0).when().returns(6)
+    (() => binding.GL_TEXTURE_BINDING_2D).when().returns(7)
+
+    addGetIntegervBinding(binding, binding.GL_ARRAY_BUFFER_BINDING, 0, 1234)
+    addGetIntegervBinding(binding, binding.GL_ELEMENT_ARRAY_BUFFER_BINDING, 1, 5678)
+    addGetIntegervBinding(binding, binding.GL_CURRENT_PROGRAM, 2, 9012)
+    addGetIntegervBinding(binding, binding.GL_ACTIVE_TEXTURE, 3, 3456)
+    addGetIntegervBinding(binding, binding.GL_TEXTURE_BINDING_2D, 0, 789).noMoreThanOnce()
+    addGetIntegervBinding(binding, binding.GL_TEXTURE_BINDING_2D, 0, 1234).noMoreThanOnce()
+
+    binding
+  }
+
+  private def addGetIntegervBinding(binding: OpenGLBinding, pname: Int, index: Int, expectedValue: Int) = {
+    (binding.glGetIntegerv: (Int, Array[Int], Int) => Unit)
+      .when(pname, *, index)
+      .onCall((_, array, index) => array(index) = expectedValue)
+  }
 }

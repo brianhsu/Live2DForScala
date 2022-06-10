@@ -46,8 +46,8 @@ class Profile private (implicit gl: OpenGLBinding) {
     gl.glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBufferBinding, 0)
     gl.glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, lastElementArrayBufferBinding, 0)
     gl.glGetIntegerv(GL_CURRENT_PROGRAM, lastProgram, 0)
-
     gl.glGetIntegerv(GL_ACTIVE_TEXTURE, lastActiveTexture, 0)
+
     gl.glActiveTexture(GL_TEXTURE1)
     gl.glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture1Binding2D, 0)
 
