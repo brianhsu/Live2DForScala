@@ -12,11 +12,7 @@ import moe.brianhsu.porting.live2d.renderer.opengl.clipping.{ClippingContext, Cl
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.ShaderRenderer
 
 class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
-  def destroy(): Unit = {
-    offscreenBufferHolder.foreach(_.destroy())
-  }
-
-  import gl._
+  import gl.openGLConstants._
 
   private var projection: Option[ProjectionMatrix] = None
   private val textureManager = TextureManager.getInstance
@@ -25,9 +21,10 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
   private var isCulling: Boolean = false
   private var clippingContextBufferForMask: Option[ClippingContext] = None
   private var clippingContextBufferForDraw: Option[ClippingContext] = None
-  private val clippingManagerHolder: Option[ClippingManager] = model.containMaskedDrawables match {
-    case true => Some(new ClippingManager(model, textureManager))
-    case false => None
+  private val clippingManagerHolder: Option[ClippingManager] = if (model.containMaskedDrawables) {
+    Some(new ClippingManager(model, textureManager))
+  } else {
+    None
   }
 
   var offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => new OffscreenFrame(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
@@ -73,9 +70,10 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
   def drawMesh(drawTextureId: Int, vertexInfo: VertexInfo,
                opacity: Float, colorBlendMode: BlendMode, invertedMask: Boolean): Unit ={
 
-    isCulling match {
-      case true  => gl.glEnable(GL_CULL_FACE)
-      case false => gl.glDisable(GL_CULL_FACE)
+    if (isCulling) {
+      gl.glEnable(GL_CULL_FACE)
+    } else {
+      gl.glDisable(GL_CULL_FACE)
     }
 
     gl.glFrontFace(GL_CCW)
@@ -129,6 +127,10 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
       )
     }
     postDraw()
+  }
+
+  def destroy(): Unit = {
+    offscreenBufferHolder.foreach(_.destroy())
   }
 
 }

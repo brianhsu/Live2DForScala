@@ -1,14 +1,15 @@
 package moe.brianhsu.live2d.enitiy.opengl.shader
 
-import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.exception.{ShaderCompileException, ShaderLinkException}
+import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, OptionValues, TryValues}
 
-class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory with OptionValues with TryValues {
-  private val GL_INFO_LOG_LENGTH = 1
+class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
+                            with MockFactory with OptionValues with TryValues
+                            with OpenGLMock {
 
   Feature("Link program") {
     Scenario("Link successfully") {
@@ -16,7 +17,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val programId = 123
 
       And("a stubbed OpenGL binding")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
 
       And("a ShaderCompile based on that and does not have error when read link log")
       val compiler = new ShaderCompiler(gl) {
@@ -35,7 +36,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val programId = 123
 
       And("a stubbed OpenGL binding")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
 
       And("a ShaderCompile based on that and have error when read link log")
       val compiler = new ShaderCompiler(gl) {
@@ -61,7 +62,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val mockedShaderType = 456
 
       And("a stubbed OpenGL binding")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
       (gl.glCreateShader _).when(mockedShaderType).returns(mockedShaderId)
 
       And("a ShaderCompile based on that and does not have error when read compile log")
@@ -96,7 +97,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val mockedShaderType = 456
 
       And("a stubbed OpenGL binding")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
       (gl.glCreateShader _).when(mockedShaderType).returns(mockedShaderId)
 
       And("a ShaderCompile based on that and does not have error when read compile log")
@@ -132,10 +133,9 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val shaderId = 123
 
       And("an OpenGL binding that has does not update log length")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
 
-      (() => gl.GL_INFO_LOG_LENGTH).when().returns(GL_INFO_LOG_LENGTH)
-      (gl.glGetShaderiv _).when(shaderId, GL_INFO_LOG_LENGTH, *)
+      (gl.glGetShaderiv _).when(shaderId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
 
       And("a compiler based on that biding")
       val compiler = new ShaderCompiler(gl)
@@ -152,12 +152,10 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val shaderId = 123
 
       And("an OpenGL binding that has update log length to 0")
-      val gl = stub[OpenGLBinding]
-
-      (() => gl.GL_INFO_LOG_LENGTH).when().returns(GL_INFO_LOG_LENGTH)
+      val gl = createOpenGLStub()
 
       (gl.glGetShaderiv _)
-        .when(shaderId, GL_INFO_LOG_LENGTH, *)
+        .when(shaderId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
         .onCall((_, _, values) => values(0) = 0)
 
       And("a compiler based on that biding")
@@ -176,12 +174,10 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val errorMessage = "Compile Error Message"
 
       And("an OpenGL binding that has update log length to 0")
-      val gl = stub[OpenGLBinding]
-
-      (() => gl.GL_INFO_LOG_LENGTH).when().returns(GL_INFO_LOG_LENGTH)
+      val gl = createOpenGLStub()
 
       (gl.glGetShaderiv _)
-        .when(shaderId, GL_INFO_LOG_LENGTH, *)
+        .when(shaderId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
         .onCall((_, _, values) => values(0) = errorMessage.length)
 
       (gl.glGetShaderInfoLog _)
@@ -206,10 +202,9 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val programId = 456
 
       And("an OpenGL binding that has does not update log length")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
 
-      (() => gl.GL_INFO_LOG_LENGTH).when().returns(GL_INFO_LOG_LENGTH)
-      (gl.glGetProgramiv _).when(programId, GL_INFO_LOG_LENGTH, *)
+      (gl.glGetProgramiv _).when(programId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
 
       And("a compiler based on that biding")
       val compiler = new ShaderCompiler(gl)
@@ -226,12 +221,10 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val programId = 456
 
       And("an OpenGL binding that has update log length to 0")
-      val gl = stub[OpenGLBinding]
-
-      (() => gl.GL_INFO_LOG_LENGTH).when().returns(GL_INFO_LOG_LENGTH)
+      val gl = createOpenGLStub()
 
       (gl.glGetProgramiv _)
-        .when(programId, GL_INFO_LOG_LENGTH, *)
+        .when(programId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
         .onCall((_, _, values) => values(0) = 0)
 
       And("a compiler based on that biding")
@@ -250,12 +243,10 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val errorMessage = "Link Error Message"
 
       And("an OpenGL binding that has update log length to 0")
-      val gl = stub[OpenGLBinding]
-
-      (() => gl.GL_INFO_LOG_LENGTH).when().returns(GL_INFO_LOG_LENGTH)
+      val gl = createOpenGLStub()
 
       (gl.glGetProgramiv _)
-        .when(programId, GL_INFO_LOG_LENGTH, *)
+        .when(programId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
         .onCall((_, _, values) => values(0) = errorMessage.length)
 
       (gl.glGetProgramInfoLog _)

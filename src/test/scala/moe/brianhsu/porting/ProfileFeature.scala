@@ -2,16 +2,17 @@ package moe.brianhsu.porting
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.porting.live2d.renderer.opengl.Profile
+import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory {
+class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory with OpenGLMock {
   Feature("Singleton by OpenGL binding") {
     Scenario("Get instance with same OpenGL binding") {
       Given("Given a stubbed OpenGL binding")
-      val binding = stub[OpenGLBinding]
+      val binding = createOpenGLStub()
 
       When("Create a profile from that binding")
       val thisProfile = Profile.getInstance(binding)
@@ -25,7 +26,7 @@ class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen wit
 
     Scenario("Get instance with different OpenGL binding") {
       Given("Given a stubbed OpenGL binding")
-      val thisBinding = stub[OpenGLBinding]
+      val thisBinding = createOpenGLStub()
 
       When("Create a profile from that binding")
       val thisProfile = Profile.getInstance(thisBinding)
@@ -42,36 +43,30 @@ class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen wit
   Feature("Save profile") {
     Scenario("Save profile") {
       Given("Given a stubbed OpenGL binding and a Profile")
-      val binding = createStubbedOpenGLBinding()
+      val binding = createProfileOpenGLBinding()
       val profile = Profile.getInstance(binding)
 
       When("When save")
       profile.save()
 
       Then("it should enable texture")
-      (binding.glActiveTexture _).verify(binding.GL_TEXTURE1).once()
-      (binding.glActiveTexture _).verify(binding.GL_TEXTURE0).once()
+      import binding.openGLConstants._
+      (binding.glActiveTexture _).verify(GL_TEXTURE1).once()
+      (binding.glActiveTexture _).verify(GL_TEXTURE0).once()
 
     }
   }
 
-  private def createStubbedOpenGLBinding(): OpenGLBinding = {
-    val binding = stub[OpenGLBinding]
+  private def createProfileOpenGLBinding(): OpenGLBinding = {
+    val binding = createOpenGLStub()
+    import binding.openGLConstants._
 
-    (() => binding.GL_ARRAY_BUFFER_BINDING).when().returns(1)
-    (() => binding.GL_ELEMENT_ARRAY_BUFFER_BINDING).when().returns(2)
-    (() => binding.GL_CURRENT_PROGRAM).when().returns(3)
-    (() => binding.GL_ACTIVE_TEXTURE).when().returns(4)
-    (() => binding.GL_TEXTURE1).when().returns(5)
-    (() => binding.GL_TEXTURE0).when().returns(6)
-    (() => binding.GL_TEXTURE_BINDING_2D).when().returns(7)
-
-    addGetIntegervBinding(binding, binding.GL_ARRAY_BUFFER_BINDING, 0, 1234)
-    addGetIntegervBinding(binding, binding.GL_ELEMENT_ARRAY_BUFFER_BINDING, 1, 5678)
-    addGetIntegervBinding(binding, binding.GL_CURRENT_PROGRAM, 2, 9012)
-    addGetIntegervBinding(binding, binding.GL_ACTIVE_TEXTURE, 3, 3456)
-    addGetIntegervBinding(binding, binding.GL_TEXTURE_BINDING_2D, 0, 789).noMoreThanOnce()
-    addGetIntegervBinding(binding, binding.GL_TEXTURE_BINDING_2D, 0, 1234).noMoreThanOnce()
+    addGetIntegervBinding(binding, GL_ARRAY_BUFFER_BINDING, 0, 1234)
+    addGetIntegervBinding(binding, GL_ELEMENT_ARRAY_BUFFER_BINDING, 1, 5678)
+    addGetIntegervBinding(binding, GL_CURRENT_PROGRAM, 2, 9012)
+    addGetIntegervBinding(binding, GL_ACTIVE_TEXTURE, 3, 3456)
+    addGetIntegervBinding(binding, GL_TEXTURE_BINDING_2D, 0, 789).noMoreThanOnce()
+    addGetIntegervBinding(binding, GL_TEXTURE_BINDING_2D, 0, 1234).noMoreThanOnce()
 
     binding
   }

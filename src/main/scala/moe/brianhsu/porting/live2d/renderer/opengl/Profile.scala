@@ -18,7 +18,7 @@ object Profile {
 
 class Profile private (implicit gl: OpenGLBinding) {
 
-  import gl._
+  import gl.openGLConstants._
 
   private val lastArrayBufferBinding: Array[Int] = new Array(1)
   private val lastElementArrayBufferBinding: Array[Int] = new Array(1)
@@ -48,11 +48,11 @@ class Profile private (implicit gl: OpenGLBinding) {
     gl.glGetIntegerv(GL_CURRENT_PROGRAM, lastProgram, 0)
     gl.glGetIntegerv(GL_ACTIVE_TEXTURE, lastActiveTexture, 0)
 
-    gl.glActiveTexture(GL_TEXTURE1)
-    gl.glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture1Binding2D, 0)
-
     gl.glActiveTexture(GL_TEXTURE0)
     gl.glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture0Binding2D, 0)
+
+    gl.glActiveTexture(GL_TEXTURE1)
+    gl.glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture1Binding2D, 0)
 
     gl.glGetVertexAttribiv(0, GL_VERTEX_ATTRIB_ARRAY_ENABLED, lastVertexAttribArrayEnabled, 0)
     gl.glGetVertexAttribiv(1, GL_VERTEX_ATTRIB_ARRAY_ENABLED, lastVertexAttribArrayEnabled, 1)
