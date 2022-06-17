@@ -24,7 +24,7 @@ object TextureManager {
 
 class TextureManager private[texture] (implicit gl: OpenGLBinding) {
 
-  import gl.openGLConstants._
+  import gl.constants._
 
   case class ImageBitmap(width: Int, height: Int, bitmap: ByteBuffer)
 

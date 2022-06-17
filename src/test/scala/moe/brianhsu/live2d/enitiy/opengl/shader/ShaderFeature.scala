@@ -29,7 +29,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
 
       And("stubbed OpenGL binding based on that")
       val gl = createOpenGLStub()
-      import gl.openGLConstants._
+      import gl.constants._
 
       (() => gl.glCreateProgram()).when().returns(mockedProgramId)
       (compiler.compile _).when(GL_VERTEX_SHADER, mockedVertexSource).returns(Success(mockedVertexShaderId))
@@ -89,7 +89,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
       val gl = createOpenGLStub()
       val mockedException = new ShaderCompileException(mockedVertexShaderId, "Cannot compile vertex")
 
-      import gl.openGLConstants._
+      import gl.constants._
 
       (() => gl.glCreateProgram()).when().returns(mockedProgramId)
       (compiler.compile _).when(GL_VERTEX_SHADER, mockedVertexSource).returns(Failure(mockedException))
@@ -124,7 +124,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
       And("stubbed OpenGL binding based on that")
       val gl = createOpenGLStub()
       val mockedException = new ShaderCompileException(mockedFragmentShaderId, "Cannot compile fragment")
-      import gl.openGLConstants._
+      import gl.constants._
 
       (() => gl.glCreateProgram()).when().returns(mockedProgramId)
       (compiler.compile _).when(GL_VERTEX_SHADER, mockedVertexSource).returns(Success(mockedVertexShaderId))
@@ -160,7 +160,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
       val gl = createOpenGLStub()
       val mockedException = new ShaderLinkException(mockedProgramId, "Cannot link program")
 
-      import gl.openGLConstants._
+      import gl.constants._
 
       (() => gl.glCreateProgram()).when().returns(mockedProgramId)
       (compiler.compile _).when(GL_VERTEX_SHADER, mockedVertexSource).returns(Success(mockedVertexShaderId))

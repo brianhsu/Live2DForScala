@@ -135,7 +135,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       And("an OpenGL binding that has does not update log length")
       val gl = createOpenGLStub()
 
-      (gl.glGetShaderiv _).when(shaderId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
+      (gl.glGetShaderiv _).when(shaderId, gl.constants.GL_INFO_LOG_LENGTH, *)
 
       And("a compiler based on that biding")
       val compiler = new ShaderCompiler(gl)
@@ -155,7 +155,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val gl = createOpenGLStub()
 
       (gl.glGetShaderiv _)
-        .when(shaderId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
+        .when(shaderId, gl.constants.GL_INFO_LOG_LENGTH, *)
         .onCall((_, _, values) => values(0) = 0)
 
       And("a compiler based on that biding")
@@ -177,7 +177,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val gl = createOpenGLStub()
 
       (gl.glGetShaderiv _)
-        .when(shaderId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
+        .when(shaderId, gl.constants.GL_INFO_LOG_LENGTH, *)
         .onCall((_, _, values) => values(0) = errorMessage.length)
 
       (gl.glGetShaderInfoLog _)
@@ -204,7 +204,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       And("an OpenGL binding that has does not update log length")
       val gl = createOpenGLStub()
 
-      (gl.glGetProgramiv _).when(programId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
+      (gl.glGetProgramiv _).when(programId, gl.constants.GL_INFO_LOG_LENGTH, *)
 
       And("a compiler based on that biding")
       val compiler = new ShaderCompiler(gl)
@@ -224,7 +224,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val gl = createOpenGLStub()
 
       (gl.glGetProgramiv _)
-        .when(programId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
+        .when(programId, gl.constants.GL_INFO_LOG_LENGTH, *)
         .onCall((_, _, values) => values(0) = 0)
 
       And("a compiler based on that biding")
@@ -246,7 +246,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       val gl = createOpenGLStub()
 
       (gl.glGetProgramiv _)
-        .when(programId, gl.openGLConstants.GL_INFO_LOG_LENGTH, *)
+        .when(programId, gl.constants.GL_INFO_LOG_LENGTH, *)
         .onCall((_, _, values) => values(0) = errorMessage.length)
 
       (gl.glGetProgramInfoLog _)

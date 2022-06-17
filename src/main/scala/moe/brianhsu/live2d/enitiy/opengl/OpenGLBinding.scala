@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.enitiy.opengl
 import java.nio.{ByteBuffer, FloatBuffer}
 
 trait OpenGLBinding {
-  val openGLConstants: OpenGLConstants
+  val constants: OpenGLConstants
 
   def glGenTextures(n: Int, textures: Array[Int]): Unit
 
@@ -110,4 +110,6 @@ trait OpenGLBinding {
   def newDirectFloatBuffer(float: Array[Float]): FloatBuffer
 
   def glViewport(x: Int, y: Int, w: Int, h: Int): Unit
+
 }
+

@@ -10,7 +10,7 @@ abstract class LAppSprite(drawCanvasInfoReader: DrawCanvasInfoReader, textureInf
 
   case class Position(originX: Float, originY: Float, width: Float, height: Float)
 
-  import gl.openGLConstants._
+  import gl.constants._
 
   private val positionLocation = shader.positionLocation
   private val uvLocation = shader.uvLocation

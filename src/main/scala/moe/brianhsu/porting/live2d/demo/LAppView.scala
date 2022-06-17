@@ -20,7 +20,7 @@ import scala.util.Try
 
 class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL: OpenGLBinding) {
 
-  import openGL.openGLConstants._
+  import openGL.constants._
 
   private var zoom: Float = 2.0f
   private var offsetX: Float = 0.0f

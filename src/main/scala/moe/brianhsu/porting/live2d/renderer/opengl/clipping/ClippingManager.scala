@@ -5,6 +5,7 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ViewPort, fromOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.texture.TextureManager
 import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 
@@ -114,7 +115,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
     }
   }
 
-  def setupClippingContext(renderer: Renderer, lastFBO: Int, lastViewport: Array[Int]): Unit = {
+  def setupClippingContext(renderer: Renderer, lastFBO: Int, lastViewport: ViewPort): Unit = {
 
     // 全てのクリッピングを用意する
     // 同じクリップ（複数の場合はまとめて１つのクリップ）を使う場合は１度だけ設定する
@@ -161,7 +162,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
       // --- 後処理 ---
       renderer.offscreenBufferHolder.foreach(_.endDraw())
       renderer.setClippingContextBufferForMask(None)
-      gl.glViewport(lastViewport(0), lastViewport(1), lastViewport(2), lastViewport(3))
+      gl.updateViewPort(lastViewport)
     }
   }
 }

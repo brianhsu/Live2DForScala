@@ -12,7 +12,7 @@ import moe.brianhsu.porting.live2d.renderer.opengl.clipping.{ClippingContext, Cl
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.ShaderRenderer
 
 class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
-  import gl.openGLConstants._
+  import gl.constants._
 
   private var projection: Option[ProjectionMatrix] = None
   private val textureManager = TextureManager.getInstance
@@ -103,7 +103,7 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
   def drawModel(): Unit = {
     clippingManagerHolder.foreach { manager =>
       preDraw()
-      manager.setupClippingContext(this, profile.lastFrameBufferBinding, profile.lastViewPort)
+      manager.setupClippingContext(this, profile.lastFrameBufferBinding.get, profile.lastViewPort.get)
     }
 
     preDraw()

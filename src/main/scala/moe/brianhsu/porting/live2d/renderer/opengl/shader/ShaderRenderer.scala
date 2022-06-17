@@ -25,7 +25,7 @@ object ShaderRenderer {
 
 class ShaderRenderer private (implicit gl: OpenGLBinding) {
 
-  import gl.openGLConstants._
+  import gl.constants._
 
   private val setupMaskShader = new SetupMaskShader
   private val normalShader = new NormalShader

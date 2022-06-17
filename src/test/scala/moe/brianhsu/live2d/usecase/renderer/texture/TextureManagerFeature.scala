@@ -100,7 +100,7 @@ trait FeatureSpecStackBehaviors {
       textureInfo2 should be theSameInstanceAs textureInfo
 
       And("the stubbed OpenGL binding should have correct calls to setup texture only once")
-      import binding.openGLConstants._
+      import binding.constants._
       inSequence {
         (binding.glGenTextures _).verify(1, *).once()
         (binding.glBindTexture _).verify(GL_TEXTURE_2D, 1234).once()

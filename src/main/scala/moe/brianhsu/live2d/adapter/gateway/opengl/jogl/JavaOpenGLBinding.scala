@@ -11,7 +11,7 @@ class JavaOpenGLBinding(gl: GL, gl2: GL2, gl2es1: GL2ES1, gl2es2: GL2ES2) extend
 
   def this(gl2: GL2) = this(gl2, gl2, gl2, gl2)
 
-  override val openGLConstants: OpenGLConstants = JavaOpenGLConstants
+  override val constants: OpenGLConstants = JavaOpenGLConstants
 
   override def glGenTextures(n: Int, textures: Array[Int]): Unit = {
     gl.glGenTextures(n, textures, 0)

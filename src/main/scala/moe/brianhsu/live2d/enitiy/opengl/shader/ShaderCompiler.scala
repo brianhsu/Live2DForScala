@@ -8,7 +8,7 @@ import scala.util.Try
 
 class ShaderCompiler(gl: OpenGLBinding) {
 
-  import gl.openGLConstants._
+  import gl.constants._
 
   def compile(shaderType: Int, shaderSourceCode: String): Try[Int] = Try {
     val shaderId = gl.glCreateShader(shaderType)

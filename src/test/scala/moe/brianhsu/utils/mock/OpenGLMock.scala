@@ -11,7 +11,7 @@ trait OpenGLMock {
   def createOpenGLMock(): OpenGLBinding = mock[DummyOpenGLBinding]
 
   abstract class DummyOpenGLBinding extends OpenGLBinding {
-    override val openGLConstants: OpenGLConstants = Constants
+    override val constants: OpenGLConstants = Constants
   }
 
   object Constants extends OpenGLConstants {

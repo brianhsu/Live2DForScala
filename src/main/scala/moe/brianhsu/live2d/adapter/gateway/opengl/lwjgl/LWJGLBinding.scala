@@ -8,7 +8,7 @@ import java.nio.{ByteBuffer, ByteOrder, FloatBuffer}
 
 class LWJGLBinding extends OpenGLBinding {
 
-  override val openGLConstants: OpenGLConstants = LWJGLConstants
+  override val constants: OpenGLConstants = LWJGLConstants
 
   override def glGenTextures(n: Int, textures: Array[Int]): Unit = {
     GL11.glGenTextures(textures)
