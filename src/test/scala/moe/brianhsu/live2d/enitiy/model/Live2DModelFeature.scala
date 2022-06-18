@@ -2,9 +2,10 @@ package moe.brianhsu.live2d.enitiy.model
 
 import com.sun.jna.Memory
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
+import moe.brianhsu.live2d.enitiy.math.matrix.ModelMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.GivenWhenThen
+import org.scalatest.{GivenWhenThen, Inside, ScalaTestVersion}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
@@ -12,9 +13,41 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 import scala.util.{Success, Try}
 
 class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory
-  with TableDrivenPropertyChecks {
+  with TableDrivenPropertyChecks with Inside {
 
   private val mockedCanvasInfo = ModelCanvasInfo(1980, 1020, (0, 0), 1)
+
+  Feature("Read / update model matrix") {
+    Scenario("Read a model matrix before update it") {
+      Given("A model witch mocked backend")
+      val backend = new MockedBackend(drawables = Map.empty)
+      val live2DModel = new Live2DModel(backend)
+
+      When("read modelMatrix")
+      val matrix = live2DModel.modelMatrix
+
+      Then("it should have the default value")
+
+      inside(matrix) { case ModelMatrix(canvasWidth, canvasHeight, elements) =>
+        canvasWidth shouldBe 1980.0
+        canvasHeight shouldBe 1020.0
+        elements should contain theSameElementsInOrderAs List(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0)
+      }
+    }
+
+    Scenario("Update model matrix") {
+      Given("A model witch mocked backend")
+      val backend = new MockedBackend(drawables = Map.empty)
+      val live2DModel = new Live2DModel(backend)
+
+      When("update it's modelMatrix")
+      val updatedModelMatrix = ModelMatrix(123.4f, 567.8f, Array(123, 456, 789))
+      live2DModel.modelMatrix = updatedModelMatrix
+
+      Then("it should return same object when read modelMatrix again")
+      live2DModel.modelMatrix shouldBe theSameInstanceAs (updatedModelMatrix)
+    }
+  }
   Feature("Use containMaskedDrawables to get whether drawable has mask or not") {
     Scenario("No drawable at all") {
       Given("A model without any drawable")

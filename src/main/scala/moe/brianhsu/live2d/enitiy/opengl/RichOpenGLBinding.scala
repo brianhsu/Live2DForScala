@@ -16,20 +16,20 @@ object RichOpenGLBinding {
 class RichOpenGLBinding(binding: OpenGLBinding) {
   import binding.constants._
 
-  def openGLParameter[T: TypeTag](pname: Int): T = {
+  def openGLParameters[T: TypeTag](pname: Int): T = {
     pname match {
       case _ if typeOf[T] <:< typeOf[Int] =>
         val pointer = new Array[Int](1)
         binding.glGetIntegerv(pname, pointer, 0)
         pointer(0).asInstanceOf[T]
-      case _ if typeOf[T] <:< typeOf[Boolean] =>
-        false.asInstanceOf[T]
+      case _  =>
+        throw new Exception("Unknown Type")
     }
   }
 
-  def textureBinding2D(texture: Int): Int = {
-    binding.glActiveTexture(texture)
-    openGLParameter[Int](GL_TEXTURE_BINDING_2D)
+  def textureBinding2D(textureUnit: Int): Int = {
+    binding.glActiveTexture(textureUnit)
+    openGLParameters[Int](GL_TEXTURE_BINDING_2D)
   }
 
   def activeAndBinding2DTexture(textureUnit: Int, textureName: Int): Unit = {
@@ -49,7 +49,7 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     BlendFunction(buffer(0), buffer(1), buffer(2), buffer(3))
   }
 
-  def updateBlendFunc(blendFunction: BlendFunction): Unit = {
+  def blendFunction_=(blendFunction: BlendFunction): Unit = {
     binding.glBlendFuncSeparate(
       blendFunction.sourceRGB,
       blendFunction.destRGB,
@@ -64,7 +64,7 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     ViewPort(buffer(0), buffer(1), buffer(2), buffer(3))
   }
 
-  def updateViewPort(viewPort: ViewPort): Unit = {
+  def viewPort_=(viewPort: ViewPort): Unit = {
     binding.glViewport(
       viewPort.x, viewPort.y,
       viewPort.width, viewPort.height
@@ -79,7 +79,7 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     temp.map(_ == GL_TRUE)
   }
 
-  def setVertexAttributes(buffer: Array[Boolean]): Unit = {
+  def vertexAttributes_=(buffer: Array[Boolean]): Unit = {
     for (index <- buffer.indices) {
       if (buffer(index)) {
         binding.glEnableVertexAttribArray(index)

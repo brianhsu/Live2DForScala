@@ -162,7 +162,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
       // --- 後処理 ---
       renderer.offscreenBufferHolder.foreach(_.endDraw())
       renderer.setClippingContextBufferForMask(None)
-      gl.updateViewPort(lastViewport)
+      gl.viewPort = lastViewport
     }
   }
 }

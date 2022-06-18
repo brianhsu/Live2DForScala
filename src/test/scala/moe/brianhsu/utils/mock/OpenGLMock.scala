@@ -1,19 +1,10 @@
 package moe.brianhsu.utils.mock
 
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, OpenGLConstants}
+import moe.brianhsu.utils.mock.OpenGLMock.Constants
 import org.scalamock.scalatest.MockFactory
 
-
-trait OpenGLMock {
-  this: MockFactory =>
-
-  def createOpenGLStub(): OpenGLBinding = stub[DummyOpenGLBinding]
-  def createOpenGLMock(): OpenGLBinding = mock[DummyOpenGLBinding]
-
-  abstract class DummyOpenGLBinding extends OpenGLBinding {
-    override val constants: OpenGLConstants = Constants
-  }
-
+object OpenGLMock {
   object Constants extends OpenGLConstants {
     override val GL_TEXTURE_2D: Int = 1
     override val GL_RGBA: Int = 2
@@ -68,5 +59,16 @@ trait OpenGLMock {
     override val GL_SRC_ALPHA: Int = 51
     override val GL_DEPTH_BUFFER_BIT: Int = 52
     override val GL_TRIANGLE_FAN: Int = 53
+  }
+
+}
+trait OpenGLMock {
+  this: MockFactory =>
+
+  def createOpenGLStub(): OpenGLBinding = stub[DummyOpenGLBinding]
+  def createOpenGLMock(): OpenGLBinding = mock[DummyOpenGLBinding]
+
+  abstract class DummyOpenGLBinding extends OpenGLBinding {
+    override val constants: OpenGLConstants = Constants
   }
 }

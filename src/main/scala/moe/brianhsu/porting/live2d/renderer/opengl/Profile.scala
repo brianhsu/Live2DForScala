@@ -41,10 +41,10 @@ class Profile private (implicit gl: OpenGLBinding) {
   var lastViewPort: Option[ViewPort] = None
 
   def save(): Unit = {
-    lastArrayBufferBinding = Option(gl.openGLParameter(GL_ARRAY_BUFFER_BINDING))
-    lastElementArrayBufferBinding = Option(gl.openGLParameter(GL_ELEMENT_ARRAY_BUFFER_BINDING))
-    lastProgram = Option(gl.openGLParameter(GL_CURRENT_PROGRAM))
-    lastActiveTexture = Option(gl.openGLParameter(GL_ACTIVE_TEXTURE))
+    lastArrayBufferBinding = Option(gl.openGLParameters(GL_ARRAY_BUFFER_BINDING))
+    lastElementArrayBufferBinding = Option(gl.openGLParameters(GL_ELEMENT_ARRAY_BUFFER_BINDING))
+    lastProgram = Option(gl.openGLParameters(GL_CURRENT_PROGRAM))
+    lastActiveTexture = Option(gl.openGLParameters(GL_ACTIVE_TEXTURE))
     lastTexture0Binding2D = Option(gl.textureBinding2D(GL_TEXTURE0))
     lastTexture1Binding2D = Option(gl.textureBinding2D(GL_TEXTURE1))
     lastVertexAttributes = gl.vertexAttributes
@@ -54,16 +54,16 @@ class Profile private (implicit gl: OpenGLBinding) {
     lastDepthTest = gl.glIsEnabled(GL_DEPTH_TEST)
     lastCullFace = gl.glIsEnabled(GL_CULL_FACE)
     lastBlend = gl.glIsEnabled(GL_BLEND)
-    lastFrontFace = Option(gl.openGLParameter(GL_FRONT_FACE))
+    lastFrontFace = Option(gl.openGLParameters(GL_FRONT_FACE))
     lastColorWriteMask = Option(gl.colorWriteMask)
     lastBlending = Option(gl.blendFunction)
-    lastFrameBufferBinding = Option(gl.openGLParameter(GL_FRAMEBUFFER_BINDING))
+    lastFrameBufferBinding = Option(gl.openGLParameters(GL_FRAMEBUFFER_BINDING))
     lastViewPort = Option(gl.viewPort)
   }
 
   def restore(): Unit = {
     gl.glUseProgram(lastProgram.get)
-    gl.setVertexAttributes(lastVertexAttributes)
+    gl.vertexAttributes = lastVertexAttributes
 
     gl.setCapabilityEnabled(GL_SCISSOR_TEST, lastScissorTest)
     gl.setCapabilityEnabled(GL_STENCIL_TEST, lastStencilTest)
@@ -81,7 +81,7 @@ class Profile private (implicit gl: OpenGLBinding) {
     gl.activeAndBinding2DTexture(GL_TEXTURE0, lastTexture0Binding2D.get)
 
     gl.glActiveTexture(lastActiveTexture.get)
-    gl.updateBlendFunc(lastBlending.get)
+    gl.blendFunction = lastBlending.get
   }
 
 }

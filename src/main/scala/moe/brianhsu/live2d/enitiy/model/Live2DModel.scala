@@ -11,7 +11,7 @@ class Live2DModel(modelBackend: ModelBackend) {
 
   def modelMatrix: ModelMatrix = {
     if (modelMatrixHolder.isEmpty) {
-      modelMatrixHolder = Some(new ModelMatrix(canvasInfo.width, canvasInfo.height))
+      modelMatrixHolder = Some(ModelMatrix(canvasInfo.width, canvasInfo.height))
     }
     modelMatrixHolder.get
   }

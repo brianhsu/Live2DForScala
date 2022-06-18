@@ -6,10 +6,11 @@ scalaVersion := "2.13.8"
 
 scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
 
-//scalacOptions := Seq("-deprecation")
 Compile / doc / scalacOptions ++= Seq("-private")
 
 Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-h", "target/test-reports-html")
+
+//javaOptions ++= Seq("-XX:+PrintGC")
 
 autoAPIMappings := true
 
