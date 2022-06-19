@@ -13,7 +13,7 @@ class BreathFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
 
   Feature("Calculate the breath parameter operations") {
     Scenario("There is no breath parameter passed in") {
-      When("The passed in breath parameter is an empty list")
+      When("the passed in breath parameter is an empty list")
       val breath = new Breath(Nil)
 
       Then("it should return an empty list at any given time")
@@ -24,7 +24,7 @@ class BreathFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
     }
 
     Scenario("Use default breath parameters") {
-      When("Using default breath parameters")
+      When("using default breath parameters")
       val breath = new Breath()
 
       Then("it should return correct operation at first frame")

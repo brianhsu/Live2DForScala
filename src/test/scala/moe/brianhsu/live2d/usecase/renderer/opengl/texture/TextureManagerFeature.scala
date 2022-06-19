@@ -13,7 +13,7 @@ class TextureManagerFeature extends AnyFeatureSpec with GivenWhenThen with Match
                             with OpenGLMock {
 
   Feature("Singleton by OpenGL binding") {
-    Scenario("Get TextureManager twice by same OpenGL binding") {
+    Scenario("get TextureManager twice by same OpenGL binding") {
       Given("an implicit stubbed OpenGL binding")
       implicit val binding: OpenGLBinding = createOpenGLStub()
 
@@ -66,7 +66,7 @@ trait FeatureSpecStackBehaviors {
   def loadTexture(fileType: String, textureFilename: String, expectationFilename: String): Unit = {
     Scenario(s"Load and cache a $fileType texture file") {
 
-      Given("A stubbed OpenGL binding that will set mocked textureId")
+      Given("a stubbed OpenGL binding that will set mocked textureId")
       val binding = createOpenGLStub()
       val mockedTextureId = 1234
       val bitmap: Array[Byte] = new Array[Byte](1048576)
@@ -76,13 +76,13 @@ trait FeatureSpecStackBehaviors {
         .when(*, *, *, *, *, *, *, *, *)
         .onCall { (_, _, _, _, _, _, _, _, byteBuffer) => byteBuffer.get(bitmap) }
 
-      And("A texture manager using that binding")
+      And("a texture manager using that binding")
       val textureManager = new TextureManager()(binding)
 
-      When(s"Load a $fileType png file")
+      When(s"load a $fileType png file")
       val textureInfo = textureManager.loadTexture(textureFilename)
 
-      Then("The texture info should contains the correct data")
+      Then("the texture info should contains the correct data")
       inside(textureInfo) { case TextureInfo(textureId, width, height) =>
         textureId shouldBe 1234
         width shouldBe 512
@@ -93,7 +93,7 @@ trait FeatureSpecStackBehaviors {
       val expectedBitmap = ExpectedBitmap.getBitmap(expectationFilename)
       bitmap should contain theSameElementsInOrderAs expectedBitmap
 
-      When(s"Load that $fileType file again")
+      When(s"load that $fileType file again")
       val textureInfo2 = textureManager.loadTexture(textureFilename)
 
       Then("it should be the same instance as previous TextureInfo")

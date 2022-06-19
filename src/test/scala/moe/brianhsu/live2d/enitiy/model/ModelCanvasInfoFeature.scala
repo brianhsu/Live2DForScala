@@ -9,7 +9,7 @@ class ModelCanvasInfoFeature extends AnyFeatureSpec with GivenWhenThen with Matc
   Feature("Validation of pixelPerUnit") {
     Scenario("pixelPerUnit is equal to zero") {
 
-      Given("A CanvasInfo with pixelPerUnit is 0")
+      Given("a CanvasInfo with pixelPerUnit is 0")
       Then("it should throw an AssertionError")
       val error = the[AssertionError] thrownBy {
         ModelCanvasInfo(0, 0, (0, 0), 0)
@@ -20,7 +20,7 @@ class ModelCanvasInfoFeature extends AnyFeatureSpec with GivenWhenThen with Matc
 
     Scenario("pixelPerUnit is less then zero") {
 
-      Given("A CanvasInfo with pixelPerUnit is -1")
+      Given("a CanvasInfo with pixelPerUnit is -1")
       Then("it should throw an AssertionError")
       val error = the[AssertionError] thrownBy {
         ModelCanvasInfo(0, 0, (0, 0), -1)
@@ -32,7 +32,7 @@ class ModelCanvasInfoFeature extends AnyFeatureSpec with GivenWhenThen with Matc
 
   Feature("Calculate the height / width in unit of a canvas") {
     Scenario("The pixelPerUnit=1") {
-      Given("A CanvasInfo with pixelPerUnit=1")
+      Given("a CanvasInfo with pixelPerUnit=1")
       val canvasInfo = ModelCanvasInfo(
         widthInPixel = 1920, heightInPixel = 1080,
         originInPixel = (0, 0),
@@ -49,7 +49,7 @@ class ModelCanvasInfoFeature extends AnyFeatureSpec with GivenWhenThen with Matc
     }
 
     Scenario("The pixelPerUnit=2") {
-      Given("A CanvasInfo with pixelPerUnit=2")
+      Given("a CanvasInfo with pixelPerUnit=2")
       val canvasInfo = ModelCanvasInfo(
         widthInPixel = 1920, heightInPixel = 1080,
         originInPixel = (0, 0),

@@ -20,7 +20,7 @@ class ShaderCleanerFeature extends AnyFeatureSpec with Matchers with GivenWhenTh
       And("a ShaderCleaner.ShaderDeleter")
       val shaderCleaner = new ShaderDeleter(programId, gl)
 
-      When("Cleanup a shader")
+      When("cleanup a shader")
       shaderCleaner.run()
 
       Then("the mocked OpenGL binding should delete the program")

@@ -14,10 +14,10 @@ import org.scalatest.{GivenWhenThen, Inside, OptionValues, TryValues}
 class AvatarPhysicsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues with OptionValues with Inside {
   Feature("Read avatar physics data from Live2D avatar settings") {
     Scenario("Load data from a avatar without physics") {
-      Given("A folder path contains json files for Haru Live2D avatar model")
+      Given("a folder path contains json files for Haru Live2D avatar model")
       val folderPath = "src/test/resources/models/Haru"
 
-      When("Create a physics effect from this Live2D avatar settings")
+      When("create a physics effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val reader = new AvatarPhysicsReader(settings)
@@ -28,10 +28,10 @@ class AvatarPhysicsReaderFeature extends AnyFeatureSpec with GivenWhenThen with 
     }
 
     Scenario("Load data from a avatar with physics effects") {
-      Given("A folder path contains json files for Mark Live2D avatar model")
+      Given("a folder path contains json files for Mark Live2D avatar model")
       val folderPath = "src/test/resources/models/Mark"
 
-      When("Create a physics effect from this Live2D avatar settings")
+      When("create a physics effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val reader = new AvatarPhysicsReader(settings)

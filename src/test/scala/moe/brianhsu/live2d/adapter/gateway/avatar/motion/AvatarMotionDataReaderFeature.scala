@@ -12,13 +12,13 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
   Feature("Read pose parts data from Live2D avatar settings") {
 
     Scenario("Load motion idle[0] from avatar Mark") {
-      Given("A folder path contains json files for a Live2D avatar model")
+      Given("a folder path contains json files for a Live2D avatar model")
       val folderPath = "src/test/resources/models/Mark"
 
-      When("Create a MotionData from this Live2D avatar settings")
+      When("create a MotionData from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
-      val motionData = new AvatarMotionDataReader(settings.motionGroups("idle")(0)).loadMotionData()
+      val motionData = new AvatarMotionDataReader(settings.motionGroups("idle").head).loadMotionData()
 
       motionData.fps shouldBe 30.0
       motionData.isLoop shouldBe true
@@ -29,10 +29,10 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
     }
 
     Scenario("Load motion idle[1] from avatar Mark") {
-      Given("A folder path contains json files for a Live2D avatar model")
+      Given("a folder path contains json files for a Live2D avatar model")
       val folderPath = "src/test/resources/models/Mark"
 
-      When("Create a MotionData from this Live2D avatar settings")
+      When("create a MotionData from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionData = new AvatarMotionDataReader(settings.motionGroups("idle")(1)).loadMotionData()
@@ -49,10 +49,10 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
     }
 
     Scenario("Load motion idle[3] from avatar Mark") {
-      Given("A folder path contains json files for a Live2D avatar model")
+      Given("a folder path contains json files for a Live2D avatar model")
       val folderPath = "src/test/resources/models/Mark"
 
-      When("Create a MotionData from this Live2D avatar settings")
+      When("create a MotionData from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionData = new AvatarMotionDataReader(settings.motionGroups("idle")(3)).loadMotionData()
@@ -68,13 +68,13 @@ class AvatarMotionDataReaderFeature extends AnyFeatureSpec with GivenWhenThen wi
     }
 
     Scenario("Load motion from avatar Hiyori") {
-      Given("A folder path contains json files for a Live2D avatar model")
+      Given("a folder path contains json files for a Live2D avatar model")
       val folderPath = "src/test/resources/models/Hiyori"
 
-      When("Create a MotionData from this Live2D avatar settings")
+      When("create a MotionData from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
-      val motionData = new AvatarMotionDataReader(settings.motionGroups("idle")(0)).loadMotionData()
+      val motionData = new AvatarMotionDataReader(settings.motionGroups("idle").head).loadMotionData()
 
       motionData.fps shouldBe 30.0
       motionData.isLoop shouldBe true

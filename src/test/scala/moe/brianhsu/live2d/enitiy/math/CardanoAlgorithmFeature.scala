@@ -44,10 +44,10 @@ class CardanoAlgorithmFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       )
 
       forAll(dataTable) { (a, b, c, d, expectedResult) =>
-        When(s"The passed in value is ($a, $b, $c, $d)")
+        When(s"the passed in value is ($a, $b, $c, $d)")
         val value = CardanoAlgorithm.forBezier(a, b, c, d)
 
-        Then(s"it should calculated correct value, which is ${expectedResult}")
+        Then(s"it should calculated correct value, which is $expectedResult")
         if (expectedResult.isNaN) {
           value.isNaN shouldBe true
         } else {
@@ -67,10 +67,10 @@ class CardanoAlgorithmFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       )
 
       forAll(dataTable) { (a, b, c, d, expectedResult) =>
-        When(s"The passed in value is ($a, $b, $c, $d)")
+        When(s"the passed in value is ($a, $b, $c, $d)")
         val value = CardanoAlgorithm.forBezier(a, b, c, d)
 
-        Then(s"it should calculated correct value, which is ${expectedResult}")
+        Then(s"it should calculated correct value, which is $expectedResult")
         value shouldBe expectedResult
       }
     }
@@ -85,10 +85,10 @@ class CardanoAlgorithmFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       )
 
       forAll(dataTable) { (a, b, c, d, expectedResult) =>
-        When(s"The passed in value is ($a, $b, $c, $d)")
+        When(s"the passed in value is ($a, $b, $c, $d)")
         val value = CardanoAlgorithm.forBezier(a, b, c, d)
 
-        Then(s"it should calculated correct value, which is ${expectedResult}")
+        Then(s"it should calculated correct value, which is $expectedResult")
         value shouldBe expectedResult
       }
     }
@@ -125,10 +125,10 @@ class CardanoAlgorithmFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       )
 
       forAll(dataTable) { (a, b, c, d, expectedResult) =>
-        When(s"The passed in value is ($a, $b, $c, $d)")
+        When(s"the passed in value is ($a, $b, $c, $d)")
         val value = CardanoAlgorithm.forBezier(a, b, c, d)
 
-        Then(s"it should calculated correct value, which is ${expectedResult}")
+        Then(s"it should calculated correct value, which is $expectedResult")
         value shouldBe expectedResult
       }
     }

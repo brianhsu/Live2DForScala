@@ -89,12 +89,12 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       motionManger.startMotion(motion2)
       motionManger.startMotion(motion3)
 
-      And("First three motion should all have a callback set")
+      And("first three motion should all have a callback set")
       motion1.eventCallbackHolder shouldBe Some(mockedCallback)
       motion2.eventCallbackHolder shouldBe Some(mockedCallback)
       motion3.eventCallbackHolder shouldBe Some(mockedCallback)
 
-      And("Last motion should not have any callback set")
+      And("last motion should not have any callback set")
       motion4.eventCallbackHolder shouldBe None
     }
 
@@ -117,7 +117,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       Then("the eventCallbackHolder should be set")
       motionManger.eventCallbackHolder shouldBe Some(mockedCallback)
 
-      And("Three motion should all have a callback set")
+      And("three motion should all have a callback set")
       motion1.eventCallbackHolder shouldBe Some(mockedCallback)
       motion2.eventCallbackHolder shouldBe Some(mockedCallback)
       motion3.eventCallbackHolder shouldBe Some(mockedCallback)
@@ -146,12 +146,12 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       motionManger.startMotion(motion2)
       motionManger.startMotion(motion3)
 
-      And("First three motion should all have a callback set")
+      And("first three motion should all have a callback set")
       motion1.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion2.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion3.finishedCallbackHolder shouldBe Some(mockedCallback)
 
-      And("Last motion should not have any callback set")
+      And("last motion should not have any callback set")
       motion4.finishedCallbackHolder shouldBe None
     }
 
@@ -175,7 +175,7 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       Then("the finishedCallbackHolder should be set")
       motionManger.finishedCallbackHolder shouldBe Some(mockedCallback)
 
-      And("Three motion should all have a callback set")
+      And("three motion should all have a callback set")
       motion1.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion2.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion3.finishedCallbackHolder shouldBe Some(mockedCallback)

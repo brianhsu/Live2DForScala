@@ -33,10 +33,10 @@ class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with T
 
   Feature("Read pose parts data from Live2D avatar settings") {
     Scenario("Load pose with fade in time specific inside json file") {
-      Given("A folder path contains json files for Haru Live2D avatar model")
+      Given("a folder path contains json files for Haru Live2D avatar model")
       val folderPath = "src/test/resources/models/Haru"
 
-      When("Create a Pose effect from this Live2D avatar settings")
+      When("create a Pose effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val reader = new AvatarPoseReader(settings)

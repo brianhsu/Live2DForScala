@@ -20,7 +20,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         initialParticles = Nil
       )
 
-      And("A mocked Live2D Model")
+      And("a mocked Live2D Model")
       val model = mock[Live2DModel]
 
       When("calculate particle update parameter")
@@ -50,7 +50,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         initialParticles = Nil
       )
 
-      And("A mocked Live2D Model with mocked parameter")
+      And("a mocked Live2D Model with mocked parameter")
       val model = stub[Live2DModel]
       val mockedParameters = Map(
         "someParameterId" -> new JavaVMParameter("someParameterId", min = 5, max = 50, default = 25, value = 10)
@@ -86,7 +86,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         initialParticles = Nil
       )
 
-      And("A mocked Live2D Model with mocked parameter")
+      And("a mocked Live2D Model with mocked parameter")
       val model = stub[Live2DModel]
       val mockedParameters = Map(
         "someParameterId" -> new JavaVMParameter("someParameterId", min = 5, max = 50, default = 25, value = 10)
@@ -122,7 +122,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         initialParticles = Nil
       )
 
-      And("A mocked Live2D Model with mocked parameter")
+      And("a mocked Live2D Model with mocked parameter")
       val model = stub[Live2DModel]
       val mockedParameters = Map(
         "someParameterId" -> new JavaVMParameter("someParameterId", min = 5, max = 50, default = 25, value = 10)
@@ -170,7 +170,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         initialParticles = Nil
       )
 
-      And("A mocked Live2D Model with mocked parameter")
+      And("a mocked Live2D Model with mocked parameter")
       val model = stub[Live2DModel]
       val mockedParameters = Map(
         "someParameterId1" -> new JavaVMParameter("someParameterId1", min = 5, max = 50, default = 25, value = 10),
@@ -320,7 +320,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
 
     Scenario("A particle list contains multiple items") {
-      Given("A particle list")
+      Given("a particle list")
       val particles = List(
         data.physics.PhysicsParticle(
           mobility = 0.1f, delay = 0.2f, acceleration = 0.3f, radius = 0.4f,
@@ -356,7 +356,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         )
       )
 
-      And("A PhysicsEffect based on above particles")
+      And("a PhysicsEffect based on above particles")
       val physicsEffect = PhysicsEffect(
         normalizationPosition = PhysicsNormalization(0, 100f, 0f),
         normalizationAngle = PhysicsNormalization(0, 100f, 0f),
@@ -364,7 +364,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         initialParticles = particles
       )
 
-      When("Calculate new particle status")
+      When("calculate new particle status")
       val particleUpdateParameter = data.physics.ParticleUpdateParameter(EuclideanVector(1.0f, 2.1f), 0.5f)
       val newParticles = physicsEffect.calculateNewParticleStatus(
         particles, particleUpdateParameter,
@@ -372,7 +372,7 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
         deltaTimeSeconds = 0.333f
       )
 
-      Then("The size of new particle list should be the same as old one")
+      Then("the size of new particle list should be the same as old one")
       newParticles.size shouldBe particles.size
 
       And("the update particle status should be updated")
@@ -414,8 +414,6 @@ class PhysicsEffectFeature extends AnyFeatureSpec with GivenWhenThen with Matche
           EuclideanVector(-0.20271638f, 0.56968266f)
         )
       )
-
-      println(newParticles)
     }
   }
 

@@ -15,7 +15,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
 
   Feature("Create Shader") {
     Scenario("Compile and Link successfully") {
-      Given("A stubbed OpenGL / ShaderCompile and ShaderCleaner object")
+      Given("a stubbed OpenGL / ShaderCompile and ShaderCleaner object")
       val mockedProgramId = 123
       val mockedVertexShaderId = 234
       val mockedFragmentShaderId = 456
@@ -47,15 +47,15 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
         Then("it should create a program using OpenGL binding")
         (() => gl.glCreateProgram()).verify().once().returns(mockedProgramId)
 
-        And("Compile source code")
+        And("compile source code")
         (compiler.compile _).verify(GL_VERTEX_SHADER, mockedVertexSource).once()
         (compiler.compile _).verify(GL_FRAGMENT_SHADER, mockedFragmentSource).once()
 
-        And("Attach shader")
+        And("attach shader")
         (gl.glAttachShader _).verify(mockedProgramId, mockedVertexShaderId).once()
         (gl.glAttachShader _).verify(mockedProgramId, mockedFragmentShaderId).once()
 
-        And("Link program")
+        And("link program")
         (compiler.link _).verify(mockedProgramId).once()
 
         And("detach and delete vertex shader")
@@ -68,12 +68,12 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
 
       }
 
-      And("The programId should be the mocked program id")
+      And("the programId should be the mocked program id")
       shader.programId shouldBe mockedProgramId
     }
 
     Scenario("Failed to compile vertex shader") {
-      Given("A stubbed OpenGL / ShaderCompile and ShaderCleaner object")
+      Given("a stubbed OpenGL / ShaderCompile and ShaderCleaner object")
       val mockedProgramId = 123
       val mockedVertexShaderId = 234
       val mockedFragmentShaderId = 456
@@ -109,7 +109,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
     }
 
     Scenario("Failed to compile fragment shader") {
-      Given("A stubbed OpenGL / ShaderCompile and ShaderCleaner object")
+      Given("a stubbed OpenGL / ShaderCompile and ShaderCleaner object")
       val mockedProgramId = 123
       val mockedVertexShaderId = 234
       val mockedFragmentShaderId = 456
@@ -144,7 +144,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
     }
 
     Scenario("Failed to link") {
-      Given("A stubbed OpenGL / ShaderCompile and ShaderCleaner object")
+      Given("a stubbed OpenGL / ShaderCompile and ShaderCleaner object")
       val mockedProgramId = 123
       val mockedVertexShaderId = 234
       val mockedFragmentShaderId = 456
@@ -186,7 +186,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
       Given("a mocked programId")
       val mockedProgramId = 123
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = createOpenGLStub()
 
       And("a dummy Shader")
@@ -206,7 +206,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
       val mockedProgramId = 123
       val mockedPositionLocation = 456
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = createOpenGLStub()
       (gl.glGetAttribLocation _).when(mockedProgramId, "position").returns(mockedPositionLocation)
 
@@ -225,7 +225,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
       val mockedProgramId = 123
       val mockedUvLocation = 234
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = createOpenGLStub()
       (gl.glGetAttribLocation _).when(mockedProgramId, "uv").returns(mockedUvLocation)
 
@@ -244,7 +244,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
       val mockedProgramId = 123
       val mockedTextureLocation = 789
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = createOpenGLStub()
       (gl.glGetUniformLocation _).when(mockedProgramId, "texture").returns(mockedTextureLocation)
 
@@ -263,7 +263,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
       val mockedProgramId = 123
       val mockedBaseColorLocation = 890
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = createOpenGLStub()
       (gl.glGetUniformLocation _).when(mockedProgramId, "baseColor").returns(mockedBaseColorLocation)
 

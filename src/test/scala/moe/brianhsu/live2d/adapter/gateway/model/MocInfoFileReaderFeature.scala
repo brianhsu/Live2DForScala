@@ -18,11 +18,11 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
   Feature("Read .moc3 from file") {
 
     Scenario("Read exist and correct .mocFile into mocInfo") {
-      Given("A exist .moc3 file")
+      Given("a exist .moc3 file")
       val modelFile = "src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3"
       val fileContent = Files.readAllBytes(Paths.get(modelFile))
 
-      And("A set of mocked memory to be allocated and written")
+      And("a set of mocked memory to be allocated and written")
       val mockedOriginalMemory = mock[MockableMemory]
       val mockedAlignedMemory = mock[MockableMemory]
       val mockedMemoryInfo = MemoryInfo(mockedOriginalMemory, mockedAlignedMemory)
@@ -32,7 +32,7 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
       (mockedMemoryAllocator.allocate _).expects(fileContent.size, MocAlignment).returning(mockedMemoryInfo).once()
       (mockedAlignedMemory.write: (Long, Array[Byte], Int, Int) => Unit).expects(0, *, 0, fileContent.size).once()
 
-      When("Read .moc file using MocInfoFileReader")
+      When("read .moc file using MocInfoFileReader")
       val mocInfoFileReader = new MocInfoFileReader(modelFile)
 
       Then("it should be a success")
@@ -44,11 +44,11 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
     }
 
     Scenario("Read non-exist .mocFile into mocInfo") {
-      Given("A set of mocked memory")
+      Given("a set of mocked memory")
       val mockedMemoryAllocator = mock[MemoryAllocator]
       implicit val core: NativeCubismAPILoader = createMockedCubismCore(mockedMemoryAllocator)
 
-      When("Read .moc file using MocInfoFileReader")
+      When("read .moc file using MocInfoFileReader")
       val mocInfoFileReader = new MocInfoFileReader("nonExistFile")
 
       Then("it should be a Failure[NoSuchFileException]")

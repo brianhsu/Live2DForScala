@@ -12,7 +12,7 @@ class FaceDirectionByMouseFeature extends AnyFeatureSpec with GivenWhenThen with
 
   Feature("The face direction target point calculator should calculate correct face target point") {
     Scenario("Doing a sequence of mouse drag") {
-      Given("An sequence of interval / viewX / viewY data")
+      Given("an sequence of interval / viewX / viewY data")
       val testDataList = loadTestData
 
       Then("it should calculate correct expectedTargetX / expectedTargetY from test data")

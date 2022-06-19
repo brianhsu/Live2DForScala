@@ -8,8 +8,8 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("The basic attributes") {
     Scenario("Access the basic attributes") {
-      Given("A model matrix with predefined elements")
-      val matrix = new ModelMatrix(
+      Given("a model matrix with predefined elements")
+      val matrix = ModelMatrix(
         canvasWidth = 1.5f, canvasHeight = 1.875f,
         Array(
           0.0f, 0.1f, 0.2f, 0.3f,
@@ -38,9 +38,9 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Calculate the transformed X value") {
     Scenario("Calculate transformed X") {
-      Given("A matrix that scale X with 1.5")
+      Given("a matrix that scale X with 1.5")
       And("translate X with 2.5")
-      val matrix = new ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
+      val matrix = ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
         .scale(xScalar = 1.5f, yScalar = 1.0f)
         .translateX(2.5f)
 
@@ -52,9 +52,9 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("Invert the transformed X to origin X") {
-      Given("A matrix that scale X with 1.5")
+      Given("a matrix that scale X with 1.5")
       And("translate X with 2.5")
-      val matrix = new ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
+      val matrix = ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
         .scale(xScalar = 1.5f, yScalar = 1.0f)
         .translateX(2.5f)
 
@@ -69,9 +69,9 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Calculate the transformed Y value") {
     Scenario("Calculate transformed X") {
-      Given("A matrix that scale Y with 1.5")
+      Given("a matrix that scale Y with 1.5")
       And("translate Y with 2.5")
-      val matrix = new ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
+      val matrix = ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
         .scale(xScalar = 1.0f, yScalar = 1.5f)
         .translateY(2.5f)
 
@@ -83,9 +83,9 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("Invert the transformed Y to origin Y") {
-      Given("A matrix that scale Y with 1.5")
+      Given("a matrix that scale Y with 1.5")
       And("translate Y with 2.5")
-      val matrix = new ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
+      val matrix = ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
         .scale(xScalar = 1.0f, yScalar = 1.5f)
         .translateY(2.5f)
 
@@ -100,11 +100,11 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Multiple with another matrix") {
     Scenario("Multiple by an identity matrix") {
-      Given("An identity matrix")
-      val identityMatrix = new ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
+      Given("an identity matrix")
+      val identityMatrix = ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
 
       And("a model matrix")
-      val matrix = new ModelMatrix(
+      val matrix = ModelMatrix(
         canvasWidth = 1.5f, canvasHeight = 1.875f,
         Array(
           0.1f, 0.2f, 0.3f, 0.4f,
@@ -127,8 +127,8 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("Multiple two normal matrix") {
-      Given("Two model matrix")
-      val matrix1 = new ModelMatrix(
+      Given("two model matrix")
+      val matrix1 = ModelMatrix(
         canvasWidth = 1.5f, canvasHeight = 1.875f,
         Array(
          1.1f, 2.2f, 3.3f, 4.4f,
@@ -137,7 +137,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
          4.3f, 5.4f, 6.5f, 7.6f
         )
       )
-      val matrix2 = new ModelMatrix(
+      val matrix2 = ModelMatrix(
         canvasWidth = 1.5f, canvasHeight = 1.875f,
         Array(
           0.1f, 0.2f, 0.3f, 0.4f,
@@ -165,7 +165,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by update x/y axis position directly") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(1.5f, 1.875f)
+      val matrix = ModelMatrix(1.5f, 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("update left position")
@@ -182,7 +182,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by update left position") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(1.5f, 1.875f)
+      val matrix = ModelMatrix(1.5f, 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("update left position")
@@ -199,7 +199,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by update right position") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
+      val matrix = ModelMatrix(canvasWidth = 1.5f, canvasHeight = 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("update left position")
@@ -216,7 +216,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by update top position") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(1.5f, 1.875f)
+      val matrix = ModelMatrix(1.5f, 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("update top position")
@@ -233,7 +233,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by update bottom position") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(1.5f, 1.875f)
+      val matrix = ModelMatrix(1.5f, 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("update bottom position")
@@ -250,7 +250,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by update center X position") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(1.5f, 1.875f)
+      val matrix = ModelMatrix(1.5f, 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("update center X position")
@@ -267,7 +267,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by update center Y position") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(1.5f, 1.875f)
+      val matrix = ModelMatrix(1.5f, 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("update centerY position")
@@ -284,7 +284,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by update center X/Y position") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(1.5f, 1.875f)
+      val matrix = ModelMatrix(1.5f, 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("update center X position")
@@ -301,7 +301,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by scale to certain width but maintain aspect ratio") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(1.5f, 1.875f)
+      val matrix = ModelMatrix(1.5f, 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("scale width to 2.0")
@@ -318,7 +318,7 @@ class ModelMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     Scenario("Create a matrix by scale to certain height but maintain aspect ratio") {
       Given("a model matrix with xScalar=1.1 and yScalar=2.2")
-      val matrix = new ModelMatrix(1.5f, 1.875f)
+      val matrix = ModelMatrix(1.5f, 1.875f)
         .scale(xScalar = 1.1f, yScalar = 2.2f)
 
       When("scale height to 2.0")

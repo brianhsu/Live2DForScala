@@ -11,7 +11,7 @@ import java.nio.{Buffer, ByteBuffer, FloatBuffer, IntBuffer}
 class JavaOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory {
   Feature("OpenGL constant") {
     Scenario("Validate OpenGL constant") {
-      Given("A OpenGL binding")
+      Given("a OpenGL binding")
       val binding = new JavaOpenGLBinding(null)
 
       Then("it should contains correct constant values")
@@ -80,7 +80,7 @@ class JavaOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
       val floats = Array[Float](0.1f, 0.2f, 0.3f, 0.4f)
       val buffer = binding.newDirectFloatBuffer(floats)
 
-      Then("The buffer should be a direct buffer")
+      Then("the buffer should be a direct buffer")
       buffer.isDirect shouldBe true
 
       And("the data in the buffer should be same as Array[Float]")

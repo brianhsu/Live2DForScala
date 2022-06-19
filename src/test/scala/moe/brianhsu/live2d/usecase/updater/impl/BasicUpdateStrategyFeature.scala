@@ -23,14 +23,14 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
   Feature("Simplified constructor") {
     Scenario("Create BasicUpdateStrategy using simplified constructor") {
       noException should be thrownBy {
-        Given("A folder path contains json files for Haru Live2D avatar model")
+        Given("a folder path contains json files for Haru Live2D avatar model")
         val folderPath = "src/test/resources/models/Haru"
         val jsonSettingsReader = new JsonSettingsReader(folderPath)
 
-        And("Settings come from that avatar model")
+        And("settings come from that avatar model")
         val settings = jsonSettingsReader.loadSettings().success.value
 
-        When("Create BasicUpdateStrategy using simplified constructor")
+        When("create BasicUpdateStrategy using simplified constructor")
         val updateStrategy = new BasicUpdateStrategy(settings, mock[Live2DModel])
 
         Then("no exception should be thrown")
@@ -141,7 +141,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
 
   Feature("Start Motion with MotionSetting") {
     Scenario("Start Motion using MotionSetting object") {
-      Given("A dummy MotionSetting")
+      Given("a dummy MotionSetting")
       val motionSetting = MotionSetting("3", None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
 
       And("a mocked motion manager expected start a motion")
@@ -186,7 +186,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         updater = mock[Updater]
       )
 
-      When("Start an non-exist group name")
+      When("start an non-exist group name")
       val result = updateStrategy.startMotion("unknownGroup", 0)
 
       Then("the result should be None")
@@ -218,13 +218,14 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
           updater = mock[Updater]
         )
 
-        When("Start an non-exist group name")
+        When("start an non-exist group name")
         val result = updateStrategy.startMotion("group1", index)
 
         Then("the result should be None")
         result shouldBe None
       }
     }
+
     Scenario("The group name exist and index is correct") {
       Given("a Avatar Setting that has motion group")
       val motionSetting1 = MotionSetting("3", None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
@@ -249,7 +250,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         updater = mock[Updater]
       )
 
-      When("Start a motion with group name and index")
+      When("start a motion with group name and index")
       val result = updateStrategy.startMotion("group1", 1)
 
       Then("the result should have correct MotionWithTransition")
@@ -260,7 +261,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
 
   Feature("Update avatar model status") {
     Scenario("No effects and any motion") {
-      Given("A motion / expression manager that does nothing")
+      Given("a motion / expression manager that does nothing")
       val expressionManager = stub[MotionManager]
       val motionManager = stub[MotionManager]
 
@@ -297,14 +298,14 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
     }
 
     Scenario("There are effects") {
-      Given("A motion / expression manager that does nothing")
+      Given("a motion / expression manager that does nothing")
       val expressionManager = stub[MotionManager]
       val motionManager = stub[MotionManager]
 
       (expressionManager.calculateOperations _).when(*, *, *, *).returns(Nil)
       (motionManager.calculateOperations _).when(*, *, *, *).returns(Nil)
 
-      And("Some stubbed effects")
+      And("some stubbed effects")
       val stubbedEffect1 = stub[Effect]
       val stubbedEffect2 = stub[Effect]
       val effectOperationList1 = ParameterValueUpdate("id1", 0.1f) :: ParameterValueAdd("id2", 0.2f) :: Nil
@@ -312,7 +313,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       (stubbedEffect1.calculateOperations _).when(*, *, *).returns(effectOperationList1)
       (stubbedEffect2.calculateOperations _).when(*, *, *).returns(effectOperationList2)
 
-      And("A mocked Live2D model and updater with expectation")
+      And("a mocked Live2D model and updater with expectation")
       val model = mock[Live2DModel]
       val updater = mock[Updater]
       inSequence {
@@ -346,7 +347,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
 
     Scenario("There are motion / expression and effects") {
 
-      Given("A motion / expression manager that return mocked operations")
+      Given("a motion / expression manager that return mocked operations")
       val expressionManager = stub[MotionManager]
       val motionManager = stub[MotionManager]
       val expressionOperations = ParameterValueUpdate("id1", 0.1f) :: ParameterValueAdd("id2", 0.2f) :: Nil
@@ -355,7 +356,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       (expressionManager.calculateOperations _).when(*, *, *, *).returns(expressionOperations)
       (motionManager.calculateOperations _).when(*, *, *, *).returns(motionOperations)
 
-      And("Some stubbed effects")
+      And("some stubbed effects")
       val stubbedEffect1 = stub[Effect]
       val stubbedEffect2 = stub[Effect]
       val effectOperationList1 = ParameterValueUpdate("id5", 0.1f) :: ParameterValueAdd("id6", 0.2f) :: Nil
@@ -363,7 +364,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       (stubbedEffect1.calculateOperations _).when(*, *, *).returns(effectOperationList1)
       (stubbedEffect2.calculateOperations _).when(*, *, *).returns(effectOperationList2)
 
-      And("A mocked Live2D model and updater with expectation")
+      And("a mocked Live2D model and updater with expectation")
       val model = mock[Live2DModel]
       val updater = mock[Updater]
       inSequence {

@@ -9,7 +9,7 @@ class EasingFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
 
   Feature("Calculate the easing sine") {
     Scenario("The value is under 0.0") {
-      When("The passed in value is under 0.0")
+      When("the passed in value is under 0.0")
       val easingValue = Easing.sine(-1)
 
       Then("it should just become 0.0f")
@@ -17,7 +17,7 @@ class EasingFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
     }
 
     Scenario("The value exceed 1.0") {
-      When("The passed in value exceed 1.0")
+      When("the passed in value exceed 1.0")
       val easingValue = Easing.sine(1.1f)
 
       Then("it should just become 1.0f")
@@ -41,7 +41,7 @@ class EasingFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       )
 
       forAll(dataTable) { (value, expectedResult) =>
-        When(s"The passed in value is $value")
+        When(s"the passed in value is $value")
         val easingValue = Easing.sine(value)
 
         Then(s"it should calculated correct value, which is ${expectedResult}")

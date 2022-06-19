@@ -8,7 +8,7 @@ class EuclideanVectorFeature extends AnyFeatureSpec with GivenWhenThen with Matc
 
   Feature("Arithmetic operations") {
     Scenario("Add two vector") {
-      Given("A a [123.4, 456.7] and a [432.1, 678.9] vector")
+      Given("a [123.4, 456.7] and a [432.1, 678.9] vector")
       val a = EuclideanVector(123.4f, 456.7f)
       val b = EuclideanVector(431.1f, 678.9f)
 
@@ -27,7 +27,7 @@ class EuclideanVectorFeature extends AnyFeatureSpec with GivenWhenThen with Matc
     }
 
     Scenario("Subtract two vector") {
-      Given("A a [123.4, 456.7] and a [432.1, 678.9] vector")
+      Given("a [123.4, 456.7] and a [432.1, 678.9] vector")
       val a = EuclideanVector(123.4f, 456.7f)
       val b = EuclideanVector(431.1f, 678.9f)
 
@@ -45,35 +45,35 @@ class EuclideanVectorFeature extends AnyFeatureSpec with GivenWhenThen with Matc
     }
 
     Scenario("Multiple by a factor") {
-      Given("A a [123.4, 456.7] vector")
+      Given("a [123.4, 456.7] vector")
       val a = EuclideanVector(123.4f, 456.7f)
 
-      When("Calculate a * 5")
+      When("calculate a * 5")
       val b = a * 5
 
-      Then("The result should be [617.0, 2283.5]")
+      Then("the result should be [617.0, 2283.5]")
       b shouldBe EuclideanVector(617.0f, 2283.5f)
     }
 
     Scenario("Divided by a factor") {
-      Given("A a [123.4, 456.7] vector")
+      Given("a [123.4, 456.7] vector")
       val a = EuclideanVector(123.4f, 456.7f)
 
-      When("Calculate a / 5")
+      When("calculate a / 5")
       val b = a / 5
 
-      Then("The result should be [24.68, 91.340004]")
+      Then("the result should be [24.68, 91.340004]")
       b shouldBe EuclideanVector(24.68f, 91.340004f)
     }
 
     Scenario("Normalize a vector") {
-      Given("A a [123.4, 456.7] vector")
+      Given("a [123.4, 456.7] vector")
       val a = EuclideanVector(123.4f, 456.7f)
 
-      When("Normalize it")
+      When("normalize it")
       val normalized = a.normalize()
 
-      Then("The result should be [0.26084512, 0.9653806]")
+      Then("the result should be [0.26084512, 0.9653806]")
       normalized shouldBe EuclideanVector(0.26084512f, 0.9653806f)
     }
 

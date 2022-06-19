@@ -17,7 +17,7 @@ class Live2DModelFileReaderFeature extends AnyFeatureSpec with GivenWhenThen wit
 
   Feature("Load Live2D Model") {
     Scenario("Load a valid model") {
-      Given("A mocInfoReader that load .moc3 correctly")
+      Given("a mocInfoReader that load .moc3 correctly")
       val modelFile = "src/test/resources/models/HaruGreeter/runtime/haru_greeter_t03.moc3"
       val mocInfoFileReader = new MocInfoFileReader(modelFile)
 
@@ -32,7 +32,7 @@ class Live2DModelFileReaderFeature extends AnyFeatureSpec with GivenWhenThen wit
     }
 
     Scenario("The .moc3 file does not read correctly") {
-      Given("A mocInfoReader that return failure when loading .moc3")
+      Given("a mocInfoReader that return failure when loading .moc3")
       val mocInfoReader = stub[MocInfoFileReader]
       val mockedException = new Exception("Cannot read .moc3 file")
       (mocInfoReader.loadMocInfo _).when().returning(Failure(mockedException))

@@ -23,20 +23,20 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       )
 
       forAll(weightTable) { weight =>
-        Given("Given an exist ParticleUpdateParameter")
+        Given("given an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val particleUpdateParameter = ParticleUpdateParameter(
           translation = originalTranslation,
           angle = 5.6f
         )
 
-        And("A Live2D model parameter")
+        And("a Live2D model parameter")
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
-        And("A normalization setting")
+        And("an normalization setting")
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
-        When("Calculate new angle")
+        When("calculate new angle")
         val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, false, weight)
 
         Then("the translation should be the same")
@@ -60,20 +60,20 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       )
 
       forAll(weightTable) { weight =>
-        Given("Given an exist ParticleUpdateParameter")
+        Given("given an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val particleUpdateParameter = physics.ParticleUpdateParameter(
           translation = originalTranslation,
           angle = 5.6f
         )
 
-        And("A Live2D model parameter")
+        And("a Live2D model parameter")
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
-        And("A normalization setting")
+        And("an normalization setting")
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
-        When("Calculate new inverted angle")
+        When("calculate new inverted angle")
         val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, true, weight)
 
         Then("the translation should be the same")
@@ -99,7 +99,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       )
 
       forAll(weightTable) { weight =>
-        Given("Given an exist ParticleUpdateParameter")
+        Given("an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val originalAngle = 5.6f
         val particleUpdateParameter = physics.ParticleUpdateParameter(
@@ -107,13 +107,13 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
           angle = originalAngle
         )
 
-        And("A Live2D model parameter")
+        And("a Live2D model parameter")
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
-        And("A normalization setting")
+        And("an normalization setting")
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
-        When("Calculate new X")
+        When("calculate new X")
         val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, false, weight)
 
         Then("the angle should be the same")
@@ -140,7 +140,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       )
 
       forAll(weightTable) { weight =>
-        Given("Given an exist ParticleUpdateParameter")
+        Given("an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val originalAngle = 5.6f
         val particleUpdateParameter = physics.ParticleUpdateParameter(
@@ -148,13 +148,13 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
           angle = originalAngle
         )
 
-        And("A Live2D model parameter")
+        And("a Live2D model parameter")
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
-        And("A normalization setting")
+        And("an normalization setting")
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
-        When("Calculate new X")
+        When("calculate new X")
         val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, true, weight)
 
         Then("the angle should be the same")
@@ -183,7 +183,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       )
 
       forAll(weightTable) { weight =>
-        Given("Given an exist ParticleUpdateParameter")
+        Given("an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val originalAngle = 5.6f
         val particleUpdateParameter = physics.ParticleUpdateParameter(
@@ -191,13 +191,13 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
           angle = originalAngle
         )
 
-        And("A Live2D model parameter")
+        And("a Live2D model parameter")
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
-        And("A normalization setting")
+        And("a normalization setting")
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
-        When("Calculate new X")
+        When("calculate new X")
         val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, false, weight)
 
         Then("the angle should be the same")
@@ -224,7 +224,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       )
 
       forAll(weightTable) { weight =>
-        Given("Given an exist ParticleUpdateParameter")
+        Given("an exist ParticleUpdateParameter")
         val originalTranslation = EuclideanVector(1.2f, 3.4f)
         val originalAngle = 5.6f
         val particleUpdateParameter = physics.ParticleUpdateParameter(
@@ -232,13 +232,13 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
           angle = originalAngle
         )
 
-        And("A Live2D model parameter")
+        And("a Live2D model parameter")
         val parameter = new JavaVMParameter("id", min = 0, max = 12, default = 6, value = 3)
 
-        And("A normalization setting")
+        And("an normalization setting")
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
-        When("Calculate new X")
+        When("calculate new X")
         val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, true, weight)
 
         Then("the angle should be the same")

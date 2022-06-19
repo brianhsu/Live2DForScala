@@ -19,7 +19,7 @@ class PhysicOutputFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       )
 
       forAll(expectation) { (particleCount, vertexIndex) =>
-        Given("A PhysicOutput with assigned vertexIndex")
+        Given("a PhysicOutput with assigned vertexIndex")
         val output = PhysicsOutput(
           PhysicsParameter("id", TargetType.Parameter),
           ParameterType.X,
@@ -44,7 +44,7 @@ class PhysicOutputFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       )
 
       forAll(expectation) { (particleCount, vertexIndex) =>
-        Given("A PhysicOutput with assigned vertexIndex")
+        Given("a PhysicOutput with assigned vertexIndex")
         val output = physics.PhysicsOutput(
           PhysicsParameter("id", TargetType.Parameter),
           ParameterType.X,
