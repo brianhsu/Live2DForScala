@@ -19,7 +19,18 @@ object Profile {
 
 }
 
-class Profile (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
+/**
+ * The Profile state object
+ *
+ * This is to save / restore various OpenGL parameters.
+
+ * This class should no be created directly by client, client should use `getInstance` method
+ * in Profile object.
+ *
+ * @param gl The OpenGL binding
+ * @param richOpenGLWrapper The converter that will wrap OpenGLBinding to a RichOpenGLBinding
+ */
+class Profile private[opengl] (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
 
   import gl.constants._
   private var lastProgram: Int = 0
