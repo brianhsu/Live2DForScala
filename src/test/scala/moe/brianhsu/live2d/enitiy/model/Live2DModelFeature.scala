@@ -19,7 +19,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Read / update model matrix") {
     Scenario("Read a model matrix before update it") {
-      Given("A model witch mocked backend")
+      Given("a model witch mocked backend")
       val backend = new MockedBackend(drawables = Map.empty)
       val live2DModel = new Live2DModel(backend)
 
@@ -36,7 +36,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("Update model matrix") {
-      Given("A model witch mocked backend")
+      Given("a model witch mocked backend")
       val backend = new MockedBackend(drawables = Map.empty)
       val live2DModel = new Live2DModel(backend)
 
@@ -48,9 +48,10 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       live2DModel.modelMatrix shouldBe theSameInstanceAs (updatedModelMatrix)
     }
   }
+
   Feature("Use containMaskedDrawables to get whether drawable has mask or not") {
     Scenario("No drawable at all") {
-      Given("A model without any drawable")
+      Given("a model without any drawable")
       val backend = new MockedBackend(drawables = Map.empty)
       val live2DModel = new Live2DModel(backend)
 
@@ -73,7 +74,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("One drawable has mask") {
-      Given("A model has three drawable, and one of them has mask")
+      Given("a model has three drawable, and one of them has mask")
       val mockedDrawables = Map(
         "id1" -> createDrawable("id1", index = 0),
         "id2" -> createDrawable("id2", index = 1, hasMask = true),
@@ -87,7 +88,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("All drawable has mask") {
-      Given("A model has three drawable, and all of them has mask")
+      Given("a model has three drawable, and all of them has mask")
       val mockedDrawables = Map(
         "id1" -> createDrawable("id1", index = 0, hasMask = true),
         "id2" -> createDrawable("id2", index = 1, hasMask = true),
@@ -104,7 +105,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Get drawable sorted by index") {
     Scenario("No drawable at all") {
-      Given("A model without any drawable")
+      Given("a model without any drawable")
       val backend = new MockedBackend(drawables = Map.empty)
       val live2DModel = new Live2DModel(backend)
 
@@ -113,7 +114,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("Model contains multiple drawables") {
-      Given("An model 4 drawable")
+      Given("a model with 4 drawable")
       val mockedDrawables = Map(
         "id0" -> createDrawable("id0", index = 0),
         "id3" -> createDrawable("id3", index = 3),
@@ -143,7 +144,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Get drawable sorted by render order") {
     Scenario("No drawable at all") {
-      Given("A model without any drawable")
+      Given("a model without any drawable")
       val backend = new MockedBackend(drawables = Map.empty)
       val live2DModel = new Live2DModel(backend)
 
@@ -152,7 +153,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("Model contains multiple drawables") {
-      Given("An model 4 drawable")
+      Given("a model 4 drawable")
       val mockedDrawables = Map(
         "id0" -> createDrawable("id0", index = 0, renderOrder = 1),
         "id1" -> createDrawable("id1", index = 1, renderOrder = 0),
@@ -181,7 +182,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("It should delegate access basic information / updateModel to backend") {
     Scenario("Access basic information") {
-      Given("A mocked model backend")
+      Given("a mocked model backend")
       val mockedTextureFiles = List("texture1", "texture2")
       val mockedParameters: Map[String, Parameter] = Map("p1" -> stub[Parameter])
       val mockedParts: Map[String, Part] = Map("p1" -> stub[Part])
@@ -210,7 +211,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("Update model") {
-      Given("A Live2DModel backed by mocked model backend")
+      Given("a Live2DModel backed by mocked model backend")
       val mockedBackend = new MockedBackend()
       val model = new Live2DModel(mockedBackend)
 
@@ -224,7 +225,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Snapshot and restore parameters") {
     Scenario("Only snapshot the parameters") {
-      Given("A Live 2D Model with following parameters")
+      Given("a Live 2D Model with following parameters")
       val parameters = Map(
         "id1" -> new JavaVMParameter("id1", value = 0.1f),
         "id2" -> new JavaVMParameter("id2", value = 0.2f),
@@ -243,7 +244,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     }
 
     Scenario("There are only parameters from backend") {
-      Given("A Live 2D Model with following parameters")
+      Given("a Live 2D Model with following parameters")
       val parameters = Map(
         "id1" -> new JavaVMParameter("id1", value = 0.1f),
         "id2" -> new JavaVMParameter("id2", value = 0.2f),
@@ -252,14 +253,14 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val backend = new MockedBackend(parameters = parameters)
       val live2DModel = new Live2DModel(backend)
 
-      And("Update a fallback parameter created by getParameterWithFallback")
+      And("update a fallback parameter created by getParameterWithFallback")
       val fallbackParameter = live2DModel.parameterWithFallback("notExistId")
       fallbackParameter.update(0.3f)
 
       And("snapshot the Live 2D model parameters")
       live2DModel.snapshotParameters()
 
-      And("Change the value of parameters after snapshot")
+      And("change the value of parameters after snapshot")
       parameters("id1").update(0.5f)
       parameters("id2").update(0.6f)
       parameters("id3").update(0.7f)
@@ -281,7 +282,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Reset model") {
     Scenario("Reset a Live 2D Model") {
-      Given("A Live 2D Model with following parameters with default value")
+      Given("a Live 2D Model with following parameters with default value")
       val parameters = Map(
         "id1" -> new JavaVMParameter("id1", default = 0.6f, value = 0.1f),
         "id2" -> new JavaVMParameter("id2", default = 0.7f, value = 0.2f),
@@ -307,7 +308,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("getParameterWithFallback on parameters") {
     Scenario("Get parameter that is backed by backend") {
-      Given("A Live2D Model with only one parameter")
+      Given("a Live2D Model with only one parameter")
       val parameters = Map(
         "id1" -> new JavaVMParameter("id1", value = 0.1f),
       )
@@ -342,7 +343,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Hit test for hit area") {
     Scenario("The provided coordinate is inside the drawable boundary") {
-      Given("A Live2D Model with a drawable for hit test")
+      Given("a Live2D Model with a drawable for hit test")
       val canvasInfo = ModelCanvasInfo(
         widthInPixel = 2400, heightInPixel = 4500,
         originInPixel = (1200, 2250), pixelPerUnit = 2400
@@ -353,7 +354,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val backend = new MockedBackend(drawables = drawables, canvasInfo = canvasInfo)
       val live2DModel = new Live2DModel(backend)
 
-      When("The coordinate is inside the drawable boundary")
+      When("the coordinate is inside the drawable boundary")
       val isHit = live2DModel.isHit("hitArea", -0.004149437f, 0.19502074f)
 
       Then("it should judge as a hit")
@@ -370,7 +371,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       )
 
       forAll(invalidCombos) { (side, pointX, pointY) =>
-        Given("A Live2D Model with a drawable for hit test")
+        Given("a Live2D Model with a drawable for hit test")
         val canvasInfo = ModelCanvasInfo(
           widthInPixel = 2400, heightInPixel = 4500,
           originInPixel = (1200, 2250), pixelPerUnit = 2400
@@ -381,7 +382,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         val backend = new MockedBackend(drawables = drawables, canvasInfo = canvasInfo)
         val live2DModel = new Live2DModel(backend)
 
-        When(s"The coordinate is inside the drawable's $side boundary")
+        When(s"the coordinate is inside the drawable's $side boundary")
         val isHit = live2DModel.isHit("hitArea", pointX, pointY)
 
         Then("it should judge as a non hit")

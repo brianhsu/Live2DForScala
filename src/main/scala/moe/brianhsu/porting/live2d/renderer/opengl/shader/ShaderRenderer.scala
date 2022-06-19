@@ -65,11 +65,8 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
     setGlVertexInfo(vertexArray, uvArray, shader)
 
     for (context <- drawClippingContextHolder) {
-      for {
-        buffer <- renderer.offscreenBufferHolder
-        textureId <- buffer.bufferIds.textureBufferHolder
-      } {
-        setGlTexture(GL_TEXTURE1, textureId, shader.samplerTexture1Location, 1)
+      renderer.offscreenBufferHolder.foreach { buffer =>
+        setGlTexture(GL_TEXTURE1, buffer.frameBufferId, shader.samplerTexture1Location, 1)
         gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, context.getMatrixForDraw.elements)
         setGlColorChannel(context, shader)
       }

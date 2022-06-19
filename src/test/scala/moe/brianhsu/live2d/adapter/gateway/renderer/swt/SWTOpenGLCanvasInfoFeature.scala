@@ -13,12 +13,12 @@ import org.scalatest.matchers.should.Matchers
 class SWTOpenGLCanvasInfoFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MixedMockFactory {
   Feature("Get canvas information") {
     Scenario("Get canvas information from SWT OpenGL Canvas", CanvasInfoRelated) {
-      Given("A stubbed SWT OpenGL Canvas")
+      Given("a stubbed SWT OpenGL Canvas")
       val canvas = new GLCanvas(new Shell(), SWT.NONE, stub[GLData]) {
         override def getBounds: Rectangle = new Rectangle(123, 456, 789, 987)
       }
 
-      And("A SWTOpenGLCanvasInfo based on that canvas")
+      And("a SWTOpenGLCanvasInfo based on that canvas")
       val canvasInfo = new SWTOpenGLCanvasInfoReader(canvas)
 
       Then("it should have correct properties")

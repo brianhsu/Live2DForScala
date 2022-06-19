@@ -28,7 +28,7 @@ class DynamicFlagsFeature extends AnyFeatureSpec
       )
 
       forAll(dataTable) { (bitmap, isVisible, visibilityChanged, opacityChanged, drawOrderChanged, vertexPositionChanged) =>
-        When(s"Create a ConstantDrawableFlags from that bitmap $bitmap")
+        When(s"create a ConstantDrawableFlags from that bitmap $bitmap")
         val pointer = new Memory(Native.getNativeSize(classOf[Byte])).share(0)
         pointer.setByte(0, bitmap.toByte)
         val flags = DynamicFlags(pointer)
@@ -58,7 +58,7 @@ class DynamicFlagsFeature extends AnyFeatureSpec
       )
 
       forAll(dataTable) { (bitmap, isVisible, visibilityChanged, opacityChanged, drawOrderChanged, vertexPositionChanged) =>
-        When(s"Create a ConstantDrawableFlags from that bitmap $bitmap")
+        When(s"create a ConstantDrawableFlags from that bitmap $bitmap")
         val pointer = new Memory(Native.getNativeSize(classOf[Byte])).share(0)
         pointer.setByte(0, 0)
         val flags = drawable.DynamicFlags(pointer)

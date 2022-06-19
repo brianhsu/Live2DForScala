@@ -9,7 +9,7 @@ import org.scalatest.matchers.should.Matchers
 class LWJGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory {
   Feature("OpenGL constant") {
     Scenario("Validate OpenGL constant") {
-      Given("A LWJGL OpenGL binding")
+      Given("a LWJGL OpenGL binding")
       val binding = new LWJGLBinding()
 
       Then("it should contains correct constant values")
@@ -72,14 +72,14 @@ class LWJGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
 
   Feature("Create direct float buffer") {
     Scenario("Create from Array[Float]") {
-      Given("A LWJGL OpenGL binding")
+      Given("a LWJGL OpenGL binding")
       val binding = new LWJGLBinding()
 
       When("create a buffer from that an Array[Float]")
       val floats = Array[Float](0.1f, 0.2f, 0.3f, 0.4f)
       val buffer = binding.newDirectFloatBuffer(floats)
 
-      Then("The buffer should be a direct buffer")
+      Then("the buffer should be a direct buffer")
       buffer.isDirect shouldBe true
 
       And("the data in the buffer should be same as Array[Float]")

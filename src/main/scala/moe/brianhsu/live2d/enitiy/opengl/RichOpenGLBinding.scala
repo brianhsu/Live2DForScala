@@ -51,6 +51,34 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     }
   }
 
+  def generateTextures(count: Int): List[Int] = {
+    require(count > 0, s"$count should >= 1")
+
+    val newTextureBuffers: Array[Int] = new Array(count)
+    binding.glGenTextures(count, newTextureBuffers)
+
+    val successCount = newTextureBuffers.count(_ != 0)
+    if (successCount != count) {
+      throw new RuntimeException(s"Cannot generate all textures, expected count: $count, actual count: $successCount")
+    }
+
+    newTextureBuffers.toList
+  }
+
+  def generateFrameBuffers(count: Int): List[Int] = {
+    require(count > 0, s"$count should >= 1")
+
+    val newFrameBuffers: Array[Int] = new Array(count)
+    binding.glGenFramebuffers(count, newFrameBuffers)
+
+    val successCount = newFrameBuffers.count(_ != 0)
+    if (successCount != count) {
+      throw new RuntimeException(s"Cannot generate all buffers, expected count: $count, actual count: $successCount")
+    }
+
+    newFrameBuffers.toList
+  }
+
   def textureBinding2D(textureUnit: Int): Int = {
     binding.glActiveTexture(textureUnit)
     openGLParameters[Int](GL_TEXTURE_BINDING_2D)

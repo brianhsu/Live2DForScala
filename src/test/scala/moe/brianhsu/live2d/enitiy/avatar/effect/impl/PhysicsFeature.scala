@@ -32,15 +32,15 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
   Feature("Calculate operations of Physics effect") {
     Scenario("Calculate physics from Rice avatar") {
-      Given("A folder path contains json files for Rice Live2D avatar model")
+      Given("a folder path contains json files for Rice Live2D avatar model")
       val folderPath = "src/test/resources/models/Rice"
 
-      When("Create a Physics effect from this Live2D avatar settings")
+      When("create a Physics effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val physics = new AvatarPhysicsReader(settings).loadPhysics.value
 
-      And("Set wind direction to (10.0f, 10.0f)")
+      And("set wind direction to (10.0f, 10.0f)")
       physics.windDirection = EuclideanVector(10.0f, 10.0f)
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/physicOperations/markPhysicsOperations.json")
@@ -59,15 +59,15 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
     }
 
     Scenario("Calculate physics from Hiyori avatar") {
-      Given("A folder path contains json files for Hiyori Live2D avatar model")
+      Given("a folder path contains json files for Hiyori Live2D avatar model")
       val folderPath = "src/test/resources/models/Hiyori"
 
-      When("Create a Physics effect from this Live2D avatar settings")
+      When("create a Physics effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val physics = new AvatarPhysicsReader(settings).loadPhysics.value
 
-      And("Set wind direction to (10.0f, 10.0f)")
+      And("set wind direction to (10.0f, 10.0f)")
       physics.windDirection = EuclideanVector(10.0f, 10.0f)
 
       val testDataFile = Source.fromFile("src/test/resources/expectation/physicOperations/hiyoriPhysicsOperations.json")

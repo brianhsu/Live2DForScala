@@ -14,7 +14,7 @@ class AvatarFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
   Feature("Update avatar should delegate to update strategy") {
     Scenario("There is no update strategy") {
       noException shouldBe thrownBy {
-        Given("An avatar and an mocked FrameTimeInfo")
+        Given("an avatar and an mocked FrameTimeInfo")
         val avatar = Avatar(stub[Settings], stub[Live2DModel])
         val frameTimeInfo = stub[FrameTimeInfo]
 
@@ -29,7 +29,7 @@ class AvatarFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
     }
 
     Scenario("There is update strategy set") {
-      Given("An avatar and an mocked FrameTimeInfo")
+      Given("an avatar and an mocked FrameTimeInfo")
       val avatar = Avatar(stub[Settings], stub[Live2DModel])
       val frameTimeInfo = stub[FrameTimeInfo]
 

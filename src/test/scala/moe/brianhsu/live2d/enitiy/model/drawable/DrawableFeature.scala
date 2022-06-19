@@ -13,8 +13,8 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
   class MockablePointer extends Pointer(0)
 
   Feature("Get draw order") {
-    Scenario("Get draw order value from pointer") {
-      Given("A drawable with a mocked pointer to draw order value")
+    Scenario("get draw order value from pointer") {
+      Given("a drawable with a mocked pointer to draw order value")
       val drawOrderPointer = stub[MockablePointer]
       val drawable = Drawable(
         "drawableId", index = 0,
@@ -26,7 +26,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       And("the mocked pointer return integer value 123 when request with offset=0")
       (drawOrderPointer.getInt _).when(0).returning(123)
 
-      When("Ask drawOrder from drawable")
+      When("ask drawOrder from drawable")
       val drawOrder = drawable.drawOrder
 
       Then("it should be 123")
@@ -35,8 +35,8 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
   }
 
   Feature("Get render order") {
-    Scenario("Get render order value from pointer") {
-      Given("A drawable with a mocked pointer to render order value")
+    Scenario("get render order value from pointer") {
+      Given("a drawable with a mocked pointer to render order value")
       val renderOrderPointer = stub[MockablePointer]
       val drawable = Drawable(
         "drawableId", index = 0,
@@ -48,7 +48,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       And("the mocked pointer return integer value 456 when request with offset=0")
       (renderOrderPointer.getInt _).when(0).returning(456)
 
-      When("Ask renderOrder from drawable")
+      When("ask renderOrder from drawable")
       val renderOrder = drawable.renderOrder
 
       Then("it should be 456")
@@ -58,7 +58,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
   Feature("Get opacity") {
     Scenario("Get opacity value from pointer") {
-      Given("A drawable with a mocked pointer to opacity value")
+      Given("a drawable with a mocked pointer to opacity value")
       val opacityPointer = stub[MockablePointer]
       val drawable = Drawable(
         "drawableId", index = 0,
@@ -70,7 +70,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       And("the mocked pointer return integer value 0.65 when request with offset=0")
       (opacityPointer.getFloat _).when(0).returning(0.65f)
 
-      When("Ask opacity from drawable")
+      When("ask opacity from drawable")
       val opacity = drawable.opacity
 
       Then("it should be 0.65")
@@ -93,7 +93,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
       forAll(dataTable) { (flagsInBinary, expectedResult) =>
 
-        Given(s"A drawable with constantFlag with bitValue=$flagsInBinary")
+        Given(s"a drawable with constantFlag with bitValue=$flagsInBinary")
         val flagByte = java.lang.Byte.parseByte(flagsInBinary, 2)
         val drawable = Drawable(
           "drawableId", index = 0,

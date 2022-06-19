@@ -11,41 +11,41 @@ class ViewOrientationFeature extends AnyFeatureSpec with GivenWhenThen with Matc
 
   Feature("Create ViewOrientation from DrawCanvasInfo") {
     Scenario("The view is Horizontal (width == height)") {
-      Given("A DrawCanvasInfo that is horizontal")
+      Given("a DrawCanvasInfo that is horizontal")
       val drawCanvasInfo = stub[DrawCanvasInfoReader]
       (() => drawCanvasInfo.currentCanvasWidth).when().returns(1024)
       (() => drawCanvasInfo.currentCanvasHeight).when().returns(1024)
 
-      When("Create ViewOrientation")
+      When("create ViewOrientation")
       val orientation = ViewOrientation(drawCanvasInfo)
 
-      Then("The orientation should be Horizontal")
+      Then("the orientation should be Horizontal")
       orientation shouldBe Horizontal
     }
 
     Scenario("The view is Horizontal (width > height)") {
-      Given("A DrawCanvasInfo that is horizontal")
+      Given("a DrawCanvasInfo that is horizontal")
       val drawCanvasInfo = stub[DrawCanvasInfoReader]
       (() => drawCanvasInfo.currentCanvasWidth).when().returns(1024)
       (() => drawCanvasInfo.currentCanvasHeight).when().returns(768)
 
-      When("Create ViewOrientation")
+      When("create ViewOrientation")
       val orientation = ViewOrientation(drawCanvasInfo)
 
-      Then("The orientation should be Horizontal")
+      Then("the orientation should be Horizontal")
       orientation shouldBe Horizontal
     }
 
     Scenario("The view is Vertical (height > weight)") {
-      Given("A DrawCanvasInfo that is horizontal")
+      Given("a DrawCanvasInfo that is horizontal")
       val drawCanvasInfo = stub[DrawCanvasInfoReader]
       (() => drawCanvasInfo.currentCanvasWidth).when().returns(768)
       (() => drawCanvasInfo.currentCanvasHeight).when().returns(1024)
 
-      When("Create ViewOrientation")
+      When("create ViewOrientation")
       val orientation = ViewOrientation(drawCanvasInfo)
 
-      Then("The orientation should be Vertical")
+      Then("the orientation should be Vertical")
       orientation shouldBe Vertical
     }
 

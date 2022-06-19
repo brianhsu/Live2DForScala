@@ -8,7 +8,6 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, Inside, OptionValues}
 
-import scala.reflect.runtime.universe._
 
 class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory with OpenGLMock
                      with OptionValues with Inside {
@@ -70,9 +69,7 @@ class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen wit
 
       And("the OpenGL binding return some value for frameBufferBinding / viewPort")
       (() => richOpenGLBinding.viewPort).when().returning(ViewPort(1234, 5678, 9012, 3456))
-      (richOpenGLBinding.openGLParameters(_: Int)(_: TypeTag[Int]))
-        .when(GL_FRAMEBUFFER_BINDING, typeTag[Int])
-        .returning(123)
+      addDummyIntOpenGLParameter(richOpenGLBinding, GL_FRAMEBUFFER_BINDING, 123)
 
       When("save the profile")
       profile.save()
@@ -86,6 +83,7 @@ class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen wit
         height shouldBe 3456
       }
     }
+
     Scenario("Restore state before save any state") {
       Given("a stubbed OpenGL binding and a Profile")
       val binding = createOpenGLStub()
@@ -160,12 +158,6 @@ class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen wit
 
   }
 
-  private def addDummyIntOpenGLParameter(richOpenGLBinding: RichOpenGLBinding, pname: Int, value: Int): Unit = {
-    (richOpenGLBinding.openGLParameters(_: Int)(_: TypeTag[Int]))
-      .when(pname, typeTag[Int])
-      .returning(value)
-
-  }
 
   private def createProfile(binding: OpenGLBinding, richOpenGLBinding: RichOpenGLBinding): Profile = {
     val converter: OpenGLBinding => RichOpenGLBinding = _ => richOpenGLBinding

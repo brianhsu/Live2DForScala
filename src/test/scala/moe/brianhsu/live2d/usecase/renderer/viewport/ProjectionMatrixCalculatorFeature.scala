@@ -24,7 +24,7 @@ class ProjectionMatrixCalculatorFeature extends featurespec.FixtureAnyFeatureSpe
       stubbedDrawCanvasInfo.canvasWidth = 1920
       stubbedDrawCanvasInfo.canvasHeight = 1080
 
-      When("Calculate the projection matrix")
+      When("calculate the projection matrix")
       val projectMatrix = calculator.calculate(viewPortMatrix, isForceUpdate = false, stubbedCallback)
 
       Then("the element in the projection matrix should have correct")
@@ -46,7 +46,7 @@ class ProjectionMatrixCalculatorFeature extends featurespec.FixtureAnyFeatureSpe
       stubbedDrawCanvasInfo.canvasWidth = 1920
       stubbedDrawCanvasInfo.canvasHeight = 1080
 
-      When("Calculate the projection matrix twice")
+      When("calculate the projection matrix twice")
       calculator.calculate(viewPortMatrix, isForceUpdate = false, stubbedCallback)
       val projectMatrix = calculator.calculate(viewPortMatrix, isForceUpdate = false, stubbedCallback)
 
@@ -69,7 +69,7 @@ class ProjectionMatrixCalculatorFeature extends featurespec.FixtureAnyFeatureSpe
       stubbedDrawCanvasInfo.canvasWidth = 1920
       stubbedDrawCanvasInfo.canvasHeight = 1080
 
-      When("Calculate the projection matrix first time")
+      When("calculate the projection matrix first time")
       calculator.calculate(viewPortMatrix, isForceUpdate = false, stubbedCallback)
 
       And("update the width of draw canvas")
@@ -97,7 +97,7 @@ class ProjectionMatrixCalculatorFeature extends featurespec.FixtureAnyFeatureSpe
       stubbedDrawCanvasInfo.canvasWidth = 1920
       stubbedDrawCanvasInfo.canvasHeight = 1080
 
-      When("Calculate the projection matrix first time")
+      When("calculate the projection matrix first time")
       calculator.calculate(viewPortMatrix, isForceUpdate = false, stubbedCallback)
 
       And("update the height of draw canvas")
@@ -125,7 +125,7 @@ class ProjectionMatrixCalculatorFeature extends featurespec.FixtureAnyFeatureSpe
       stubbedDrawCanvasInfo.canvasWidth = 1920
       stubbedDrawCanvasInfo.canvasHeight = 1080
 
-      When("Calculate the projection matrix first time")
+      When("calculate the projection matrix first time")
       calculator.calculate(viewPortMatrix, isForceUpdate = false, stubbedCallback)
 
       And("update the height of draw canvas")

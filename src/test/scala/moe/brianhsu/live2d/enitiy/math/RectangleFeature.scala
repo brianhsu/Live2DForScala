@@ -8,7 +8,7 @@ class RectangleFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   Feature("Basic attributes") {
     Scenario("Access the attributes of a Rectangle") {
-      Given("A rectangle object")
+      Given("a rectangle object")
       val rectangle = Rectangle(1.0f, 2.0f, 3.0f, 4.0f)
 
       Then("it should have correct boundary attributes")
@@ -26,7 +26,7 @@ class RectangleFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   Feature("Create new Rectangle by expend it") {
     Scenario("Expend a rectangle") {
-      Given("A rectangle object")
+      Given("a rectangle object")
       val rectangle = Rectangle(1.0f, 2.0f, 3.0f, 4.0f)
 
       When("expend it")

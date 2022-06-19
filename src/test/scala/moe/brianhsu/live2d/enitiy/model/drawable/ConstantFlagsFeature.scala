@@ -15,7 +15,7 @@ class ConstantFlagsFeature extends AnyFeatureSpec
       Given("a bitmask that both bit is set")
       val flagsValue = 0 | csmIsDoubleSided | csmIsInvertedMask
 
-      When(s"Create a ConstantDrawableFlags from that bitmap")
+      When(s"create a ConstantDrawableFlags from that bitmap")
       val flag = ConstantFlags(flagsValue.toByte)
 
       Then("both isDoubledSided and isInvertedMask should be true")
@@ -27,7 +27,7 @@ class ConstantFlagsFeature extends AnyFeatureSpec
       Given("a bitmask that only csmIsDoubleSided bit is set")
       val flagsValue = 0 | csmIsDoubleSided
 
-      When(s"Create a ConstantDrawableFlags from that bitmap")
+      When(s"create a ConstantDrawableFlags from that bitmap")
       val flag = ConstantFlags(flagsValue.toByte)
 
       Then("only isDoubledSided should be true")
@@ -39,7 +39,7 @@ class ConstantFlagsFeature extends AnyFeatureSpec
       Given("a bitmask that only csmIsInvertedMask bit is set")
       val flagsValue = 0 | csmIsInvertedMask
 
-      When(s"Create a ConstantDrawableFlags from that bitmap")
+      When(s"create a ConstantDrawableFlags from that bitmap")
       val flag = ConstantFlags(flagsValue.toByte)
 
       Then("only isInvertedMask should be true")
@@ -60,7 +60,7 @@ class ConstantFlagsFeature extends AnyFeatureSpec
       )
 
       forAll(dataTable) { (bitmap, expectedValue) =>
-        When(s"Create a ConstantDrawableFlags from that bitmap $bitmap")
+        When(s"create a ConstantDrawableFlags from that bitmap $bitmap")
         val flag = new ConstantFlags(bitmap.toByte)
 
         Then("the blendMode should be Normal")
@@ -79,7 +79,7 @@ class ConstantFlagsFeature extends AnyFeatureSpec
       )
 
       forAll(dataTable) { (bitmap, expectedValue) =>
-        When(s"Create a ConstantDrawableFlags from that bitmap $bitmap")
+        When(s"create a ConstantDrawableFlags from that bitmap $bitmap")
         val flag = new ConstantFlags(bitmap.toByte)
 
         Then("the blendMode should be Normal")

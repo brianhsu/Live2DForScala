@@ -15,7 +15,7 @@ class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val mockedProgramId = 123
       val mockedPositionLocation = 456
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = stub[OpenGLBinding]
       (gl.glGetAttribLocation _).when(mockedProgramId, "a_position").returns(mockedPositionLocation)
 
@@ -34,7 +34,7 @@ class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val mockedProgramId = 123
       val mockedTexCoordLocation = 456
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = stub[OpenGLBinding]
       (gl.glGetAttribLocation _).when(mockedProgramId, "a_texCoord").returns(mockedTexCoordLocation)
 
@@ -53,7 +53,7 @@ class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val mockedProgramId = 123
       val mockedSamplerTexture0Location = 456
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = stub[OpenGLBinding]
       (gl.glGetUniformLocation _).when(mockedProgramId, "s_texture0").returns(mockedSamplerTexture0Location)
 
@@ -72,7 +72,7 @@ class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val mockedProgramId = 123
       val mockedSamplerTexture1Location = 456
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = stub[OpenGLBinding]
       (gl.glGetUniformLocation _).when(mockedProgramId, "s_texture1").returns(mockedSamplerTexture1Location)
 
@@ -91,7 +91,7 @@ class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val mockedProgramId = 123
       val mockedUniformClipMatrixLocation = 456
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = stub[OpenGLBinding]
       (gl.glGetUniformLocation _).when(mockedProgramId, "u_clipMatrix").returns(mockedUniformClipMatrixLocation)
 
@@ -110,7 +110,7 @@ class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val mockedProgramId = 123
       val mockedUniformChannelFlagLocation = 456
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = stub[OpenGLBinding]
       (gl.glGetUniformLocation _).when(mockedProgramId, "u_channelFlag").returns(mockedUniformChannelFlagLocation)
 
@@ -129,7 +129,7 @@ class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val mockedProgramId = 123
       val mockedUniformBaseColorLocation = 456
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = stub[OpenGLBinding]
       (gl.glGetUniformLocation _).when(mockedProgramId, "u_baseColor").returns(mockedUniformBaseColorLocation)
 
@@ -148,7 +148,7 @@ class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val mockedProgramId = 123
       val mockedUniformMatrixLocation = 456
 
-      And("An stubbed OpenGL binding")
+      And("a stubbed OpenGL binding")
       val gl = stub[OpenGLBinding]
       (gl.glGetUniformLocation _).when(mockedProgramId, "u_matrix").returns(mockedUniformMatrixLocation)
 

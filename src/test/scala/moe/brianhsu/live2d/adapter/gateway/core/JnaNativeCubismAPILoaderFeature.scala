@@ -8,7 +8,7 @@ import org.scalatest.matchers.should.Matchers
 class JnaNativeCubismAPILoaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Init with custom logger") {
     Scenario("create cubism with custom logger") {
-      Given("A custom logger")
+      Given("a custom logger")
       val logger = new CsmLogFunction {
         override def invoke(message: String): Unit = {}
       }
@@ -23,7 +23,7 @@ class JnaNativeCubismAPILoaderFeature extends AnyFeatureSpec with GivenWhenThen 
 
   Feature("Get version related information") {
     Scenario("Get core library version") {
-      Given("A JNA cubism core")
+      Given("a JNA cubism core")
       val cubismCore = new JnaNativeCubismAPILoader()
 
       When("get core library version")
@@ -34,7 +34,7 @@ class JnaNativeCubismAPILoaderFeature extends AnyFeatureSpec with GivenWhenThen 
     }
 
     Scenario("Get supported .moc file version") {
-      Given("A JNA cubism core")
+      Given("a JNA cubism core")
       val cubismCore = new JnaNativeCubismAPILoader()
 
       When("get latest supported .moc file version")

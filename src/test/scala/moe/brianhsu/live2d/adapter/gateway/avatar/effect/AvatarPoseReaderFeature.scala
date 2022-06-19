@@ -10,10 +10,10 @@ import org.scalatest.{GivenWhenThen, TryValues}
 class AvatarPoseReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
   Feature("Read pose parts data from Live2D avatar settings") {
     Scenario("Load pose with fade in time specific inside json file") {
-      Given("A folder path contains json files for Haru Live2D avatar model")
+      Given("a folder path contains json files for Haru Live2D avatar model")
       val folderPath = "src/test/resources/models/Haru"
 
-      When("Create a Pose effect from this Live2D avatar settings")
+      When("create a Pose effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val reader = new AvatarPoseReader(settings)
@@ -31,7 +31,7 @@ class AvatarPoseReaderFeature extends AnyFeatureSpec with GivenWhenThen with Mat
         )
       )
 
-      And("The fade in time should has same value as in json file")
+      And("the fade in time should has same value as in json file")
       pose.fadeTimeInSeconds shouldBe 1.5f
     }
 
@@ -39,7 +39,7 @@ class AvatarPoseReaderFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       Given("A folder path contains json files for Haru Live2D avatar model")
       val folderPath = "src/test/resources/models/HaruGreeter/runtime"
 
-      When("Create a Pose effect from this Live2D avatar settings")
+      When("create a Pose effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val reader = new AvatarPoseReader(settings)
@@ -57,15 +57,15 @@ class AvatarPoseReaderFeature extends AnyFeatureSpec with GivenWhenThen with Mat
         )
       )
 
-      And("The fade in time should has same value as in json file")
+      And("the fade in time should has same value as in json file")
       pose.fadeTimeInSeconds shouldBe 0.5
     }
 
     Scenario("Load pose from avatar that does not utilize Pose") {
-      Given("A folder path contains json files for Mark Live2D avatar model")
+      Given("a folder path contains json files for Mark Live2D avatar model")
       val folderPath = "src/test/resources/models/Mark"
 
-      When("Create a Pose effect from this Live2D avatar settings")
+      When("create a Pose effect from this Live2D avatar settings")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val reader = new AvatarPoseReader(settings)

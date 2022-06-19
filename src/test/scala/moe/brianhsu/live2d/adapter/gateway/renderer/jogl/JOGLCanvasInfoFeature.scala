@@ -10,13 +10,13 @@ import org.scalatest.matchers.should.Matchers
 class JOGLCanvasInfoFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MixedMockFactory {
   Feature("Get canvas information") {
     Scenario("Get canvas information from Java OpenGL AWT Canvas", CanvasInfoRelated) {
-      Given("A stubbed Java OpenGL AWT Canvas")
+      Given("a stubbed Java OpenGL AWT Canvas")
       val canvas = new GLCanvas {
         override def getWidth: Int = 123
         override def getHeight: Int = 456
       }
 
-      And("A JOGLCanvasInfo based on that canvas")
+      And("a JOGLCanvasInfo based on that canvas")
       val canvasInfo = new JOGLCanvasInfoReader(canvas)
 
       Then("it should have correct properties")

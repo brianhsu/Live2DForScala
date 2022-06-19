@@ -89,7 +89,7 @@ class ViewPortMatrixCalculatorFeature extends AnyFeatureSpec with GivenWhenThen 
       Given("a clean ViewPortMatrixCalculator")
       val calculator = new ViewPortMatrixCalculator
 
-      And("Update the viewport")
+      And("update the viewport")
       calculator.updateViewPort(width = 1024, height = 768)
 
       When("the drawCanvasToModelMatrix should have correct element")
@@ -124,7 +124,7 @@ class ViewPortMatrixCalculatorFeature extends AnyFeatureSpec with GivenWhenThen 
       Given("a clean ViewPortMatrixCalculator")
       val calculator = new ViewPortMatrixCalculator
 
-      And("Update the viewport")
+      And("update the viewport")
       calculator.updateViewPort(width = 768, height = 1024)
 
       When("the drawCanvasToModelMatrix should have correct element")

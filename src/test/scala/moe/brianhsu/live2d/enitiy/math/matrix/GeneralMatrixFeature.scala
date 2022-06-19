@@ -8,7 +8,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
   Feature("The basic attributes") {
     Scenario("Access the basic attributes") {
-      Given("A general 4x4 matrix with predefined elements")
+      Given("a general 4x4 matrix with predefined elements")
       val matrix = new GeneralMatrix(
         Array(
           0.0f, 0.1f, 0.2f, 0.3f,
@@ -33,7 +33,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
   Feature("Calculate the transformed X value") {
     Scenario("Calculate transformed X") {
-      Given("A matrix that scale X with 1.5")
+      Given("a matrix that scale X with 1.5")
       And("translate X with 2.5")
       val matrix = new GeneralMatrix().scale(xScalar = 1.5f, yScalar = 1.0f).translateX(2.5f)
 
@@ -45,7 +45,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
     Scenario("Invert the transformed X to origin X") {
-      Given("A matrix that scale X with 1.5")
+      Given("a matrix that scale X with 1.5")
       And("translate X with 2.5")
       val matrix = new GeneralMatrix().scale(xScalar = 1.5f, yScalar = 1.0f).translateX(2.5f)
 
@@ -60,7 +60,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
   Feature("Calculate the transformed Y value") {
     Scenario("Calculate transformed X") {
-      Given("A matrix that scale Y with 1.5")
+      Given("a matrix that scale Y with 1.5")
       And("translate Y with 2.5")
       val matrix = new GeneralMatrix().scale(xScalar = 1.0f, yScalar = 1.5f).translateY(2.5f)
 
@@ -72,7 +72,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
     Scenario("Invert the transformed Y to origin Y") {
-      Given("A matrix that scale Y with 1.5")
+      Given("a matrix that scale Y with 1.5")
       And("translate Y with 2.5")
       val matrix = new GeneralMatrix().scale(xScalar = 1.0f, yScalar = 1.5f).translateY(2.5f)
 
@@ -87,7 +87,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
   Feature("Create updated matrix instance") {
     Scenario("Create a matrix by set a new scale rate") {
-      Given("A identity matrix")
+      Given("a identity matrix")
       val matrix = new GeneralMatrix()
 
       When("update it to a matrix with X scale rate 1.5,  Y scale rate 2.5")
@@ -104,7 +104,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
     Scenario("Create a matrix by set a new X offset") {
-      Given("A identity matrix")
+      Given("a identity matrix")
       val matrix = new GeneralMatrix()
 
       When("update it to a matrix X offset = 20")
@@ -118,7 +118,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
     Scenario("Create a matrix by set a Y offset") {
-      Given("A identity matrix")
+      Given("a identity matrix")
       val matrix = new GeneralMatrix()
 
       When("update it to a matrix Y offset = 30")
@@ -132,7 +132,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
     Scenario("Create a matrix by set a new X / Y offset") {
-      Given("A identity matrix")
+      Given("a identity matrix")
       val matrix = new GeneralMatrix()
 
       When("update it to a matrix X offset = 20, Y offset = 30")
@@ -148,7 +148,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
     Scenario("Create a matrix by set offset relative to current matrix") {
-      Given("A matrix with X scalar 1.1, y Scalar 2.2, X offset 3.3, Y offset 4.4")
+      Given("a matrix with X scalar 1.1, y Scalar 2.2, X offset 3.3, Y offset 4.4")
       val matrix = new GeneralMatrix()
         .scale(xScalar = 1.1f, yScalar = 2.2f)
         .translate(xOffset = 3.3f, yOffset = 4.4f)
@@ -174,7 +174,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
     Scenario("Create a matrix by set scalar relative to current matrix") {
-      Given("A matrix with X scalar 1.1, y Scalar 2.2, X offset 3.3, Y offset 4.4")
+      Given("a matrix with X scalar 1.1, y Scalar 2.2, X offset 3.3, Y offset 4.4")
       val matrix = new GeneralMatrix()
         .scale(xScalar = 1.1f, yScalar = 2.2f)
         .translate(xOffset = 3.3f, yOffset = 4.4f)
@@ -203,7 +203,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
   Feature("Multiple with another matrix") {
     Scenario("Multiple by an identity matrix") {
-      Given("An identity matrix")
+      Given("a identity matrix")
       val identityMatrix = new GeneralMatrix()
       And("a normal 4x4 matrix")
       val matrix = new GeneralMatrix(Array(
@@ -226,7 +226,7 @@ class GeneralMatrixFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
     Scenario("Multiple two normal matrix") {
-      Given("Two normal 4x4 matrix")
+      Given("two normal 4x4 matrix")
       val matrix1 = new GeneralMatrix(Array(
         1.1f, 2.2f, 3.3f, 4.4f,
         5.5f, 6.6f, 7.7f, 8.8f,

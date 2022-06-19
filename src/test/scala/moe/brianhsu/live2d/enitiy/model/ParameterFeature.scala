@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Update parameter value with default weight = 1.0") {
     Scenario("The new value is inside [min, max]") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       When("update the value to 15")
@@ -18,7 +18,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The new value is under [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       When("update the value to 5")
@@ -29,7 +29,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The new value is over [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", 10, 20)
 
       When("update the value to 100")
@@ -43,7 +43,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   Feature("Update parameter value with weight = 0.3") {
     Scenario("The new value is inside [min, max]") {
-      Given("A parameter backed by JVM with min=20, max=100")
+      Given("a parameter backed by JVM with min=20, max=100")
       val parameter = new JavaVMParameter("parameterId", min = 20, max = 100)
 
       And("current value is 20")
@@ -58,7 +58,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The new value is under [min] value") {
-      Given("A parameter backed by JVM with min=20, max=100")
+      Given("a parameter backed by JVM with min=20, max=100")
       val parameter = new JavaVMParameter("parameterId", min = 20, max = 100)
 
       And("current value is 30")
@@ -74,7 +74,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The new value is over [min] value") {
-      Given("A parameter backed by JVM with min=20, max=100")
+      Given("a parameter backed by JVM with min=20, max=100")
       val parameter = new JavaVMParameter("parameterId", min = 20, max = 100)
 
       And("current value is 30")
@@ -93,7 +93,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   Feature("Add parameter value with default weight = 1.0") {
     Scenario("The value after addition is inside [min, max]") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -107,7 +107,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The value after addition is under [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -121,7 +121,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The value after addition is over [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -138,7 +138,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   Feature("Add parameter value with weight = 0.3") {
     Scenario("The value after addition is inside [min, max]") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -153,7 +153,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The value after addition is under [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -167,7 +167,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The value after addition is over [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -184,7 +184,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   Feature("Multiply parameter value with default weight = 1.0") {
     Scenario("The value after addition is inside [min, max]") {
-      Given("A parameter backed by JVM with min=10, max=100")
+      Given("a parameter backed by JVM with min=10, max=100")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -198,7 +198,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The value after addition is under [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -212,7 +212,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The value after addition is over [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -229,7 +229,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   Feature("Multiply parameter value with default weight = 0.3") {
     Scenario("The value after addition is inside [min, max]") {
-      Given("A parameter backed by JVM with min=10, max=100")
+      Given("a parameter backed by JVM with min=10, max=100")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -245,7 +245,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The value after addition is under [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")
@@ -261,7 +261,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
 
     Scenario("The value after addition is over [min] value") {
-      Given("A parameter backed by JVM with min=10, max=20")
+      Given("a parameter backed by JVM with min=10, max=20")
       val parameter = new JavaVMParameter("parameterId", min = 10, max = 20)
 
       And("the current value is 15")

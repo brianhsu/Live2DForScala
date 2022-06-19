@@ -16,10 +16,10 @@ import java.io.FileNotFoundException
 class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Inside with OptionValues with TryValues with FilePathMatcher {
   Feature("Read Live2D avatar settings") {
     Scenario("Load from Live 2D json setting folder") {
-      Given("A folder path contains json files for a Live2D avatar model")
+      Given("a folder path contains json files for a Live2D avatar model")
       val folderPath = "src/test/resources/models/Haru"
 
-      When("Load it using JsonSettingsReader")
+      When("load it using JsonSettingsReader")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings = jsonSettingsReader.loadSettings().success.value
 
@@ -44,11 +44,12 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
         )
       }
     }
+
     Scenario("Load physic settings from Avatar folder") {
-      Given("A folder path contains json files for a Live2D avatar model")
+      Given("a folder path contains json files for a Live2D avatar model")
       val folderPath = "src/test/resources/models/Rice"
 
-      When("Load it using JsonSettingsReader")
+      When("load it using JsonSettingsReader")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings = jsonSettingsReader.loadSettings().success.value
 
@@ -125,10 +126,10 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
     }
 
     Scenario("Load model fom a non exist folder") {
-      Given("A folder path that does not exist")
+      Given("a folder path that does not exist")
       val folderPath = "src/test/resources/models/DoNoExist"
 
-      When("Load it with JsonSettingReder")
+      When("load it with JsonSettingReder")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val loadedSettings = jsonSettingsReader.loadSettings()
 
@@ -137,10 +138,10 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
     }
 
     Scenario("Load model fom a folder not containing the main json file") {
-      Given("A folder path that does not have .model3.json")
+      Given("a folder path that does not have .model3.json")
       val folderPath = "src/test/resources/models/corruptedModel/noMainModelJson"
 
-      When("Load it with JsonSettingReder")
+      When("load it with JsonSettingReder")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val loadedSettings = jsonSettingsReader.loadSettings()
 
@@ -149,10 +150,10 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
     }
 
     Scenario("Load model fom a folder not containing the .moc file") {
-      Given("A folder path that does not have .moc file")
+      Given("a folder path that does not have .moc file")
       val folderPath = "src/test/resources/models/corruptedModel/noMocFile"
 
-      When("Load it with JsonSettingReder")
+      When("load it with JsonSettingReder")
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val loadedSettings = jsonSettingsReader.loadSettings()
 

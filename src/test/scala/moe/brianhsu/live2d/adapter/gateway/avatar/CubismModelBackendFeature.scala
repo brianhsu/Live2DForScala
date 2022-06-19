@@ -51,10 +51,10 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
 
   Feature("Reading model information") {
     Scenario("Reading canvas info from model") {
-      Given("A Cubism HaruGreeter Model")
+      Given("a Cubism HaruGreeter Model")
       val model = createModelBackend(modelFile)
 
-      When("Get the canvas info")
+      When("get the canvas info")
       val canvasInfo = model.canvasInfo
 
       Then("it should return the correct canvas info")
@@ -71,10 +71,10 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading parts that has no parent from model") {
-      Given("A Cubism HaruGreeter Model")
+      Given("a Cubism HaruGreeter Model")
       val model = createModelBackend(modelFile)
 
-      When("Get the parts")
+      When("get the parts")
       val parts = model.parts
 
       Then("it should have correct number of parts")
@@ -132,10 +132,10 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading parameters data from model") {
-      Given("A Cubism HaruGreeter Model")
+      Given("a Cubism HaruGreeter Model")
       val model = createModelBackend(modelFile)
 
-      When("Get the parameters")
+      When("get the parameters")
       val parameters = model.parameters
 
       Then("it should have correct number of parameters")
@@ -158,10 +158,10 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("reading drawables from the model") {
-      Given("A Cubism HaruGreeter Model")
+      Given("a Cubism HaruGreeter Model")
       val model = createModelBackend(modelFile)
 
-      When("Get the drawables")
+      When("get the drawables")
       val drawables = model.drawables
 
       Then("the basic information of drawables should be correct")
@@ -266,7 +266,7 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       )
 
       forAll(invalidCombos) { textureFiles =>
-        Given("A Live2D HaruGreeter Model that does not match the information in the model")
+        Given("a Live2D HaruGreeter Model that does not match the information in the model")
         Then("it should throw TextureSizeMismatchException")
         a[TextureSizeMismatchException] should be thrownBy {
           val model = createModelBackend(modelFile, textureFiles)

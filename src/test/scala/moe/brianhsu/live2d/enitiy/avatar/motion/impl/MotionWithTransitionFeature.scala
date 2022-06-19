@@ -15,7 +15,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
   Feature("Delegated to base motion but with modified weight") {
     Scenario("Base motion does not have duration and no fading") {
-      Given("A base Motion without duration and has not fade in / fade out")
+      Given("a base Motion without duration and has not fade in / fade out")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(None)
       (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(0f))
@@ -43,7 +43,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
     }
 
     Scenario("Base motion does not have duration but has fading time") {
-      Given("A base Motion without duration and has fade in / fade out time as 1.5 / 2.0 second")
+      Given("a base Motion without duration and has fade in / fade out time as 1.5 / 2.0 second")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(None)
       (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(1.5f))
@@ -71,7 +71,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
     }
 
     Scenario("Base motion have duration 1 seconds and has fading time") {
-      Given("A base Motion with 1 second duration and has fade in / fade out time as 1.5 / 2.0 second")
+      Given("a base Motion with 1 second duration and has fade in / fade out time as 1.5 / 2.0 second")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
       (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(1.5f))
@@ -128,7 +128,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
   Feature("Finished event and callback handling") {
     Scenario("The motion is not finished") {
-      Given("A base Motion with 1 second duration and has fade in / fade out time as 1.5 / 2.0 second")
+      Given("a base Motion with 1 second duration and has fade in / fade out time as 1.5 / 2.0 second")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
       (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(1.5f))
@@ -147,7 +147,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       When("create a MotionWithTransition based on this motion")
       val transitionMotion = new MotionWithTransition(baseMotion)
 
-      And("Set a event callback")
+      And("set a event callback")
       val mockedCallback = stub[FinishedCallback]
       transitionMotion.finishedCallbackHolder = Some(mockedCallback)
 
@@ -162,7 +162,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
     }
 
     Scenario("The motion is finished and triggered event callback") {
-      Given("A base Motion with 1 second duration and has fade in / fade out time as 1.5 / 2.0 second")
+      Given("a base Motion with 1 second duration and has fade in / fade out time as 1.5 / 2.0 second")
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
       (() => baseMotion.fadeInTimeInSeconds).when().returning(Some(1.5f))
@@ -181,7 +181,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
       When("create a MotionWithTransition based on this motion")
       val transitionMotion = new MotionWithTransition(baseMotion)
 
-      And("Set a event callback")
+      And("set a event callback")
       val mockedCallback = stub[FinishedCallback]
       transitionMotion.finishedCallbackHolder = Some(mockedCallback)
 
@@ -200,7 +200,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
   Feature("Motion event and event callback handling") {
     Scenario("Not fire any events yet") {
-      Given("A base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
+      Given("a base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
       val eventList = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
@@ -224,7 +224,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
     }
 
     Scenario("Fire only first events") {
-      Given("A base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
+      Given("a base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
       val eventList = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
@@ -249,7 +249,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
     }
 
     Scenario("Fire all events") {
-      Given("A base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
+      Given("a base Motion with 1 second duration and has two defined event, at 0.34 and 0.67 seconds")
       val eventList = List(MotionEvent("event1", 0.34f), MotionEvent("event2", 0.67f))
       val baseMotion = stub[Motion]
       (() => baseMotion.durationInSeconds).when().returning(Some(1))
@@ -280,7 +280,7 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
   Feature("Force fade out before planned fade out") {
     Scenario("Set force fade out flag") {
-      Given("A MotionWithTransition")
+      Given("a MotionWithTransition")
       val motionWithTransition = new MotionWithTransition(mock[Motion])
 
       And("the default force fade out flag is false")

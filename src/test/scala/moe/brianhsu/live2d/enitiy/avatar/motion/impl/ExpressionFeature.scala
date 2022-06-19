@@ -14,7 +14,7 @@ class ExpressionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
 
   Feature("Calculate the Expression update operations") {
     Scenario("There is no expression parameters") {
-      When("The passed in expression parameter is an empty list")
+      When("the passed in expression parameter is an empty list")
       val expression = Expression(None, None, Nil)
 
       Then("it should return an empty list at any given time")
@@ -23,8 +23,9 @@ class ExpressionFeature extends AnyFeatureSpec with GivenWhenThen with Matchers 
       expression.calculateOperations(model, 0.66f, 0.33f, 1, -1.0f, 0, None) shouldBe Nil
       expression.calculateOperations(model, 0.99f, 0.33f, 1, -1.0f, 0, None) shouldBe Nil
     }
+
     Scenario("There are expression parameters") {
-      When("The passed in expression contains different blend type")
+      When("the passed in expression contains different blend type")
       val parameters = List(
         Parameter("id1", Add, 0.5f),
         Parameter("id2", Multiply, 0.6f),

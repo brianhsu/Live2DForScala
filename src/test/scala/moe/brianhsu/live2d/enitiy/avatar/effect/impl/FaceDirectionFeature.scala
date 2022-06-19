@@ -14,7 +14,7 @@ class FaceDirectionFeature extends AnyFeatureSpec with GivenWhenThen with Matche
 
   Feature("Calculate the face direction parameter operations") {
     Scenario("Update parameters according to DirectionCalculator") {
-      Given("A mocked direction calculator")
+      Given("a mocked direction calculator")
       val directionCalculator = mock[FaceDirectionCalculator]
 
       (directionCalculator.updateFrameTimeInfo _).expects(1.0f, 33.0f)

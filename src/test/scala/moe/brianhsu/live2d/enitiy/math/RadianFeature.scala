@@ -9,10 +9,10 @@ class RadianFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
 
   Feature("Conversion between different presentation") {
     Scenario("Convert radian to direction") {
-      Given("A radian of Pi/2")
+      Given("a radian of Pi/2")
       val radian = 2 / Math.PI.toFloat
 
-      When("Calculate the direction")
+      When("calculate the direction")
       val direction = Radian.radianToDirection(radian)
 
       Then("the direction should be [0.59448075,0.8041099]")
@@ -20,10 +20,10 @@ class RadianFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
     }
 
     Scenario("Convert degrees to radian") {
-      Given("A 45 degrees")
+      Given("a 45 degrees")
       val degree = 45f
 
-      When("Calculate the radian")
+      When("calculate the radian")
       val radian = Radian.degreesToRadian(degree)
 
       Then("the radian should be (45 / 180) * PI = 0.7853982")

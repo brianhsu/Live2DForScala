@@ -15,7 +15,7 @@ class ModelUpdaterFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       Given("a mocked model do not expect any command")
       val model = mock[Live2DModel]
 
-      And("A ModelUpdater based on that model")
+      And("a ModelUpdater based on that model")
       val strategy = new ModelUpdater(model)
 
       When("executeOperations with empty command list to that model")
@@ -37,7 +37,7 @@ class ModelUpdaterFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       )
       (() => model.parameters).when().returns(mockedParameters)
 
-      And("A ModelUpdater based on that model")
+      And("a ModelUpdater based on that model")
       val updater = new ModelUpdater(model)
 
       When("executeOperations with a operation list to that model")
@@ -71,7 +71,7 @@ class ModelUpdaterFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       (model.parameterWithFallback _).when("id1").returns(mockedParameterId1)
       (model.parameterWithFallback _).when("id2").returns(mockedParameterId2)
 
-      And("A ModelUpdater based on that model")
+      And("a ModelUpdater based on that model")
       val updater = new ModelUpdater(model)
 
       When("executeOperations with a operation list to that model")
@@ -101,7 +101,7 @@ class ModelUpdaterFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val model = stub[Live2DModel]
       (() => model.parts).when().returns(parts)
 
-      And("A ModelUpdater based on that model")
+      And("a ModelUpdater based on that model")
       val updater = new ModelUpdater(model)
 
       When("executeOperations with a operation list to that model")

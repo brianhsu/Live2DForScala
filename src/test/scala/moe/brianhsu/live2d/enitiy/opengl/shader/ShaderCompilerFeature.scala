@@ -24,7 +24,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
         override def readShaderLinkError(programId: Int): Option[String] = None
       }
 
-      When("Link a program")
+      When("link a program")
       val result = compiler.link(programId)
 
       Then("it should be a success and contain the programId")
@@ -43,7 +43,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
         override def readShaderLinkError(programId: Int): Option[String] = Some("Link Error")
       }
 
-      When("Link a program")
+      When("link a program")
       val result = compiler.link(programId)
 
       Then("it should be a failure and contain the exception")
@@ -70,7 +70,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
         override def readShaderCompileError(shaderId: Int): Option[String] = None
       }
 
-      When("Compile a program")
+      When("compile a program")
       val result = compiler.compile(mockedShaderType, "ShaderSourceCode")
 
       Then("it should be a success and contain the shaderId")
@@ -105,7 +105,7 @@ class ShaderCompilerFeature extends AnyFeatureSpec with Matchers with GivenWhenT
         override def readShaderCompileError(shaderId: Int): Option[String] = Some("Shader Compile Error")
       }
 
-      When("Compile a program")
+      When("compile a program")
       val result = compiler.compile(mockedShaderType, "ShaderSourceCode")
 
       Then("it should be a failure and contain the exception")
