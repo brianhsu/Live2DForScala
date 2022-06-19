@@ -28,7 +28,7 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
     None
   }
 
-  var offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => new OffscreenFrame(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
+  var offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => OffscreenFrame.getInstance(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
 
   def getProjection: Option[GeneralMatrix] = projection
   def getClippingContextBufferForDraw: Option[ClippingContext] = clippingContextBufferForDraw

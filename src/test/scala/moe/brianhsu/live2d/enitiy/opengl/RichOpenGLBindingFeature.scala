@@ -41,11 +41,11 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
       Then("these two wrapping should be different instance")
       thisWrap should not be theSameInstanceAs (thatWrap)
     }
-
   }
+
   Feature("Read OpenGL parameter") {
     Scenario("Read integer parameter") {
-      Given("A RichOpenGL with a stubbed OpenGL binding")
+      Given("a RichOpenGL with a stubbed OpenGL binding")
       val binding = createOpenGLStub()
       val richOpenGL = new RichOpenGLBinding(binding)
 
@@ -64,7 +64,7 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
     }
 
     Scenario("Read boolean parameter") {
-      Given("A RichOpenGL with a stubbed OpenGL binding")
+      Given("a RichOpenGL with a stubbed OpenGL binding")
       val binding = createOpenGLStub()
       val richOpenGL = new RichOpenGLBinding(binding)
 
@@ -79,27 +79,27 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
   Feature("Enable / Disable capability") {
 
     Scenario("Enable capability") {
-      Given("A RichOpenGL with a stubbed OpenGL binding")
+      Given("a RichOpenGL with a stubbed OpenGL binding")
       val binding = createOpenGLStub()
       val richOpenGL = new RichOpenGLBinding(binding)
 
-      When("Enable an OpenGL capability")
+      When("enable an OpenGL capability")
       richOpenGL.setCapabilityEnabled(GL_CULL_FACE, isEnabled = true)
 
-      Then("The stubbed OpenGL binding should be called with glEnable")
+      Then("the stubbed OpenGL binding should be called with glEnable")
       (binding.glEnable _).verify(GL_CULL_FACE).once()
       (binding.glDisable _).verify(*).never()
     }
 
     Scenario("Disable capability") {
-      Given("A RichOpenGL with a stubbed OpenGL binding")
+      Given("a RichOpenGL with a stubbed OpenGL binding")
       val binding = createOpenGLStub()
       val richOpenGL = new RichOpenGLBinding(binding)
 
-      When("Enable an OpenGL capability")
+      When("enable an OpenGL capability")
       richOpenGL.setCapabilityEnabled(GL_CULL_FACE, isEnabled = false)
 
-      Then("The stubbed OpenGL binding should be called with glDisable")
+      Then("the stubbed OpenGL binding should be called with glDisable")
       (binding.glDisable _).verify(GL_CULL_FACE).once()
       (binding.glEnable _).verify(*).never()
     }
@@ -120,14 +120,14 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
 
       Scenario(s"Writing color writing mask = $mask") {
 
-        Given("A RichOpenGL with a stubbed OpenGL binding")
+        Given("a RichOpenGL with a stubbed OpenGL binding")
         val binding = createOpenGLStub()
         val richOpenGL = new RichOpenGLBinding(binding)
 
         When(s"update the color writing mask = $mask")
         richOpenGL.colorWriteMask = mask
 
-        Then("The stubbed OpenGL binding should call glColorMask with correct values")
+        Then("the stubbed OpenGL binding should call glColorMask with correct values")
         (binding.glColorMask _).verify(mask.red, mask.green, mask.blue, mask.alpha).once()
       }
 
@@ -144,7 +144,7 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
       )
 
       forAll(table) { case (red, green, blue, alpha, expectedResult) =>
-        Given("A RichOpenGL with a stubbed OpenGL binding")
+        Given("a RichOpenGL with a stubbed OpenGL binding")
         val binding = createOpenGLStub()
         val richOpenGL = new RichOpenGLBinding(binding)
 
@@ -155,10 +155,10 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
           buffer(3) = alpha.toByte
         }
 
-        When("Read color writing mask")
+        When("read color writing mask")
         val writingMask = richOpenGL.colorWriteMask
 
-        Then("It should have correct value")
+        Then("it should have correct value")
         writingMask shouldBe expectedResult
 
       }
@@ -177,11 +177,11 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
       )
 
       forAll(testData) { (dataAtIndex0, dataAtIndex1, dataAtIndex2, dataAtIndex3, expectedResult) =>
-        Given("A RichOpenGL with a stubbed OpenGL binding")
+        Given("a RichOpenGL with a stubbed OpenGL binding")
         val binding = createOpenGLStub()
         val richOpenGL = new RichOpenGLBinding(binding)
 
-        And(s"The binding will write the following data: $dataAtIndex0, $dataAtIndex1, $dataAtIndex2, $dataAtIndex3")
+        And(s"the binding will write the following data: $dataAtIndex0, $dataAtIndex1, $dataAtIndex2, $dataAtIndex3")
         addDummyVertexAttribute(binding, 0, dataAtIndex0)
         addDummyVertexAttribute(binding, 1, dataAtIndex1)
         addDummyVertexAttribute(binding, 2, dataAtIndex2)
@@ -198,7 +198,7 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
 
     Scenario("Update vertex attribute") {
       noException shouldBe thrownBy {
-        Given("A RichOpenGL with a mocked OpenGL binding")
+        Given("a RichOpenGL with a mocked OpenGL binding")
         val binding = createOpenGLMock()
         val richOpenGL = new RichOpenGLBinding(binding)
 
@@ -221,11 +221,11 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
 
   Feature("Read / update view port") {
     Scenario("Read view port") {
-      Given("A RichOpenGL with a stubbed OpenGL binding")
+      Given("a RichOpenGL with a stubbed OpenGL binding")
       val binding = createOpenGLStub()
       val richOpenGL = new RichOpenGLBinding(binding)
 
-      And("The binding will write the following data")
+      And("the binding will write the following data")
       (binding.glGetIntegerv: (Int, Array[Int]) => Unit)
         .when(GL_VIEWPORT, *)
         .onCall { (_, buffer) =>
@@ -235,19 +235,19 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
           buffer(3) = 678
         }
 
-      When("Read view port through RichOpenGL binding")
+      When("read view port through RichOpenGL binding")
       val viewPort = richOpenGL.viewPort
 
-      Then("The viewPort should be correct")
+      Then("the viewPort should be correct")
       viewPort shouldBe ViewPort(123, 234, 456, 678)
     }
 
     Scenario("Update view port") {
-      Given("A RichOpenGL with a stubbed OpenGL binding")
+      Given("a RichOpenGL with a stubbed OpenGL binding")
       val binding = createOpenGLStub()
       val richOpenGL = new RichOpenGLBinding(binding)
 
-      When("Update view port through RichOpenGL binding")
+      When("update view port through RichOpenGL binding")
       richOpenGL.viewPort = ViewPort(123, 456, 789, 987)
 
       Then("the stubbed OpenGL binding should update view port")
@@ -329,6 +329,133 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
       }
 
     }
+  }
+
+  Feature("Generate frame buffers") {
+    Scenario("Intended to generate less than 1 frame buffers") {
+      val testData = Table(
+        "count",
+        0,
+        -1,
+        -2
+      )
+
+      forAll(testData) { count =>
+        Given("a RichOpenGL with a stubbed OpenGL binding")
+        val binding = createOpenGLStub()
+        val richOpenGL = new RichOpenGLBinding(binding)
+
+        When(s"generate $count frame buffers")
+        Then("it should throw IllegalArgumentException")
+        an[IllegalArgumentException] shouldBe thrownBy {
+          richOpenGL.generateFrameBuffers(count)
+        }
+      }
+    }
+
+    Scenario("OpenGL does not return enough frame buffer ids") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      And("the OpenGL binding only generate 1 framebuffer id when request 3")
+      (binding.glGenFramebuffers _).when(3, *)
+        .onCall { (_, buffer) =>
+          buffer(0) = 1
+          buffer(1) = 0
+          buffer(2) = 0
+        }
+
+      When("request RichOpenGL binding to generate 3 frame buffers")
+      Then("it should throw a RuntimeException")
+      an[RuntimeException] should be thrownBy {
+        richOpenGL.generateFrameBuffers(3)
+      }
+    }
+
+    Scenario("Successfully generate all frame buffers") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      And("the OpenGL binding generate 3 framebuffer ids when request 3")
+      (binding.glGenFramebuffers _).when(3, *)
+        .onCall { (_, buffer) =>
+          buffer(0) = 1
+          buffer(1) = 2
+          buffer(2) = 3
+        }
+
+      When("request RichOpenGL binding to generate 3 frame buffers")
+      val frameBuffersIds = richOpenGL.generateFrameBuffers(3)
+
+      Then("the return value should contains correct ids")
+      frameBuffersIds should contain theSameElementsInOrderAs List(1, 2, 3)
+    }
+  }
+
+  Feature("Generate textures") {
+    Scenario("Intended to generate less than 1 textures") {
+      val testData = Table(
+        "count",
+        0,
+        -1,
+        -2
+      )
+
+      forAll(testData) { count =>
+        Given("a RichOpenGL with a stubbed OpenGL binding")
+        val binding = createOpenGLStub()
+        val richOpenGL = new RichOpenGLBinding(binding)
+
+        When(s"generate $count textures")
+        Then("it should throw IllegalArgumentException")
+        an[IllegalArgumentException] shouldBe thrownBy {
+          richOpenGL.generateTextures(count)
+        }
+      }
+    }
+
+    Scenario("OpenGL does not return enough texture ids") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      And("the OpenGL binding only generate 1 texture id when request 3")
+      (binding.glGenTextures _).when(3, *)
+        .onCall { (_, buffer) =>
+          buffer(0) = 1
+          buffer(1) = 0
+          buffer(2) = 0
+        }
+
+      When("request RichOpenGL binding to generate 3 textures")
+      Then("it should throw a RuntimeException")
+      an[RuntimeException] should be thrownBy {
+        richOpenGL.generateTextures(3)
+      }
+    }
+
+    Scenario("Successfully generate all textures") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      And("the OpenGL binding generate 3 texture ids when request 3")
+      (binding.glGenTextures _).when(3, *)
+        .onCall { (_, buffer) =>
+          buffer(0) = 1
+          buffer(1) = 2
+          buffer(2) = 3
+        }
+
+      When("request RichOpenGL binding to generate 3 textures")
+      val textureIds = richOpenGL.generateTextures(3)
+
+      Then("the return ids should contains correct ids")
+      textureIds should contain theSameElementsInOrderAs List(1, 2, 3)
+    }
+
   }
 
   private def addDummyIntegerVariable(binding: OpenGLBinding, pname: Int, offset: Int, value: Int): Unit = {
