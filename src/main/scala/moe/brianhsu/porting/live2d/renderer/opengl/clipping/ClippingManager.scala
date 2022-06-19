@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
-import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ViewPort, wrapOpenGLBinding}
+import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.ViewPort
 import moe.brianhsu.live2d.usecase.renderer.texture.TextureManager
 import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 

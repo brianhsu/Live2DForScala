@@ -1,13 +1,12 @@
-package moe.brianhsu.porting
+package moe.brianhsu.live2d.usecase.renderer.opengl
 
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{BlendFunction, ColorWriteMask, ViewPort}
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
-import moe.brianhsu.porting.live2d.renderer.opengl.Profile
 import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, Inside, OptionValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{GivenWhenThen, Inside, OptionValues}
 
 import scala.reflect.runtime.universe._
 
@@ -108,21 +107,25 @@ class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen wit
 
       And("the OpenGL binding return some value for various parameters")
       import binding.constants._
-      addDummyIntOpenGLParameter(richOpenGLBinding, GL_ARRAY_BUFFER_BINDING, 1)
-      addDummyIntOpenGLParameter(richOpenGLBinding, GL_ELEMENT_ARRAY_BUFFER_BINDING, 2)
-      addDummyIntOpenGLParameter(richOpenGLBinding, GL_CURRENT_PROGRAM, 3)
-      addDummyIntOpenGLParameter(richOpenGLBinding, GL_ACTIVE_TEXTURE, 4)
-      (richOpenGLBinding.textureBinding2D _).when(GL_TEXTURE0).returns(5)
-      (richOpenGLBinding.textureBinding2D _).when(GL_TEXTURE1).returns(6)
-      (() => richOpenGLBinding.vertexAttributes).when().returns(Array(true, false, true, false))
+      val vertexAttributes = Array(true, false, true, false)
+      val colorWriteMask = ColorWriteMask(red = true, green = false, blue = true, alpha = false)
+      val blendFunction = BlendFunction(12, 34, 56, 78)
+
+      addDummyIntOpenGLParameter(richOpenGLBinding, GL_CURRENT_PROGRAM, 1)
+      (() => richOpenGLBinding.vertexAttributes).when().returns(vertexAttributes)
       (binding.glIsEnabled _).when(GL_SCISSOR_TEST).returns(true)
       (binding.glIsEnabled _).when(GL_STENCIL_TEST).returns(false)
       (binding.glIsEnabled _).when(GL_DEPTH_TEST).returns(true)
       (binding.glIsEnabled _).when(GL_CULL_FACE).returns(false)
       (binding.glIsEnabled _).when(GL_BLEND).returns(true)
-      addDummyIntOpenGLParameter(richOpenGLBinding, GL_FRONT_FACE, 7)
-      (() => richOpenGLBinding.colorWriteMask).when().returns(ColorWriteMask(red = true, green = false, blue = true, alpha = false))
-      (() => richOpenGLBinding.blendFunction).when().returns(BlendFunction(12, 34, 56, 78))
+      addDummyIntOpenGLParameter(richOpenGLBinding, GL_FRONT_FACE, 2)
+      (() => richOpenGLBinding.colorWriteMask).when().returns(colorWriteMask)
+      addDummyIntOpenGLParameter(richOpenGLBinding, GL_ARRAY_BUFFER_BINDING, 3)
+      addDummyIntOpenGLParameter(richOpenGLBinding, GL_ELEMENT_ARRAY_BUFFER_BINDING, 4)
+      (richOpenGLBinding.textureBinding2D _).when(GL_TEXTURE0).returns(5)
+      (richOpenGLBinding.textureBinding2D _).when(GL_TEXTURE1).returns(6)
+      addDummyIntOpenGLParameter(richOpenGLBinding, GL_ACTIVE_TEXTURE, 7)
+      (() => richOpenGLBinding.blendFunction).when().returns(blendFunction)
 
       And("save the profile")
       profile.save()
@@ -132,7 +135,26 @@ class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen wit
 
       Then("it should call the following method to restore profile")
       inSequence {
-        (binding.glUseProgram _).verify(3).once()
+        (binding.glUseProgram _).verify(1).once()
+        (richOpenGLBinding.vertexAttributes_= _).verify(vertexAttributes).once()
+
+        (richOpenGLBinding.setCapabilityEnabled _).verify(GL_SCISSOR_TEST, true).once()
+        (richOpenGLBinding.setCapabilityEnabled _).verify(GL_STENCIL_TEST, false).once()
+        (richOpenGLBinding.setCapabilityEnabled _).verify(GL_DEPTH_TEST, true).once()
+        (richOpenGLBinding.setCapabilityEnabled _).verify(GL_CULL_FACE, false).once()
+        (richOpenGLBinding.setCapabilityEnabled _).verify(GL_BLEND, true).once()
+
+        (binding.glFrontFace _).verify(2).once()
+        (richOpenGLBinding.colorWriteMask_= _).verify(colorWriteMask).once()
+
+        (binding.glBindBuffer _).verify(GL_ARRAY_BUFFER, 3).once()
+        (binding.glBindBuffer _).verify(GL_ELEMENT_ARRAY_BUFFER, 4).once()
+
+        (richOpenGLBinding.activeAndBinding2DTexture _).verify(GL_TEXTURE0, 5).once()
+        (richOpenGLBinding.activeAndBinding2DTexture _).verify(GL_TEXTURE1, 6).once()
+        (binding.glActiveTexture _).verify(7).once()
+        (richOpenGLBinding.blendFunction_= _).verify(blendFunction).once()
+
       }
     }
 

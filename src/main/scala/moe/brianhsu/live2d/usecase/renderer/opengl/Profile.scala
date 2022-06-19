@@ -1,7 +1,7 @@
-package moe.brianhsu.porting.live2d.renderer.opengl
+package moe.brianhsu.live2d.usecase.renderer.opengl
 
-import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding._
+import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 
 object Profile {
   private var profile: Map[OpenGLBinding, Profile] = Map.empty
@@ -22,14 +22,8 @@ object Profile {
 class Profile (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
 
   import gl.constants._
-
-  private var lastArrayBufferBinding: Int = 0
-  private var lastElementArrayBufferBinding: Int = 0
   private var lastProgram: Int = 0
-  private var lastTexture0Binding2D: Int = 0
-  private var lastTexture1Binding2D: Int = 0
   private var lastVertexAttributes: Array[Boolean] = new Array[Boolean](4)
-  private var lastActiveTexture: Int = 0
   private var lastScissorTest: Boolean = false
   private var lastStencilTest: Boolean = false
   private var lastDepthTest: Boolean = false
@@ -37,6 +31,12 @@ class Profile (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => R
   private var lastBlend: Boolean = false
   private var lastFrontFace: Int = 0
   private var lastColorWriteMask: ColorWriteMask = _
+
+  private var lastArrayBufferBinding: Int = 0
+  private var lastElementArrayBufferBinding: Int = 0
+  private var lastTexture0Binding2D: Int = 0
+  private var lastTexture1Binding2D: Int = 0
+  private var lastActiveTexture: Int = 0
   private var lastBlending: BlendFunction = _
   private var isSaved: Boolean = false
 
@@ -44,14 +44,8 @@ class Profile (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => R
   var lastViewPort: ViewPort = _
 
   def save(): Unit = {
-    lastArrayBufferBinding = gl.openGLParameters[Int](GL_ARRAY_BUFFER_BINDING)
-    lastElementArrayBufferBinding = gl.openGLParameters[Int](GL_ELEMENT_ARRAY_BUFFER_BINDING)
     lastProgram = gl.openGLParameters[Int](GL_CURRENT_PROGRAM)
-    lastActiveTexture = gl.openGLParameters[Int](GL_ACTIVE_TEXTURE)
-    lastTexture0Binding2D = gl.textureBinding2D(GL_TEXTURE0)
-    lastTexture1Binding2D = gl.textureBinding2D(GL_TEXTURE1)
     lastVertexAttributes = gl.vertexAttributes
-
     lastScissorTest = gl.glIsEnabled(GL_SCISSOR_TEST)
     lastStencilTest = gl.glIsEnabled(GL_STENCIL_TEST)
     lastDepthTest = gl.glIsEnabled(GL_DEPTH_TEST)
@@ -59,6 +53,12 @@ class Profile (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => R
     lastBlend = gl.glIsEnabled(GL_BLEND)
     lastFrontFace = gl.openGLParameters[Int](GL_FRONT_FACE)
     lastColorWriteMask = gl.colorWriteMask
+    lastArrayBufferBinding = gl.openGLParameters[Int](GL_ARRAY_BUFFER_BINDING)
+    lastElementArrayBufferBinding = gl.openGLParameters[Int](GL_ELEMENT_ARRAY_BUFFER_BINDING)
+    lastTexture1Binding2D = gl.textureBinding2D(GL_TEXTURE1)
+    lastTexture0Binding2D = gl.textureBinding2D(GL_TEXTURE0)
+    lastActiveTexture = gl.openGLParameters[Int](GL_ACTIVE_TEXTURE)
+
     lastBlending = gl.blendFunction
 
     lastFrameBufferBinding = gl.openGLParameters[Int](GL_FRAMEBUFFER_BINDING)
@@ -86,10 +86,10 @@ class Profile (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => R
     gl.glBindBuffer(GL_ARRAY_BUFFER, lastArrayBufferBinding)
     gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lastElementArrayBufferBinding)
 
-    gl.activeAndBinding2DTexture(GL_TEXTURE1, lastTexture1Binding2D)
     gl.activeAndBinding2DTexture(GL_TEXTURE0, lastTexture0Binding2D)
-
+    gl.activeAndBinding2DTexture(GL_TEXTURE1, lastTexture1Binding2D)
     gl.glActiveTexture(lastActiveTexture)
+
     gl.blendFunction = lastBlending
   }
 
