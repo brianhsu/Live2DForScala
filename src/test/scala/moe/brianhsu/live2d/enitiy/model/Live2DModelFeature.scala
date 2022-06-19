@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.math.matrix.ModelMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, Inside, ScalaTestVersion}
+import org.scalatest.{GivenWhenThen, Inside}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks

@@ -2,11 +2,19 @@ package moe.brianhsu.live2d.enitiy.opengl
 
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{BlendFunction, ColorWriteMask, ViewPort}
 
-import scala.language.implicitConversions
 import reflect.runtime.universe._
 
 object RichOpenGLBinding {
-  implicit def fromOpenGLBinding(binding: OpenGLBinding) = new RichOpenGLBinding(binding)
+  private var wrapper: Map[OpenGLBinding, RichOpenGLBinding] = Map.empty
+
+  def wrapOpenGLBinding(binding: OpenGLBinding): RichOpenGLBinding = {
+    wrapper.get(binding) match {
+      case Some(wrapper) => wrapper
+      case None =>
+        wrapper += (binding -> new RichOpenGLBinding(binding))
+        wrapper(binding)
+    }
+  }
 
   case class BlendFunction(sourceRGB: Int, destRGB: Int, sourceAlpha: Int, destAlpha: Int)
   case class ColorWriteMask(red: Boolean, green: Boolean, blue: Boolean, alpha: Boolean)
@@ -16,12 +24,28 @@ object RichOpenGLBinding {
 class RichOpenGLBinding(binding: OpenGLBinding) {
   import binding.constants._
 
+  private val intBuffer: Array[Int] = new Array[Int](10)
+  private val byteBuffer: Array[Byte] = new Array[Byte](10)
+  private val booleanBuffer: Array[Boolean] = new Array[Boolean](4)
+
+  private def clearIntBuffer(): Unit = {
+    intBuffer.indices.foreach(intBuffer(_) = 0)
+  }
+
+  private def clearByteBuffer(): Unit = {
+    byteBuffer.indices.foreach(byteBuffer(_) = 0)
+  }
+
+  private def clearBooleanBuffer(): Unit = {
+    booleanBuffer.indices.foreach(booleanBuffer(_) = false)
+  }
+
   def openGLParameters[T: TypeTag](pname: Int): T = {
+    clearIntBuffer()
     pname match {
       case _ if typeOf[T] <:< typeOf[Int] =>
-        val pointer = new Array[Int](1)
-        binding.glGetIntegerv(pname, pointer, 0)
-        pointer(0).asInstanceOf[T]
+        binding.glGetIntegerv(pname, intBuffer, 0)
+        intBuffer(0).asInstanceOf[T]
       case _  =>
         throw new Exception("Unknown Type")
     }
@@ -39,14 +63,14 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
 
 
   def blendFunction: BlendFunction = {
-    val buffer = new Array[Int](4)
+    clearIntBuffer()
 
-    binding.glGetIntegerv(GL_BLEND_SRC_RGB, buffer, 0)
-    binding.glGetIntegerv(GL_BLEND_DST_RGB, buffer, 1)
-    binding.glGetIntegerv(GL_BLEND_SRC_ALPHA, buffer, 2)
-    binding.glGetIntegerv(GL_BLEND_DST_ALPHA, buffer, 3)
+    binding.glGetIntegerv(GL_BLEND_SRC_RGB, intBuffer, 0)
+    binding.glGetIntegerv(GL_BLEND_DST_RGB, intBuffer, 1)
+    binding.glGetIntegerv(GL_BLEND_SRC_ALPHA, intBuffer, 2)
+    binding.glGetIntegerv(GL_BLEND_DST_ALPHA, intBuffer, 3)
 
-    BlendFunction(buffer(0), buffer(1), buffer(2), buffer(3))
+    BlendFunction(intBuffer(0), intBuffer(1), intBuffer(2), intBuffer(3))
   }
 
   def blendFunction_=(blendFunction: BlendFunction): Unit = {
@@ -59,9 +83,10 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
   }
 
   def viewPort: ViewPort = {
-    val buffer: Array[Int] = new Array(4)
-    binding.glGetIntegerv(GL_VIEWPORT, buffer)
-    ViewPort(buffer(0), buffer(1), buffer(2), buffer(3))
+    clearIntBuffer()
+
+    binding.glGetIntegerv(GL_VIEWPORT, intBuffer)
+    ViewPort(intBuffer(0), intBuffer(1), intBuffer(2), intBuffer(3))
   }
 
   def viewPort_=(viewPort: ViewPort): Unit = {
@@ -72,11 +97,16 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
   }
 
   def vertexAttributes: Array[Boolean] = {
-    val temp = new Array[Int](4)
-    for (i <- temp.indices) {
-      binding.glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, temp, i)
+    clearIntBuffer()
+    clearBooleanBuffer()
+    val attributeCount = 4
+
+    for (i <- 0 until attributeCount) {
+      binding.glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, intBuffer, i)
+      booleanBuffer(i) = intBuffer(i) == GL_TRUE
     }
-    temp.map(_ == GL_TRUE)
+
+    booleanBuffer
   }
 
   def vertexAttributes_=(buffer: Array[Boolean]): Unit = {
@@ -89,7 +119,7 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     }
   }
 
-  def colorWriteMask_=(colorWriteMask: ColorWriteMask) = {
+  def colorWriteMask_=(colorWriteMask: ColorWriteMask): Unit = {
     binding.glColorMask(
       colorWriteMask.red, colorWriteMask.green,
       colorWriteMask.blue, colorWriteMask.alpha
@@ -97,11 +127,11 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
   }
 
   def colorWriteMask: ColorWriteMask = {
-    val colorMask: Array[Byte] = new Array(4)
-    binding.glGetBooleanv(GL_COLOR_WRITEMASK, colorMask)
+    clearByteBuffer()
+    binding.glGetBooleanv(GL_COLOR_WRITEMASK, byteBuffer)
     ColorWriteMask(
-      colorMask(0) == GL_TRUE, colorMask(1) == GL_TRUE,
-      colorMask(2) == GL_TRUE, colorMask(3) == GL_TRUE
+      byteBuffer(0) == GL_TRUE, byteBuffer(1) == GL_TRUE,
+      byteBuffer(2) == GL_TRUE, byteBuffer(3) == GL_TRUE
     )
   }
 

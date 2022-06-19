@@ -4,8 +4,8 @@ import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ViewPort, fromOpenGLBinding}
+import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
+import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ViewPort, wrapOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.texture.TextureManager
 import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 
@@ -162,7 +162,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
       // --- 後処理 ---
       renderer.offscreenBufferHolder.foreach(_.endDraw())
       renderer.setClippingContextBufferForMask(None)
-      gl.viewPort = lastViewport
+      RichOpenGLBinding.wrapOpenGLBinding(gl).viewPort = lastViewport
     }
   }
 }

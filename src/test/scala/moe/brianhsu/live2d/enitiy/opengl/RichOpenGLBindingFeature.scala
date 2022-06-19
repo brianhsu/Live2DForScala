@@ -12,6 +12,37 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory
                                with OpenGLMock with TableDrivenPropertyChecks {
 
+  Feature("Singleton by OpenGL binding") {
+    Scenario("Get instance with same OpenGL binding") {
+      Given("a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+
+      When("create a wrap from that binding")
+      val thisWrap = RichOpenGLBinding.wrapOpenGLBinding(binding)
+
+      And("create another wrap from that binding again")
+      val thatWrap = RichOpenGLBinding.wrapOpenGLBinding(binding)
+
+      Then("these two wrapping should be same instance")
+      thisWrap should be theSameInstanceAs thatWrap
+    }
+
+    Scenario("Get instance with different OpenGL binding") {
+      Given("a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+
+      When("create a wrap from that binding")
+      val thisWrap = RichOpenGLBinding.wrapOpenGLBinding(binding)
+
+      And("create another wrap from another binding")
+      val anotherBinding = createOpenGLStub()
+      val thatWrap = RichOpenGLBinding.wrapOpenGLBinding(anotherBinding)
+
+      Then("these two wrapping should be different instance")
+      thisWrap should not be theSameInstanceAs (thatWrap)
+    }
+
+  }
   Feature("Read OpenGL parameter") {
     Scenario("Read integer parameter") {
       Given("A RichOpenGL with a stubbed OpenGL binding")

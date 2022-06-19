@@ -103,7 +103,7 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
   def drawModel(): Unit = {
     clippingManagerHolder.foreach { manager =>
       preDraw()
-      manager.setupClippingContext(this, profile.lastFrameBufferBinding.get, profile.lastViewPort.get)
+      manager.setupClippingContext(this, profile.lastFrameBufferBinding, profile.lastViewPort)
     }
 
     preDraw()
