@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.usecase.renderer.texture
+package moe.brianhsu.live2d.usecase.renderer.opengl.texture
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
@@ -24,7 +24,7 @@ object TextureManager {
 
 class TextureManager private[texture] (implicit gl: OpenGLBinding) {
 
-  import gl._
+  import gl.constants._
 
   case class ImageBitmap(width: Int, height: Int, bitmap: ByteBuffer)
 

@@ -2,13 +2,15 @@ name := "Live2D Cubism For Scala"
 
 organization := "moe.brianhsu.live2d"
 
-scalaVersion := "2.13.5"
+scalaVersion := "2.13.8"
 
-scalacOptions := Seq("-deprecation", "-Ywarn-unused")
-
-//scalacOptions := Seq("-deprecation")
+scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
 
 Compile / doc / scalacOptions ++= Seq("-private")
+
+Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-h", "target/test-reports-html")
+
+//javaOptions ++= Seq("-XX:+PrintGC")
 
 autoAPIMappings := true
 
@@ -52,8 +54,10 @@ libraryDependencies ++= lwjglNatives
 libraryDependencies ++= testFramework
 
 libraryDependencies ++= Seq(
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "net.java.dev.jna" % "jna" % "5.10.0",
     "org.json4s" %% "json4s-native" % "4.0.4",
+    "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test
 //    "org.jogamp.gluegen" % "gluegen-rt" % "2.3.2",
 //    "org.jogamp.gluegen" % "gluegen-rt-main" % "2.3.2",
 //    "org.jogamp.jogl" % "jogl-all" % "2.3.2",

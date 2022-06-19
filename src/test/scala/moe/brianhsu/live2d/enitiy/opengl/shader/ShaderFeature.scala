@@ -2,6 +2,7 @@ package moe.brianhsu.live2d.enitiy.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.exception.{ShaderCompileException, ShaderLinkException}
+import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -9,7 +10,8 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.util.{Failure, Success}
 
-class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory {
+class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
+                    with MockFactory with OpenGLMock {
 
   Feature("Create Shader") {
     Scenario("Compile and Link successfully") {
@@ -26,12 +28,8 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       val mockedFragmentSource = "FragmentSourceCode"
 
       And("stubbed OpenGL binding based on that")
-      val GL_VERTEX_SHADER = 678
-      val GL_FRAGMENT_SHADER = 789
-      val gl = stub[OpenGLBinding]
-
-      (() => gl.GL_VERTEX_SHADER).when().returns(GL_VERTEX_SHADER)
-      (() => gl.GL_FRAGMENT_SHADER).when().returns(GL_FRAGMENT_SHADER)
+      val gl = createOpenGLStub()
+      import gl.constants._
 
       (() => gl.glCreateProgram()).when().returns(mockedProgramId)
       (compiler.compile _).when(GL_VERTEX_SHADER, mockedVertexSource).returns(Success(mockedVertexShaderId))
@@ -88,13 +86,10 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       val mockedFragmentSource = "FragmentSourceCode"
 
       And("stubbed OpenGL binding based on that")
-      val GL_VERTEX_SHADER = 678
-      val GL_FRAGMENT_SHADER = 789
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
       val mockedException = new ShaderCompileException(mockedVertexShaderId, "Cannot compile vertex")
 
-      (() => gl.GL_VERTEX_SHADER).when().returns(GL_VERTEX_SHADER)
-      (() => gl.GL_FRAGMENT_SHADER).when().returns(GL_FRAGMENT_SHADER)
+      import gl.constants._
 
       (() => gl.glCreateProgram()).when().returns(mockedProgramId)
       (compiler.compile _).when(GL_VERTEX_SHADER, mockedVertexSource).returns(Failure(mockedException))
@@ -127,13 +122,9 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       val mockedFragmentSource = "FragmentSourceCode"
 
       And("stubbed OpenGL binding based on that")
-      val GL_VERTEX_SHADER = 678
-      val GL_FRAGMENT_SHADER = 789
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
       val mockedException = new ShaderCompileException(mockedFragmentShaderId, "Cannot compile fragment")
-
-      (() => gl.GL_VERTEX_SHADER).when().returns(GL_VERTEX_SHADER)
-      (() => gl.GL_FRAGMENT_SHADER).when().returns(GL_FRAGMENT_SHADER)
+      import gl.constants._
 
       (() => gl.glCreateProgram()).when().returns(mockedProgramId)
       (compiler.compile _).when(GL_VERTEX_SHADER, mockedVertexSource).returns(Success(mockedVertexShaderId))
@@ -166,13 +157,10 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       val mockedFragmentSource = "FragmentSourceCode"
 
       And("stubbed OpenGL binding based on that")
-      val GL_VERTEX_SHADER = 678
-      val GL_FRAGMENT_SHADER = 789
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
       val mockedException = new ShaderLinkException(mockedProgramId, "Cannot link program")
 
-      (() => gl.GL_VERTEX_SHADER).when().returns(GL_VERTEX_SHADER)
-      (() => gl.GL_FRAGMENT_SHADER).when().returns(GL_FRAGMENT_SHADER)
+      import gl.constants._
 
       (() => gl.glCreateProgram()).when().returns(mockedProgramId)
       (compiler.compile _).when(GL_VERTEX_SHADER, mockedVertexSource).returns(Success(mockedVertexShaderId))
@@ -199,7 +187,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       val mockedProgramId = 123
 
       And("An stubbed OpenGL binding")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
 
       And("a dummy Shader")
       val shader = createDummyShader(mockedProgramId, gl)
@@ -219,7 +207,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       val mockedPositionLocation = 456
 
       And("An stubbed OpenGL binding")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
       (gl.glGetAttribLocation _).when(mockedProgramId, "position").returns(mockedPositionLocation)
 
       And("a dummy Shader")
@@ -238,7 +226,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       val mockedUvLocation = 234
 
       And("An stubbed OpenGL binding")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
       (gl.glGetAttribLocation _).when(mockedProgramId, "uv").returns(mockedUvLocation)
 
       And("a dummy Shader")
@@ -257,7 +245,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       val mockedTextureLocation = 789
 
       And("An stubbed OpenGL binding")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
       (gl.glGetUniformLocation _).when(mockedProgramId, "texture").returns(mockedTextureLocation)
 
       And("a dummy Shader")
@@ -276,7 +264,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       val mockedBaseColorLocation = 890
 
       And("An stubbed OpenGL binding")
-      val gl = stub[OpenGLBinding]
+      val gl = createOpenGLStub()
       (gl.glGetUniformLocation _).when(mockedProgramId, "baseColor").returns(mockedBaseColorLocation)
 
       And("a dummy Shader")
@@ -294,7 +282,7 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
   private def createDummyShader(mockedProgramId: Int, openGLBinding: OpenGLBinding) = {
     new Shader(openGLBinding) {
       override val programId: Int = mockedProgramId
-      override def createShaderProgram() = mockedProgramId
+      override def createShaderProgram(): Int = mockedProgramId
       override protected def vertexShaderSource: String = ""
       override protected def fragmentShaderSource: String = ""
     }

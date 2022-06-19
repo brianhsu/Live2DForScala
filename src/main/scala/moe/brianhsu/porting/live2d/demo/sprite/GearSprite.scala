@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.demo.sprite
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.texture.TextureInfo
+import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureInfo
 
 class GearSprite(canvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo, shader: SpriteShader)
                 (implicit private val gl: OpenGLBinding) extends LAppSprite(canvasInfo, textureInfo, shader) {

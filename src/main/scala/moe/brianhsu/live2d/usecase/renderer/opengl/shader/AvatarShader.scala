@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.usecase.renderer.shader
+package moe.brianhsu.live2d.usecase.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.opengl.shader.Shader

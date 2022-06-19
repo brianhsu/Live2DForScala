@@ -1,6 +1,7 @@
-package moe.brianhsu.live2d.usecase.renderer.shader
+package moe.brianhsu.live2d.usecase.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.opengl.shader.AvatarShader
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

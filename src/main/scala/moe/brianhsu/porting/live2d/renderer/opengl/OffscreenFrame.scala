@@ -12,7 +12,7 @@ object OffscreenFrame {
 
 class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)(implicit gl: OpenGLBinding) {
 
-  import gl._
+  import gl.constants._
 
   val bufferIds: BufferIds = createTextureAndColorBuffer()
   var oldFBO: Int = 0

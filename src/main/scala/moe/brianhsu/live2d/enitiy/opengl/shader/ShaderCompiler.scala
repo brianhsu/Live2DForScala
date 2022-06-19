@@ -8,6 +8,8 @@ import scala.util.Try
 
 class ShaderCompiler(gl: OpenGLBinding) {
 
+  import gl.constants._
+
   def compile(shaderType: Int, shaderSourceCode: String): Try[Int] = Try {
     val shaderId = gl.glCreateShader(shaderType)
 
@@ -34,7 +36,7 @@ class ShaderCompiler(gl: OpenGLBinding) {
 
   def readShaderCompileError(shaderId: Int): Option[String] = {
     val logLengthHolder = Array(Int.MinValue)
-    gl.glGetShaderiv(shaderId, gl.GL_INFO_LOG_LENGTH, logLengthHolder)
+    gl.glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, logLengthHolder)
     val logLength = logLengthHolder(0)
 
     logLength match {
@@ -48,7 +50,7 @@ class ShaderCompiler(gl: OpenGLBinding) {
 
   def readShaderLinkError(programId: Int): Option[String] = {
     val logLengthHolder = Array(Int.MinValue)
-    gl.glGetProgramiv(programId, gl.GL_INFO_LOG_LENGTH, logLengthHolder)
+    gl.glGetProgramiv(programId, GL_INFO_LOG_LENGTH, logLengthHolder)
     val logLength = logLengthHolder(0)
     logLength match {
       case 0 | Int.MinValue => None

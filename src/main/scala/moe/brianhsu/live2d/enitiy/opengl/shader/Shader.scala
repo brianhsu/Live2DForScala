@@ -10,7 +10,7 @@ abstract class Shader(gl: OpenGLBinding, shaderCompiler: ShaderCompiler, shaderC
 
   def this(gl: OpenGLBinding) = this(gl, new ShaderCompiler(gl), Shader.cleaner)
 
-  import gl._
+  import gl.constants._
 
   protected def vertexShaderSource: String
   protected def fragmentShaderSource: String

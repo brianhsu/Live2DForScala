@@ -1,17 +1,21 @@
-package moe.brianhsu.live2d.usecase.renderer.texture
+package moe.brianhsu.live2d.usecase.renderer.opengl.texture
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.utils.expectation.ExpectedBitmap
+import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, Inside}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{GivenWhenThen, Inside}
 
-class TextureManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory with Inside with FeatureSpecStackBehaviors {
+class TextureManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
+                            with MockFactory with Inside with FeatureSpecStackBehaviors
+                            with OpenGLMock {
+
   Feature("Singleton by OpenGL binding") {
     Scenario("Get TextureManager twice by same OpenGL binding") {
       Given("an implicit stubbed OpenGL binding")
-      implicit val binding: OpenGLBinding = stub[OpenGLBinding]
+      implicit val binding: OpenGLBinding = createOpenGLStub()
 
       When("get TextureManager twice")
       val textureManager1 = TextureManager.getInstance
@@ -23,8 +27,8 @@ class TextureManagerFeature extends AnyFeatureSpec with GivenWhenThen with Match
 
     Scenario("Get TextureManager twice by different OpenGL binding") {
       Given("an implicit stubbed OpenGL binding")
-      val binding1: OpenGLBinding = stub[OpenGLBinding]
-      val binding2: OpenGLBinding = stub[OpenGLBinding]
+      val binding1: OpenGLBinding = createOpenGLStub()
+      val binding2: OpenGLBinding = createOpenGLStub()
 
       When("get TextureManager twice")
       val textureManager1 = TextureManager.getInstance(binding1)
@@ -57,13 +61,13 @@ class TextureManagerFeature extends AnyFeatureSpec with GivenWhenThen with Match
 }
 
 trait FeatureSpecStackBehaviors {
-  this: AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory with Inside =>
+  this: AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory with Inside with OpenGLMock =>
 
   def loadTexture(fileType: String, textureFilename: String, expectationFilename: String): Unit = {
     Scenario(s"Load and cache a $fileType texture file") {
 
       Given("A stubbed OpenGL binding that will set mocked textureId")
-      val binding = createStubbedGLBinding
+      val binding = createOpenGLStub()
       val mockedTextureId = 1234
       val bitmap: Array[Byte] = new Array[Byte](1048576)
 
@@ -96,7 +100,7 @@ trait FeatureSpecStackBehaviors {
       textureInfo2 should be theSameInstanceAs textureInfo
 
       And("the stubbed OpenGL binding should have correct calls to setup texture only once")
-      import binding._
+      import binding.constants._
       inSequence {
         (binding.glGenTextures _).verify(1, *).once()
         (binding.glBindTexture _).verify(GL_TEXTURE_2D, 1234).once()
@@ -107,20 +111,5 @@ trait FeatureSpecStackBehaviors {
       }
     }
   }
-
-  private def createStubbedGLBinding: OpenGLBinding = {
-    val binding = stub[OpenGLBinding]
-
-    (() => binding.GL_TEXTURE_MAG_FILTER).when().returns(1)
-    (() => binding.GL_RGBA).when().returns(2)
-    (() => binding.GL_UNSIGNED_BYTE).when().returns(3)
-    (() => binding.GL_TEXTURE_MIN_FILTER).when().returns(4)
-    (() => binding.GL_LINEAR_MIPMAP_LINEAR).when().returns(5)
-    (() => binding.GL_LINEAR).when().returns(6)
-    (() => binding.GL_TEXTURE_2D).when().returns(7)
-
-    binding
-  }
-
 
 }

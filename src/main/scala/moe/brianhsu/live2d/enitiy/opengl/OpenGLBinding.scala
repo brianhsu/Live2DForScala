@@ -3,6 +3,8 @@ package moe.brianhsu.live2d.enitiy.opengl
 import java.nio.{ByteBuffer, FloatBuffer}
 
 trait OpenGLBinding {
+  val constants: OpenGLConstants
+
   def glGenTextures(n: Int, textures: Array[Int]): Unit
 
   def glBindTexture(target: Int, texture: Int): Unit
@@ -109,58 +111,5 @@ trait OpenGLBinding {
 
   def glViewport(x: Int, y: Int, w: Int, h: Int): Unit
 
-
-  def GL_TEXTURE_2D: Int
-  def GL_RGBA: Int
-  def GL_UNSIGNED_BYTE: Int
-  def GL_TEXTURE_MIN_FILTER: Int
-  def GL_LINEAR_MIPMAP_LINEAR: Int
-  def GL_TEXTURE_MAG_FILTER: Int
-  def GL_LINEAR: Int
-  def GL_VERTEX_SHADER: Int
-  def GL_FRAGMENT_SHADER: Int
-  def GL_INFO_LOG_LENGTH: Int
-  def GL_ZERO: Int
-  def GL_ONE: Int
-  def GL_ONE_MINUS_SRC_ALPHA: Int
-  def GL_ONE_MINUS_SRC_COLOR: Int
-  def GL_DST_COLOR: Int
-  def GL_TEXTURE1: Int
-  def GL_TEXTURE0: Int
-  def GL_FLOAT: Int
-  def GL_ARRAY_BUFFER_BINDING: Int
-  def GL_ELEMENT_ARRAY_BUFFER_BINDING: Int
-  def GL_CURRENT_PROGRAM: Int
-  def GL_ACTIVE_TEXTURE: Int
-  def GL_TEXTURE_BINDING_2D: Int
-  def GL_VERTEX_ATTRIB_ARRAY_ENABLED: Int
-  def GL_SCISSOR_TEST: Int
-  def GL_STENCIL_TEST: Int
-  def GL_DEPTH_TEST: Int
-  def GL_CULL_FACE: Int
-  def GL_BLEND: Int
-  def GL_FRONT_FACE: Int
-  def GL_COLOR_WRITEMASK: Int
-  def GL_BLEND_SRC_RGB: Int
-  def GL_BLEND_DST_RGB: Int
-  def GL_BLEND_SRC_ALPHA: Int
-  def GL_BLEND_DST_ALPHA: Int
-  def GL_FRAMEBUFFER_BINDING: Int
-  def GL_VIEWPORT: Int
-  def GL_FALSE: Int
-  def GL_TRUE: Int
-  def GL_ARRAY_BUFFER: Int
-  def GL_ELEMENT_ARRAY_BUFFER: Int
-  def GL_TEXTURE_WRAP_S: Int
-  def GL_CLAMP_TO_EDGE: Int
-  def GL_TEXTURE_WRAP_T: Int
-  def GL_FRAMEBUFFER: Int
-  def GL_COLOR_ATTACHMENT0: Int
-  def GL_COLOR_BUFFER_BIT: Int
-  def GL_CCW: Int
-  def GL_TRIANGLES: Int
-  def GL_UNSIGNED_SHORT: Int
-  def GL_SRC_ALPHA: Int
-  def GL_DEPTH_BUFFER_BIT: Int
-  def GL_TRIANGLE_FAN: Int
 }
+

@@ -9,7 +9,7 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDire
 import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.texture.TextureManager
+import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureManager
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
@@ -20,7 +20,7 @@ import scala.util.Try
 
 class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL: OpenGLBinding) {
 
-  import openGL._
+  import openGL.constants._
 
   private var zoom: Float = 2.0f
   private var offsetX: Float = 0.0f
