@@ -1,8 +1,9 @@
 package moe.brianhsu.utils.mock
 
-import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, OpenGLConstants}
+import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, OpenGLConstants, RichOpenGLBinding}
 import moe.brianhsu.utils.mock.OpenGLMock.Constants
 import org.scalamock.scalatest.MockFactory
+import scala.reflect.runtime.universe._
 
 object OpenGLMock {
   object Constants extends OpenGLConstants {
@@ -71,4 +72,12 @@ trait OpenGLMock {
   abstract class DummyOpenGLBinding extends OpenGLBinding {
     override val constants: OpenGLConstants = Constants
   }
+
+  def addDummyIntOpenGLParameter(richOpenGLBinding: RichOpenGLBinding, pname: Int, value: Int): Unit = {
+    (richOpenGLBinding.openGLParameters(_: Int)(_: TypeTag[Int]))
+      .when(pname, typeTag[Int])
+      .returning(value)
+
+  }
+
 }

@@ -5,8 +5,8 @@ import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.enitiy.model.drawable.VertexInfo
-import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.opengl.Profile
+import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
+import moe.brianhsu.live2d.usecase.renderer.opengl.{OffscreenFrame, Profile}
 import moe.brianhsu.live2d.usecase.renderer.opengl.texture.{TextureColor, TextureManager}
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.{ClippingContext, ClippingManager}
@@ -14,6 +14,8 @@ import moe.brianhsu.porting.live2d.renderer.opengl.shader.ShaderRenderer
 
 class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
   import gl.constants._
+
+  private implicit val wrapper: OpenGLBinding => RichOpenGLBinding = RichOpenGLBinding.wrapOpenGLBinding
 
   private var projection: Option[ProjectionMatrix] = None
   private val textureManager = TextureManager.getInstance
@@ -28,7 +30,7 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
     None
   }
 
-  var offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => OffscreenFrame.getInstance(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
+  val offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => OffscreenFrame.getInstance(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
 
   def getProjection: Option[GeneralMatrix] = projection
   def getClippingContextBufferForDraw: Option[ClippingContext] = clippingContextBufferForDraw
@@ -128,10 +130,6 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
       )
     }
     postDraw()
-  }
-
-  def destroy(): Unit = {
-    offscreenBufferHolder.foreach(_.destroy())
   }
 
 }
