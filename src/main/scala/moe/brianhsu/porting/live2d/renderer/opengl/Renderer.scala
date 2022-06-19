@@ -7,7 +7,7 @@ import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.enitiy.model.drawable.VertexInfo
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.usecase.renderer.opengl.Profile
-import moe.brianhsu.live2d.usecase.renderer.texture.{TextureColor, TextureManager}
+import moe.brianhsu.live2d.usecase.renderer.opengl.texture.{TextureColor, TextureManager}
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.{ClippingContext, ClippingManager}
 import moe.brianhsu.porting.live2d.renderer.opengl.shader.ShaderRenderer

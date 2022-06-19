@@ -1,8 +1,8 @@
-package moe.brianhsu.live2d.usecase.renderer.shader
+package moe.brianhsu.live2d.usecase.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
-class MaskedShader(implicit gl: OpenGLBinding) extends AvatarShader {
+class InvertedMaskedShader(implicit gl: OpenGLBinding) extends AvatarShader {
   override def vertexShaderSource: String =
     """|#version 120
        |
@@ -40,7 +40,7 @@ class MaskedShader(implicit gl: OpenGLBinding) extends AvatarShader {
        |  col_formask.rgb = col_formask.rgb  * col_formask.a;
        |  vec4 clipMask = (1.0 - texture2D(s_texture1, v_clipPos.xy / v_clipPos.w)) * u_channelFlag;
        |  float maskVal = clipMask.r + clipMask.g + clipMask.b + clipMask.a;
-       |  col_formask = col_formask * maskVal;
+       |  col_formask = col_formask * (1.0 - maskVal);
        |  gl_FragColor = col_formask;
        |}
        |""".stripMargin

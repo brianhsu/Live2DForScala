@@ -1,12 +1,12 @@
-package moe.brianhsu.live2d.usecase.renderer.texture
+package moe.brianhsu.live2d.usecase.renderer.opengl.texture
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.utils.expectation.ExpectedBitmap
 import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, Inside}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{GivenWhenThen, Inside}
 
 class TextureManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
                             with MockFactory with Inside with FeatureSpecStackBehaviors
