@@ -14,30 +14,23 @@ object ClippingContext {
     3 -> TextureColor(0.0f, 0.0f, 0.0f),
   )
 
+  val ColorChannelCount: Int = ChannelColors.size
+
   case class Layout(channel: Int, bounds: Rectangle) {
     def channelColor: TextureColor = ChannelColors(channel)
   }
 }
 
-class ClippingContext(val maskDrawable: List[Drawable], val clippedDrawables: List[Drawable]) {
+case class ClippingContext(maskDrawable: List[Drawable], clippedDrawables: List[Drawable],
+                           allClippedDrawRect: Option[Rectangle] = None,
+                           matrixForMask: GeneralMatrix = new GeneralMatrix,
+                           matrixForDraw: GeneralMatrix = new GeneralMatrix,
+                           layout: Layout = Layout(0, Rectangle())) {
 
-  private var mIsUsing: Boolean = false                                ///< 現在の描画状態でマスクの準備が必要ならtrue
-  private var mAllClippedDrawRect: Rectangle = Rectangle()                   ///< このクリッピングで、クリッピングされる全ての描画オブジェクトの囲み矩形（毎回更新）
-  private var mMatrixForMask: GeneralMatrix = new GeneralMatrix ///< マスクの位置計算結果を保持する行列
-  private var mMatrixForDraw: GeneralMatrix = new GeneralMatrix ///< 描画オブジェクトの位置計算結果を保持する行列
+  def isUsing: Boolean = allClippedDrawRect.isDefined
 
-  var layout: Layout = Layout(0, Rectangle())
-
-  def matrixForMask: GeneralMatrix = this.mMatrixForMask
-
-  def matrixForDraw: GeneralMatrix = this.mMatrixForDraw
-
-  def allClippedDrawRect: Rectangle = this.mAllClippedDrawRect
-
-  def isUsing: Boolean = this.mIsUsing
-
-  def calculateMatrix(): Unit = {
-    val allClippedDrawRect = this.allClippedDrawRect
+  def calculateMatrix(): ClippingContext = {
+    val allClippedDrawRect = this.allClippedDrawRect.getOrElse(Rectangle())
     val layoutBoundsOnTex01 = this.layout.bounds
 
     val margin = 0.05f
@@ -49,8 +42,7 @@ class ClippingContext(val maskDrawable: List[Drawable], val clippedDrawables: Li
     val scaleX = layoutBoundsOnTex01.width / tmpBoundsOnModel.width
     val scaleY = layoutBoundsOnTex01.height / tmpBoundsOnModel.height
 
-    this.mMatrixForMask = calcMaskMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY)
-    this.mMatrixForDraw = calcDrawMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY)
+    this.copy(matrixForMask = calcMaskMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY), matrixForDraw = calcDrawMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY))
   }
 
   private def calcDrawMatrix(layoutBoundsOnTex01: Rectangle, tmpBoundsOnModel: Rectangle,
@@ -72,7 +64,7 @@ class ClippingContext(val maskDrawable: List[Drawable], val clippedDrawables: Li
       .translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.bottomY)
   }
 
-  def calculateClippedDrawTotalBounds(): Unit = {
+  def calculateClippedDrawTotalBounds(): ClippingContext = {
     val FLT_MAX = Float.MaxValue
     val FLT_MIN = 0.0f
 
@@ -86,16 +78,15 @@ class ClippingContext(val maskDrawable: List[Drawable], val clippedDrawables: Li
     val clippedDrawTotalMaxY = yPositions.filter(_ > 0).maxOption.getOrElse(FLT_MIN)
 
     if (clippedDrawTotalMinX == FLT_MAX) {
-      this.mIsUsing = false
-      this.mAllClippedDrawRect = Rectangle()
+      this.copy(allClippedDrawRect = None)
     } else {
-      this.mIsUsing = true
-      this.mAllClippedDrawRect = Rectangle(
+      val clippedRectangle = Rectangle(
         clippedDrawTotalMinX,
         clippedDrawTotalMinY,
         width = clippedDrawTotalMaxX - clippedDrawTotalMinX,
         height = clippedDrawTotalMaxY - clippedDrawTotalMinY
       )
+      this.copy(allClippedDrawRect = Some(clippedRectangle))
     }
   }
 
