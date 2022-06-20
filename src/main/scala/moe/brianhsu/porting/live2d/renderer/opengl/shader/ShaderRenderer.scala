@@ -67,7 +67,7 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
     for (context <- drawClippingContextHolder) {
       renderer.offscreenBufferHolder.foreach { buffer =>
         setGlTexture(GL_TEXTURE1, buffer.frameBufferId, shader.samplerTexture1Location, 1)
-        gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, context.getMatrixForDraw.elements)
+        gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, context.matrixForDraw.elements)
         setGlColorChannel(context, shader)
       }
     }
@@ -90,9 +90,9 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
     setGlVertexInfo(vertexArray, uvArray, shader)
     setGlColorChannel(context, shader)
 
-    gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, context.getMatrixForMask.elements)
+    gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, context.matrixForMask.elements)
 
-    val rect = context.getLayoutBounds
+    val rect = context.layout.bounds
 
     gl.glUniform4f(
       shader.uniformBaseColorLocation,
@@ -106,9 +106,8 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
   }
 
   def setGlColorChannel(context: ClippingContext, shader: AvatarShader): Unit = {
-    val colorChannel = context.getChannelColor
+    val colorChannel = context.layout.channelColor
     gl.glUniform4f(shader.uniformChannelFlagLocation, colorChannel.red, colorChannel.green, colorChannel.blue, colorChannel.alpha)
-
   }
 
   def setGlTexture(textureUnit: Int, textureId: Int, variable: Int, variableValue: Int): Unit = {

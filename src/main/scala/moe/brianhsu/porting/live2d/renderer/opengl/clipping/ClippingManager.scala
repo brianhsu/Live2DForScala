@@ -8,6 +8,7 @@ import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.ViewPort
 import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureManager
 import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
+import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingContext.Layout
 
 class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implicit gl: OpenGLBinding) {
 
@@ -46,7 +47,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
     if (usingClipCount <= 0) {
 
       contextListForMask.foreach { context =>
-        context.setLayout(0, Rectangle(0.0f, 0.0f, 1.0f, 1.0f))
+        context.layout = Layout(0, Rectangle(0.0f, 0.0f, 1.0f, 1.0f))
       }
 
     } else {
@@ -70,14 +71,14 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
           case 0 =>
           case 1 =>
             val cc = contextListForMask(curClipIndex)
-            cc.setLayout(channelNo, Rectangle(0.0f, 0.0f, 1.0f, 1.0f))
+            cc.layout = Layout(channelNo, Rectangle(0.0f, 0.0f, 1.0f, 1.0f))
             curClipIndex += 1
           case 2 =>
             //UVを2つに分解して使う
             for (i <- 0 until layoutCount) {
               val xPosition = i % 2
               val cc = contextListForMask(curClipIndex)
-              cc.setLayout(channelNo, Rectangle(xPosition * 0.5f, 0.0f, 0.5f, 1.0f))
+              cc.layout = Layout(channelNo, Rectangle(xPosition * 0.5f, 0.0f, 0.5f, 1.0f))
               curClipIndex += 1
             }
           case 3|4 =>
@@ -87,7 +88,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
               val yPosition = i / 2
 
               val cc = contextListForMask(curClipIndex)
-              cc.setLayout(channelNo, Rectangle(xPosition * 0.5f, yPosition * 0.5f, 0.5f, 0.5f))
+              cc.layout = Layout(channelNo, Rectangle(xPosition * 0.5f, yPosition * 0.5f, 0.5f, 0.5f))
               curClipIndex += 1
             }
           case 5|6|7|8|9 =>
@@ -97,7 +98,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
               val yPosition = i / 3
 
               val cc = contextListForMask(curClipIndex)
-              cc.setLayout(channelNo, Rectangle(xPosition / 3.0f, yPosition / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f))
+              cc.layout = Layout(channelNo, Rectangle(xPosition / 3.0f, yPosition / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f))
               curClipIndex += 1
             }
           case _ =>
@@ -107,7 +108,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
             // もちろん描画結果はろくなことにならない
             for (_ <- 0 until layoutCount) {
               val cc = contextListForMask(curClipIndex)
-              cc.setLayout(0, Rectangle(0.0f, 0.0f, 1.0f, 1.0f))
+              cc.layout = Layout(0, Rectangle(0.0f, 0.0f, 1.0f, 1.0f))
               curClipIndex += 1
             }
         }
@@ -119,14 +120,10 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
 
     // 全てのクリッピングを用意する
     // 同じクリップ（複数の場合はまとめて１つのクリップ）を使う場合は１度だけ設定する
-    var usingClipCount = 0
     for (cc <- contextListForMask) {
-      cc.calcClippedDrawTotalBounds()
-
-      if (cc.getIsUsing) {
-        usingClipCount += 1
-      }
+      cc.calculateClippedDrawTotalBounds()
     }
+    val usingClipCount = contextListForMask.count(_.isUsing)
 
     // マスク作成処理
     if (usingClipCount > 0) {
@@ -141,7 +138,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
       // 全てのマスクをどの様にレイアウトして描くかを決定し、ClipContext , ClippedDrawContext に記憶する
       for (clipContext <- contextListForMask) {
 
-        clipContext.calcMatrix()
+        clipContext.calculateMatrix()
 
         for (drawable <- clipContext.maskDrawable if drawable.dynamicFlags.vertexPositionChanged) {
           renderer.setIsCulling(drawable.isCulling)
