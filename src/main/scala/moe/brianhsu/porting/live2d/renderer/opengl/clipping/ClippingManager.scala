@@ -6,9 +6,10 @@ import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.ViewPort
+import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
+import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext.Layout
 import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureManager
 import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
-import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingContext.Layout
 
 class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implicit gl: OpenGLBinding) {
 

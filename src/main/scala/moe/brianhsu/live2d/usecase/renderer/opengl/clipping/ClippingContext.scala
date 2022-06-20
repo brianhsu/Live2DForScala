@@ -1,10 +1,10 @@
-package moe.brianhsu.porting.live2d.renderer.opengl.clipping
+package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
+import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext.Layout
 import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
-import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingContext.Layout
 
 object ClippingContext {
   private val ChannelColors = Map(
@@ -42,7 +42,10 @@ case class ClippingContext(maskDrawable: List[Drawable], clippedDrawables: List[
     val scaleX = layoutBoundsOnTex01.width / tmpBoundsOnModel.width
     val scaleY = layoutBoundsOnTex01.height / tmpBoundsOnModel.height
 
-    this.copy(matrixForMask = calcMaskMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY), matrixForDraw = calcDrawMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY))
+    this.copy(
+      matrixForMask = calcMaskMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY),
+      matrixForDraw = calcDrawMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY)
+    )
   }
 
   private def calcDrawMatrix(layoutBoundsOnTex01: Rectangle, tmpBoundsOnModel: Rectangle,
@@ -65,27 +68,25 @@ case class ClippingContext(maskDrawable: List[Drawable], clippedDrawables: List[
   }
 
   def calculateClippedDrawTotalBounds(): ClippingContext = {
-    val FLT_MAX = Float.MaxValue
-    val FLT_MIN = 0.0f
-
     val positions = clippedDrawables.flatMap(_.vertexInfo.positions)
     val xPositions = positions.map(_._1)
     val yPositions = positions.map(_._2)
 
-    val clippedDrawTotalMinX = xPositions.minOption.getOrElse(FLT_MAX)
-    val clippedDrawTotalMinY = yPositions.minOption.getOrElse(FLT_MAX)
-    val clippedDrawTotalMaxX = xPositions.filter(_ > 0).maxOption.getOrElse(FLT_MIN)
-    val clippedDrawTotalMaxY = yPositions.filter(_ > 0).maxOption.getOrElse(FLT_MIN)
-
-    if (clippedDrawTotalMinX == FLT_MAX) {
+    if (xPositions.minOption.isEmpty) {
       this.copy(allClippedDrawRect = None)
     } else {
+      val clippedDrawTotalMinX = xPositions.minOption.getOrElse(Float.MaxValue)
+      val clippedDrawTotalMinY = yPositions.minOption.getOrElse(0.0f)
+      val clippedDrawTotalMaxX = xPositions.filter(_ > 0).maxOption.getOrElse(0.0f)
+      val clippedDrawTotalMaxY = yPositions.filter(_ > 0).maxOption.getOrElse(0.0f)
+
       val clippedRectangle = Rectangle(
         clippedDrawTotalMinX,
         clippedDrawTotalMinY,
         width = clippedDrawTotalMaxX - clippedDrawTotalMinX,
         height = clippedDrawTotalMaxY - clippedDrawTotalMinY
       )
+
       this.copy(allClippedDrawRect = Some(clippedRectangle))
     }
   }
