@@ -2,7 +2,6 @@ package moe.brianhsu.live2d.enitiy.model.drawable
 
 import com.sun.jna.{Memory, Native}
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.DynamicDrawableFlagMask._
-import moe.brianhsu.live2d.enitiy.model.drawable
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -31,7 +30,7 @@ class DynamicFlagsFeature extends AnyFeatureSpec
         When(s"create a ConstantDrawableFlags from that bitmap $bitmap")
         val pointer = new Memory(Native.getNativeSize(classOf[Byte])).share(0)
         pointer.setByte(0, bitmap.toByte)
-        val flags = DynamicFlags(pointer)
+        val flags = new DynamicFlags(pointer)
 
         Then("the flags should have correct value")
         flags.bitmask shouldBe bitmap.toByte
@@ -61,7 +60,7 @@ class DynamicFlagsFeature extends AnyFeatureSpec
         When(s"create a ConstantDrawableFlags from that bitmap $bitmap")
         val pointer = new Memory(Native.getNativeSize(classOf[Byte])).share(0)
         pointer.setByte(0, 0)
-        val flags = drawable.DynamicFlags(pointer)
+        val flags = new DynamicFlags(pointer)
 
         Then("the flags should all be false")
         flags.bitmask shouldBe 0

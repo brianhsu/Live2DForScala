@@ -110,7 +110,7 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
 
   def setupClippingContext(renderer: Renderer, lastFBO: Int, lastViewport: ViewPort): Unit = {
 
-    this.contextListForMask = contextListForMask.map(_.calculateClippedDrawTotalBounds())
+    this.contextListForMask = contextListForMask.map(_.calculateAllClippedDrawableBounds())
 
     val usingClipCount = contextListForMask.count(_.isUsing)
 
@@ -127,16 +127,16 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
       this.contextListForMask = this.contextListForMask.map(_.calculateMatrix())
       for (clipContext <- contextListForMask) {
 
-        for (drawable <- clipContext.maskDrawable if drawable.dynamicFlags.vertexPositionChanged) {
-          renderer.setIsCulling(drawable.isCulling)
+        for (maskDrawable <- clipContext.vertexPositionChangedMaskDrawable) {
+          renderer.setIsCulling(maskDrawable.isCulling)
           renderer.setClippingContextBufferForMask(Some(clipContext))
 
-          val textureFile = model.textureFiles(drawable.textureIndex)
+          val textureFile = model.textureFiles(maskDrawable.textureIndex)
           val textureInfo = textureManager.loadTexture(textureFile)
           renderer.drawMesh(
             textureInfo.textureId,
-            drawable.vertexInfo,
-            drawable.opacity,
+            maskDrawable.vertexInfo,
+            maskDrawable.opacity,
             Normal,
             invertedMask = false
           )

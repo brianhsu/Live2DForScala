@@ -237,7 +237,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     range.map { i =>
       val drawableId = drawableIdList(i)
       val constantFlags = ConstantFlags(constantFlagsList(i))
-      val dynamicFlags = DynamicFlags(dynamicFlagsList.pointerToByte(i))
+      val dynamicFlags = new DynamicFlags(dynamicFlagsList.pointerToByte(i))
       val textureIndex = textureIndexList(i)
       val drawOrderPointer = drawOrderList.pointerToInt(i)
       val renderOrderPointer = renderOrderList.pointerToInt(i)

@@ -22,29 +22,27 @@ object ClippingContext {
 }
 
 case class ClippingContext(maskDrawable: List[Drawable], clippedDrawables: List[Drawable],
-                           allClippedDrawRect: Option[Rectangle] = None,
+                           allClippedDrawableBounds: Option[Rectangle] = None,
                            matrixForMask: GeneralMatrix = new GeneralMatrix,
                            matrixForDraw: GeneralMatrix = new GeneralMatrix,
                            layout: Layout = Layout(0, Rectangle())) {
 
-  def isUsing: Boolean = allClippedDrawRect.isDefined
+  def isUsing: Boolean = allClippedDrawableBounds.isDefined
 
   def calculateMatrix(): ClippingContext = {
-    val allClippedDrawRect = this.allClippedDrawRect.getOrElse(Rectangle())
-    val layoutBoundsOnTex01 = this.layout.bounds
-
+    val allClippedDrawRect = this.allClippedDrawableBounds.getOrElse(Rectangle())
     val margin = 0.05f
     val tmpBoundsOnModel = allClippedDrawRect.expand(
       allClippedDrawRect.width * margin,
       allClippedDrawRect.height * margin
     )
 
-    val scaleX = layoutBoundsOnTex01.width / tmpBoundsOnModel.width
-    val scaleY = layoutBoundsOnTex01.height / tmpBoundsOnModel.height
+    val scaleX = this.layout.bounds.width / tmpBoundsOnModel.width
+    val scaleY = this.layout.bounds.height / tmpBoundsOnModel.height
 
     this.copy(
-      matrixForMask = calcMaskMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY),
-      matrixForDraw = calcDrawMatrix(layoutBoundsOnTex01, tmpBoundsOnModel, scaleX, scaleY)
+      matrixForMask = calcMaskMatrix(this.layout.bounds, tmpBoundsOnModel, scaleX, scaleY),
+      matrixForDraw = calcDrawMatrix(this.layout.bounds, tmpBoundsOnModel, scaleX, scaleY)
     )
   }
 
@@ -67,16 +65,17 @@ case class ClippingContext(maskDrawable: List[Drawable], clippedDrawables: List[
       .translateRelative(-tmpBoundsOnModel.leftX, -tmpBoundsOnModel.bottomY)
   }
 
-  def calculateClippedDrawTotalBounds(): ClippingContext = {
+  def calculateAllClippedDrawableBounds(): ClippingContext = {
     val positions = clippedDrawables.flatMap(_.vertexInfo.positions)
-    val xPositions = positions.map(_._1)
-    val yPositions = positions.map(_._2)
 
-    if (xPositions.minOption.isEmpty) {
-      this.copy(allClippedDrawRect = None)
+    if (positions.isEmpty) {
+      this.copy(allClippedDrawableBounds = None)
     } else {
-      val clippedDrawTotalMinX = xPositions.minOption.getOrElse(Float.MaxValue)
-      val clippedDrawTotalMinY = yPositions.minOption.getOrElse(0.0f)
+      val xPositions = positions.map(_._1)
+      val yPositions = positions.map(_._2)
+
+      val clippedDrawTotalMinX = xPositions.min
+      val clippedDrawTotalMinY = yPositions.min
       val clippedDrawTotalMaxX = xPositions.filter(_ > 0).maxOption.getOrElse(0.0f)
       val clippedDrawTotalMaxY = yPositions.filter(_ > 0).maxOption.getOrElse(0.0f)
 
@@ -87,8 +86,10 @@ case class ClippingContext(maskDrawable: List[Drawable], clippedDrawables: List[
         height = clippedDrawTotalMaxY - clippedDrawTotalMinY
       )
 
-      this.copy(allClippedDrawRect = Some(clippedRectangle))
+      this.copy(allClippedDrawableBounds = Some(clippedRectangle))
     }
   }
+
+  def vertexPositionChangedMaskDrawable: List[Drawable] = maskDrawable.filter(_.dynamicFlags.vertexPositionChanged)
 
 }
