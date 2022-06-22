@@ -5,6 +5,7 @@ import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.enitiy.opengl.shader.Blending
 import moe.brianhsu.live2d.usecase.renderer.opengl.OffscreenFrame
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
+import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderFactory.DefaultShaderFactory
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader._
 import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
@@ -18,21 +19,21 @@ object ShaderRenderer {
     shaderRendererHolder.get(gl) match {
       case Some(renderer) => renderer
       case None =>
-        this.shaderRendererHolder += (gl -> new ShaderRenderer()(gl, {x: OpenGLBinding => new RichOpenGLBinding(x)}))
+        val shaderFactory = new DefaultShaderFactory
+        this.shaderRendererHolder += (gl -> new ShaderRenderer(shaderFactory)(gl, {x: OpenGLBinding => new RichOpenGLBinding(x)}))
         this.shaderRendererHolder(gl)
     }
   }
 }
 
-class ShaderRenderer private (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
+class ShaderRenderer private(shaderFactory: ShaderFactory)(implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
 
   import gl.constants._
 
-  private val setupMaskShader = new SetupMaskShader
-  private val normalShader = new NormalShader
-  private val maskedShader = new MaskedShader
-  private val invertedMaskedShader = new InvertedMaskedShader
-
+  private val setupMaskShader = shaderFactory.setupMaskShader
+  private val normalShader = shaderFactory.normalShader
+  private val maskedShader = shaderFactory.maskedShader
+  private val invertedMaskedShader = shaderFactory.invertedMaskedShader
 
   def renderDrawable(clippingContextBufferForDraw: Option[ClippingContext], offscreenFrameHolder: Option[OffscreenFrame], textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: ProjectionMatrix, invertedMask: Boolean): Unit = {
     val drawClippingContextHolder = clippingContextBufferForDraw
@@ -64,23 +65,20 @@ class ShaderRenderer private (implicit gl: OpenGLBinding, richOpenGLWrapper: Ope
   }
 
   def renderMask(context: ClippingContext, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer): Unit = {
-    val shader = setupMaskShader
 
-    shader.useProgram()
+    setupMaskShader.useProgram()
 
-    gl.setGlTexture(GL_TEXTURE0, textureId, shader.samplerTexture0Location, 0)
-    gl.setGlVertexInfo(vertexArray, uvArray, shader.attributePositionLocation, shader.attributeTexCoordLocation)
-    gl.setGlColorChannel(context.layout.channelColor, shader.uniformChannelFlagLocation)
-    gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, context.matrixForMask.elements)
-
-    val rect = context.layout.bounds
+    gl.setGlTexture(GL_TEXTURE0, textureId, setupMaskShader.samplerTexture0Location, 0)
+    gl.setGlVertexInfo(vertexArray, uvArray, setupMaskShader.attributePositionLocation, setupMaskShader.attributeTexCoordLocation)
+    gl.setGlColorChannel(context.layout.channelColor, setupMaskShader.uniformChannelFlagLocation)
+    gl.glUniformMatrix4fv(setupMaskShader.uniformClipMatrixLocation, 1, transpose = false, context.matrixForMask.elements)
 
     gl.glUniform4f(
-      shader.uniformBaseColorLocation,
-      rect.leftX * 2.0f - 1.0f,
-      rect.bottomY * 2.0f - 1.0f,
-      rect.rightX * 2.0f - 1.0f,
-      rect.topY * 2.0f - 1.0f
+      setupMaskShader.uniformBaseColorLocation,
+      context.layout.bounds.leftX * 2.0f - 1.0f,
+      context.layout.bounds.bottomY * 2.0f - 1.0f,
+      context.layout.bounds.rightX * 2.0f - 1.0f,
+      context.layout.bounds.topY * 2.0f - 1.0f
     )
 
     gl.setGlBlend(Blending(GL_ZERO, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA))
