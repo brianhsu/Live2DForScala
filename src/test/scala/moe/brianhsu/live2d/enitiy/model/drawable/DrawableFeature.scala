@@ -18,7 +18,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val drawOrderPointer = stub[MockablePointer]
       val drawable = Drawable(
         "drawableId", index = 0,
-        ConstantFlags(0), DynamicFlags(stub[MockablePointer]),
+        ConstantFlags(0), new DynamicFlags(stub[MockablePointer]),
         textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer,
         renderOrderPointer = null, opacityPointer = null
       )
@@ -40,7 +40,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val renderOrderPointer = stub[MockablePointer]
       val drawable = Drawable(
         "drawableId", index = 0,
-        ConstantFlags(0), DynamicFlags(stub[MockablePointer]),
+        ConstantFlags(0), new DynamicFlags(stub[MockablePointer]),
         textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer = null,
         renderOrderPointer, opacityPointer = null
       )
@@ -62,7 +62,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
       val opacityPointer = stub[MockablePointer]
       val drawable = Drawable(
         "drawableId", index = 0,
-        ConstantFlags(0), DynamicFlags(stub[MockablePointer]),
+        ConstantFlags(0), new DynamicFlags(stub[MockablePointer]),
         textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer = null,
         renderOrderPointer = null, opacityPointer
       )
@@ -97,7 +97,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
         val flagByte = java.lang.Byte.parseByte(flagsInBinary, 2)
         val drawable = Drawable(
           "drawableId", index = 0,
-          ConstantFlags(flagByte), DynamicFlags(stub[MockablePointer]),
+          ConstantFlags(flagByte), new DynamicFlags(stub[MockablePointer]),
           textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer = null,
           renderOrderPointer = null, opacityPointer = null
         )

@@ -8,7 +8,7 @@ import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.DynamicDrawableFlagMask._
  *
  * @param pointer The pointer to actual of memory address that contains the value of this flag
  */
-case class DynamicFlags(private val pointer: Pointer) extends Flags {
+class DynamicFlags(private val pointer: Pointer) extends Flags {
   private def byteValue = pointer.getByte(0)
 
   /**
