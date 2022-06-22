@@ -1,7 +1,10 @@
 package moe.brianhsu.live2d.enitiy.opengl
 
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{BlendFunction, ColorWriteMask, ViewPort}
+import moe.brianhsu.live2d.enitiy.opengl.shader.Blending
+import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 
+import java.nio.ByteBuffer
 import reflect.runtime.universe._
 
 object RichOpenGLBinding {
@@ -170,4 +173,28 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
       binding.glDisable(capability)
     }
   }
+
+  def setGlColorChannel(textureColor: TextureColor, uniformChannelFlagLocation: Int): Unit = {
+    binding.glUniform4f(uniformChannelFlagLocation, textureColor.red, textureColor.green, textureColor.blue, textureColor.alpha)
+  }
+
+  def setGlTexture(textureUnit: Int, textureId: Int, variable: Int, variableValue: Int): Unit = {
+    binding.glActiveTexture(textureUnit)
+    binding.glBindTexture(GL_TEXTURE_2D, textureId)
+    binding.glUniform1i(variable, variableValue)
+  }
+
+  def setGlVertexInfo(vertexArray: ByteBuffer, uvArray: ByteBuffer, attributePositionLocation: Int, attributeTexCoordLocation: Int): Unit = {
+    // 頂点配列の設定
+    binding.glEnableVertexAttribArray(attributePositionLocation)
+    binding.glVertexAttribPointer(attributePositionLocation, 2, GL_FLOAT, normalized = false, 4 * 2, vertexArray)
+    // テクスチャ頂点の設定
+    binding.glEnableVertexAttribArray(attributeTexCoordLocation)
+    binding.glVertexAttribPointer(attributeTexCoordLocation, 2, GL_FLOAT, normalized = false, 4 * 2, uvArray)
+  }
+
+  def setGlBlend(blending: Blending): Unit = {
+    binding.glBlendFuncSeparate(blending.srcColor, blending.dstColor, blending.srcAlpha, blending.dstAlpha)
+  }
+
 }
