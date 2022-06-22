@@ -1,6 +1,7 @@
 package moe.brianhsu.live2d.enitiy.opengl
 
-import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{BlendFunction, ColorWriteMask, ViewPort}
+import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ColorWriteMask, ViewPort}
+import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 import moe.brianhsu.utils.mock.OpenGLMock
 import moe.brianhsu.utils.mock.OpenGLMock.Constants._
 import org.scalamock.scalatest.MockFactory
@@ -8,6 +9,8 @@ import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
+
+import java.nio.ByteBuffer
 
 class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory
                                with OpenGLMock with TableDrivenPropertyChecks {
@@ -456,6 +459,71 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
       textureIds should contain theSameElementsInOrderAs List(1, 2, 3)
     }
 
+  }
+
+  Feature("Set color channel") {
+    Scenario("Set color channel by TextureColor object") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      When("set color channel by TextureColor object")
+      richOpenGL.setColorChannel(
+        textureColor = TextureColor(0.1f, 0.2f, 0.3f, 0.4f),
+        uniformChannelFlagLocation = 4
+      )
+
+      Then("it should delegated to underlay OpenGL binding")
+      (binding.glUniform4f _).verify(4, 0.1f, 0.2f, 0.3f, 0.4f).once()
+    }
+  }
+
+  Feature("Active and update texture variable") {
+    Scenario("Active and update texture variable") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      When("active and update texture variable")
+      val textureUnit = 1
+      val textureId = 2
+      val variable = 3
+      val newValue = 4
+      richOpenGL.activeAndUpdateTextureVariable(textureUnit, textureId, variable, newValue)
+
+      Then("it should delegated to underlay OpenGL binding")
+      inSequence {
+        (binding.glActiveTexture _).verify(textureUnit).once()
+        (binding.glBindTexture _).verify(GL_TEXTURE_2D, textureId).once()
+        (binding.glUniform1i _).verify(variable, newValue).once()
+      }
+    }
+  }
+
+  Feature("Update vertex info") {
+    Scenario("Update vertex info with ByteBuffer") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      When("update vertex info with ByteBuffer")
+      val vertexArray = ByteBuffer.allocate(1)
+      val uvArray = ByteBuffer.allocate(1)
+      val attributePositionLocation = 1
+      val attributeTexCoordLocation = 2
+      richOpenGL.updateVertexInfo(vertexArray, vertexArray, attributePositionLocation, attributeTexCoordLocation)
+
+      Then("it should delegated to underlay OpenGL binding")
+      type MethodType = (Int, Int, Int, Boolean, Int, ByteBuffer) => Unit
+      inSequence {
+        (binding.glEnableVertexAttribArray _).verify(attributePositionLocation).once()
+        (binding.glVertexAttribPointer: MethodType).verify(attributePositionLocation, 2, GL_FLOAT, false, 4 * 2, vertexArray)
+        // テクスチャ頂点の設定
+        (binding.glEnableVertexAttribArray _).verify(attributeTexCoordLocation).once()
+        (binding.glVertexAttribPointer: MethodType).verify(attributeTexCoordLocation, 2, GL_FLOAT, false, 4 * 2, uvArray)
+      }
+
+    }
   }
 
   private def addDummyIntegerVariable(binding: OpenGLBinding, pname: Int, offset: Int, value: Int): Unit = {

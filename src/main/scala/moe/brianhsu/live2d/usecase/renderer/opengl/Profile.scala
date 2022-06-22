@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl
 
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding._
-import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
+import moe.brianhsu.live2d.enitiy.opengl.{BlendFunction, OpenGLBinding, RichOpenGLBinding}
 
 object Profile {
   private var profile: Map[OpenGLBinding, Profile] = Map.empty

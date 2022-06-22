@@ -1,7 +1,6 @@
 package moe.brianhsu.live2d.enitiy.opengl
 
-import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{BlendFunction, ColorWriteMask, ViewPort}
-import moe.brianhsu.live2d.enitiy.opengl.shader.Blending
+import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ColorWriteMask, ViewPort}
 import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 
 import java.nio.ByteBuffer
@@ -19,7 +18,6 @@ object RichOpenGLBinding {
     }
   }
 
-  case class BlendFunction(sourceRGB: Int, destRGB: Int, sourceAlpha: Int, destAlpha: Int)
   case class ColorWriteMask(red: Boolean, green: Boolean, blue: Boolean, alpha: Boolean)
   case class ViewPort(x: Int, y: Int, width: Int, height: Int)
 }
@@ -104,15 +102,6 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     BlendFunction(intBuffer(0), intBuffer(1), intBuffer(2), intBuffer(3))
   }
 
-  def blendFunction_=(blendFunction: BlendFunction): Unit = {
-    binding.glBlendFuncSeparate(
-      blendFunction.sourceRGB,
-      blendFunction.destRGB,
-      blendFunction.sourceAlpha,
-      blendFunction.destAlpha
-    )
-  }
-
   def viewPort: ViewPort = {
     clearIntBuffer()
 
@@ -174,17 +163,17 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     }
   }
 
-  def setGlColorChannel(textureColor: TextureColor, uniformChannelFlagLocation: Int): Unit = {
+  def setColorChannel(textureColor: TextureColor, uniformChannelFlagLocation: Int): Unit = {
     binding.glUniform4f(uniformChannelFlagLocation, textureColor.red, textureColor.green, textureColor.blue, textureColor.alpha)
   }
 
-  def setGlTexture(textureUnit: Int, textureId: Int, variable: Int, variableValue: Int): Unit = {
+  def activeAndUpdateTextureVariable(textureUnit: Int, textureId: Int, variable: Int, newValue: Int): Unit = {
     binding.glActiveTexture(textureUnit)
     binding.glBindTexture(GL_TEXTURE_2D, textureId)
-    binding.glUniform1i(variable, variableValue)
+    binding.glUniform1i(variable, newValue)
   }
 
-  def setGlVertexInfo(vertexArray: ByteBuffer, uvArray: ByteBuffer, attributePositionLocation: Int, attributeTexCoordLocation: Int): Unit = {
+  def updateVertexInfo(vertexArray: ByteBuffer, uvArray: ByteBuffer, attributePositionLocation: Int, attributeTexCoordLocation: Int): Unit = {
     // 頂点配列の設定
     binding.glEnableVertexAttribArray(attributePositionLocation)
     binding.glVertexAttribPointer(attributePositionLocation, 2, GL_FLOAT, normalized = false, 4 * 2, vertexArray)
@@ -193,8 +182,8 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     binding.glVertexAttribPointer(attributeTexCoordLocation, 2, GL_FLOAT, normalized = false, 4 * 2, uvArray)
   }
 
-  def setGlBlend(blending: Blending): Unit = {
-    binding.glBlendFuncSeparate(blending.srcColor, blending.dstColor, blending.srcAlpha, blending.dstAlpha)
+  def blendFunction_=(blending: BlendFunction): Unit = {
+    binding.glBlendFuncSeparate(blending.sourceRGB, blending.destRGB, blending.sourceAlpha, blending.destAlpha)
   }
 
 }

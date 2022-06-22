@@ -1,7 +1,6 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.opengl.shader.InvertedMaskedShader
 import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen

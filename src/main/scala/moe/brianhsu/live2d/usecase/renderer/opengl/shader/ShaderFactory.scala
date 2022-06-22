@@ -4,8 +4,8 @@ import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
 object ShaderFactory {
   class DefaultShaderFactory(implicit gl: OpenGLBinding) extends ShaderFactory {
-    override def setupMaskShader: SetupMaskShader = new SetupMaskShader
     override def normalShader: NormalShader = new NormalShader
+    override def setupMaskShader: SetupMaskShader = new SetupMaskShader
     override def maskedShader: MaskedShader = new MaskedShader
     override def invertedMaskedShader: InvertedMaskedShader = new InvertedMaskedShader
   }
