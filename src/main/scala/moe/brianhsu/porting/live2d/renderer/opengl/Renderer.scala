@@ -1,7 +1,6 @@
 package moe.brianhsu.porting.live2d.renderer.opengl
 
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
-import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.enitiy.model.drawable.VertexInfo
@@ -33,9 +32,6 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
 
   val offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => OffscreenFrame.getInstance(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
 
-  def getProjection: Option[GeneralMatrix] = projection
-  def getClippingContextBufferForDraw: Option[ClippingContext] = clippingContextBufferForDraw
-  def getClippingContextBufferForMask: Option[ClippingContext] = clippingContextBufferForMask
   def setClippingContextBufferForMask(clip: Option[ClippingContext]): Unit = {
     clippingContextBufferForMask = clip
   }
@@ -82,20 +78,25 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
 
     gl.glFrontFace(GL_CCW)
 
-    val modelColorRGBA = getClippingContextBufferForMask match {
+    val modelColorRGBA = clippingContextBufferForMask match {
       case None => TextureColor(1.0f, 1.0f, 1.0f, opacity)
       case _    => TextureColor()
     }
 
-    shaderRenderer.render(
-      this, drawTextureId,
-      vertexInfo.vertexArrayDirectBuffer,
-      vertexInfo.uvArrayDirectBuffer,
-      colorBlendMode,
-      modelColorRGBA,
-      projection.getOrElse(new ProjectionMatrix),
-      invertedMask
-    )
+    this.clippingContextBufferForMask match {
+      case Some(context) =>
+        shaderRenderer.renderMask(
+          context, drawTextureId,
+          vertexInfo.vertexArrayDirectBuffer, vertexInfo.uvArrayDirectBuffer
+        )
+      case None =>
+        shaderRenderer.renderDrawable(
+          clippingContextBufferForDraw, offscreenBufferHolder, drawTextureId,
+          vertexInfo.vertexArrayDirectBuffer, vertexInfo.uvArrayDirectBuffer,
+          colorBlendMode, modelColorRGBA, projection.getOrElse(new ProjectionMatrix), invertedMask
+        )
+    }
+
 
     gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.indexArrayDirectBuffer)
 

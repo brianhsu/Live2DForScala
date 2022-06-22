@@ -2,11 +2,11 @@ package moe.brianhsu.porting.live2d.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.opengl.OffscreenFrame
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.{AvatarShader, InvertedMaskedShader, MaskedShader, NormalShader, SetupMaskShader}
 import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
-import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 
 import java.nio.ByteBuffer
 
@@ -34,19 +34,8 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
 
   case class Blending(srcColor: Int, dstColor: Int, srcAlpha: Int, dstAlpha: Int)
 
-  def render(renderer: Renderer, textureId: Int,
-             vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode,
-             baseColor: TextureColor, projection: ProjectionMatrix,
-             invertedMask: Boolean): Unit = {
-
-    renderer.getClippingContextBufferForMask match {
-      case Some(context) => renderMask(context, textureId, vertexArray, uvArray)
-      case None => renderDrawable(renderer, textureId, vertexArray, uvArray, colorBlendMode, baseColor, projection, invertedMask)
-    }
-  }
-
-  private def renderDrawable(renderer: Renderer, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: ProjectionMatrix, invertedMask: Boolean): Unit = {
-    val drawClippingContextHolder = renderer.getClippingContextBufferForDraw
+  def renderDrawable(clippingContextBufferForDraw: Option[ClippingContext], offscreenFrameHolder: Option[OffscreenFrame], textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: ProjectionMatrix, invertedMask: Boolean): Unit = {
+    val drawClippingContextHolder = clippingContextBufferForDraw
     val masked = drawClippingContextHolder.isDefined // この描画オブジェクトはマスク対象か
     val shader = masked match {
       case true if invertedMask => invertedMaskedShader
@@ -65,7 +54,7 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
     setGlVertexInfo(vertexArray, uvArray, shader)
 
     for (context <- drawClippingContextHolder) {
-      renderer.offscreenBufferHolder.foreach { buffer =>
+      offscreenFrameHolder.foreach { buffer =>
         setGlTexture(GL_TEXTURE1, buffer.frameBufferId, shader.samplerTexture1Location, 1)
         gl.glUniformMatrix4fv(shader.uniformClipMatrixLocation, 1, transpose = false, context.matrixForDraw.elements)
         setGlColorChannel(context, shader)
@@ -81,7 +70,7 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
     setGlBlend(blending)
   }
 
-  private def renderMask(context: ClippingContext, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer): Unit = {
+  def renderMask(context: ClippingContext, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer): Unit = {
     val shader = setupMaskShader
 
     shader.useProgram()
@@ -105,12 +94,12 @@ class ShaderRenderer private (implicit gl: OpenGLBinding) {
     setGlBlend(Blending(GL_ZERO, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA))
   }
 
-  def setGlColorChannel(context: ClippingContext, shader: AvatarShader): Unit = {
+  private def setGlColorChannel(context: ClippingContext, shader: AvatarShader): Unit = {
     val colorChannel = context.layout.channelColor
     gl.glUniform4f(shader.uniformChannelFlagLocation, colorChannel.red, colorChannel.green, colorChannel.blue, colorChannel.alpha)
   }
 
-  def setGlTexture(textureUnit: Int, textureId: Int, variable: Int, variableValue: Int): Unit = {
+  private def setGlTexture(textureUnit: Int, textureId: Int, variable: Int, variableValue: Int): Unit = {
     gl.glActiveTexture(textureUnit)
     gl.glBindTexture(GL_TEXTURE_2D, textureId)
     gl.glUniform1i(variable, variableValue)
