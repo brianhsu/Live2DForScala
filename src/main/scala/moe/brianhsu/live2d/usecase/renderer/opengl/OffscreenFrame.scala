@@ -22,10 +22,12 @@ class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)
   import gl.constants._
 
   private var originalFrameBufferId: Int = 0
+  private val (mColorTextureBufferId, mFrameBufferId) = createColorTextureBufferAndFrameBuffer()
 
-  val (colorTextureBufferId, frameBufferId) = createColorTextureBufferAndFrameBuffer()
+  def frameBufferId: Int = mFrameBufferId
+  def colorTextureBufferId: Int = mColorTextureBufferId
 
-  private def createColorTextureBufferAndFrameBuffer(): (Int, Int) = {
+  protected def createColorTextureBufferAndFrameBuffer(): (Int, Int) = {
     val colorTextureBufferId = gl.generateTextures(10).head
     gl.glBindTexture(GL_TEXTURE_2D, colorTextureBufferId)
     gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, displayBufferWidth, displayBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null)

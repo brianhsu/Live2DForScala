@@ -181,25 +181,6 @@ class ShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
     }
   }
 
-  Feature("Use program") {
-    Scenario("Use program") {
-      Given("a mocked programId")
-      val mockedProgramId = 123
-
-      And("a stubbed OpenGL binding")
-      val gl = createOpenGLStub()
-
-      And("a dummy Shader")
-      val shader = createDummyShader(mockedProgramId, gl)
-
-      When("call useProgram on shader")
-      shader.useProgram()
-
-      Then("the OpenGL binding should get delegated call")
-      (gl.glUseProgram _).verify(mockedProgramId).once()
-    }
-  }
-
   Feature("Access location") {
     Scenario("positionLocation") {
       Given("a mocked programId and position location")
