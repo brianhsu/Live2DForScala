@@ -1,11 +1,10 @@
-package moe.brianhsu.porting.live2d.renderer.opengl.shader
+package moe.brianhsu.live2d.usecase.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.enitiy.opengl.{BlendFunction, OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.OffscreenFrame
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderFactory.DefaultShaderFactory
-import moe.brianhsu.live2d.usecase.renderer.opengl.shader._
 import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
 
@@ -27,7 +26,7 @@ object ShaderRenderer {
   }
 }
 
-class ShaderRenderer private(shaderFactory: ShaderFactory)(implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
+class ShaderRenderer (shaderFactory: ShaderFactory)(implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
 
   import gl.constants._
 
@@ -44,7 +43,7 @@ class ShaderRenderer private(shaderFactory: ShaderFactory)(implicit gl: OpenGLBi
       case false => normalShader
     }
 
-    currentShader.useProgram()
+    gl.glUseProgram(currentShader.programId)
     gl.updateVertexInfo(vertexArray, uvArray, currentShader.attributePositionLocation, currentShader.attributeTexCoordLocation)
 
     for {
@@ -67,7 +66,7 @@ class ShaderRenderer private(shaderFactory: ShaderFactory)(implicit gl: OpenGLBi
 
   def renderMask(context: ClippingContext, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer): Unit = {
 
-    setupMaskShader.useProgram()
+    gl.glUseProgram(setupMaskShader.programId)
 
     gl.activeAndUpdateTextureVariable(GL_TEXTURE0, textureId, setupMaskShader.samplerTexture0Location, 0)
     gl.updateVertexInfo(vertexArray, uvArray, setupMaskShader.attributePositionLocation, setupMaskShader.attributeTexCoordLocation)

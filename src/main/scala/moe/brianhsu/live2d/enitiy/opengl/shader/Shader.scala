@@ -22,8 +22,6 @@ abstract class Shader(gl: OpenGLBinding, shaderCompiler: ShaderCompiler, shaderC
   def textureLocation: Int = gl.glGetUniformLocation(programId, "texture")
   def baseColorLocation: Int = gl.glGetUniformLocation(programId, "baseColor")
 
-  def useProgram(): Unit = gl.glUseProgram(programId)
-
   protected def createShaderProgram(): Int = {
     val shaderProgram = gl.glCreateProgram()
     val vertexShaderHolder = shaderCompiler.compile(GL_VERTEX_SHADER, vertexShaderSource)
