@@ -11,17 +11,34 @@ object ClippingManager {
 
   def fromLive2DModel(model: Live2DModel): Option[ClippingManager] = {
     if (model.containMaskedDrawables) {
-      Some(new ClippingManager(model))
+      val clippingContextList = initContextListForMask(model)
+      Some(new ClippingManager(clippingContextList))
     } else {
       None
     }
   }
+
+  private def initContextListForMask(model: Live2DModel): List[ClippingContext] = {
+    val drawablesHasMasks = model.drawables.values.filter(_.masks.nonEmpty)
+    val masksToDrawables = drawablesHasMasks.groupBy(_.masks.sorted).toList
+    val contextList = masksToDrawables.map { case(masks, drawables) =>
+      val maskDrawables = masks.map(model.drawablesByIndex)
+      new ClippingContext(maskDrawables, drawables.toList)
+    }
+
+    contextList.sortBy(_.clippedDrawables.head.index)
+  }
+
 }
 
-class ClippingManager(model: Live2DModel) {
+class ClippingManager(private var mContextListForMask: List[ClippingContext], var usingClipCount: Int) {
 
-
-  private var mContextListForMask: List[ClippingContext] = initContextListForMask(model) ///< マスク用クリッピングコンテキストのリスト
+  def this(contextListForMask: List[ClippingContext]) = {
+    this(
+      contextListForMask,
+      contextListForMask.count(_.isUsing)
+    )
+  }
 
   def contextListForMask: List[ClippingContext] = mContextListForMask
 
@@ -116,14 +133,11 @@ class ClippingManager(model: Live2DModel) {
     }
   }
 
-  private var mUsingClipCount: Int = 0
-  def usingClipCount = mUsingClipCount
-
   def updateContextListForMask(): Unit = {
     this.mContextListForMask = mContextListForMask.map(_.calculateAllClippedDrawableBounds())
-    this.mUsingClipCount = mContextListForMask.count(_.isUsing)
-    if (this.mUsingClipCount > 0) {
-      setupLayoutBounds(mUsingClipCount)
+    this.usingClipCount = contextListForMask.count(_.isUsing)
+    if (this.usingClipCount > 0) {
+      setupLayoutBounds(usingClipCount)
       this.mContextListForMask = this.mContextListForMask.map(_.calculateMatrix())
     }
   }
