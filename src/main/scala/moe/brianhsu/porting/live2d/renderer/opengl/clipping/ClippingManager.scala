@@ -2,23 +2,31 @@ package moe.brianhsu.porting.live2d.renderer.opengl.clipping
 
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.Normal
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
-import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.ViewPort
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext.Layout
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureManager
-import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 
-class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implicit gl: OpenGLBinding) {
+object ClippingManager {
+  val MaskBufferSize: Int = 256 ///< クリッピングマスクのバッファサイズ（初期値:256）
 
-  val clippingMaskBufferSize: Int = 256 ///< クリッピングマスクのバッファサイズ（初期値:256）
+  def fromLive2DModel(model: Live2DModel): Option[ClippingManager] = {
+    if (model.containMaskedDrawables) {
+      Some(new ClippingManager(model))
+    } else {
+      None
+    }
+  }
+}
 
-  private var contextListForMask: List[ClippingContext] = initContextListForMask(model) ///< マスク用クリッピングコンテキストのリスト
+class ClippingManager(model: Live2DModel) {
+
+
+  private var mContextListForMask: List[ClippingContext] = initContextListForMask(model) ///< マスク用クリッピングコンテキストのリスト
+
+  def contextListForMask: List[ClippingContext] = mContextListForMask
 
   def getClippingContextByDrawable(drawable: Drawable): Option[ClippingContext] = {
-    contextListForMask.find(_.clippedDrawables.map(_.id).contains(drawable.id))
+    mContextListForMask.find(_.clippedDrawables.map(_.id).contains(drawable.id))
   }
 
   def initContextListForMask(model: Live2DModel): List[ClippingContext] = {
@@ -49,8 +57,8 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
       layoutCount match {
         case 0 =>
         case 1 =>
-          val cc = contextListForMask(curClipIndex)
-          contextListForMask = contextListForMask.updated(
+          val cc = mContextListForMask(curClipIndex)
+          mContextListForMask = mContextListForMask.updated(
             curClipIndex,
             cc.copy(layout = Layout(channelNo, Rectangle(0.0f, 0.0f, 1.0f, 1.0f)))
           )
@@ -59,8 +67,8 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
           //UVを2つに分解して使う
           for (i <- 0 until layoutCount) {
             val xPosition = i % 2
-            val cc = contextListForMask(curClipIndex)
-            contextListForMask = contextListForMask.updated(
+            val cc = mContextListForMask(curClipIndex)
+            mContextListForMask = mContextListForMask.updated(
               curClipIndex,
               cc.copy(layout = Layout(channelNo, Rectangle(xPosition * 0.5f, 0.0f, 0.5f, 1.0f)))
             )
@@ -71,8 +79,8 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
           for (i <- 0 until layoutCount) {
             val xPosition = i % 2
             val yPosition = i / 2
-            val cc = contextListForMask(curClipIndex)
-            contextListForMask = contextListForMask.updated(
+            val cc = mContextListForMask(curClipIndex)
+            mContextListForMask = mContextListForMask.updated(
               curClipIndex,
               cc.copy(layout = Layout(channelNo, Rectangle(xPosition * 0.5f, yPosition * 0.5f, 0.5f, 0.5f)))
             )
@@ -83,9 +91,9 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
           for (i <- 0 until layoutCount) {
             val xPosition = i % 3
             val yPosition = i / 3
-            val cc = contextListForMask(curClipIndex)
+            val cc = mContextListForMask(curClipIndex)
 
-            contextListForMask = contextListForMask.updated(
+            mContextListForMask = mContextListForMask.updated(
               curClipIndex,
               cc.copy(layout = Layout(channelNo, Rectangle(xPosition / 3.0f, yPosition / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f)))
             )
@@ -97,8 +105,8 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
           // 引き続き実行する場合、 SetupShaderProgramでオーバーアクセスが発生するので仕方なく適当に入れておく
           // もちろん描画結果はろくなことにならない
           for (_ <- 0 until layoutCount) {
-            val cc = contextListForMask(curClipIndex)
-            contextListForMask = contextListForMask.updated(
+            val cc = mContextListForMask(curClipIndex)
+            mContextListForMask = mContextListForMask.updated(
               curClipIndex,
               cc.copy(layout = Layout(0, Rectangle(0.0f, 0.0f, 1.0f, 1.0f)))
             )
@@ -108,45 +116,16 @@ class ClippingManager(model: Live2DModel, textureManager: TextureManager)(implic
     }
   }
 
-  def setupClippingContext(renderer: Renderer, lastFBO: Int, lastViewport: ViewPort): Unit = {
+  private var mUsingClipCount: Int = 0
+  def usingClipCount = mUsingClipCount
 
-    this.contextListForMask = contextListForMask.map(_.calculateAllClippedDrawableBounds())
-
-    val usingClipCount = contextListForMask.count(_.isUsing)
-
-    // マスク作成処理
-    if (usingClipCount > 0) {
-      gl.glViewport(0, 0, clippingMaskBufferSize, clippingMaskBufferSize)
-
-      renderer.preDraw()
-      renderer.offscreenBufferHolder.foreach(_.beginDraw(lastFBO))
-      setupLayoutBounds(usingClipCount)
-
-      // 実際にマスクを生成する
-      // 全てのマスクをどの様にレイアウトして描くかを決定し、ClipContext , ClippedDrawContext に記憶する
-      this.contextListForMask = this.contextListForMask.map(_.calculateMatrix())
-      for (clipContext <- contextListForMask) {
-
-        for (maskDrawable <- clipContext.vertexPositionChangedMaskDrawable) {
-          renderer.setIsCulling(maskDrawable.isCulling)
-          renderer.setClippingContextBufferForMask(Some(clipContext))
-
-          val textureFile = model.textureFiles(maskDrawable.textureIndex)
-          val textureInfo = textureManager.loadTexture(textureFile)
-          renderer.drawMesh(
-            textureInfo.textureId,
-            maskDrawable.vertexInfo,
-            maskDrawable.opacity,
-            Normal,
-            invertedMask = false
-          )
-        }
-      }
-
-      // --- 後処理 ---
-      renderer.offscreenBufferHolder.foreach(_.endDraw())
-      renderer.setClippingContextBufferForMask(None)
-      RichOpenGLBinding.wrapOpenGLBinding(gl).viewPort = lastViewport
+  def updateContextListForMask(): Unit = {
+    this.mContextListForMask = mContextListForMask.map(_.calculateAllClippedDrawableBounds())
+    this.mUsingClipCount = mContextListForMask.count(_.isUsing)
+    if (this.mUsingClipCount > 0) {
+      setupLayoutBounds(mUsingClipCount)
+      this.mContextListForMask = this.mContextListForMask.map(_.calculateMatrix())
     }
   }
+
 }

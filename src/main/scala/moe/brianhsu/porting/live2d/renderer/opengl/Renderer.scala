@@ -2,7 +2,7 @@ package moe.brianhsu.porting.live2d.renderer.opengl
 
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
+import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{BlendMode, Normal}
 import moe.brianhsu.live2d.enitiy.model.drawable.VertexInfo
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
@@ -21,28 +21,10 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
   private val textureManager = TextureManager.getInstance
   private val shaderRenderer = ShaderRenderer.getInstance
   private val profile = Profile.getInstance
-  private var isCulling: Boolean = false
   private var clippingContextBufferForMask: Option[ClippingContext] = None
   private var clippingContextBufferForDraw: Option[ClippingContext] = None
-  private val clippingManagerHolder: Option[ClippingManager] = if (model.containMaskedDrawables) {
-    Some(new ClippingManager(model, textureManager))
-  } else {
-    None
-  }
-
-  val offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(manager => OffscreenFrame.getInstance(manager.clippingMaskBufferSize, manager.clippingMaskBufferSize))
-
-  def setClippingContextBufferForMask(clip: Option[ClippingContext]): Unit = {
-    clippingContextBufferForMask = clip
-  }
-
-  def setClippingContextBufferForDraw(context: Option[ClippingContext]): Unit = {
-    clippingContextBufferForDraw = context
-  }
-
-  def setIsCulling(isCulling: Boolean): Unit = {
-    this.isCulling = isCulling
-  }
+  private val clippingManagerHolder: Option[ClippingManager] = ClippingManager.fromLive2DModel(model)
+  private val offscreenBufferHolder: Option[OffscreenFrame] = clippingManagerHolder.map(_ => OffscreenFrame.getInstance(ClippingManager.MaskBufferSize, ClippingManager.MaskBufferSize))
 
   private def setProjection(projection: ProjectionMatrix): Unit = {
     this.projection = Some(projection)
@@ -55,6 +37,14 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
     this.profile.restore()
   }
 
+  def beginDrawOffscreenFrame(lastFrameBufferBinding: Int): Unit = {
+    this.offscreenBufferHolder.foreach(_.beginDraw(lastFrameBufferBinding))
+  }
+
+  def endDrawOffscreenFrame(): Unit = {
+    this.offscreenBufferHolder.foreach(_.endDraw())
+  }
+
   def preDraw(): Unit = {
     gl.glDisable(GL_SCISSOR_TEST)
     gl.glDisable(GL_STENCIL_TEST)
@@ -65,9 +55,7 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
     gl.glBindBuffer(GL_ARRAY_BUFFER, 0) //前にバッファがバインドされていたら破棄する必要がある
   }
 
-  def postDraw(): Unit = {}
-
-  def drawMesh(drawTextureId: Int, vertexInfo: VertexInfo,
+  def drawMesh(drawTextureId: Int, isCulling: Boolean, vertexInfo: VertexInfo,
                opacity: Float, colorBlendMode: BlendMode, invertedMask: Boolean): Unit ={
 
     if (isCulling) {
@@ -101,37 +89,62 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
     gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.indexArrayDirectBuffer)
 
     gl.glUseProgram(0)
-    setClippingContextBufferForDraw(None)
-    setClippingContextBufferForMask(None)
+    this.clippingContextBufferForDraw = None
+    this.clippingContextBufferForMask = None
   }
 
   def drawModel(): Unit = {
     clippingManagerHolder.foreach { manager =>
-      preDraw()
-      manager.setupClippingContext(this, profile.lastFrameBufferBinding, profile.lastViewPort)
+      manager.updateContextListForMask()
+      if (manager.usingClipCount > 0) {
+        gl.glViewport(0, 0, ClippingManager.MaskBufferSize, ClippingManager.MaskBufferSize)
+
+        this.preDraw()
+        this.beginDrawOffscreenFrame(profile.lastFrameBufferBinding)
+
+        for (clipContext <- manager.contextListForMask) {
+
+          for (maskDrawable <- clipContext.vertexPositionChangedMaskDrawable) {
+            this.clippingContextBufferForMask = Some(clipContext)
+
+            val textureFile = model.textureFiles(maskDrawable.textureIndex)
+            val textureInfo = textureManager.loadTexture(textureFile)
+            this.drawMesh(
+              textureInfo.textureId,
+              maskDrawable.isCulling,
+              maskDrawable.vertexInfo,
+              maskDrawable.opacity,
+              Normal,
+              invertedMask = false
+            )
+          }
+        }
+
+        // --- 後処理 ---
+        this.endDrawOffscreenFrame()
+        this.clippingContextBufferForMask = None
+        gl.viewPort = profile.lastViewPort
+      }
+
     }
 
     preDraw()
 
     val sortedDrawable = model.sortedDrawables
     for (drawable <- sortedDrawable.filter(_.dynamicFlags.isVisible)) {
-
-      val clipContext: Option[ClippingContext] = clippingManagerHolder.flatMap(_.getClippingContextByDrawable(drawable))
-      setClippingContextBufferForDraw(clipContext)
-
-      setIsCulling(drawable.isCulling)
+      this.clippingContextBufferForDraw = clippingManagerHolder.flatMap(_.getClippingContextByDrawable(drawable))
       val textureFile = model.textureFiles(drawable.textureIndex)
       val textureInfo = textureManager.loadTexture(textureFile)
 
       drawMesh(
         textureInfo.textureId,
+        drawable.isCulling,
         drawable.vertexInfo,
         drawable.opacity,
         drawable.constantFlags.blendMode,
         drawable.constantFlags.isInvertedMask
       )
     }
-    postDraw()
   }
 
 }
