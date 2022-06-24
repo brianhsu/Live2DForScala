@@ -92,6 +92,27 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
     this.clippingContextBufferForDraw = None
     this.clippingContextBufferForMask = None
   }
+  def drawClippingMesh(clippingContextBufferForMask: ClippingContext,
+                       drawTextureId: Int, isCulling: Boolean, vertexInfo: VertexInfo): Unit ={
+
+    if (isCulling) {
+      gl.glEnable(GL_CULL_FACE)
+    } else {
+      gl.glDisable(GL_CULL_FACE)
+    }
+
+    gl.glFrontFace(GL_CCW)
+
+    shaderRenderer.renderMask(
+      clippingContextBufferForMask, drawTextureId,
+      vertexInfo.vertexArrayDirectBuffer, vertexInfo.uvArrayDirectBuffer
+    )
+
+    gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.indexArrayDirectBuffer)
+
+    gl.glUseProgram(0)
+    this.clippingContextBufferForDraw = None
+  }
 
   def drawModel(): Unit = {
     clippingManagerHolder = clippingManagerHolder.map(_.updateContextListForMask())
@@ -127,24 +148,14 @@ class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {
     for (clipContext <- contextListForMask) {
 
       for (maskDrawable <- clipContext.vertexPositionChangedMaskDrawable) {
-        this.clippingContextBufferForMask = Some(clipContext)
-
         val textureFile = model.textureFiles(maskDrawable.textureIndex)
         val textureInfo = textureManager.loadTexture(textureFile)
-        this.drawMesh(
-          textureInfo.textureId,
-          maskDrawable.isCulling,
-          maskDrawable.vertexInfo,
-          maskDrawable.opacity,
-          Normal,
-          invertedMask = false
-        )
+        this.drawClippingMesh(clipContext, textureInfo.textureId, maskDrawable.isCulling, maskDrawable.vertexInfo)
       }
     }
 
     // --- 後処理 ---
     this.endDrawOffscreenFrame()
-    this.clippingContextBufferForMask = None
     gl.viewPort = profile.lastViewPort
   }
 }
