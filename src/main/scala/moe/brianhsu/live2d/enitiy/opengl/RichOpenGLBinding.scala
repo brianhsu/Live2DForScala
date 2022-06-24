@@ -186,4 +186,14 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     binding.glBlendFuncSeparate(blending.sourceRGB, blending.destRGB, blending.sourceAlpha, blending.destAlpha)
   }
 
+  def preDraw(): Unit = {
+    binding.glDisable(GL_SCISSOR_TEST)
+    binding.glDisable(GL_STENCIL_TEST)
+    binding.glDisable(GL_DEPTH_TEST)
+    binding.glEnable(GL_BLEND)
+    binding.glColorMask(red = true, green = true, blue = true, alpha = true)
+    binding.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+    binding.glBindBuffer(GL_ARRAY_BUFFER, 0)
+  }
+
 }

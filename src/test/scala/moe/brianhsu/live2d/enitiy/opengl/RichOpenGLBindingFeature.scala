@@ -525,6 +525,27 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
 
     }
   }
+  Feature("Pre drawing") {
+    Scenario("Call preDraw method on RichOpenGL object") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      When("call preDraw()")
+      richOpenGL.preDraw()
+
+      Then("it should delegated to underlay OpenGL binding")
+      inSequence {
+        (binding.glDisable _).verify(GL_SCISSOR_TEST).once()
+        (binding.glDisable _).verify(GL_STENCIL_TEST).once()
+        (binding.glDisable _).verify(GL_DEPTH_TEST).once()
+        (binding.glEnable _).verify(GL_BLEND).pos
+        (binding.glColorMask _).verify(true, true, true, true).once()
+        (binding.glBindBuffer _).verify(GL_ELEMENT_ARRAY_BUFFER, 0).once()
+        (binding.glBindBuffer _).verify(GL_ARRAY_BUFFER, 0).once()
+      }
+    }
+  }
 
   private def addDummyIntegerVariable(binding: OpenGLBinding, pname: Int, offset: Int, value: Int): Unit = {
     (binding.glGetIntegerv: (Int, Array[Int], Int) => Unit)
