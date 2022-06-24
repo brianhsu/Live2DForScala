@@ -25,13 +25,9 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   private var zoom: Float = 2.0f
   private var offsetX: Float = 0.0f
   private var offsetY: Float = 0.0f
-  private val spriteShader: SpriteShader = new SpriteShader()//.useProgram()
-  println("spriteSharder:" + spriteShader)
-  private val manager = TextureManager.getInstance
+  private val spriteShader: SpriteShader = new SpriteShader()
+  private val textureManager = TextureManager.getInstance
 
-  private lazy val backgroundTexture = manager.loadTexture("src/main/resources/texture/back_class_normal.png")
-  private lazy val powerTexture = manager.loadTexture("src/main/resources/texture/close.png")
-  private lazy val gearTexture = manager.loadTexture("src/main/resources/texture/icon_gear.png")
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
   private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator(drawCanvasInfo)
 
@@ -45,13 +41,27 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
     a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
     a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
   })
-  private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, backgroundTexture, spriteShader)
-  private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, powerTexture, spriteShader)
-  private val gearSprite: LAppSprite = new GearSprite(drawCanvasInfo, gearTexture, spriteShader)
 
-  private val targetPointCalculator = new FaceDirectionByMouse(30)
-
+  private val targetPointCalculator = new FaceDirectionByMouse(60)
   private val faceDirection = new FaceDirection(targetPointCalculator)
+  private val backgroundSprite: Sprite = new BackgroundSprite(
+    drawCanvasInfo,
+    textureManager.loadTexture("src/main/resources/texture/back_class_normal.png"),
+    spriteShader
+  )
+
+  private val powerSprite: Sprite = new PowerSprite(
+    drawCanvasInfo,
+    textureManager.loadTexture("src/main/resources/texture/close.png"),
+    spriteShader
+  )
+
+  private val gearSprite: Sprite = new GearSprite(
+    drawCanvasInfo,
+    textureManager.loadTexture("src/main/resources/texture/icon_gear.png"),
+    spriteShader
+  )
+
 
   {
     setupAvatarEffects()
@@ -65,9 +75,10 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   def display(isForceUpdate: Boolean = false): Unit = {
     clearScreen()
 
-    this.backgroundSprite.render()
-    this.powerSprite.render()
-    this.gearSprite.render()
+    rendererHolder.foreach(_.drawSprite(this.backgroundSprite))
+    rendererHolder.foreach(_.drawSprite(this.powerSprite))
+    rendererHolder.foreach(_.drawSprite(this.gearSprite))
+
     this.frameTimeCalculator.updateFrameTime()
 
     for {
@@ -104,7 +115,6 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
       drawCanvasInfo.currentCanvasHeight
     )
 
-    println(drawCanvasInfo)
     openGL.glViewport(0, 0, drawCanvasInfo.currentSurfaceWidth, drawCanvasInfo.currentSurfaceHeight)
     backgroundSprite.resize()
     powerSprite.resize()
