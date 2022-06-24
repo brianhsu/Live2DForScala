@@ -11,7 +11,7 @@ object ClippingContext {
     0 -> TextureColor(1.0f, 0.0f, 0.0f, 0.0f),
     1 -> TextureColor(0.0f, 1.0f, 0.0f, 0.0f),
     2 -> TextureColor(0.0f, 0.0f, 1.0f, 0.0f),
-    3 -> TextureColor(0.0f, 0.0f, 0.0f),
+    3 -> TextureColor(0.0f, 0.0f, 0.0f, 1.0f),
   )
 
   val ColorChannelCount: Int = ChannelColors.size

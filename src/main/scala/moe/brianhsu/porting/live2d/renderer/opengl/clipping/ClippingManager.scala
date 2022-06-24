@@ -31,7 +31,7 @@ object ClippingManager {
 
 }
 
-class ClippingManager(private var mContextListForMask: List[ClippingContext], var usingClipCount: Int) {
+case class ClippingManager(contextListForMask: List[ClippingContext], usingClipCount: Int) {
 
   def this(contextListForMask: List[ClippingContext]) = {
     this(
@@ -40,10 +40,8 @@ class ClippingManager(private var mContextListForMask: List[ClippingContext], va
     )
   }
 
-  def contextListForMask: List[ClippingContext] = mContextListForMask
-
   def getClippingContextByDrawable(drawable: Drawable): Option[ClippingContext] = {
-    mContextListForMask.find(_.clippedDrawables.map(_.id).contains(drawable.id))
+    contextListForMask.find(_.clippedDrawables.map(_.id).contains(drawable.id))
   }
 
   def initContextListForMask(model: Live2DModel): List[ClippingContext] = {
@@ -57,7 +55,9 @@ class ClippingManager(private var mContextListForMask: List[ClippingContext], va
     contextList.sortBy(_.clippedDrawables.head.index)
   }
 
-  private def setupLayoutBounds(usingClipCount: Int): Unit = {
+  private def setupLayoutBounds(originalList: List[ClippingContext], usingClipCount: Int): List[ClippingContext] = {
+    var newContextListForMask = originalList
+    println(originalList)
     // ひとつのRenderTextureを極力いっぱいに使ってマスクをレイアウトする
     // マスクグループの数が4以下ならRGBA各チャンネルに１つずつマスクを配置し、5以上6以下ならRGBAを2,2,1,1と配置する
 
@@ -74,8 +74,8 @@ class ClippingManager(private var mContextListForMask: List[ClippingContext], va
       layoutCount match {
         case 0 =>
         case 1 =>
-          val cc = mContextListForMask(curClipIndex)
-          mContextListForMask = mContextListForMask.updated(
+          val cc = newContextListForMask(curClipIndex)
+          newContextListForMask = newContextListForMask.updated(
             curClipIndex,
             cc.copy(layout = Layout(channelNo, Rectangle(0.0f, 0.0f, 1.0f, 1.0f)))
           )
@@ -84,8 +84,8 @@ class ClippingManager(private var mContextListForMask: List[ClippingContext], va
           //UVを2つに分解して使う
           for (i <- 0 until layoutCount) {
             val xPosition = i % 2
-            val cc = mContextListForMask(curClipIndex)
-            mContextListForMask = mContextListForMask.updated(
+            val cc = newContextListForMask(curClipIndex)
+            newContextListForMask = newContextListForMask.updated(
               curClipIndex,
               cc.copy(layout = Layout(channelNo, Rectangle(xPosition * 0.5f, 0.0f, 0.5f, 1.0f)))
             )
@@ -96,8 +96,8 @@ class ClippingManager(private var mContextListForMask: List[ClippingContext], va
           for (i <- 0 until layoutCount) {
             val xPosition = i % 2
             val yPosition = i / 2
-            val cc = mContextListForMask(curClipIndex)
-            mContextListForMask = mContextListForMask.updated(
+            val cc = newContextListForMask(curClipIndex)
+            newContextListForMask = newContextListForMask.updated(
               curClipIndex,
               cc.copy(layout = Layout(channelNo, Rectangle(xPosition * 0.5f, yPosition * 0.5f, 0.5f, 0.5f)))
             )
@@ -108,9 +108,9 @@ class ClippingManager(private var mContextListForMask: List[ClippingContext], va
           for (i <- 0 until layoutCount) {
             val xPosition = i % 3
             val yPosition = i / 3
-            val cc = mContextListForMask(curClipIndex)
+            val cc = newContextListForMask(curClipIndex)
 
-            mContextListForMask = mContextListForMask.updated(
+            newContextListForMask = newContextListForMask.updated(
               curClipIndex,
               cc.copy(layout = Layout(channelNo, Rectangle(xPosition / 3.0f, yPosition / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f)))
             )
@@ -122,8 +122,8 @@ class ClippingManager(private var mContextListForMask: List[ClippingContext], va
           // 引き続き実行する場合、 SetupShaderProgramでオーバーアクセスが発生するので仕方なく適当に入れておく
           // もちろん描画結果はろくなことにならない
           for (_ <- 0 until layoutCount) {
-            val cc = mContextListForMask(curClipIndex)
-            mContextListForMask = mContextListForMask.updated(
+            val cc = newContextListForMask(curClipIndex)
+            newContextListForMask = newContextListForMask.updated(
               curClipIndex,
               cc.copy(layout = Layout(0, Rectangle(0.0f, 0.0f, 1.0f, 1.0f)))
             )
@@ -131,15 +131,19 @@ class ClippingManager(private var mContextListForMask: List[ClippingContext], va
           }
       }
     }
+    newContextListForMask
   }
 
-  def updateContextListForMask(): Unit = {
-    this.mContextListForMask = mContextListForMask.map(_.calculateAllClippedDrawableBounds())
-    this.usingClipCount = contextListForMask.count(_.isUsing)
-    if (this.usingClipCount > 0) {
-      setupLayoutBounds(usingClipCount)
-      this.mContextListForMask = this.mContextListForMask.map(_.calculateMatrix())
+  def updateContextListForMask(): ClippingManager = {
+    var newContextList = this.contextListForMask.map(_.calculateAllClippedDrawableBounds())
+    val newUsingClipCount = newContextList.count(_.isUsing)
+    if (newUsingClipCount > 0) {
+      newContextList =
+        setupLayoutBounds(newContextList, usingClipCount)
+          .map(_.calculateMatrix())
     }
+
+    this.copy(newContextList, newUsingClipCount)
   }
 
 }
