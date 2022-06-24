@@ -41,18 +41,7 @@ case class ClippingManager(contextListForMask: List[ClippingContext], usingClipC
   }
 
   def getClippingContextByDrawable(drawable: Drawable): Option[ClippingContext] = {
-    contextListForMask.find(_.clippedDrawables.map(_.id).contains(drawable.id))
-  }
-
-  def initContextListForMask(model: Live2DModel): List[ClippingContext] = {
-    val drawablesHasMasks = model.drawables.values.filter(_.masks.nonEmpty)
-    val masksToDrawables = drawablesHasMasks.groupBy(_.masks.sorted).toList
-    val contextList = masksToDrawables.map { case(masks, drawables) =>
-      val maskDrawables = masks.map(model.drawablesByIndex)
-      new ClippingContext(maskDrawables, drawables.toList)
-    }
-
-    contextList.sortBy(_.clippedDrawables.head.index)
+    contextListForMask.find(_.clippedDrawables.contains(drawable))
   }
 
   private def setupLayoutBounds(originalList: List[ClippingContext], usingClipCount: Int): List[ClippingContext] = {
