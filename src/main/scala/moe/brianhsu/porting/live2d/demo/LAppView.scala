@@ -97,6 +97,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
 
   def resize(): Unit = {
 
+    System.err.println(s"cw: ${drawCanvasInfo.currentCanvasWidth}, ch: ${drawCanvasInfo.currentCanvasHeight}, sw: ${drawCanvasInfo.currentSurfaceWidth}, sh: ${drawCanvasInfo.currentSurfaceHeight}")
     // TODO:
     // 1. There should be better way to do this.
     viewPortMatrixCalculator.updateViewPort(
