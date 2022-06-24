@@ -6,4 +6,6 @@ trait DrawCanvasInfoReader {
   def currentSurfaceWidth: Int
   def currentSurfaceHeight: Int
 
+  override def toString: String = s"DrawCanvasInfoReader($currentCanvasWidth, $currentCanvasHeight, $currentSurfaceWidth, $currentSurfaceHeight)"
+
 }
