@@ -57,7 +57,7 @@ case class ClippingManager(contextListForMask: List[ClippingContext], usingClipC
 
   private def setupLayoutBounds(originalList: List[ClippingContext], usingClipCount: Int): List[ClippingContext] = {
     var newContextListForMask = originalList
-    println(originalList)
+    //println(originalList)
     // ひとつのRenderTextureを極力いっぱいに使ってマスクをレイアウトする
     // マスクグループの数が4以下ならRGBA各チャンネルに１つずつマスクを配置し、5以上6以下ならRGBAを2,2,1,1と配置する
 

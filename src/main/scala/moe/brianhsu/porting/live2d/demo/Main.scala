@@ -18,7 +18,7 @@ object Main {
 
     this.frame = new JFrame("Live 2D Scala Demo")
     frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
-    frame.setSize(1920, 1080)
+    frame.setSize(1080, 720)
     frame.getContentPane.add(createGLCanvas())
     frame.setVisible(true)
 

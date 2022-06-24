@@ -104,7 +104,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
       drawCanvasInfo.currentCanvasHeight
     )
 
-    openGL.glViewport(0, 0, drawCanvasInfo.currentCanvasWidth, drawCanvasInfo.currentCanvasHeight)
+    println(drawCanvasInfo)
+    openGL.glViewport(0, 0, drawCanvasInfo.currentSurfaceWidth, drawCanvasInfo.currentSurfaceHeight)
     backgroundSprite.resize()
     powerSprite.resize()
     gearSprite.resize()
