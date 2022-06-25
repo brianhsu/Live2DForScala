@@ -155,9 +155,7 @@ class ProfileFeature extends AnyFeatureSpec with Matchers with GivenWhenThen wit
 
       }
     }
-
   }
-
 
   private def createProfile(binding: OpenGLBinding, richOpenGLBinding: RichOpenGLBinding): Profile = {
     val converter: OpenGLBinding => RichOpenGLBinding = _ => richOpenGLBinding

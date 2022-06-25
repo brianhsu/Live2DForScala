@@ -31,7 +31,7 @@ object ClippingManager {
 
 }
 
-case class ClippingManager(contextListForMask: List[ClippingContext], usingClipCount: Int) {
+class ClippingManager(val contextListForMask: List[ClippingContext], val usingClipCount: Int) {
 
   def this(contextListForMask: List[ClippingContext]) = {
     this(
@@ -132,7 +132,7 @@ case class ClippingManager(contextListForMask: List[ClippingContext], usingClipC
           .map(_.calculateMatrix())
     }
 
-    this.copy(newContextList, newUsingClipCount)
+    new ClippingManager(newContextList, newUsingClipCount)
   }
 
 }

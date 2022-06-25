@@ -22,7 +22,7 @@ object TextureManager {
 
 }
 
-class TextureManager private[texture] (implicit gl: OpenGLBinding) {
+class TextureManager(implicit gl: OpenGLBinding) {
 
   import gl.constants._
 

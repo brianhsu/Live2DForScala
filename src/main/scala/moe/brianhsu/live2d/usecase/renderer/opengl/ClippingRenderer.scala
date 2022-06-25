@@ -31,7 +31,7 @@ class ClippingRenderer(model: Live2DModel, textureManager: TextureManager, shade
   }
 
   def clippingContextBufferForDraw(drawable: Drawable): Option[ClippingContext] = {
-    clippingManagerHolder.flatMap(_.getClippingContextByDrawable(drawable))
+    clippingManagerHolder.flatMap (_.getClippingContextByDrawable(drawable))
   }
 
   def draw(profile: Profile): Unit = {
