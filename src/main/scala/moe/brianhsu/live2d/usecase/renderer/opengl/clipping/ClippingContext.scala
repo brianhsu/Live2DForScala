@@ -90,6 +90,9 @@ case class ClippingContext(maskDrawable: List[Drawable], clippedDrawables: List[
     }
   }
 
-  def vertexPositionChangedMaskDrawable: List[Drawable] = maskDrawable.filter(_.dynamicFlags.vertexPositionChanged)
+  def vertexPositionChangedMaskDrawable: List[Drawable] = {
+    println("maskDrawable2:" + maskDrawable)
+    maskDrawable.filter(_.dynamicFlags.vertexPositionChanged)
+  }
 
 }

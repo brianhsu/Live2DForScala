@@ -9,25 +9,42 @@ import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderRenderer
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingManager
 
 class ClippingRenderer(model: Live2DModel, textureManager: TextureManager, shaderRenderer: ShaderRenderer,
-                       initClippingManager: Option[ClippingManager])
+                       initClippingManager: Option[ClippingManager], val offscreenFrameHolder: Option[OffscreenFrame])
                       (implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding) {
 
   import gl.constants._
 
   private var clippingManagerHolder: Option[ClippingManager] = initClippingManager
 
-  val offscreenFrameHolder: Option[OffscreenFrame] = {
-    clippingManagerHolder.map { _ =>
-      OffscreenFrame.getInstance(
-        ClippingManager.MaskBufferSize,
-        ClippingManager.MaskBufferSize
-      )
-    }
-  }
-
   def this(model: Live2DModel, textureManager: TextureManager, shaderRenderer: ShaderRenderer)
           (implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding = RichOpenGLBinding.wrapOpenGLBinding) = {
-    this(model, textureManager, shaderRenderer, ClippingManager.fromLive2DModel(model))
+
+    this(
+      model, textureManager, shaderRenderer,
+      ClippingManager.fromLive2DModel(model),
+      ClippingManager.fromLive2DModel(model).map { _ =>
+        OffscreenFrame.getInstance(
+          ClippingManager.MaskBufferSize,
+          ClippingManager.MaskBufferSize
+        )
+      }
+    )
+  }
+
+  def this(model: Live2DModel, textureManager: TextureManager,
+           shaderRenderer: ShaderRenderer, initClippingManager: Option[ClippingManager])
+          (implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding) = {
+
+    this(
+      model, textureManager, shaderRenderer,
+      initClippingManager,
+      initClippingManager.map { _ =>
+        OffscreenFrame.getInstance(
+          ClippingManager.MaskBufferSize,
+          ClippingManager.MaskBufferSize
+        )
+      }
+    )
   }
 
   def clippingContextBufferForDraw(drawable: Drawable): Option[ClippingContext] = {
@@ -47,9 +64,12 @@ class ClippingRenderer(model: Live2DModel, textureManager: TextureManager, shade
 
     this.offscreenFrameHolder.foreach(_.beginDraw(profile.lastFrameBufferBinding))
 
+    println("contextListForMask:" + contextListForMask)
     for (clipContext <- contextListForMask) {
+      println("clipContext:" + clipContext)
 
       for (maskDrawable <- clipContext.vertexPositionChangedMaskDrawable) {
+        println("maskDrawable:" + maskDrawable)
         val textureFile = model.textureFiles(maskDrawable.textureIndex)
         val textureInfo = textureManager.loadTexture(textureFile)
         this.drawClippingMesh(clipContext, textureInfo.textureId, maskDrawable.isCulling, maskDrawable.vertexInfo)

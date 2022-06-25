@@ -31,7 +31,7 @@ object ClippingManager {
 
 }
 
-class ClippingManager(val contextListForMask: List[ClippingContext], val usingClipCount: Int) {
+class ClippingManager(mContextListForMask: List[ClippingContext], mUsingClipCount: Int) {
 
   def this(contextListForMask: List[ClippingContext]) = {
     this(
@@ -39,6 +39,9 @@ class ClippingManager(val contextListForMask: List[ClippingContext], val usingCl
       contextListForMask.count(_.isUsing)
     )
   }
+
+  def contextListForMask: List[ClippingContext] = mContextListForMask
+  def usingClipCount = mUsingClipCount
 
   def getClippingContextByDrawable(drawable: Drawable): Option[ClippingContext] = {
     contextListForMask.find(_.clippedDrawables.contains(drawable))

@@ -1,9 +1,10 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
+import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.ConstantDrawableFlagMask.csmIsDoubleSided
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.live2d.enitiy.opengl.texture.TextureManager
+import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureInfo, TextureManager}
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderRenderer
@@ -126,6 +127,126 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       clippingContextHolder.value.clippedDrawables should contain theSameElementsAs List(idToDrawable("id4"), idToDrawable("id3"))
     }
 
+  }
+
+  Feature("Draw clipping") {
+    Scenario("There is no clipping manager at all") {
+      Given("a mocked OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
+      implicit val binding: OpenGLBinding = createOpenGLMock()
+      val richOpenGLBinding: RichOpenGLBinding = mock[RichOpenGLBinding]
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
+      val textureManager = stub[TextureManager]
+      val shaderRenderer = new ShaderRenderer(createShaderFactory())
+      val live2DModel = new Live2DModel(stub[ModelBackend])
+
+      And("create a ClippingRenderer with ClippingManager that has no clipping manager")
+      val renderer = new ClippingRenderer(live2DModel, textureManager, shaderRenderer, None)
+
+      Then("nothing should happen and no exception is thrown")
+      noException should be thrownBy {
+        When("draw it with mocked profile")
+        val mockedProfile = mock[Profile]
+        renderer.draw(mockedProfile)
+      }
+    }
+
+    Scenario("There is clipping manager but no clipping is in using") {
+      Given("a mocked OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
+      implicit val binding: OpenGLBinding = createOpenGLMock()
+      val richOpenGLBinding: RichOpenGLBinding = mock[RichOpenGLBinding]
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
+      val textureManager = stub[TextureManager]
+      val shaderRenderer = new ShaderRenderer(createShaderFactory())
+      val live2DModel = new Live2DModel(stub[ModelBackend])
+
+      val stubbedClippingManager = stub[ClippingManager]
+      (() => stubbedClippingManager.usingClipCount).when().returns(10)
+
+      And("the stubbedClippingManager will return another clipping manager that has no using clipping after update context list")
+      val newClippingManager = stub[ClippingManager]
+      (() => newClippingManager.usingClipCount).when().returns(0)
+      (() => stubbedClippingManager.updateContextListForMask()).when().returns(newClippingManager)
+
+      And("create a ClippingRenderer with ClippingManager that has no clipping manager")
+      val renderer = new ClippingRenderer(live2DModel, textureManager, shaderRenderer, Some(stubbedClippingManager), None)
+
+      Then("nothing should happen and no exception is thrown")
+      noException should be thrownBy {
+        When("draw it with mocked profile")
+        val mockedProfile = mock[Profile]
+        renderer.draw(mockedProfile)
+      }
+    }
+
+    Scenario("Both clipping manager and in using clipping exist - without OffscreenFrame") {
+      /*
+      Given("4 drawable that 2 of them is vertex changed")
+      val idToDrawable = Map(
+        "id0" -> createDrawable("id0", 0, isCulling = false, isVertexChanged = true),
+        "id1" -> createDrawable("id1", 1, isCulling = false, isVertexChanged = false),
+        "id2" -> createDrawable("id2", 2, isCulling = true, isVertexChanged = true),
+        "id3" -> createDrawable("id3", 3, isCulling = false, isVertexChanged = false),
+      )
+
+      And("a clipping manager based on those drawables")
+      val clippingContextList = List(
+        new ClippingContext(List(idToDrawable("id0"), idToDrawable("id1")), Nil),
+        new ClippingContext(List(idToDrawable("id2"), idToDrawable("id3")), Nil),
+      )
+      val clippingManager = stub[ClippingManager]
+      (() => clippingManager.updateContextListForMask()).when().returns(clippingManager)
+      (() => clippingManager.contextListForMask).when().returns(clippingContextList)
+      (() => clippingManager.usingClipCount).when().returns(1)
+
+      And("a mocked OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
+      implicit val binding: OpenGLBinding = createOpenGLMock()
+      val richOpenGLBinding: RichOpenGLBinding = mock[RichOpenGLBinding]
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
+      val shaderRenderer = new ShaderRenderer(createShaderFactory())
+      val live2DModel = new Live2DModel(stub[ModelBackend]) {
+        override val textureFiles: List[String] = List("0.png", "1.png" ,"2.png", "3.png")
+      }
+      val textureManager = stub[TextureManager]
+      (textureManager.loadTexture _).when("0.png").returns(TextureInfo(0, 4, 5))
+      (textureManager.loadTexture _).when("1.png").returns(TextureInfo(1, 6, 7))
+      (textureManager.loadTexture _).when("2.png").returns(TextureInfo(2, 8, 9))
+      (textureManager.loadTexture _).when("3.png").returns(TextureInfo(3, 10, 11))
+
+      And("create a ClippingRenderer with ClippingManager based on that clipping manager but without offscreen frame")
+      val renderer = new ClippingRenderer(live2DModel, textureManager, shaderRenderer, Some(clippingManager), None)
+
+      When("draw it with mocked profile")
+      inSequence {
+        import binding.constants._
+        (binding.glViewport _).expects(0, 0, ClippingManager.MaskBufferSize, ClippingManager.MaskBufferSize).once()
+        (() => richOpenGLBinding.preDraw).expects().once()
+
+        // First mask drawable
+        (binding.setCapabilityEnabled _).expects(GL_CULL_FACE, true).once()
+        (binding.glFrontFace _).expects(GL_CCW).once()
+      }
+      val mockedProfile = mock[Profile]
+      renderer.draw(mockedProfile)
+      
+       */
+
+    }
+
+    Scenario("Both clipping manager and in using clipping exist - with OffscreenFrame") {
+      pending
+
+
+
+    }
+
+  }
+
+  private def createDrawable(id: String, index:Int, isCulling: Boolean, isVertexChanged: Boolean): Drawable = {
+    val vertexInfo = VertexInfo(index, index, null, null, null)
+    val flagsValue = if (isCulling) 0 | csmIsDoubleSided else 0
+    val dynamicFlag = stub[DynamicFlags]
+    (() => dynamicFlag.vertexPositionChanged).when().returns(isVertexChanged)
+    Drawable(id, index, ConstantFlags(flagsValue.toByte), dynamicFlag, index, Nil, vertexInfo, null, null, null)
   }
 
   private def createClippingManager(): (Map[String, Drawable], ClippingManager) = {
