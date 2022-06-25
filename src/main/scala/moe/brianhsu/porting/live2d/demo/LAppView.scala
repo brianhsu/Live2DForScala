@@ -9,6 +9,7 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDire
 import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.opengl.SpriteRenderer
 import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureManager
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
@@ -37,6 +38,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
+  private val spriteRenderer = new SpriteRenderer
   private var updateStrategyHolder: Try[BasicUpdateStrategy] = avatarHolder.map(a => {
     a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
     a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
@@ -61,6 +63,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
     textureManager.loadTexture("src/main/resources/texture/icon_gear.png"),
     spriteShader
   )
+  private val sprites = this.backgroundSprite :: this.gearSprite :: this.powerSprite :: Nil
 
 
   {
@@ -75,9 +78,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   def display(isForceUpdate: Boolean = false): Unit = {
     clearScreen()
 
-    rendererHolder.foreach(_.drawSprite(this.backgroundSprite))
-    rendererHolder.foreach(_.drawSprite(this.powerSprite))
-    rendererHolder.foreach(_.drawSprite(this.gearSprite))
+    sprites.foreach(spriteRenderer.drawSprite)
 
     this.frameTimeCalculator.updateFrameTime()
 
@@ -116,9 +117,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
     )
 
     openGL.glViewport(0, 0, drawCanvasInfo.currentSurfaceWidth, drawCanvasInfo.currentSurfaceHeight)
-    backgroundSprite.resize()
-    powerSprite.resize()
-    gearSprite.resize()
+
+    sprites.foreach(_.resize())
 
     this.display()
   }
