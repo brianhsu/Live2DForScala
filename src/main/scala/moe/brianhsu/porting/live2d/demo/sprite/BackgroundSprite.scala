@@ -9,7 +9,7 @@ import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.Sprite
 class BackgroundSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo,
                        shader: SpriteShader) extends Sprite(drawCanvasInfo, textureInfo, shader) {
 
-  override protected def calculatePosition(): Rectangle = {
+  override protected def calculatePositionAndSize(): Rectangle = {
 
     val windowWidth = drawCanvasInfo.currentCanvasWidth
     val windowHeight = drawCanvasInfo.currentCanvasHeight

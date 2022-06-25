@@ -8,7 +8,7 @@ import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.Sprite
 
 class GearSprite(canvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo, shader: SpriteShader)
                 extends Sprite(canvasInfo, textureInfo, shader) {
-  override protected def calculatePosition(): Rectangle = {
+  override protected def calculatePositionAndSize(): Rectangle = {
     val windowWidth = canvasInfo.currentCanvasWidth
     val windowHeight = canvasInfo.currentCanvasHeight
 

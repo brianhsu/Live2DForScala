@@ -15,22 +15,22 @@ abstract class Sprite(val drawCanvasInfoReader: DrawCanvasInfoReader,
                       val shader: SpriteShader) {
 
   def spriteColor: TextureColor = DefaultTextureColor
-  def rect: Rectangle = mRect
+  def positionAndSize: Rectangle = mPositionAndSize
 
-  private var mRect = calculatePosition()
+  private var mPositionAndSize = calculatePositionAndSize()
 
-  protected def calculatePosition(): Rectangle
+  protected def calculatePositionAndSize(): Rectangle
 
   def resize(): Unit = {
-    this.mRect = calculatePosition()
+    this.mPositionAndSize = calculatePositionAndSize()
   }
 
   def isHit(pointX: Float, pointY: Float): Boolean = {
     val invertedY = drawCanvasInfoReader.currentCanvasHeight - pointY
 
-    pointX >= rect.leftX &&
-      pointX <= rect.rightX &&
-      invertedY >= rect.bottomY &&
-      invertedY <= rect.topY
+    pointX >= positionAndSize.leftX &&
+      pointX <= positionAndSize.rightX &&
+      invertedY >= positionAndSize.bottomY &&
+      invertedY <= positionAndSize.topY
   }
 }
