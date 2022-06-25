@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureInfo
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
-import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.Sprite
+import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
 import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
@@ -41,12 +41,12 @@ class SpriteRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       (() => canvasInfoReader.currentCanvasWidth).when().returns(1024)
       (() => canvasInfoReader.currentCanvasHeight).when().returns(720)
 
-      val sprite = new Sprite(canvasInfoReader, stubbedTextureInfo, stubbedShader) {
+      val sprite = new Sprite(canvasInfoReader, stubbedTextureInfo) {
         override protected def calculatePositionAndSize(): Rectangle = Rectangle(10, 20, 30, 40)
       }
 
       And("create a SpriteRenderer")
-      val spriteRenderer = new SpriteRenderer()
+      val spriteRenderer = new SpriteRenderer(stubbedShader)
       val expectedPositionVertex = Array(
         -0.921875f, -0.8333333f, -0.98046875f, -0.8333333f,
         -0.98046875f, -0.9444444f, -0.921875f, -0.9444444f

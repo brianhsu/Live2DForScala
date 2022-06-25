@@ -1,9 +1,10 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.Sprite
+import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
+import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
 
-class SpriteRenderer(implicit gl: OpenGLBinding) {
+class SpriteRenderer(spriteShader: SpriteShader)(implicit gl: OpenGLBinding) {
 
 
   import gl.constants._
@@ -13,12 +14,12 @@ class SpriteRenderer(implicit gl: OpenGLBinding) {
     val maxWidth = sprite.drawCanvasInfoReader.currentCanvasWidth
     val maxHeight = sprite.drawCanvasInfoReader.currentCanvasHeight
 
-    gl.glUseProgram(sprite.shader.programId)
+    gl.glUseProgram(spriteShader.programId)
     gl.glEnable(GL_TEXTURE_2D)
 
-    gl.glEnableVertexAttribArray(sprite.shader.positionLocation)
-    gl.glEnableVertexAttribArray(sprite.shader.uvLocation)
-    gl.glUniform1i(sprite.shader.textureLocation, 0)
+    gl.glEnableVertexAttribArray(spriteShader.positionLocation)
+    gl.glEnableVertexAttribArray(spriteShader.uvLocation)
+    gl.glUniform1i(spriteShader.textureLocation, 0)
 
     val positionVertex = Array(
       (sprite.positionAndSize.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (sprite.positionAndSize.topY - maxHeight * 0.5f) / (maxHeight * 0.5f),
@@ -37,10 +38,10 @@ class SpriteRenderer(implicit gl: OpenGLBinding) {
     val buffer1 = gl.newDirectFloatBuffer(positionVertex)
     val buffer2 = gl.newDirectFloatBuffer(uvVertex)
 
-    gl.glVertexAttribPointer(sprite.shader.positionLocation, 2, GL_FLOAT, normalized = false, 0, buffer1)
-    gl.glVertexAttribPointer(sprite.shader.uvLocation, 2, GL_FLOAT, normalized = false, 0, buffer2)
+    gl.glVertexAttribPointer(spriteShader.positionLocation, 2, GL_FLOAT, normalized = false, 0, buffer1)
+    gl.glVertexAttribPointer(spriteShader.uvLocation, 2, GL_FLOAT, normalized = false, 0, buffer2)
 
-    gl.glUniform4f(sprite.shader.baseColorLocation, sprite.spriteColor.red, sprite.spriteColor.green, sprite.spriteColor.blue, sprite.spriteColor.alpha)
+    gl.glUniform4f(spriteShader.baseColorLocation, sprite.spriteColor.red, sprite.spriteColor.green, sprite.spriteColor.blue, sprite.spriteColor.alpha)
     gl.glBindTexture(GL_TEXTURE_2D, sprite.textureInfo.textureId)
     gl.glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
   }

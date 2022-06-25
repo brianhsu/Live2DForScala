@@ -12,7 +12,7 @@ import moe.brianhsu.live2d.enitiy.opengl.texture.TextureManager
 import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.usecase.renderer.opengl.SpriteRenderer
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
-import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.Sprite
+import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
@@ -28,7 +28,6 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   private var zoom: Float = 2.0f
   private var offsetX: Float = 0.0f
   private var offsetY: Float = 0.0f
-  private val spriteShader: SpriteShader = new SpriteShader()
   private val textureManager = TextureManager.getInstance
 
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
@@ -40,7 +39,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
   private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
-  private val spriteRenderer = new SpriteRenderer
+  private val spriteRenderer = new SpriteRenderer(new SpriteShader)
   private var updateStrategyHolder: Try[BasicUpdateStrategy] = avatarHolder.map(a => {
     a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
     a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
@@ -51,20 +50,18 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   private val backgroundSprite: Sprite = new BackgroundSprite(
     drawCanvasInfo,
     textureManager.loadTexture("src/main/resources/texture/back_class_normal.png"),
-    spriteShader
   )
 
   private val powerSprite: Sprite = new PowerSprite(
     drawCanvasInfo,
     textureManager.loadTexture("src/main/resources/texture/close.png"),
-    spriteShader
   )
 
   private val gearSprite: Sprite = new GearSprite(
     drawCanvasInfo,
     textureManager.loadTexture("src/main/resources/texture/icon_gear.png"),
-    spriteShader
   )
+
   private val sprites = this.backgroundSprite :: this.gearSprite :: this.powerSprite :: Nil
 
 

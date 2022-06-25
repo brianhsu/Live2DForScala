@@ -1,10 +1,8 @@
-package moe.brianhsu.live2d.usecase.renderer.opengl.sprite
+package moe.brianhsu.live2d.enitiy.opengl.sprite
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.math.Rectangle
-import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureColor, TextureInfo}
-import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
 import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
@@ -18,10 +16,8 @@ class SpriteFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
   Feature("Default sprite color") {
     Scenario("Get sprite color from a Sprite that is not override default value") {
       Given("a stubbed Sprite")
-      implicit val openGLBinding: OpenGLBinding = createOpenGLStub()
       val stubbedTextureInfo = TextureInfo(0, 24, 24)
-      val stubbedShader = new SpriteShader()
-      val sprite = new Sprite(stub[DrawCanvasInfoReader], stubbedTextureInfo, stubbedShader) {
+      val sprite = new Sprite(stub[DrawCanvasInfoReader], stubbedTextureInfo) {
         override protected def calculatePositionAndSize(): Rectangle = Rectangle(0, 0, 0, 0)
       }
 
@@ -38,15 +34,13 @@ class SpriteFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
   Feature("Calculate position") {
     Scenario("calculate position twice and has different position") {
       Given("a stubbed Sprite that return different position when calculating position")
-      implicit val openGLBinding: OpenGLBinding = createOpenGLStub()
       val stubbedTextureInfo = TextureInfo(0, 24, 24)
-      val stubbedShader = new SpriteShader()
       val mockedPosition = List(
         Rectangle(0, 0, 1024, 768),
         Rectangle(500, 400, 300, 200)
       )
       var calculateTimes: Int = -1
-      val sprite = new Sprite(stub[DrawCanvasInfoReader], stubbedTextureInfo, stubbedShader) {
+      val sprite = new Sprite(stub[DrawCanvasInfoReader], stubbedTextureInfo) {
         override protected def calculatePositionAndSize(): Rectangle = {
           println("calculatePositionAndSize:" + calculateTimes)
           calculateTimes += 1
@@ -83,10 +77,8 @@ class SpriteFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
         (() => canvasInfoReader.currentCanvasHeight).when().returns(1000)
 
         And("a sprite that at (500, 400) position and has size (60, 70)")
-        implicit val openGLBinding: OpenGLBinding = createOpenGLStub()
         val stubbedTextureInfo = TextureInfo(0, 24, 24)
-        val stubbedShader = new SpriteShader()
-        val sprite = new Sprite(canvasInfoReader, stubbedTextureInfo, stubbedShader) {
+        val sprite = new Sprite(canvasInfoReader, stubbedTextureInfo) {
           override protected def calculatePositionAndSize(): Rectangle = Rectangle(500, 400, 60, 70)
         }
 
@@ -111,10 +103,8 @@ class SpriteFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
         (() => canvasInfoReader.currentCanvasHeight).when().returns(1000)
 
         And("a sprite that at (500, 400) position and has size (60, 70)")
-        implicit val openGLBinding: OpenGLBinding = createOpenGLStub()
         val stubbedTextureInfo = TextureInfo(0, 24, 24)
-        val stubbedShader = new SpriteShader()
-        val sprite = new Sprite(canvasInfoReader, stubbedTextureInfo, stubbedShader) {
+        val sprite = new Sprite(canvasInfoReader, stubbedTextureInfo) {
           override protected def calculatePositionAndSize(): Rectangle = Rectangle(500, 400, 60, 70)
         }
 
