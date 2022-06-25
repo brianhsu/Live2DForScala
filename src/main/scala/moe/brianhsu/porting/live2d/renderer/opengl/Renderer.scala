@@ -4,13 +4,13 @@ import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.enitiy.model.drawable.VertexInfo
+import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureColor, TextureManager}
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderRenderer
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.{TextureColor, TextureManager}
+import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.Sprite
 import moe.brianhsu.live2d.usecase.renderer.opengl.{OffscreenFrame, Profile}
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
-import moe.brianhsu.porting.live2d.demo.sprite.Sprite
 import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingManager
 
 class Renderer(var model: Live2DModel)(implicit gl: OpenGLBinding) {

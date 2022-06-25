@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.usecase.renderer.opengl.texture
+package moe.brianhsu.live2d.enitiy.opengl.texture
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 

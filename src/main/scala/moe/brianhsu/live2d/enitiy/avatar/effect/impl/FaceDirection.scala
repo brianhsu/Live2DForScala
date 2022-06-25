@@ -3,8 +3,8 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 import moe.brianhsu.live2d.boundary.gateway.avatar.effect.FaceDirectionCalculator
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation.ParameterValueAdd
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.ParameterValueAdd
 
 class FaceDirection(directionCalculator: FaceDirectionCalculator) extends Effect {
 

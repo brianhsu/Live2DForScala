@@ -7,8 +7,8 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.impl.AvatarMotion.{EffectNameEye
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{FallbackParameterValueUpdate, ParameterValueUpdate}
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{FallbackParameterValueUpdate, ParameterValueUpdate}
 
 object AvatarMotion {
   private val EffectNameEyeBlink = "EyeBlink"

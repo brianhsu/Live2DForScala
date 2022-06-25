@@ -1,10 +1,9 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl
 
-import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
-import moe.brianhsu.porting.live2d.demo.sprite.Sprite
+import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.Sprite
 
-class SpriteRenderer(implicit gl: OpenGLBinding,
-                     wrapper: OpenGLBinding => RichOpenGLBinding = RichOpenGLBinding.wrapOpenGLBinding) {
+class SpriteRenderer(implicit gl: OpenGLBinding) {
 
 
   import gl.constants._

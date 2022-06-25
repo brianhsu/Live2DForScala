@@ -1,5 +1,6 @@
-package moe.brianhsu.live2d.enitiy.avatar.updater
+package moe.brianhsu.live2d.enitiy.updater
 
+import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

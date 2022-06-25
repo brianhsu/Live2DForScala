@@ -1,15 +1,20 @@
-package moe.brianhsu.porting.live2d.demo.sprite
+package moe.brianhsu.live2d.usecase.renderer.opengl.sprite
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.math.Rectangle
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.{TextureColor, TextureInfo}
+import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureColor, TextureInfo}
+import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
+import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.Sprite.DefaultTextureColor
+
+object Sprite {
+  val DefaultTextureColor: TextureColor = TextureColor(1.0f, 1.0f, 1.0f, 1.0f)
+}
 
 abstract class Sprite(val drawCanvasInfoReader: DrawCanvasInfoReader,
                       val textureInfo: TextureInfo,
                       val shader: SpriteShader) {
 
-  val spriteColor: TextureColor = TextureColor(1.0f, 1.0f, 1.0f, 1.0f)
-
+  def spriteColor: TextureColor = DefaultTextureColor
   def rect: Rectangle = mRect
 
   private var mRect = calculatePosition()

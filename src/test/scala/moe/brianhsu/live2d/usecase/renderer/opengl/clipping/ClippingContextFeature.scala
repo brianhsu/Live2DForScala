@@ -2,8 +2,8 @@ package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext.Layout
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
