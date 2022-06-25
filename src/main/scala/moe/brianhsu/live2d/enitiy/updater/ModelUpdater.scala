@@ -1,8 +1,7 @@
-package moe.brianhsu.live2d.usecase.updater.impl
+package moe.brianhsu.live2d.enitiy.updater
 
+import UpdateOperation._
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
-import moe.brianhsu.live2d.usecase.updater.{UpdateOperation, Updater}
 
 class ModelUpdater(model: Live2DModel) extends Updater {
   override def executeOperations(operations: List[UpdateOperation]): Unit = {

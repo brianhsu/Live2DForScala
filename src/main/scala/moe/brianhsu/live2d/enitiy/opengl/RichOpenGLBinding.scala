@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.opengl
 
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ColorWriteMask, ViewPort}
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 
 import java.nio.ByteBuffer
 import reflect.runtime.universe._

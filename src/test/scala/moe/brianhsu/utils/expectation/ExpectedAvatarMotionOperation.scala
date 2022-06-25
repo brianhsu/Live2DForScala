@@ -1,7 +1,7 @@
 package moe.brianhsu.utils.expectation
 
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
 import moe.brianhsu.utils.expectation.ExpectedAvatarMotionOperation.{Input, Output}
 import org.json4s.{Formats, ShortTypeHints}
 import org.json4s.native.JsonMethods.parse

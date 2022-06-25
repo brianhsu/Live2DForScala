@@ -3,8 +3,8 @@ package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext.Layout
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 
 object ClippingContext {
   private val ChannelColors = Map(

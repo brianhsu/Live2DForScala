@@ -1,9 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateStrategy
+import moe.brianhsu.live2d.enitiy.updater.{FrameTimeInfo, UpdateStrategy}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

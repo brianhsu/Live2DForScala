@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.usecase.updater
+package moe.brianhsu.live2d.enitiy.updater
 
 sealed trait UpdateOperation
 

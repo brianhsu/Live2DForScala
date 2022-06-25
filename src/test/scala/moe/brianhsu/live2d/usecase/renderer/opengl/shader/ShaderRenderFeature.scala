@@ -3,11 +3,11 @@ package moe.brianhsu.live2d.usecase.renderer.opengl.shader
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 import moe.brianhsu.live2d.enitiy.opengl.{BlendFunction, OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.OffscreenFrame
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext.Layout
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
 import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory

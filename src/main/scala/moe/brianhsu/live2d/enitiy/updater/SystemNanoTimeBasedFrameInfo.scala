@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.enitiy.avatar.updater
+package moe.brianhsu.live2d.enitiy.updater
 
 class SystemNanoTimeBasedFrameInfo extends FrameTimeInfo {
   private var isFirstFrame: Boolean = true
