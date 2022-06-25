@@ -9,7 +9,7 @@ class SpriteRenderer(spriteShader: SpriteShader)(implicit gl: OpenGLBinding) {
 
   import gl.constants._
 
-  def drawSprite(sprite: Sprite): Unit = {
+  def draw(sprite: Sprite): Unit = {
 
     val maxWidth = sprite.drawCanvasInfoReader.currentCanvasWidth
     val maxHeight = sprite.drawCanvasInfoReader.currentCanvasHeight

@@ -16,7 +16,7 @@ import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
-import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
+import moe.brianhsu.porting.live2d.renderer.opengl.AvatarRenderer
 
 import scala.annotation.unused
 import scala.util.Try
@@ -38,7 +38,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
 
   private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
-  private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
+  private var rendererHolder: Try[AvatarRenderer] = modelHolder.map(model => new AvatarRenderer(model))
   private val spriteRenderer = new SpriteRenderer(new SpriteShader)
   private var updateStrategyHolder: Try[BasicUpdateStrategy] = avatarHolder.map(a => {
     a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
@@ -77,7 +77,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   def display(isForceUpdate: Boolean = false): Unit = {
     clearScreen()
 
-    sprites.foreach(spriteRenderer.drawSprite)
+    sprites.foreach(spriteRenderer.draw)
 
     this.frameTimeCalculator.updateFrameTime()
 
@@ -206,7 +206,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
       a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
       a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
     })
-    this.rendererHolder = modelHolder.map(model => new Renderer(model))
+    this.rendererHolder = modelHolder.map(model => new AvatarRenderer(model))
     setupAvatarEffects()
     initOpenGL()
   }

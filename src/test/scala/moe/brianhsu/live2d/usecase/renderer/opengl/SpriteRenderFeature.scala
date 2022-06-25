@@ -68,7 +68,7 @@ class SpriteRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
         .returns(stubbedUvBuffer)
 
       When("draw the sprite")
-      spriteRenderer.drawSprite(sprite)
+      spriteRenderer.draw(sprite)
 
       Then("it should delegate it to underlay OpenGL binding")
       inSequence {
