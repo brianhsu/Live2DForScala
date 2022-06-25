@@ -16,13 +16,6 @@ class SpriteRenderer(implicit gl: OpenGLBinding) {
     gl.glUseProgram(sprite.shader.programId)
     gl.glEnable(GL_TEXTURE_2D)
 
-    val uvVertex = Array(
-      1.0f, 0.0f,
-      0.0f, 0.0f,
-      0.0f, 1.0f,
-      1.0f, 1.0f
-    )
-
     gl.glEnableVertexAttribArray(sprite.shader.positionLocation)
     gl.glEnableVertexAttribArray(sprite.shader.uvLocation)
     gl.glUniform1i(sprite.shader.textureLocation, 0)
@@ -32,6 +25,13 @@ class SpriteRenderer(implicit gl: OpenGLBinding) {
       (sprite.positionAndSize.leftX - maxWidth * 0.5f) / (maxWidth * 0.5f), (sprite.positionAndSize.topY - maxHeight * 0.5f) / (maxHeight * 0.5f),
       (sprite.positionAndSize.leftX - maxWidth * 0.5f) / (maxWidth * 0.5f), (sprite.positionAndSize.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f),
       (sprite.positionAndSize.rightX - maxWidth * 0.5f) / (maxWidth * 0.5f), (sprite.positionAndSize.bottomY - maxHeight * 0.5f) / (maxHeight * 0.5f)
+    )
+
+    val uvVertex = Array(
+      1.0f, 0.0f,
+      0.0f, 0.0f,
+      0.0f, 1.0f,
+      1.0f, 1.0f
     )
 
     val buffer1 = gl.newDirectFloatBuffer(positionVertex)
