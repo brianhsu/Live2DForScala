@@ -1,12 +1,15 @@
 package moe.brianhsu.utils.mock
 
-import moe.brianhsu.live2d.usecase.renderer.opengl.shader.{InvertedMaskedShader, MaskedShader, NormalShader, SetupMaskShader, ShaderFactory}
+import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
+import moe.brianhsu.live2d.usecase.renderer.opengl.shader.{InvertedMaskedShader, MaskedShader, NormalShader, SetupMaskShader, ShaderFactory, ShaderRenderer}
 
 trait ShaderFactoryMock {
   protected val stubbedSetupMaskShader: SetupMaskShader = createSetupShader()
   protected val stubbedMaskShader: MaskedShader = createMaskShader()
   protected val stubbedInvertedMaskShader: InvertedMaskedShader = createInvertedMaskShader()
   protected val stubbedNormalShader: NormalShader = createNormalShader()
+
+  class MockableShaderRenderer(implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding) extends ShaderRenderer(createShaderFactory())(gl, wrapper)
 
   def createShaderFactory(): ShaderFactory = {
 

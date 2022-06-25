@@ -4,6 +4,7 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.ConstantDrawableFlagMask.csmIsDoubleSided
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.ViewPort
 import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureInfo, TextureManager}
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
@@ -16,23 +17,18 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 
+import java.nio.ByteBuffer
+
 class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory
                             with Live2DModelMock with OpenGLMock with TableDrivenPropertyChecks
                             with ShaderFactoryMock with OptionValues {
-
-  private val StubbedTextureId = 1
-  private val StubbedProgramId = 2
-  private val StubbedPositionLocation = 3
-  private val StubbedUvLocation = 4
-  private val StubbedTextureLocation = 5
-  private val StubbedBaseColorLocation = 6
 
   Feature("Create offscreenFrameHolder") {
     Scenario("There is no clipping manager at all") {
       Given("a stubbed OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
       implicit val binding: OpenGLBinding = createOpenGLStub()
       val richOpenGLBinding: RichOpenGLBinding = stub[RichOpenGLBinding]
-      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = { _ => richOpenGLBinding}
       val live2DModel = new Live2DModel(stub[ModelBackend]) {
         override lazy val containMaskedDrawables: Boolean = false
       }
@@ -50,7 +46,7 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       Given("a stubbed OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
       implicit val binding: OpenGLBinding = createOpenGLStub()
       val richOpenGLBinding: RichOpenGLBinding = stub[RichOpenGLBinding]
-      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = { _ => richOpenGLBinding}
       val textureManager = stub[TextureManager]
       val shaderRenderer = new ShaderRenderer(createShaderFactory())
       val clippingManager = stub[ClippingManager]
@@ -77,7 +73,7 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       Given("a stubbed OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
       implicit val binding: OpenGLBinding = createOpenGLStub()
       val richOpenGLBinding: RichOpenGLBinding = stub[RichOpenGLBinding]
-      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = { _ => richOpenGLBinding}
       val textureManager = stub[TextureManager]
       val shaderRenderer = new ShaderRenderer(createShaderFactory())
       val live2DModel = new Live2DModel(stub[ModelBackend])
@@ -103,7 +99,7 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       Given("a stubbed OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
       implicit val binding: OpenGLBinding = createOpenGLStub()
       val richOpenGLBinding: RichOpenGLBinding = stub[RichOpenGLBinding]
-      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = { _ => richOpenGLBinding}
       val textureManager = stub[TextureManager]
       val shaderRenderer = new ShaderRenderer(createShaderFactory())
       val live2DModel = new Live2DModel(stub[ModelBackend])
@@ -134,7 +130,7 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       Given("a mocked OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
       implicit val binding: OpenGLBinding = createOpenGLMock()
       val richOpenGLBinding: RichOpenGLBinding = mock[RichOpenGLBinding]
-      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = { _ => richOpenGLBinding}
       val textureManager = stub[TextureManager]
       val shaderRenderer = new ShaderRenderer(createShaderFactory())
       val live2DModel = new Live2DModel(stub[ModelBackend])
@@ -154,7 +150,7 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       Given("a mocked OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
       implicit val binding: OpenGLBinding = createOpenGLMock()
       val richOpenGLBinding: RichOpenGLBinding = mock[RichOpenGLBinding]
-      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = { _ => richOpenGLBinding}
       val textureManager = stub[TextureManager]
       val shaderRenderer = new ShaderRenderer(createShaderFactory())
       val live2DModel = new Live2DModel(stub[ModelBackend])
@@ -179,7 +175,6 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     }
 
     Scenario("Both clipping manager and in using clipping exist - without OffscreenFrame") {
-      /*
       Given("4 drawable that 2 of them is vertex changed")
       val idToDrawable = Map(
         "id0" -> createDrawable("id0", 0, isCulling = false, isVertexChanged = true),
@@ -199,10 +194,10 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       (() => clippingManager.usingClipCount).when().returns(1)
 
       And("a mocked OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
-      implicit val binding: OpenGLBinding = createOpenGLMock()
-      val richOpenGLBinding: RichOpenGLBinding = mock[RichOpenGLBinding]
-      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = {x => richOpenGLBinding}
-      val shaderRenderer = new ShaderRenderer(createShaderFactory())
+      implicit val binding: OpenGLBinding = createOpenGLStub()
+      val richOpenGLBinding: RichOpenGLBinding = stub[RichOpenGLBinding]
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = { _ => richOpenGLBinding}
+      val shaderRenderer = stub[MockableShaderRenderer]
       val live2DModel = new Live2DModel(stub[ModelBackend]) {
         override val textureFiles: List[String] = List("0.png", "1.png" ,"2.png", "3.png")
       }
@@ -212,37 +207,129 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       (textureManager.loadTexture _).when("2.png").returns(TextureInfo(2, 8, 9))
       (textureManager.loadTexture _).when("3.png").returns(TextureInfo(3, 10, 11))
 
+      val stubbedViewPort = ViewPort(100, 200, 300, 400)
+      val stubbedProfile = new Profile()
+      stubbedProfile.lastViewPort = stubbedViewPort
+
       And("create a ClippingRenderer with ClippingManager based on that clipping manager but without offscreen frame")
       val renderer = new ClippingRenderer(live2DModel, textureManager, shaderRenderer, Some(clippingManager), None)
 
       When("draw it with mocked profile")
+      renderer.draw(stubbedProfile)
+
+      Then("it should delegated to underlay bindings")
       inSequence {
         import binding.constants._
-        (binding.glViewport _).expects(0, 0, ClippingManager.MaskBufferSize, ClippingManager.MaskBufferSize).once()
-        (() => richOpenGLBinding.preDraw).expects().once()
+        (binding.glViewport _).verify(0, 0, ClippingManager.MaskBufferSize, ClippingManager.MaskBufferSize).once()
+        (() => richOpenGLBinding.preDraw()).verify().once()
 
-        // First mask drawable
-        (binding.setCapabilityEnabled _).expects(GL_CULL_FACE, true).once()
-        (binding.glFrontFace _).expects(GL_CCW).once()
+
+        inSequence {
+          // First mask drawable
+          (binding.setCapabilityEnabled _).verify(GL_CULL_FACE, true)
+          (binding.glFrontFace _).verify(GL_CCW).once()
+          (shaderRenderer.renderMask _).verify(clippingContextList.head, 0, *, *).once()
+          (binding.glDrawElements _).verify(GL_TRIANGLES, 0, *, *).once()
+          (binding.glUseProgram _).verify(0).once()
+        }
+
+        inSequence {
+          // Second mask drawable
+          (binding.setCapabilityEnabled _).verify(GL_CULL_FACE, false)
+          (binding.glFrontFace _).verify(GL_CCW).once()
+          (shaderRenderer.renderMask _).verify(clippingContextList(1), 2, *, *).once()
+          (binding.glDrawElements _).verify(GL_TRIANGLES, 2, *, *).once()
+          (binding.glUseProgram _).verify(0).once()
+        }
+
+        (richOpenGLBinding.viewPort_= _).verify(stubbedViewPort).once()
       }
-      val mockedProfile = mock[Profile]
-      renderer.draw(mockedProfile)
-      
-       */
-
     }
 
     Scenario("Both clipping manager and in using clipping exist - with OffscreenFrame") {
-      pending
+      Given("4 drawable that 2 of them is vertex changed")
+      val idToDrawable = Map(
+        "id0" -> createDrawable("id0", 0, isCulling = false, isVertexChanged = true),
+        "id1" -> createDrawable("id1", 1, isCulling = false, isVertexChanged = false),
+        "id2" -> createDrawable("id2", 2, isCulling = true, isVertexChanged = true),
+        "id3" -> createDrawable("id3", 3, isCulling = false, isVertexChanged = false),
+      )
 
+      And("a clipping manager based on those drawables")
+      val clippingContextList = List(
+        new ClippingContext(List(idToDrawable("id0"), idToDrawable("id1")), Nil),
+        new ClippingContext(List(idToDrawable("id2"), idToDrawable("id3")), Nil),
+      )
+      val clippingManager = stub[ClippingManager]
+      (() => clippingManager.updateContextListForMask()).when().returns(clippingManager)
+      (() => clippingManager.contextListForMask).when().returns(clippingContextList)
+      (() => clippingManager.usingClipCount).when().returns(1)
 
+      And("a mocked OpenGL binding / Live2D model / TextureManager / ShaderRenderer")
+      implicit val binding: OpenGLBinding = createOpenGLStub()
+      val richOpenGLBinding: RichOpenGLBinding = stub[RichOpenGLBinding]
+      implicit val wrapper: OpenGLBinding => RichOpenGLBinding = { _ => richOpenGLBinding}
+      val shaderRenderer = stub[MockableShaderRenderer]
+      val live2DModel = new Live2DModel(stub[ModelBackend]) {
+        override val textureFiles: List[String] = List("0.png", "1.png" ,"2.png", "3.png")
+      }
+      val textureManager = stub[TextureManager]
+      (textureManager.loadTexture _).when("0.png").returns(TextureInfo(0, 4, 5))
+      (textureManager.loadTexture _).when("1.png").returns(TextureInfo(1, 6, 7))
+      (textureManager.loadTexture _).when("2.png").returns(TextureInfo(2, 8, 9))
+      (textureManager.loadTexture _).when("3.png").returns(TextureInfo(3, 10, 11))
 
+      val stubbedViewPort = ViewPort(100, 200, 300, 400)
+      val stubbedProfile = new Profile()
+      stubbedProfile.lastViewPort = stubbedViewPort
+      stubbedProfile.lastFrameBufferBinding = 1234
+
+      val offscreenFrame = stub[OffscreenFrame]
+
+      And("create a ClippingRenderer with ClippingManager based on that clipping manager and with offscreen frame")
+      val renderer = new ClippingRenderer(live2DModel, textureManager, shaderRenderer, Some(clippingManager), Some(offscreenFrame))
+
+      When("draw it with mocked profile")
+      renderer.draw(stubbedProfile)
+
+      Then("it should delegated to underlay bindings")
+      inSequence {
+        import binding.constants._
+        (binding.glViewport _).verify(0, 0, ClippingManager.MaskBufferSize, ClippingManager.MaskBufferSize).once()
+        (() => richOpenGLBinding.preDraw()).verify().once()
+        (offscreenFrame.beginDraw _).verify(1234).once()
+
+        inSequence {
+          // First mask drawable
+          (binding.setCapabilityEnabled _).verify(GL_CULL_FACE, true)
+          (binding.glFrontFace _).verify(GL_CCW).once()
+          (shaderRenderer.renderMask _).verify(clippingContextList.head, 0, *, *).once()
+          (binding.glDrawElements _).verify(GL_TRIANGLES, 0, *, *).once()
+          (binding.glUseProgram _).verify(0).once()
+        }
+
+        inSequence {
+          // Second mask drawable
+          (binding.setCapabilityEnabled _).verify(GL_CULL_FACE, false)
+          (binding.glFrontFace _).verify(GL_CCW).once()
+          (shaderRenderer.renderMask _).verify(clippingContextList(1), 2, *, *).once()
+          (binding.glDrawElements _).verify(GL_TRIANGLES, 2, *, *).once()
+          (binding.glUseProgram _).verify(0).once()
+        }
+
+        (offscreenFrame.endDraw _).verify().once()
+        (richOpenGLBinding.viewPort_= _).verify(stubbedViewPort).once()
+      }
     }
-
   }
 
+
   private def createDrawable(id: String, index:Int, isCulling: Boolean, isVertexChanged: Boolean): Drawable = {
-    val vertexInfo = VertexInfo(index, index, null, null, null)
+    val vertexInfo = new VertexInfo(index, index, null, null, null) {
+      override def vertexArrayDirectBuffer: ByteBuffer = ByteBuffer.allocate(1)
+      override def uvArrayDirectBuffer: ByteBuffer = ByteBuffer.allocate(1)
+      override def indexArrayDirectBuffer: ByteBuffer = ByteBuffer.allocate(1)
+    }
     val flagsValue = if (isCulling) 0 | csmIsDoubleSided else 0
     val dynamicFlag = stub[DynamicFlags]
     (() => dynamicFlag.vertexPositionChanged).when().returns(isVertexChanged)

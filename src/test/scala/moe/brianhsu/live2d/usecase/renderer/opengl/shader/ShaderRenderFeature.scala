@@ -295,9 +295,7 @@ trait ShaderRenderBehaviors {
   }
 
   private def createOffscreenFrame(stubbedFrameBufferId: Int): OffscreenFrame = {
-    new OffscreenFrame(1024, 768)(null, null) {
-      override def createColorTextureBufferAndFrameBuffer(): (Int, Int) = (1234, stubbedFrameBufferId)
-    }
+    new OffscreenFrame(1234, stubbedFrameBufferId)(null)
   }
 
 }

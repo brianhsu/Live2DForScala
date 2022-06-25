@@ -64,12 +64,8 @@ class ClippingRenderer(model: Live2DModel, textureManager: TextureManager, shade
 
     this.offscreenFrameHolder.foreach(_.beginDraw(profile.lastFrameBufferBinding))
 
-    println("contextListForMask:" + contextListForMask)
     for (clipContext <- contextListForMask) {
-      println("clipContext:" + clipContext)
-
       for (maskDrawable <- clipContext.vertexPositionChangedMaskDrawable) {
-        println("maskDrawable:" + maskDrawable)
         val textureFile = model.textureFiles(maskDrawable.textureIndex)
         val textureInfo = textureManager.loadTexture(textureFile)
         this.drawClippingMesh(clipContext, textureInfo.textureId, maskDrawable.isCulling, maskDrawable.vertexInfo)
@@ -81,14 +77,14 @@ class ClippingRenderer(model: Live2DModel, textureManager: TextureManager, shade
   }
 
   private def drawClippingMesh(clippingContextBufferForMask: ClippingContext,
-                               drawTextureId: Int, isCulling: Boolean,
+                               textureId: Int, isCulling: Boolean,
                                vertexInfo: VertexInfo): Unit ={
 
     gl.setCapabilityEnabled(GL_CULL_FACE, isCulling)
     gl.glFrontFace(GL_CCW)
 
     shaderRenderer.renderMask(
-      clippingContextBufferForMask, drawTextureId,
+      clippingContextBufferForMask, textureId,
       vertexInfo.vertexArrayDirectBuffer, vertexInfo.uvArrayDirectBuffer
     )
 
