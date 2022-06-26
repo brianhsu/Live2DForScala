@@ -11,15 +11,18 @@ import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderRenderer
 import moe.brianhsu.live2d.usecase.renderer.opengl.{ClippingRenderer, Profile}
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
 
-class AvatarRenderer(model: Live2DModel)(implicit gl: OpenGLBinding) {
+class AvatarRenderer(model: Live2DModel, textureManager: TextureManager, shaderRenderer: ShaderRenderer,
+                     profile: Profile, clippingRenderer: ClippingRenderer)
+                    (implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding) {
+
   import gl.constants._
 
-  private implicit val wrapper: OpenGLBinding => RichOpenGLBinding = RichOpenGLBinding.wrapOpenGLBinding
-
-  private val textureManager = TextureManager.getInstance
-  private val shaderRenderer = ShaderRenderer.getInstance
-  private val profile = Profile.getInstance
-  private val clippingRenderer = new ClippingRenderer(model, textureManager, shaderRenderer)
+  def this(model: Live2DModel)(implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding = RichOpenGLBinding.wrapOpenGLBinding) = {
+    this(
+      model, TextureManager.getInstance, ShaderRenderer.getInstance, Profile.getInstance,
+      new ClippingRenderer(model, TextureManager.getInstance, ShaderRenderer.getInstance)
+    )
+  }
 
   def draw(avatar: Avatar, projection: ProjectionMatrix): Unit = {
     this.profile.save()
@@ -29,6 +32,7 @@ class AvatarRenderer(model: Live2DModel)(implicit gl: OpenGLBinding) {
 
   private def drawModel(projection: ProjectionMatrix): Unit = {
     clippingRenderer.draw(profile)
+
     gl.preDraw()
 
     val sortedDrawable = model.sortedDrawables
