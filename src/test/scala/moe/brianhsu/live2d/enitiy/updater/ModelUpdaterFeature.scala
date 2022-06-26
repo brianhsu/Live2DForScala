@@ -1,7 +1,8 @@
-package moe.brianhsu.live2d.usecase.updater.impl
+package moe.brianhsu.live2d.enitiy.updater
 
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation._
 import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Parameter, Part}
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation._
+import moe.brianhsu.live2d.enitiy.updater.ModelUpdater
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

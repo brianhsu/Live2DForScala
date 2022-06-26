@@ -10,24 +10,14 @@ object OffscreenFrame {
     offscreenFrame.get(gl) match {
       case Some(offscreenFrame) => offscreenFrame
       case None =>
-        offscreenFrame += (gl -> new OffscreenFrame(displayBufferWidth, displayBufferHeight))
+        val (colorTextureBufferId, frameBufferId) = createColorTextureBufferAndFrameBuffer(displayBufferWidth, displayBufferHeight)
+        offscreenFrame += (gl -> new OffscreenFrame(colorTextureBufferId, frameBufferId)(gl))
         offscreenFrame(gl)
     }
   }
-}
 
-class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)
-                    (implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding) {
-
-  import gl.constants._
-
-  private var originalFrameBufferId: Int = 0
-  private val (mColorTextureBufferId, mFrameBufferId) = createColorTextureBufferAndFrameBuffer()
-
-  def frameBufferId: Int = mFrameBufferId
-  def colorTextureBufferId: Int = mColorTextureBufferId
-
-  protected def createColorTextureBufferAndFrameBuffer(): (Int, Int) = {
+  protected def createColorTextureBufferAndFrameBuffer(displayBufferWidth: Int, displayBufferHeight: Int)(implicit gl: OpenGLBinding, converter: OpenGLBinding => RichOpenGLBinding): (Int, Int) = {
+    import gl.constants._
     val colorTextureBufferId = gl.generateTextures(10).head
     gl.glBindTexture(GL_TEXTURE_2D, colorTextureBufferId)
     gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, displayBufferWidth, displayBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null)
@@ -45,6 +35,14 @@ class OffscreenFrame(displayBufferWidth: Int, displayBufferHeight: Int)
 
     (colorTextureBufferId, frameBufferId)
   }
+
+}
+
+class OffscreenFrame(val colorTextureBufferId: Int, val frameBufferId: Int)(gl: OpenGLBinding) {
+
+  import gl.constants._
+
+  private var originalFrameBufferId: Int = 0
 
   def beginDraw(currentFrameBufferId: Int): Unit = {
     this.originalFrameBufferId = currentFrameBufferId

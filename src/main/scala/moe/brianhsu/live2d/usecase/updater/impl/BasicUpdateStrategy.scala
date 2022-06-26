@@ -5,9 +5,8 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, Expression, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.{UpdateStrategy, Updater}
+import moe.brianhsu.live2d.enitiy.updater.{FrameTimeInfo, ModelUpdater, UpdateStrategy, Updater}
 
 class BasicUpdateStrategy(val avatarSettings: Settings,
                           val model: Live2DModel,

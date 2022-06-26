@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.usecase.renderer.opengl.texture
+package moe.brianhsu.live2d.enitiy.opengl.texture
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
@@ -22,7 +22,7 @@ object TextureManager {
 
 }
 
-class TextureManager private[texture] (implicit gl: OpenGLBinding) {
+class TextureManager(implicit gl: OpenGLBinding) {
 
   import gl.constants._
 

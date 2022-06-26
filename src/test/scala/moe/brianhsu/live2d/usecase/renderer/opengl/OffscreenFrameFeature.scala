@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl
 
-import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
+import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding
 import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -59,7 +59,7 @@ class OffscreenFrameFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       addDummyIntOpenGLParameter(richOpenGL, GL_FRAMEBUFFER_BINDING, 9)
 
       When("create a OffscreenFrame from that binding")
-      val offscreenFrame = createOffscreenFrame(openGL, richOpenGL)
+      val offscreenFrame = OffscreenFrame.getInstance(1024, 768)(openGL, { _ => richOpenGL })
 
       Then("it should have correct texture / color buffer id")
       offscreenFrame.colorTextureBufferId shouldBe ColorTextureBufferId
@@ -94,10 +94,9 @@ class OffscreenFrameFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     Scenario("Begin drawing") {
       Given("a stubbed OpenGL binding")
       val openGL = createOpenGLStub()
-      val richOpenGL = generateRichOpenGLBinding()
 
       And("create a OffscreenFrame from that binding")
-      val offscreenFrame = createOffscreenFrame(openGL, richOpenGL)
+      val offscreenFrame = new OffscreenFrame(0, 1)(openGL)
 
       And("begin draw with originalFrameBufferId = 123")
       offscreenFrame.beginDraw(123)
@@ -108,10 +107,9 @@ class OffscreenFrameFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     Scenario("End drawing") {
       Given("a stubbed OpenGL binding")
       val openGL = createOpenGLStub()
-      val richOpenGL = generateRichOpenGLBinding()
 
       And("create a OffscreenFrame from that binding")
-      val offscreenFrame = createOffscreenFrame(openGL, richOpenGL)
+      val offscreenFrame = new OffscreenFrame(0, 1)(openGL)
 
       And("begin draw with originalFrameBufferId = 123")
       offscreenFrame.beginDraw(123)
@@ -124,10 +122,6 @@ class OffscreenFrameFeature extends AnyFeatureSpec with Matchers with GivenWhenT
       (openGL.glBindFramebuffer _).verify(GL_FRAMEBUFFER, 123).atLeastOnce()
     }
 
-  }
-
-  private def createOffscreenFrame(openGL: OpenGLBinding, richOpenGLBinding: RichOpenGLBinding) = {
-    new OffscreenFrame(DisplayBufferWidth, DisplayBufferHeight)(openGL, {_: OpenGLBinding => richOpenGLBinding} )
   }
 
   private def generateRichOpenGLBinding(): RichOpenGLBinding = {

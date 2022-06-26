@@ -1,11 +1,11 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 import moe.brianhsu.live2d.enitiy.opengl.{BlendFunction, OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.OffscreenFrame
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderFactory.DefaultShaderFactory
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
 
 import java.nio.ByteBuffer
@@ -26,14 +26,20 @@ object ShaderRenderer {
   }
 }
 
-class ShaderRenderer (shaderFactory: ShaderFactory)(implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
+class ShaderRenderer(setupMaskShader: SetupMaskShader, normalShader: NormalShader,
+                     maskedShader: MaskedShader, invertedMaskedShader: InvertedMaskedShader)
+                    (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
 
   import gl.constants._
 
-  private val setupMaskShader = shaderFactory.setupMaskShader
-  private val normalShader = shaderFactory.normalShader
-  private val maskedShader = shaderFactory.maskedShader
-  private val invertedMaskedShader = shaderFactory.invertedMaskedShader
+  def this(shaderFactory: ShaderFactory)(implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) = {
+    this(
+      shaderFactory.setupMaskShader,
+      shaderFactory.normalShader,
+      shaderFactory.maskedShader,
+      shaderFactory.invertedMaskedShader
+    )
+  }
 
   def renderDrawable(clippingContextBufferForDraw: Option[ClippingContext], offscreenFrameHolder: Option[OffscreenFrame], textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: ProjectionMatrix, invertedMask: Boolean): Unit = {
     val isMasked = clippingContextBufferForDraw.isDefined

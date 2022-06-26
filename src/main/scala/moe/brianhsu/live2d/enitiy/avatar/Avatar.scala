@@ -1,9 +1,8 @@
 package moe.brianhsu.live2d.enitiy.avatar
 
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.avatar.updater.FrameTimeInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateStrategy
+import moe.brianhsu.live2d.enitiy.updater.{FrameTimeInfo, UpdateStrategy}
 
 /**
  * This class represent a complete Live 2D Cubism Avatar runtime model.

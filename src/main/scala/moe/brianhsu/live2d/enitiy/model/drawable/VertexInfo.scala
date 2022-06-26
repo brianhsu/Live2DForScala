@@ -13,10 +13,10 @@ import java.nio.ByteBuffer
  * @param pointerToArrayOfTextureCoordinate The pointer to the actual memory address that stores the array of vertex texture coordinate.
  * @param pointerToArrayOfIndex             The pointer to the actual memory address that stores the array of triangle index.
  */
-case class VertexInfo(numberOfVertex: Int, numberOfTriangleIndex: Int,
-                      pointerToArrayOfPositions: CArrayOfCsmCoordinate,
-                      pointerToArrayOfTextureCoordinate: CArrayOfCsmCoordinate,
-                      pointerToArrayOfIndex: CArrayOfShort) {
+class VertexInfo(val numberOfVertex: Int, val numberOfTriangleIndex: Int,
+                 pointerToArrayOfPositions: CArrayOfCsmCoordinate,
+                 pointerToArrayOfTextureCoordinate: CArrayOfCsmCoordinate,
+                 pointerToArrayOfIndex: CArrayOfShort) {
 
 
   /**

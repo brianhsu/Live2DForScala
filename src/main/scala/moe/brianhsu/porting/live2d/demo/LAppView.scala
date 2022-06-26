@@ -6,14 +6,17 @@ import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
-import moe.brianhsu.live2d.enitiy.avatar.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureManager
+import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureManager
+import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
+import moe.brianhsu.live2d.usecase.renderer.opengl.AvatarRenderer
+import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
+import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.SpriteRenderer
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
-import moe.brianhsu.porting.live2d.renderer.opengl.Renderer
 
 import scala.annotation.unused
 import scala.util.Try
@@ -25,13 +28,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   private var zoom: Float = 2.0f
   private var offsetX: Float = 0.0f
   private var offsetY: Float = 0.0f
-  private val spriteShader: SpriteShader = new SpriteShader()//.useProgram()
-  println("spriteSharder:" + spriteShader)
-  private val manager = TextureManager.getInstance
+  private val textureManager = TextureManager.getInstance
 
-  private lazy val backgroundTexture = manager.loadTexture("src/main/resources/texture/back_class_normal.png")
-  private lazy val powerTexture = manager.loadTexture("src/main/resources/texture/close.png")
-  private lazy val gearTexture = manager.loadTexture("src/main/resources/texture/icon_gear.png")
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
   private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator(drawCanvasInfo)
 
@@ -40,18 +38,32 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
 
   private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
-  private var rendererHolder: Try[Renderer] = modelHolder.map(model => new Renderer(model))
+  private var rendererHolder: Try[AvatarRenderer] = modelHolder.map(model => AvatarRenderer(model))
+  private val spriteRenderer = new SpriteRenderer(new SpriteShader)
   private var updateStrategyHolder: Try[BasicUpdateStrategy] = avatarHolder.map(a => {
     a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
     a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
   })
-  private val backgroundSprite: LAppSprite = new BackgroundSprite(drawCanvasInfo, backgroundTexture, spriteShader)
-  private val powerSprite: LAppSprite = new PowerSprite(drawCanvasInfo, powerTexture, spriteShader)
-  private val gearSprite: LAppSprite = new GearSprite(drawCanvasInfo, gearTexture, spriteShader)
 
-  private val targetPointCalculator = new FaceDirectionByMouse(30)
-
+  private val targetPointCalculator = new FaceDirectionByMouse(60)
   private val faceDirection = new FaceDirection(targetPointCalculator)
+  private val backgroundSprite: Sprite = new BackgroundSprite(
+    drawCanvasInfo,
+    textureManager.loadTexture("src/main/resources/texture/back_class_normal.png"),
+  )
+
+  private val powerSprite: Sprite = new PowerSprite(
+    drawCanvasInfo,
+    textureManager.loadTexture("src/main/resources/texture/close.png"),
+  )
+
+  private val gearSprite: Sprite = new GearSprite(
+    drawCanvasInfo,
+    textureManager.loadTexture("src/main/resources/texture/icon_gear.png"),
+  )
+
+  private val sprites = this.backgroundSprite :: this.gearSprite :: this.powerSprite :: Nil
+
 
   {
     setupAvatarEffects()
@@ -65,9 +77,8 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
   def display(isForceUpdate: Boolean = false): Unit = {
     clearScreen()
 
-    this.backgroundSprite.render()
-    this.powerSprite.render()
-    this.gearSprite.render()
+    sprites.foreach(spriteRenderer.draw)
+
     this.frameTimeCalculator.updateFrameTime()
 
     for {
@@ -83,7 +94,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
       )
 
       avatar.update(this.frameTimeCalculator)
-      renderer.draw(avatar, projection)
+      renderer.draw(projection)
     }
 
     def updateModelMatrix(model: Live2DModel)(@unused viewOrientation: ViewOrientation): Unit = {
@@ -104,10 +115,9 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
       drawCanvasInfo.currentCanvasHeight
     )
 
-    openGL.glViewport(0, 0, drawCanvasInfo.currentCanvasWidth, drawCanvasInfo.currentCanvasHeight)
-    backgroundSprite.resize()
-    powerSprite.resize()
-    gearSprite.resize()
+    openGL.glViewport(0, 0, drawCanvasInfo.currentSurfaceWidth, drawCanvasInfo.currentSurfaceHeight)
+
+    sprites.foreach(_.resize())
 
     this.display()
   }
@@ -196,7 +206,7 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
       a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
       a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
     })
-    this.rendererHolder = modelHolder.map(model => new Renderer(model))
+    this.rendererHolder = modelHolder.map(model => AvatarRenderer(model))
     setupAvatarEffects()
     initOpenGL()
   }
@@ -236,6 +246,4 @@ class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL
       case _   => println("Unknow key")
     }
   }
-
-
 }

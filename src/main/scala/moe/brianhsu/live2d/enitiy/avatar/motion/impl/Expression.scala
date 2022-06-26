@@ -3,8 +3,8 @@ package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.Expression.{Add, Multiply, Overwrite}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 
 object Expression {
   sealed trait BlendType

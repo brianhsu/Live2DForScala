@@ -29,7 +29,7 @@ class AvatarFileReader(modelDirectory: String)(implicit core: NativeCubismAPILoa
       mocInfoReader = new MocInfoFileReader(settings.mocFile)
       live2dModel <- new Live2DModelFileReader(mocInfoReader, settings.textureFiles).loadModel()
     } yield {
-      new Avatar(settings, live2dModel)
+      Avatar(settings, live2dModel)
     }
 
   }

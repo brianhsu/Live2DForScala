@@ -24,6 +24,8 @@ class SWTOpenGLCanvasInfoFeature extends AnyFeatureSpec with Matchers with Given
       Then("it should have correct properties")
       canvasInfo.currentCanvasWidth shouldBe 789
       canvasInfo.currentCanvasHeight shouldBe 987
+      canvasInfo.currentSurfaceWidth shouldBe 789
+      canvasInfo.currentSurfaceHeight shouldBe 987
     }
   }
 

@@ -4,8 +4,8 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.data.PosePart
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.Pose.{BackOpacityThreshold, Epsilon, Phi}
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{FallbackParameterValueUpdate, PartOpacityUpdate}
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{FallbackParameterValueUpdate, PartOpacityUpdate}
 
 
 object Pose {

@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.opengl
 
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ColorWriteMask, ViewPort}
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 
 import java.nio.ByteBuffer
 import reflect.runtime.universe._
@@ -184,6 +184,16 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
 
   def blendFunction_=(blending: BlendFunction): Unit = {
     binding.glBlendFuncSeparate(blending.sourceRGB, blending.destRGB, blending.sourceAlpha, blending.destAlpha)
+  }
+
+  def preDraw(): Unit = {
+    binding.glDisable(GL_SCISSOR_TEST)
+    binding.glDisable(GL_STENCIL_TEST)
+    binding.glDisable(GL_DEPTH_TEST)
+    binding.glEnable(GL_BLEND)
+    binding.glColorMask(red = true, green = true, blue = true, alpha = true)
+    binding.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+    binding.glBindBuffer(GL_ARRAY_BUFFER, 0)
   }
 
 }

@@ -152,16 +152,18 @@ class ProjectionMatrixCalculatorFeature extends featurespec.FixtureAnyFeatureSpe
 
   }
 
-  class StubbedDrawCanvasInfoReader(var canvasWidth: Int, var canvasHeight: Int) extends DrawCanvasInfoReader {
+  class StubbedDrawCanvasInfoReader(var canvasWidth: Int, var canvasHeight: Int, surfaceWidth: Int, surfaceHeight: Int) extends DrawCanvasInfoReader {
     override def currentCanvasWidth: Int = canvasWidth
     override def currentCanvasHeight: Int = canvasHeight
+    override def currentSurfaceWidth: Int = surfaceWidth
+    override def currentSurfaceHeight: Int = surfaceHeight
   }
 
   override protected def withFixture(test: OneArgTest): Outcome = {
-    val stubbedDrawCanvasInfoReader = new StubbedDrawCanvasInfoReader(0, 0)
+    val stubbedDrawCanvasInfoReader = new StubbedDrawCanvasInfoReader(0, 0, 0, 0)
     val calculator = new ProjectionMatrixCalculator(stubbedDrawCanvasInfoReader)
     val stubbedCallback = stub[ViewOrientation => Unit]
-    val viewPortMatrix = new ViewPortMatrix(
+    val viewPortMatrix = ViewPortMatrix(
       screenRectangle = Rectangle(-1.966736f, 1.966736f, 3.933472f, 2.0f),
       maxRectangle = Rectangle(-2.0f, 2.0f, 4.0f, 4.0f),
       minScale = 0.8f, maxScale = 2.0f,

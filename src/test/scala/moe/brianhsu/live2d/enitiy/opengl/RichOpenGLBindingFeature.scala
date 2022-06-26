@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.opengl
 
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ColorWriteMask, ViewPort}
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 import moe.brianhsu.utils.mock.OpenGLMock
 import moe.brianhsu.utils.mock.OpenGLMock.Constants._
 import org.scalamock.scalatest.MockFactory
@@ -523,6 +523,27 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
         (binding.glVertexAttribPointer: MethodType).verify(attributeTexCoordLocation, 2, GL_FLOAT, false, 4 * 2, uvArray)
       }
 
+    }
+  }
+  Feature("Pre drawing") {
+    Scenario("Call preDraw method on RichOpenGL object") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      When("call preDraw()")
+      richOpenGL.preDraw()
+
+      Then("it should delegated to underlay OpenGL binding")
+      inSequence {
+        (binding.glDisable _).verify(GL_SCISSOR_TEST).once()
+        (binding.glDisable _).verify(GL_STENCIL_TEST).once()
+        (binding.glDisable _).verify(GL_DEPTH_TEST).once()
+        (binding.glEnable _).verify(GL_BLEND).pos
+        (binding.glColorMask _).verify(true, true, true, true).once()
+        (binding.glBindBuffer _).verify(GL_ELEMENT_ARRAY_BUFFER, 0).once()
+        (binding.glBindBuffer _).verify(GL_ARRAY_BUFFER, 0).once()
+      }
     }
   }
 

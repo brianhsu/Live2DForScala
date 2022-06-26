@@ -3,15 +3,15 @@ package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext.Layout
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureColor
 
 object ClippingContext {
   private val ChannelColors = Map(
     0 -> TextureColor(1.0f, 0.0f, 0.0f, 0.0f),
     1 -> TextureColor(0.0f, 1.0f, 0.0f, 0.0f),
     2 -> TextureColor(0.0f, 0.0f, 1.0f, 0.0f),
-    3 -> TextureColor(0.0f, 0.0f, 0.0f),
+    3 -> TextureColor(0.0f, 0.0f, 0.0f, 1.0f),
   )
 
   val ColorChannelCount: Int = ChannelColors.size
@@ -90,6 +90,8 @@ case class ClippingContext(maskDrawable: List[Drawable], clippedDrawables: List[
     }
   }
 
-  def vertexPositionChangedMaskDrawable: List[Drawable] = maskDrawable.filter(_.dynamicFlags.vertexPositionChanged)
+  def vertexPositionChangedMaskDrawable: List[Drawable] = {
+    maskDrawable.filter(_.dynamicFlags.vertexPositionChanged)
+  }
 
 }

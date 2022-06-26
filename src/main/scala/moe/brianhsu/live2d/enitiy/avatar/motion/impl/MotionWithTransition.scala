@@ -4,7 +4,7 @@ import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{Event
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
 
 object MotionWithTransition {
   type FinishedCallback = MotionWithTransition => Unit

@@ -3,8 +3,8 @@ package moe.brianhsu.porting.live2d.demo
 import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLCapabilities, GLProfile}
 
-import java.awt.Color
-import javax.swing.JFrame
+import java.awt.{BorderLayout, Color}
+import javax.swing.{JButton, JFrame}
 
 object Main {
 
@@ -17,11 +17,13 @@ object Main {
     System.setProperty("sun.awt.noerasebackground", "true")
 
     this.frame = new JFrame("Live 2D Scala Demo")
-    frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
-    frame.setSize(1920, 1080)
-    frame.getContentPane.add(createGLCanvas())
+    frame.setSize(1080, 720)
     frame.setVisible(true)
+    frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
+    frame.getContentPane.add(BorderLayout.NORTH, new JButton("Hello"))
+    frame.getContentPane.add(BorderLayout.CENTER, createGLCanvas())
 
+    frame.setVisible(true)
 
   }
 

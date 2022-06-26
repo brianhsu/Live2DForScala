@@ -1,15 +1,16 @@
 package moe.brianhsu.porting.live2d.demo.sprite
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
-import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.opengl.texture.TextureInfo
+import moe.brianhsu.live2d.enitiy.math.Rectangle
+import moe.brianhsu.live2d.enitiy.opengl.texture.TextureInfo
+import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
 
-class PowerSprite(drawCanvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo, shader: SpriteShader)
-                 (implicit private val gl: OpenGLBinding) extends LAppSprite(drawCanvasInfo, textureInfo, shader) {
+class PowerSprite(drawCanvasInfo: DrawCanvasInfoReader,
+                  textureInfo: TextureInfo) extends Sprite(drawCanvasInfo, textureInfo) {
 
-  override protected def calculatePosition(): Position = {
+  override protected def calculatePositionAndSize(): Rectangle = {
     val windowWidth = drawCanvasInfo.currentCanvasWidth
-    Position(
+    Rectangle(
       windowWidth - textureInfo.width.toFloat,
       textureInfo.height * 0.25f,
       textureInfo.width.toFloat,

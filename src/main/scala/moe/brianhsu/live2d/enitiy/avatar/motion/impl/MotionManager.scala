@@ -3,7 +3,7 @@ package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback}
 import moe.brianhsu.live2d.enitiy.avatar.motion.Motion
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
 
 class MotionManager {
   private var mEventCallbackHolder: Option[EventCallback] = None

@@ -2,8 +2,8 @@ package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback}
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{ParameterValueAdd, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.usecase.updater.UpdateOperation.{ParameterValueAdd, ParameterValueUpdate}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{GivenWhenThen, OptionValues}
 import org.scalatest.featurespec.AnyFeatureSpec
