@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.adapter.gateway.opengl.jogl
+package mode.brianhsu.live2d.adapter.gateway.opengl.jogl
 
 import com.jogamp.common.nio.Buffers
 import com.jogamp.opengl.{GL, GL2, GL2ES1, GL2ES2}

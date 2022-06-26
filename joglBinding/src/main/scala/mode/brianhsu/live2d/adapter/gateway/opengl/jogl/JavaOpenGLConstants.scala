@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.adapter.gateway.opengl.jogl
+package mode.brianhsu.live2d.adapter.gateway.opengl.jogl
 
 import com.jogamp.opengl.{GL, GL2ES2}
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLConstants

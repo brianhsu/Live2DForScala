@@ -46,25 +46,15 @@ val lwjglNatives = Seq(
   "org.lwjgl" % "lwjgl-opengles" % lwjglVersion classifier "natives-macos",
 )
 
-val testFramework = Seq(
-  "org.scalatest" %% "scalatest" % "3.2.11" % Test,
-  "org.scalamock" %% "scalamock" % "5.2.0" % Test,
-)
-
 libraryDependencies += swtFramework
 libraryDependencies ++= slfjFramework
 libraryDependencies ++= lwjglFramework
 libraryDependencies ++= lwjglNatives
-libraryDependencies ++= testFramework
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "net.java.dev.jna" % "jna" % "5.10.0",
     "org.json4s" %% "json4s-native" % "4.0.4",
     "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test
-//    "org.jogamp.gluegen" % "gluegen-rt" % "2.3.2",
-//    "org.jogamp.gluegen" % "gluegen-rt-main" % "2.3.2",
-//    "org.jogamp.jogl" % "jogl-all" % "2.3.2",
-//    "org.jogamp.jogl" % "jogl-all-main" % "2.3.2",
 )
 

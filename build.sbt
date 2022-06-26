@@ -3,6 +3,18 @@ ThisBuild / version      := "0.0.1-SNAPSHOT"
 ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
 
-lazy val core = project
 
-lazy val examples = project.dependsOn(core)
+val testFramework = Seq(
+  "org.scalatest" %% "scalatest" % "3.2.11" % Test,
+  "org.scalamock" %% "scalamock" % "5.2.0" % Test,
+)
+
+val sharedSettings = Seq(
+  libraryDependencies ++= testFramework
+)
+
+lazy val core = project.settings(sharedSettings)
+
+lazy val joglBinding = project.dependsOn(core).settings(sharedSettings)
+
+// lazy val examples = project.dependsOn(core, joglBinding)
