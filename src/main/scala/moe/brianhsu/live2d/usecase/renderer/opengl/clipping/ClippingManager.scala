@@ -60,64 +60,66 @@ class ClippingManager(mContextListForMask: List[ClippingContext], mUsingClipCoun
     for (channelNo <- 0 until ClippingContext.ColorChannelCount) {
       // このチャンネルにレイアウトする数
       val layoutCount = div + (if (channelNo < mod) 1 else 0)
-      layoutCount match {
-        case 0 =>
-        case 1 =>
+      if (layoutCount == 0) {
+        // 何もしない
+      } else if (layoutCount == 1) {
+        val cc = newContextListForMask(curClipIndex)
+        newContextListForMask = newContextListForMask.updated(
+          curClipIndex,
+          cc.copy(layout = Layout(channelNo, Rectangle(0.0f, 0.0f, 1.0f, 1.0f)))
+        )
+        curClipIndex += 1
+      } else if (layoutCount == 2) {
+        //UVを2つに分解して使う
+        for (i <- 0 until layoutCount) {
+          val xPosition = i % 2
           val cc = newContextListForMask(curClipIndex)
           newContextListForMask = newContextListForMask.updated(
             curClipIndex,
-            cc.copy(layout = Layout(channelNo, Rectangle(0.0f, 0.0f, 1.0f, 1.0f)))
+            cc.copy(layout = Layout(channelNo, Rectangle(xPosition * 0.5f, 0.0f, 0.5f, 1.0f)))
           )
           curClipIndex += 1
-        case 2 =>
-          //UVを2つに分解して使う
-          for (i <- 0 until layoutCount) {
-            val xPosition = i % 2
-            val cc = newContextListForMask(curClipIndex)
-            newContextListForMask = newContextListForMask.updated(
-              curClipIndex,
-              cc.copy(layout = Layout(channelNo, Rectangle(xPosition * 0.5f, 0.0f, 0.5f, 1.0f)))
-            )
-            curClipIndex += 1
-          }
-        case 3 | 4 =>
-          //4分割して使う
-          for (i <- 0 until layoutCount) {
-            val xPosition = i % 2
-            val yPosition = i / 2
-            val cc = newContextListForMask(curClipIndex)
-            newContextListForMask = newContextListForMask.updated(
-              curClipIndex,
-              cc.copy(layout = Layout(channelNo, Rectangle(xPosition * 0.5f, yPosition * 0.5f, 0.5f, 0.5f)))
-            )
-            curClipIndex += 1
-          }
-        case 5 | 6 | 7 | 8 | 9 =>
-          //9分割して使う
-          for (i <- 0 until layoutCount) {
-            val xPosition = i % 3
-            val yPosition = i / 3
-            val cc = newContextListForMask(curClipIndex)
+        }
+      } else if (layoutCount <= 4) {
+        //4分割して使う
+        for (i <- 0 until layoutCount) {
+          val xPosition = i % 2
+          val yPosition = i / 2
+          val cc = newContextListForMask(curClipIndex)
+          newContextListForMask = newContextListForMask.updated(
+            curClipIndex,
+            cc.copy(layout = Layout(channelNo, Rectangle(xPosition * 0.5f, yPosition * 0.5f, 0.5f, 0.5f)))
+          )
+          curClipIndex += 1
+        }
 
-            newContextListForMask = newContextListForMask.updated(
-              curClipIndex,
-              cc.copy(layout = Layout(channelNo, Rectangle(xPosition / 3.0f, yPosition / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f)))
-            )
-            curClipIndex += 1
-          }
-        case _ =>
-          printf("not supported mask count : %d\n", layoutCount)
+      } else if (layoutCount <= 9) {
+        //9分割して使う
+        for (i <- 0 until layoutCount) {
+          val xPosition = i % 3
+          val yPosition = i / 3
+          val cc = newContextListForMask(curClipIndex)
 
-          // 引き続き実行する場合、 SetupShaderProgramでオーバーアクセスが発生するので仕方なく適当に入れておく
-          // もちろん描画結果はろくなことにならない
-          for (_ <- 0 until layoutCount) {
-            val cc = newContextListForMask(curClipIndex)
-            newContextListForMask = newContextListForMask.updated(
-              curClipIndex,
-              cc.copy(layout = Layout(0, Rectangle(0.0f, 0.0f, 1.0f, 1.0f)))
-            )
-            curClipIndex += 1
-          }
+          newContextListForMask = newContextListForMask.updated(
+            curClipIndex,
+            cc.copy(layout = Layout(channelNo, Rectangle(xPosition / 3.0f, yPosition / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f)))
+          )
+          curClipIndex += 1
+        }
+
+      } else {
+        printf("not supported mask count : %d\n", layoutCount)
+
+        // 引き続き実行する場合、 SetupShaderProgramでオーバーアクセスが発生するので仕方なく適当に入れておく
+        // もちろん描画結果はろくなことにならない
+        for (_ <- 0 until layoutCount) {
+          val cc = newContextListForMask(curClipIndex)
+          newContextListForMask = newContextListForMask.updated(
+            curClipIndex,
+            cc.copy(layout = Layout(0, Rectangle(0.0f, 0.0f, 1.0f, 1.0f)))
+          )
+          curClipIndex += 1
+        }
       }
     }
     newContextListForMask
