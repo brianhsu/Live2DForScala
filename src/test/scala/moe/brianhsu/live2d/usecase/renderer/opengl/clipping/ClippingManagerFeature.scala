@@ -1,14 +1,13 @@
-package moe.brianhsu.porting
+package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingManager
 import moe.brianhsu.utils.mock.Live2DModelMock
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, OptionValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatest.{GivenWhenThen, OptionValues}
 
 class ClippingManagerFeature extends AnyFeatureSpec with Matchers with GivenWhenThen
                              with MockFactory with Live2DModelMock with OptionValues with TableDrivenPropertyChecks {

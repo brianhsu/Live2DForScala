@@ -10,13 +10,13 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureManager
 import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
-import moe.brianhsu.live2d.usecase.renderer.opengl.SpriteRenderer
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
 import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
+import moe.brianhsu.live2d.usecase.renderer.opengl.AvatarRenderer
+import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.SpriteRenderer
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.demo.sprite._
-import moe.brianhsu.porting.live2d.renderer.opengl.AvatarRenderer
 
 import scala.annotation.unused
 import scala.util.Try

@@ -1,11 +1,11 @@
-package moe.brianhsu.live2d.usecase.renderer.opengl
+package moe.brianhsu.live2d.usecase.renderer.opengl.sprite
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
+import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureInfo
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
-import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
 import moe.brianhsu.utils.mock.OpenGLMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen

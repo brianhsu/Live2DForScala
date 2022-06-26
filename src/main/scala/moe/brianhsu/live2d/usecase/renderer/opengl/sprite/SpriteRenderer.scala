@@ -1,8 +1,8 @@
-package moe.brianhsu.live2d.usecase.renderer.opengl
+package moe.brianhsu.live2d.usecase.renderer.opengl.sprite
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
-import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
 import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
+import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
 
 class SpriteRenderer(spriteShader: SpriteShader)(implicit gl: OpenGLBinding) {
 

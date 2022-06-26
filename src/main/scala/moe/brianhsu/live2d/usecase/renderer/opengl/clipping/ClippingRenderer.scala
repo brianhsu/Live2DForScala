@@ -1,12 +1,11 @@
-package moe.brianhsu.live2d.usecase.renderer.opengl
+package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.{Drawable, VertexInfo}
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureManager
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
-import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderRenderer
-import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingManager
+import moe.brianhsu.live2d.usecase.renderer.opengl.{OffscreenFrame, Profile}
 
 class ClippingRenderer(model: Live2DModel, textureManager: TextureManager, shaderRenderer: ShaderRenderer,
                        initClippingManager: Option[ClippingManager], val offscreenFrameHolder: Option[OffscreenFrame])

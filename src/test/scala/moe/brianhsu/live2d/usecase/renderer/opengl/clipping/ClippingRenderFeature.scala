@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.usecase.renderer.opengl
+package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.ConstantDrawableFlagMask.csmIsDoubleSided
@@ -7,15 +7,14 @@ import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, Dynam
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.ViewPort
 import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureInfo, TextureManager}
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
-import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderRenderer
-import moe.brianhsu.porting.live2d.renderer.opengl.clipping.ClippingManager
+import moe.brianhsu.live2d.usecase.renderer.opengl.{OffscreenFrame, Profile}
 import moe.brianhsu.utils.mock.{Live2DModelMock, OpenGLMock, ShaderFactoryMock}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, OptionValues}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatest.{GivenWhenThen, OptionValues}
 
 import java.nio.ByteBuffer
 
