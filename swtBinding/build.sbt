@@ -1,6 +1,4 @@
-name := "Live2D for Scala Examples"
-
-fork := true
+name := "Live2D For Scala SWT Binding"
 
 val swtVersion = "3.120.0"
 
@@ -13,5 +11,4 @@ val swtFramework = {
   }
 }
 
-libraryDependencies += swtFramework
-
+libraryDependencies += swtFramework % "provided"

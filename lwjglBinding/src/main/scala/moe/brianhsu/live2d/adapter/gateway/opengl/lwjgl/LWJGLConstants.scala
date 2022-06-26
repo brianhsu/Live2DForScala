@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.adapter.gateway.opengl.lwjgl
 
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLConstants
-import org.lwjgl.opengl.{GL11, GL12, GL13, GL14, GL15, GL20, GL30}
+import org.lwjgl.opengl._
 
 object LWJGLConstants extends OpenGLConstants {
   override val GL_TEXTURE_2D: Int = GL11.GL_TEXTURE_2D

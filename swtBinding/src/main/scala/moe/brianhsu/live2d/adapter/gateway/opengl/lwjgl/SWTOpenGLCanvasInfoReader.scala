@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.adapter.gateway.renderer.swt
+package moe.brianhsu.live2d.adapter.gateway.opengl.lwjgl
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import org.eclipse.swt.opengl.GLCanvas

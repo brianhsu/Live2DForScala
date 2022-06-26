@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.adapter.gateway.opengl.lwjgl
 
-import org.lwjgl.opengl.{GL11, GL12, GL13, GL14, GL15, GL20, GL30}
+import org.lwjgl.opengl._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

@@ -17,4 +17,8 @@ lazy val core = project.settings(sharedSettings)
 
 lazy val joglBinding = project.dependsOn(core).settings(sharedSettings)
 
-lazy val examples = project.dependsOn(core, joglBinding)
+lazy val lwjglBinding = project.dependsOn(core).settings(sharedSettings)
+
+lazy val swtBinding = project.dependsOn(core).settings(sharedSettings)
+
+lazy val examples = project.dependsOn(core, joglBinding, lwjglBinding, swtBinding)

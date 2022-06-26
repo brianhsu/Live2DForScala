@@ -1,1 +1,1 @@
-name := "Live 2D For Scala OpenGL Binding"
+name := "Live2D For Scala OpenGL Binding"
