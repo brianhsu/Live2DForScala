@@ -46,9 +46,8 @@ class ClippingManager(mContextListForMask: List[ClippingContext], mUsingClipCoun
     contextListForMask.find(_.clippedDrawables.contains(drawable))
   }
 
-  private def setupLayoutBounds(originalList: List[ClippingContext], usingClipCount: Int): List[ClippingContext] = {
+  private[clipping] def setupLayoutBounds(originalList: List[ClippingContext], usingClipCount: Int): List[ClippingContext] = {
     var newContextListForMask = originalList
-    //println(originalList)
     // ひとつのRenderTextureを極力いっぱいに使ってマスクをレイアウトする
     // マスクグループの数が4以下ならRGBA各チャンネルに１つずつマスクを配置し、5以上6以下ならRGBAを2,2,1,1と配置する
 
@@ -61,7 +60,6 @@ class ClippingManager(mContextListForMask: List[ClippingContext], mUsingClipCoun
     for (channelNo <- 0 until ClippingContext.ColorChannelCount) {
       // このチャンネルにレイアウトする数
       val layoutCount = div + (if (channelNo < mod) 1 else 0)
-
       layoutCount match {
         case 0 =>
         case 1 =>

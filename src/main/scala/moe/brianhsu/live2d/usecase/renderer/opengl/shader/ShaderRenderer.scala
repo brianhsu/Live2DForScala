@@ -26,14 +26,20 @@ object ShaderRenderer {
   }
 }
 
-class ShaderRenderer (shaderFactory: ShaderFactory)(implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
+class ShaderRenderer(setupMaskShader: SetupMaskShader, normalShader: NormalShader,
+                     maskedShader: MaskedShader, invertedMaskedShader: InvertedMaskedShader)
+                    (implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) {
 
   import gl.constants._
 
-  private val setupMaskShader = shaderFactory.setupMaskShader
-  private val normalShader = shaderFactory.normalShader
-  private val maskedShader = shaderFactory.maskedShader
-  private val invertedMaskedShader = shaderFactory.invertedMaskedShader
+  def this(shaderFactory: ShaderFactory)(implicit gl: OpenGLBinding, richOpenGLWrapper: OpenGLBinding => RichOpenGLBinding) = {
+    this(
+      shaderFactory.setupMaskShader,
+      shaderFactory.normalShader,
+      shaderFactory.maskedShader,
+      shaderFactory.invertedMaskedShader
+    )
+  }
 
   def renderDrawable(clippingContextBufferForDraw: Option[ClippingContext], offscreenFrameHolder: Option[OffscreenFrame], textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: ProjectionMatrix, invertedMask: Boolean): Unit = {
     val isMasked = clippingContextBufferForDraw.isDefined

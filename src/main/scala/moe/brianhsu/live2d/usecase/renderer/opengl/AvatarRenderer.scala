@@ -1,6 +1,5 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl
 
-import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
 import moe.brianhsu.live2d.enitiy.model.drawable.VertexInfo
@@ -10,22 +9,31 @@ import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.{ClippingContext, Cl
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderRenderer
 import moe.brianhsu.live2d.usecase.renderer.viewport.matrix.ProjectionMatrix
 
-class AvatarRenderer(model: Live2DModel, textureManager: TextureManager, shaderRenderer: ShaderRenderer,
-                     profile: Profile, clippingRenderer: ClippingRenderer)
+object AvatarRenderer {
+
+  def apply(model: Live2DModel)(implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding = RichOpenGLBinding.wrapOpenGLBinding): AvatarRenderer = {
+    val textureManager = TextureManager.getInstance(gl)
+    val shaderRenderer = ShaderRenderer.getInstance(gl)
+    val profile = Profile.getInstance(gl)
+    val clippingRenderer = new ClippingRenderer(model, textureManager, shaderRenderer)(gl, wrapper)
+
+    new AvatarRenderer(
+      model, textureManager, shaderRenderer,
+      profile, clippingRenderer
+    )(gl, wrapper)
+  }
+}
+
+class AvatarRenderer(model: Live2DModel,
+                     textureManager: TextureManager, shaderRenderer: ShaderRenderer, profile: Profile,
+                     clippingRenderer: ClippingRenderer)
                     (implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding) {
 
   import gl.constants._
 
-  def this(model: Live2DModel)(implicit gl: OpenGLBinding, wrapper: OpenGLBinding => RichOpenGLBinding = RichOpenGLBinding.wrapOpenGLBinding) = {
-    this(
-      model, TextureManager.getInstance, ShaderRenderer.getInstance, Profile.getInstance,
-      new ClippingRenderer(model, TextureManager.getInstance, ShaderRenderer.getInstance)
-    )
-  }
-
-  def draw(avatar: Avatar, projection: ProjectionMatrix): Unit = {
+  def draw(projection: ProjectionMatrix): Unit = {
     this.profile.save()
-    this.drawModel(avatar.model.modelMatrix * projection)
+    this.drawModel(model.modelMatrix * projection)
     this.profile.restore()
   }
 
