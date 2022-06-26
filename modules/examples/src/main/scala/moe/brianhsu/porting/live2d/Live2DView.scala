@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.demo
+package moe.brianhsu.porting.live2d
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader, FaceDirectionByMouse}
@@ -16,12 +16,12 @@ import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
 import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.SpriteRenderer
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
-import moe.brianhsu.porting.live2d.demo.sprite._
+import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 
 import scala.annotation.unused
 import scala.util.Try
 
-class LAppView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL: OpenGLBinding) {
+class Live2DView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val openGL: OpenGLBinding) {
 
   import openGL.constants._
 

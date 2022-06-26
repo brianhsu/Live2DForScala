@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.swtopengl
 
 import moe.brianhsu.live2d.adapter.gateway.opengl.lwjgl.{LWJGLBinding, SWTOpenGLCanvasInfoReader}
-import moe.brianhsu.porting.live2d.demo.LAppView
+import moe.brianhsu.porting.live2d.Live2DView
 import org.eclipse.swt._
 import org.eclipse.swt.events.{KeyEvent, KeyListener, MouseEvent, MouseListener}
 import org.eclipse.swt.layout._
@@ -9,7 +9,7 @@ import org.eclipse.swt.opengl._
 import org.eclipse.swt.widgets._
 import org.lwjgl.opengl._
 
-object SWTOpenGL {
+object SWTWithLWJGL {
   private var lastX: Option[Int] = None
   private var lastY: Option[Int] = None
 
@@ -27,7 +27,7 @@ object SWTOpenGL {
 
     implicit val gl = new LWJGLBinding
     val canvasInfo = new SWTOpenGLCanvasInfoReader(canvas)
-    val appView = new LAppView(canvasInfo)
+    val appView = new Live2DView(canvasInfo)
 
     canvas.addListener(SWT.Resize, _ => {
       canvas.setCurrent()

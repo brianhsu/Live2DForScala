@@ -2,6 +2,15 @@ ThisBuild / organization := "com.example"
 ThisBuild / version      := "0.0.1-SNAPSHOT"
 ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
+ThisBuild / assemblyMergeStrategy := {
+  case x if x.endsWith("module-info.class") => {
+    MergeStrategy.discard
+  }
+  case x => {
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+  }
+}
 
 val swtVersion = "3.120.0"
 val swtPackageName = {
@@ -62,6 +71,7 @@ lazy val examples = (project in file("modules/examples"))
   .settings(
     name := "Live2D For Scala Examples",
     fork := true,
+    assembly / mainClass := Some("moe.brianhsu.porting.live2d.swing.SwingWithJavaOpenGL"),
     sharedSettings,
     libraryDependencies += swtFramework
   )
