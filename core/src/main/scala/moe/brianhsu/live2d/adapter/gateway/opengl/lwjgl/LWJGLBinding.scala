@@ -1,6 +1,5 @@
 package moe.brianhsu.live2d.adapter.gateway.opengl.lwjgl
 
-import com.jogamp.common.nio.Buffers
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, OpenGLConstants}
 import org.lwjgl.opengl._
 
@@ -170,7 +169,10 @@ class LWJGLBinding extends OpenGLBinding {
   }
 
   override def glGetIntegerv(pname: Int, params: Array[Int]): Unit = {
-    val buffer = Buffers.newDirectIntBuffer(params.length)
+    val buffer = ByteBuffer.allocateDirect(params.length * 4)
+      .order(ByteOrder.nativeOrder())
+      .asIntBuffer()
+
     GL11.glGetIntegerv(pname, buffer)
     buffer.get(params)
   }

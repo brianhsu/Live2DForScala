@@ -1,9 +1,9 @@
-package mode.brianhsu.live2d.adapter.gateway.opengl.jogl
+package moe.brianhsu.live2d.adapter.gateway.opengl.jogl
 
 import com.jogamp.common.nio.PointerBuffer
-import com.jogamp.opengl.{GL, GL2, GL2ES1, GL2ES2, GL2ES3, GL2GL3, GL3, GL3ES3, GL3bc, GL4, GL4ES3, GL4bc, GLArrayData, GLBufferStorage, GLContext, GLES1, GLES2, GLES3, GLProfile, GLUniformData}
+import com.jogamp.opengl._
 
-import java.nio.{Buffer, ByteBuffer, DoubleBuffer, FloatBuffer, IntBuffer, LongBuffer, ShortBuffer}
+import java.nio._
 
 class MockedGL2 extends GL2 {
   override def glClearIndex(v: Float): Unit = ???

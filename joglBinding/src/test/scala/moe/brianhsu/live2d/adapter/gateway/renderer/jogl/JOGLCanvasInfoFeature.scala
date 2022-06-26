@@ -1,7 +1,6 @@
 package moe.brianhsu.live2d.adapter.gateway.renderer.jogl
 
 import com.jogamp.opengl.awt.GLCanvas
-import moe.brianhsu.utils.tag.CanvasInfoRelated
 import org.scalamock.scalatest.MixedMockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -12,7 +11,7 @@ import java.awt.geom.AffineTransform
 
 class JOGLCanvasInfoFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MixedMockFactory {
   Feature("Get canvas information") {
-    Scenario("Get canvas information from Java OpenGL AWT Canvas", CanvasInfoRelated) {
+    Scenario("Get canvas information from Java OpenGL AWT Canvas") {
       Given("a stubbed Java OpenGL AWT Canvas")
       val stubbedConfiguration = stub[GraphicsConfiguration]
       val transform = stub[AffineTransform]
