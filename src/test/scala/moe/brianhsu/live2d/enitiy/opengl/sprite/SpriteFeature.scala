@@ -42,7 +42,6 @@ class SpriteFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with
       var calculateTimes: Int = -1
       val sprite = new Sprite(stub[DrawCanvasInfoReader], stubbedTextureInfo) {
         override protected def calculatePositionAndSize(): Rectangle = {
-          println("calculatePositionAndSize:" + calculateTimes)
           calculateTimes += 1
           mockedPosition(calculateTimes)
         }

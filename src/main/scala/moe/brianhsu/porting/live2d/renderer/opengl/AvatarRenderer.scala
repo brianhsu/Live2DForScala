@@ -19,39 +19,15 @@ class AvatarRenderer(model: Live2DModel)(implicit gl: OpenGLBinding) {
   private val textureManager = TextureManager.getInstance
   private val shaderRenderer = ShaderRenderer.getInstance
   private val profile = Profile.getInstance
-
-  private var projection: Option[ProjectionMatrix] = None
   private val clippingRenderer = new ClippingRenderer(model, textureManager, shaderRenderer)
 
   def draw(avatar: Avatar, projection: ProjectionMatrix): Unit = {
-    this.projection = Some(avatar.model.modelMatrix * projection)
     this.profile.save()
-    this.drawModel()
+    this.drawModel(avatar.model.modelMatrix * projection)
     this.profile.restore()
   }
 
-  private def drawMesh(clippingContextBufferForDraw: Option[ClippingContext], drawTextureId: Int, isCulling: Boolean, vertexInfo: VertexInfo,
-               opacity: Float, colorBlendMode: BlendMode, invertedMask: Boolean): Unit ={
-
-    gl.setCapabilityEnabled(GL_CULL_FACE, isCulling)
-    gl.glFrontFace(GL_CCW)
-
-    val modelColorRGBA = TextureColor(1.0f, 1.0f, 1.0f, opacity)
-
-    shaderRenderer.renderDrawable(
-      clippingContextBufferForDraw,
-      clippingRenderer.offscreenFrameHolder,
-      drawTextureId,
-      vertexInfo.vertexArrayDirectBuffer, vertexInfo.uvArrayDirectBuffer,
-      colorBlendMode, modelColorRGBA, projection.getOrElse(new ProjectionMatrix),
-      invertedMask
-    )
-
-    gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.indexArrayDirectBuffer)
-    gl.glUseProgram(0)
-  }
-
-  private def drawModel(): Unit = {
+  private def drawModel(projection: ProjectionMatrix): Unit = {
     clippingRenderer.draw(profile)
     gl.preDraw()
 
@@ -68,8 +44,33 @@ class AvatarRenderer(model: Live2DModel)(implicit gl: OpenGLBinding) {
         drawable.vertexInfo,
         drawable.opacity,
         drawable.constantFlags.blendMode,
-        drawable.constantFlags.isInvertedMask
+        drawable.constantFlags.isInvertedMask,
+        projection
       )
     }
   }
+
+  private def drawMesh(clippingContextBufferForDraw: Option[ClippingContext],
+                       drawTextureId: Int, isCulling: Boolean, vertexInfo: VertexInfo,
+                       opacity: Float, colorBlendMode: BlendMode,
+                       invertedMask: Boolean, projection: ProjectionMatrix): Unit ={
+
+    gl.setCapabilityEnabled(GL_CULL_FACE, isCulling)
+    gl.glFrontFace(GL_CCW)
+
+    val modelColorRGBA = TextureColor(1.0f, 1.0f, 1.0f, opacity)
+
+    shaderRenderer.renderDrawable(
+      clippingContextBufferForDraw,
+      clippingRenderer.offscreenFrameHolder,
+      drawTextureId,
+      vertexInfo.vertexArrayDirectBuffer, vertexInfo.uvArrayDirectBuffer,
+      colorBlendMode, modelColorRGBA, projection,
+      invertedMask
+    )
+
+    gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.indexArrayDirectBuffer)
+    gl.glUseProgram(0)
+  }
+
 }

@@ -35,14 +35,6 @@ object ExpectedAvatarMotionOperation {
                    endTimeInSeconds: Option[Float],
                    parameters: Map[String, Float])
 
-  def main(args: Array[String]): Unit = {
-    val xs = List(
-      ParameterValueAdd("aa", 10.0f, 0.6f),
-      ParameterValueUpdate("bb", 5.0f, 1.0f)
-    )
-    val t = org.json4s.native.Serialization.write(xs)
-    println(t)
-  }
 }
 
 case class ExpectedAvatarMotionOperation(input: Input, output: Output)
