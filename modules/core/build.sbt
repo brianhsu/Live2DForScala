@@ -1,14 +1,4 @@
-name := "Live2D For Scala Core"
-
-Compile / doc / scalacOptions ++= Seq("-private")
-
-Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-h", "target/test-reports-html")
-
-//javaOptions ++= Seq("-XX:+PrintGC")
-
 fork := true
-
-autoAPIMappings := true
 
 val slf4jVersion = "1.7.36"
 val slfjFramework = Seq(

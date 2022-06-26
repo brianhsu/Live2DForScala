@@ -60,7 +60,6 @@ class TextureManager(implicit gl: OpenGLBinding) {
   }
 
   private def readBitmapFromFile(filename: String): ImageBitmap = {
-    println("filename:" + filename)
     val image = ImageIO.read(new File(filename))
     val bitmap = image.getType match {
       case BufferedImage.TYPE_4BYTE_ABGR => loadABGRBuffer(image)

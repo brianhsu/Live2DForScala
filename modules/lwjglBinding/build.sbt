@@ -1,5 +1,3 @@
-name := "Live2D For Scala LWJGL Binding"
-
 val lwjglVersion = "3.3.1"
 val lwjglFramework = Seq(
   "org.lwjgl" % "lwjgl" % lwjglVersion,
