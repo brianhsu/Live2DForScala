@@ -56,6 +56,7 @@ class TextureManager(implicit gl: OpenGLBinding) {
     gl.glGenerateMipmap(GL_TEXTURE_2D)
     gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
     gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    gl.glBindTexture(GL_TEXTURE_2D, 0)
 
     TextureInfo(textureIds(0), bitmapInfo.width, bitmapInfo.height)
   }

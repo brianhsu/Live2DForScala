@@ -265,8 +265,8 @@ trait ShaderRenderBehaviors {
     import binding.constants._
 
     When(s"render mask with isInvertedMask = $isInvertedMask, colorBlendMode = $colorBlendMode")
-    val stubbedFrameBufferId = 5678
-    val stubbedOffscreenFrame = createOffscreenFrame(stubbedFrameBufferId)
+    val stubbedColorBufferId = 5678
+    val stubbedOffscreenFrame = createOffscreenFrame(stubbedColorBufferId)
     shaderRender.renderDrawable(
       Some(stubbedClippingContext),
       Some(stubbedOffscreenFrame),
@@ -283,7 +283,7 @@ trait ShaderRenderBehaviors {
       (richOpenGLBinding.updateVertexInfo _).verify(stubbedVertex, stubbedUv, expectedShader.attributePositionLocation, expectedShader.attributeTexCoordLocation).once()
 
       // Shouldn't do anything related to clipping context / offscreen frame
-      (richOpenGLBinding.activeAndUpdateTextureVariable _).verify(GL_TEXTURE1, stubbedFrameBufferId, expectedShader.samplerTexture1Location, 1).once()
+      (richOpenGLBinding.activeAndUpdateTextureVariable _).verify(GL_TEXTURE1, stubbedColorBufferId, expectedShader.samplerTexture1Location, 1).once()
       (binding.glUniformMatrix4fv _).verify(expectedShader.uniformClipMatrixLocation, 1, false, stubbedMatrixForDraw.elements).once()
       (richOpenGLBinding.setColorChannel _).verify(stubbedLayout.channelColor, expectedShader.uniformChannelFlagLocation).once()
 
@@ -294,8 +294,8 @@ trait ShaderRenderBehaviors {
     }
   }
 
-  private def createOffscreenFrame(stubbedFrameBufferId: Int): OffscreenFrame = {
-    new OffscreenFrame(1234, stubbedFrameBufferId)(null)
+  private def createOffscreenFrame(stubbedColorBufferId: Int): OffscreenFrame = {
+    new OffscreenFrame(stubbedColorBufferId, 1234)(null)
   }
 
 }

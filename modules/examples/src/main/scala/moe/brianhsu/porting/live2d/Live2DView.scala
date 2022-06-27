@@ -35,6 +35,10 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val open
 
   private val frameTimeCalculator = new SystemNanoTimeBasedFrameInfo
   private implicit val cubismCore: JnaNativeCubismAPILoader = new JnaNativeCubismAPILoader()
+  private val backgroundSprite: Sprite = new BackgroundSprite(
+    drawCanvasInfo,
+    textureManager.loadTexture("/texture/back_class_normal.png"),
+  )
 
   private var avatarHolder: Try[Avatar] = new AvatarFileReader("src/main/resources/Haru").loadAvatar()
   private var modelHolder: Try[Live2DModel] = avatarHolder.map(_.model)
@@ -47,10 +51,6 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val open
 
   private val targetPointCalculator = new FaceDirectionByMouse(60)
   private val faceDirection = new FaceDirection(targetPointCalculator)
-  private val backgroundSprite: Sprite = new BackgroundSprite(
-    drawCanvasInfo,
-    textureManager.loadTexture("/texture/back_class_normal.png"),
-  )
 
   private val powerSprite: Sprite = new PowerSprite(
     drawCanvasInfo,

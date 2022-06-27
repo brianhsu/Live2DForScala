@@ -55,9 +55,9 @@ class ShaderRenderer(setupMaskShader: SetupMaskShader, normalShader: NormalShade
     for {
       context <- clippingContextBufferForDraw
       offscreenFrame <- offscreenFrameHolder
-      frameBufferId = offscreenFrame.frameBufferId
+      colorBufferId = offscreenFrame.colorTextureBufferId
     } {
-      gl.activeAndUpdateTextureVariable(GL_TEXTURE1, frameBufferId, currentShader.samplerTexture1Location, 1)
+      gl.activeAndUpdateTextureVariable(GL_TEXTURE1, colorBufferId, currentShader.samplerTexture1Location, 1)
       gl.glUniformMatrix4fv(currentShader.uniformClipMatrixLocation, 1, transpose = false, context.matrixForDraw.elements)
       gl.setColorChannel(context.layout.channelColor, currentShader.uniformChannelFlagLocation)
     }

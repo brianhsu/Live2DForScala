@@ -108,6 +108,7 @@ trait FeatureSpecStackBehaviors {
         (binding.glGenerateMipmap _).verify(GL_TEXTURE_2D).once()
         (binding.glTexParameteri _).verify(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR).once()
         (binding.glTexParameteri _).verify(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR).once()
+        (binding.glBindBuffer _).verify(GL_TEXTURE_2D, 0).once()
       }
     }
   }
