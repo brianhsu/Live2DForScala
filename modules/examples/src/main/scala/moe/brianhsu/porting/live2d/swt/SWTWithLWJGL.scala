@@ -10,6 +10,8 @@ import org.eclipse.swt.widgets._
 import org.lwjgl.opengl._
 
 object SWTWithLWJGL {
+
+  /*
   private var lastX: Option[Int] = None
   private var lastY: Option[Int] = None
 
@@ -95,4 +97,6 @@ object SWTWithLWJGL {
     display.dispose()
 
   }
+
+   */
 }

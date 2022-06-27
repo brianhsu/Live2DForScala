@@ -1,7 +1,7 @@
 package moe.brianhsu.porting.live2d.swing
 
 import com.jogamp.opengl.awt.GLCanvas
-import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
+import com.jogamp.opengl.{GLAutoDrawable, GLEventListener, GLRunnable}
 import moe.brianhsu.live2d.adapter.gateway.opengl.jogl.JavaOpenGLBinding
 import moe.brianhsu.live2d.adapter.gateway.renderer.jogl.JOGLCanvasInfoReader
 import moe.brianhsu.porting.live2d.Live2DView
@@ -23,9 +23,15 @@ class Live2DWidget(val canvas: GLCanvas) extends MouseAdapter with GLEventListen
     live2DView.foreach(callback)
   }
 
+  private def runOnOpenGLThread(callback: => Any): Unit = {
+    canvas.invoke(true, (glAutoDrawable: GLAutoDrawable) => {
+      callback
+      true
+    })
+  }
   override def init(drawable: GLAutoDrawable): Unit = {
     implicit val openGL: JavaOpenGLBinding = new JavaOpenGLBinding(drawable.getGL.getGL2)
-    this.mLive2DView = Option(new Live2DView(canvasInfo))
+    this.mLive2DView = Option(new Live2DView(canvasInfo, runOnOpenGLThread))
     this.animator = Option(new FixedFPSAnimator(60, drawable))
     this.animator.foreach { x => x.start() }
   }
