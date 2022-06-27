@@ -49,17 +49,17 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val open
   private val faceDirection = new FaceDirection(targetPointCalculator)
   private val backgroundSprite: Sprite = new BackgroundSprite(
     drawCanvasInfo,
-    textureManager.loadTexture("src/main/resources/texture/back_class_normal.png"),
+    textureManager.loadTexture("/texture/back_class_normal.png"),
   )
 
   private val powerSprite: Sprite = new PowerSprite(
     drawCanvasInfo,
-    textureManager.loadTexture("src/main/resources/texture/close.png"),
+    textureManager.loadTexture("/texture/close.png"),
   )
 
   private val gearSprite: Sprite = new GearSprite(
     drawCanvasInfo,
-    textureManager.loadTexture("src/main/resources/texture/icon_gear.png"),
+    textureManager.loadTexture("/texture/icon_gear.png"),
   )
 
   private val sprites = this.backgroundSprite :: this.gearSprite :: this.powerSprite :: Nil

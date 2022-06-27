@@ -1,13 +1,12 @@
-package moe.brianhsu.porting.live2d.demo
+package moe.brianhsu.porting.live2d.swing
 
 import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLCapabilities, GLProfile}
-import moe.brianhsu.porting.live2d.swing.Live2DWidget
 
 import java.awt.{BorderLayout, Color}
 import javax.swing.{JButton, JFrame}
 
-object Main {
+object SwingWithJavaOpenGL {
 
   def main(args: Array[String]): Unit = {
 

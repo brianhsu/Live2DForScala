@@ -3,9 +3,10 @@ package moe.brianhsu.live2d.enitiy.opengl.texture
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 
 import java.awt.image.BufferedImage
-import java.io.File
+import java.io.FileInputStream
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.imageio.ImageIO
+import scala.util.Try
 
 object TextureManager {
 
@@ -60,7 +61,8 @@ class TextureManager(implicit gl: OpenGLBinding) {
   }
 
   private def readBitmapFromFile(filename: String): ImageBitmap = {
-    val image = ImageIO.read(new File(filename))
+    val inputStream = Try(new FileInputStream(filename)).getOrElse(this.getClass.getResourceAsStream(filename))
+    val image = ImageIO.read(inputStream)
     val bitmap = image.getType match {
       case BufferedImage.TYPE_4BYTE_ABGR => loadABGRBuffer(image)
       case _ => convertToABGRBuffer(image)
