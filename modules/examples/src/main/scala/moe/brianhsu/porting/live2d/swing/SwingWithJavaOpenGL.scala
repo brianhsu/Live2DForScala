@@ -2,16 +2,15 @@ package moe.brianhsu.porting.live2d.swing
 
 import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLCapabilities, GLProfile}
-import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
 
-import java.awt.TrayIcon.MessageType
-import java.awt.event.{ActionEvent, ActionListener}
-import java.awt.{BorderLayout, Color, Component}
-import javax.swing.{JButton, JDialog, JFileChooser, JFrame, JOptionPane}
+import java.awt.event.ActionEvent
+import java.awt.{BorderLayout, Component}
+import javax.swing._
 
 object SwingWithJavaOpenGL {
   private val frame = new JFrame("Live 2D Scala Demo")
   private val live2DWidget = createGLCanvas()
+  private val statusLine = createStatusLine()
 
   def main(args: Array[String]): Unit = {
 
@@ -21,16 +20,22 @@ object SwingWithJavaOpenGL {
     frame.setSize(1080, 720)
     frame.setVisible(true)
     frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
-    frame.getContentPane.add(BorderLayout.NORTH, createLoadButton(frame))
+    frame.getContentPane.add(BorderLayout.PAGE_START, createLoadButton(frame))
     frame.getContentPane.add(BorderLayout.CENTER, live2DWidget.canvas)
+    frame.getContentPane.add(BorderLayout.PAGE_END, statusLine)
 
     frame.setVisible(true)
+  }
 
+  private def createStatusLine(): JLabel = {
+    val statusLine = new JLabel("Ready.")
+    statusLine.setBorder(BorderFactory.createEtchedBorder())
+    statusLine
   }
 
   private def createLoadButton(parent: Component): JButton = {
     val button = new JButton("Load Avatar")
-    button.addActionListener { actionEvent: ActionEvent =>
+    button.addActionListener { _: ActionEvent =>
       val fileChooser = new JFileChooser()
       fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
       fileChooser.showOpenDialog(parent) match {
@@ -57,14 +62,22 @@ object SwingWithJavaOpenGL {
     val capabilities = new GLCapabilities(profile)
 
     val canvas = new GLCanvas(capabilities)
-    val widget = new Live2DWidget(canvas)
+    val widget = new Live2DWidget(
+      canvas, { live2DWidget =>
+        live2DWidget.doWithLive2DView { view =>
+          view.setLogger { message =>
+            statusLine.setText(message)
+            statusLine.updateUI()
+          }
+        }
+      }
+    )
 
     canvas.addGLEventListener(widget)
     canvas.addMouseListener(widget)
     canvas.addMouseMotionListener(widget)
     canvas.addMouseWheelListener(widget)
     canvas.addKeyListener(widget)
-
     widget
   }
 }

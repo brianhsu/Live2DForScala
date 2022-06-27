@@ -136,14 +136,28 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLT
       model <- modelHolder
     } {
 
-      val isHead = model.isHit("HitArea", transformedX, transformedY)
-      val isBody = model.isHit("HitArea2", transformedX, transformedY)
-      val isPower = powerSprite.isHit(x.toFloat, y.toFloat)
-      val isGear = gearSprite.isHit(x.toFloat, y.toFloat)
-      val message = s"isHead = $isHead, isBody = $isBody, isGear = $isGear, isPower = $isPower"
-
-      loggerHolder.foreach(_.apply(message))
+      if (powerSprite.isHit(x.toFloat, y.toFloat)) {
+        updateLog("Clicked on Power sprite.")
+      } else if (gearSprite.isHit(x.toFloat, y.toFloat)) {
+        updateLog("Clicked on Power sprite.")
+      } else {
+        val hitAreaHolder = for {
+          avatar <- avatarHolder
+          hitArea <- avatar.avatarSettings.hitArea.find(area => model.isHit(area.id, transformedX, transformedY))
+        } yield {
+          hitArea.name
+        }
+        hitAreaHolder match {
+          case Some(area) => updateLog(s"Clicked on Avatar's $area.")
+          case None => updateLog("Clicked nothing.")
+        }
+      }
     }
+  }
+
+  def updateLog(message: String): Unit = {
+    loggerHolder.foreach(_.apply(message))
+
   }
 
   def onMouseDragged(x: Int, y: Int): Unit = {
@@ -203,11 +217,13 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLT
   }
 
   def switchAvatar(directoryPath: String): Try[Avatar] = {
+    updateLog(s"Loading $directoryPath...")
+
     val newAvatarHolder = new AvatarFileReader(directoryPath).loadAvatar()
     this.avatarHolder = newAvatarHolder.toOption.orElse(this.avatarHolder)
     this.modelHolder = avatarHolder.map(_.model)
     this.updateStrategyHolder = avatarHolder.map(a => {
-      loggerHolder.foreach(_.apply(s"$directoryPath loaded."))
+      updateLog(s"$directoryPath loaded.")
       a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
       a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
     })
