@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.demo
+package moe.brianhsu.porting.live2d.swing
 
 import com.jogamp.opengl.GLAutoDrawable
 

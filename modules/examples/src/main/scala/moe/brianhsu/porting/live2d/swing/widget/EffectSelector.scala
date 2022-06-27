@@ -5,53 +5,63 @@ import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 import moe.brianhsu.porting.live2d.Live2DView.{ClickAndDrag, FollowMouse}
 import moe.brianhsu.porting.live2d.swing.Live2DWidget
 
-import java.awt.FlowLayout
+import java.awt.GridLayout
 import java.awt.event.ActionEvent
 import javax.swing.{BorderFactory, JCheckBox, JComboBox, JPanel}
 import scala.annotation.unused
 
 class EffectSelector(live2DWidget: Live2DWidget) extends JPanel {
+
   private val blink = new JCheckBox("Blink")
   private val breath = new JCheckBox("Breath")
   private val faceDirection = new JCheckBox("Face direction")
-  private val comboBox = new JComboBox[String](Array("Click and drag", "Follow mouse"))
+  private val faceDirectionMode = new JComboBox[String](Array("Click and drag", "Follow mouse"))
 
   {
-    this.setLayout(new FlowLayout)
+    this.setLayout(new GridLayout(2,2))
     this.setBorder(BorderFactory.createTitledBorder("Effects"))
+
     this.add(blink)
     this.add(breath)
     this.add(faceDirection)
-    this.add(comboBox)
+    this.add(faceDirectionMode)
+
     this.blink.setSelected(false)
-    this.blink.addActionListener((_: ActionEvent) => {
-      if (this.blink.isSelected) {
-        live2DWidget.doWithLive2DView(_.enableEyeBlink())
-      } else {
-        live2DWidget.doWithLive2DView(_.disableEyeBlink())
-      }
-    })
+    this.blink.addActionListener(updateBlinkEffect)
+
     this.breath.setSelected(false)
-    this.breath.addActionListener((_: ActionEvent) => {
-      if (this.breath.isSelected) {
-        live2DWidget.doWithLive2DView(_.enableBreath())
-      } else {
-        live2DWidget.doWithLive2DView(_.disableBreath())
-      }
-    })
+    this.breath.addActionListener(updateBreathEffect)
+
     this.faceDirection.setSelected(false)
     this.faceDirection.addActionListener(updateFaceDirectionMode)
-    this.comboBox.setEnabled(false)
-    this.comboBox.addActionListener(updateFaceDirectionMode)
-    this.comboBox.setSelectedIndex(0)
+
+    this.faceDirectionMode.setEnabled(false)
+    this.faceDirectionMode.setSelectedIndex(0)
+    this.faceDirectionMode.addActionListener(updateFaceDirectionMode)
   }
 
-  def updateFaceDirectionMode(@unused actionEvent: ActionEvent): Unit = {
-    this.comboBox.setEnabled(this.faceDirection.isSelected)
+  private def updateBlinkEffect(@unused actionEvent: ActionEvent): Unit = {
+    if (this.blink.isSelected) {
+      live2DWidget.doWithLive2DView(_.enableEyeBlink())
+    } else {
+      live2DWidget.doWithLive2DView(_.disableEyeBlink())
+    }
+  }
+
+  private def updateBreathEffect(@unused actionEvent: ActionEvent): Unit = {
+    if (this.breath.isSelected) {
+      live2DWidget.doWithLive2DView(_.enableBreath())
+    } else {
+      live2DWidget.doWithLive2DView(_.disableBreath())
+    }
+  }
+
+  private def updateFaceDirectionMode(@unused actionEvent: ActionEvent): Unit = {
+    this.faceDirectionMode.setEnabled(this.faceDirection.isSelected)
     live2DWidget.doWithLive2DView { live2D =>
       live2D.disableFaceDirection()
       live2D.resetFaceDirection()
-      live2D.faceDirectionMode = this.comboBox.getSelectedIndex match {
+      live2D.faceDirectionMode = this.faceDirectionMode.getSelectedIndex match {
         case 0 => ClickAndDrag
         case 1 => FollowMouse
         case _ => ClickAndDrag
@@ -74,12 +84,12 @@ class EffectSelector(live2DWidget: Live2DWidget) extends JPanel {
     this.blink.setSelected(hasEyeBlink)
     this.breath.setSelected(hasBreath)
     this.faceDirection.setSelected(hasFaceDirection)
-    this.comboBox.setEnabled(hasFaceDirection)
+    this.faceDirectionMode.setEnabled(hasFaceDirection)
 
     live2DWidget.doWithLive2DView { live2D =>
       live2D.faceDirectionMode match {
-        case ClickAndDrag => this.comboBox.setSelectedIndex(0)
-        case FollowMouse => this.comboBox.setSelectedIndex(1)
+        case ClickAndDrag => this.faceDirectionMode.setSelectedIndex(0)
+        case FollowMouse => this.faceDirectionMode.setSelectedIndex(1)
       }
     }
   }
