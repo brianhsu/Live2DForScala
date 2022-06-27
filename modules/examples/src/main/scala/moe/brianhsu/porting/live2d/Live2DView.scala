@@ -27,8 +27,8 @@ object Live2DView {
   type Logger = String => Any
 }
 
-class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLThread)
-                (private implicit val openGL: OpenGLBinding) {
+abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLThread)
+                         (private implicit val openGL: OpenGLBinding) {
 
   import openGL.constants._
   private implicit val cubismCore: JnaNativeCubismAPILoader = new JnaNativeCubismAPILoader()
@@ -204,7 +204,8 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLT
     }
 
   }
-  private def startExpression(name: String): Unit = {
+
+  def startExpression(name: String): Unit = {
     updateStrategyHolder.foreach { updateStrategy =>
       updateStrategy.startExpression(name)
     }
@@ -220,6 +221,8 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLT
     updateLog(s"Loading $directoryPath...")
 
     val newAvatarHolder = new AvatarFileReader(directoryPath).loadAvatar()
+    newAvatarHolder.foreach(onAvatarLoaded)
+
     this.avatarHolder = newAvatarHolder.toOption.orElse(this.avatarHolder)
     this.modelHolder = avatarHolder.map(_.model)
     this.updateStrategyHolder = avatarHolder.map(a => {
@@ -271,4 +274,6 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLT
       case _   => println("Unknow key")
     }
   }
+
+  def onAvatarLoaded(avatar: Avatar): Unit
 }
