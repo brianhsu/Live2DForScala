@@ -6,7 +6,6 @@ import com.jogamp.opengl.{GLCapabilities, GLProfile}
 import java.awt.event.ActionEvent
 import java.awt.{BorderLayout, Component, Dimension, GridLayout}
 import javax.swing._
-import javax.swing.event.{ListSelectionEvent, ListSelectionListener}
 
 object SwingWithJavaOpenGL {
   private val frame = new JFrame("Live 2D Scala Demo")
@@ -29,15 +28,10 @@ object SwingWithJavaOpenGL {
     frame.setVisible(true)
   }
 
-  private def createMotionSelector() = {
-    val textArea = new JTextArea()
-    textArea.setBorder(BorderFactory.createTitledBorder("Motions"))
-    textArea
-  }
   private def createLeftPane() = {
     val panel = new JPanel()
     panel.setLayout(new GridLayout(2, 1))
-    panel.add(createMotionSelector())
+    panel.add(live2DWidget.motionSelector)
     panel.add(live2DWidget.expressionSelector)
     panel.setPreferredSize(new Dimension(200, 100))
     panel

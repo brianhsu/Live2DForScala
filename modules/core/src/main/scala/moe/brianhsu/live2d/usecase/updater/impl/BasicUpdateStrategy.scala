@@ -29,17 +29,17 @@ class BasicUpdateStrategy(val avatarSettings: Settings,
     )
   }
 
-  def startMotion(motionSetting: MotionSetting): MotionWithTransition = {
-    val motion = AvatarMotion(motionSetting, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds)
+  def startMotion(motionSetting: MotionSetting, isLoop: Boolean): MotionWithTransition = {
+    val motion = AvatarMotion(motionSetting, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds, isLoop)
     motionManager.startMotion(motion)
   }
 
-  def startMotion(motionGroupName: String, indexInsideGroup: Int): Option[MotionWithTransition] = {
+  def startMotion(motionGroupName: String, indexInsideGroup: Int, isLoop: Boolean): Option[MotionWithTransition] = {
     for {
       motionGroup <- avatarSettings.motionGroups.get(motionGroupName) if motionGroup.size > indexInsideGroup && indexInsideGroup >= 0
       motionSetting = motionGroup(indexInsideGroup)
     } yield {
-      startMotion(motionSetting)
+      startMotion(motionSetting, isLoop)
     }
   }
 

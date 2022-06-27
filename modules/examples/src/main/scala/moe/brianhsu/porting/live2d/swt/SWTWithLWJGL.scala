@@ -1,14 +1,5 @@
 package moe.brianhsu.porting.live2d.swtopengl
 
-import moe.brianhsu.live2d.adapter.gateway.opengl.lwjgl.{LWJGLBinding, SWTOpenGLCanvasInfoReader}
-import moe.brianhsu.porting.live2d.Live2DView
-import org.eclipse.swt._
-import org.eclipse.swt.events.{KeyEvent, KeyListener, MouseEvent, MouseListener}
-import org.eclipse.swt.layout._
-import org.eclipse.swt.opengl._
-import org.eclipse.swt.widgets._
-import org.lwjgl.opengl._
-
 object SWTWithLWJGL {
 
   /*

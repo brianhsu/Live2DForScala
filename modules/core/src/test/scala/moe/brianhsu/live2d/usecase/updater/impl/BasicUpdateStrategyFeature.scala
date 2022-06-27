@@ -160,7 +160,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       )
 
       When("start a motion")
-      val motionWithTransition = updateStrategy.startMotion(motionSetting)
+      val motionWithTransition = updateStrategy.startMotion(motionSetting, isLoop = false)
 
       Then("the motion should be the correct value")
       motionWithTransition shouldBe mockedMotionWithTransition
@@ -186,7 +186,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       )
 
       When("start an non-exist group name")
-      val result = updateStrategy.startMotion("unknownGroup", 0)
+      val result = updateStrategy.startMotion("unknownGroup", 0, isLoop = false)
 
       Then("the result should be None")
       result shouldBe None
@@ -218,7 +218,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         )
 
         When("start an non-exist group name")
-        val result = updateStrategy.startMotion("group1", index)
+        val result = updateStrategy.startMotion("group1", index, isLoop = false)
 
         Then("the result should be None")
         result shouldBe None
@@ -250,7 +250,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       )
 
       When("start a motion with group name and index")
-      val result = updateStrategy.startMotion("group1", 1)
+      val result = updateStrategy.startMotion("group1", 1, isLoop = false)
 
       Then("the result should have correct MotionWithTransition")
       result.value shouldBe mockedMotionWithTransition

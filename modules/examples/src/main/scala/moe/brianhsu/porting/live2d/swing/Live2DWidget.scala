@@ -7,10 +7,10 @@ import moe.brianhsu.live2d.adapter.gateway.renderer.jogl.JOGLCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.porting.live2d.Live2DView
 import moe.brianhsu.porting.live2d.demo.FixedFPSAnimator
-import moe.brianhsu.porting.live2d.swing.widget.ExpressionSelector
+import moe.brianhsu.porting.live2d.swing.widget.{ExpressionSelector, MotionSelector}
 
 import java.awt.event._
-import javax.swing.{BorderFactory, JList, JScrollPane, SwingUtilities}
+import javax.swing.SwingUtilities
 
 
 class Live2DWidget(val canvas: GLCanvas, afterInit: Live2DWidget => Any) extends MouseAdapter with GLEventListener with KeyListener {
@@ -19,6 +19,7 @@ class Live2DWidget(val canvas: GLCanvas, afterInit: Live2DWidget => Any) extends
   private var mLive2DViewHolder: Option[Live2DView] = None
   private val canvasInfo = new JOGLCanvasInfoReader(canvas)
   val expressionSelector = new ExpressionSelector(this)
+  val motionSelector = new MotionSelector(this)
 
   def live2DView: Option[Live2DView] = mLive2DViewHolder
 
@@ -33,21 +34,13 @@ class Live2DWidget(val canvas: GLCanvas, afterInit: Live2DWidget => Any) extends
     })
   }
 
-  private def createExpressionSelector() = {
-    val xs = (1 to 200).map(_.toString).toArray
-    val list = new JList()
-    list.setListData(xs.asInstanceOf[Array[Nothing]])
-    val scrollPane = new JScrollPane(list)
-    scrollPane.setBorder(BorderFactory.createTitledBorder("Expression"))
-    scrollPane
-  }
-
   override def init(drawable: GLAutoDrawable): Unit = {
     implicit val openGL: JavaOpenGLBinding = new JavaOpenGLBinding(drawable.getGL.getGL2)
 
     val live2DView = new Live2DView(canvasInfo, runOnOpenGLThread) {
       override def onAvatarLoaded(avatar: Avatar): Unit = {
         expressionSelector.updateExpressionList(avatar)
+        motionSelector.updateMotionTree(avatar)
       }
     }
 

@@ -198,11 +198,10 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
     }
   }
 
-  private def startMotion(group: String, i: Int): Unit = {
+  def startMotion(group: String, i: Int, isLoop: Boolean): Unit = {
     updateStrategyHolder.foreach { updateStrategy =>
-      updateStrategy.startMotion(group, i)
+      updateStrategy.startMotion(group, i, isLoop)
     }
-
   }
 
   def startExpression(name: String): Unit = {
@@ -260,12 +259,12 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
       case '5' => startExpression("f05")
       case '6' => startExpression("f06")
       case '7' => startExpression("f07")
-      case 'q' => startMotion("idle", 0)
-      case 'w' => startMotion("idle", 1)
-      case 'a' => startMotion("tapBody", 0)
-      case 's' => startMotion("tapBody", 1)
-      case 'd' => startMotion("tapBody", 2)
-      case 'f' => startMotion("tapBody", 3)
+      case 'q' => startMotion("idle", 0, false)
+      case 'w' => startMotion("idle", 1, false)
+      case 'a' => startMotion("tapBody", 0, false)
+      case 's' => startMotion("tapBody", 1, false)
+      case 'd' => startMotion("tapBody", 2, false)
+      case 'f' => startMotion("tapBody", 3, false)
       case 'z' => switchAvatar("src/main/resources/Haru")
       case 'x' => switchAvatar("src/main/resources/Mark")
       case 'c' => switchAvatar("src/main/resources/Rice")
