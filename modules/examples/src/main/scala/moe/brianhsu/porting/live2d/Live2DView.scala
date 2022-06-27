@@ -198,8 +198,9 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val open
     openGL.glClearDepth(1.0)
   }
 
-  private def switchModel(filename: String): Unit = {
-    this.avatarHolder = new AvatarFileReader(filename).loadAvatar()
+  def switchAvatar(filename: String): Try[Avatar] = {
+    val newAvatarHolder = new AvatarFileReader(filename).loadAvatar()
+    this.avatarHolder = newAvatarHolder.orElse(this.avatarHolder)
     this.modelHolder = avatarHolder.map(_.model)
     this.updateStrategyHolder = avatarHolder.map(a => {
       println("Create new update strategy")
@@ -209,6 +210,7 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val open
     this.rendererHolder = modelHolder.map(model => AvatarRenderer(model))
     setupAvatarEffects()
     initOpenGL()
+    newAvatarHolder
   }
 
   def move(offsetX: Float, offsetY: Float): Unit = {
@@ -238,11 +240,11 @@ class Live2DView(drawCanvasInfo: DrawCanvasInfoReader)(private implicit val open
       case 's' => startMotion("tapBody", 1)
       case 'd' => startMotion("tapBody", 2)
       case 'f' => startMotion("tapBody", 3)
-      case 'z' => switchModel("src/main/resources/Haru")
-      case 'x' => switchModel("src/main/resources/Mark")
-      case 'c' => switchModel("src/main/resources/Rice")
-      case 'v' => switchModel("src/main/resources/Natori")
-      case 'b' => switchModel("src/main/resources/Hiyori")
+      case 'z' => switchAvatar("src/main/resources/Haru")
+      case 'x' => switchAvatar("src/main/resources/Mark")
+      case 'c' => switchAvatar("src/main/resources/Rice")
+      case 'v' => switchAvatar("src/main/resources/Natori")
+      case 'b' => switchAvatar("src/main/resources/Hiyori")
       case _   => println("Unknow key")
     }
   }

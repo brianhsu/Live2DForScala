@@ -19,6 +19,10 @@ class Live2DWidget(val canvas: GLCanvas) extends MouseAdapter with GLEventListen
 
   def live2DView: Option[Live2DView] = mLive2DView
 
+  def doWithLive2DView(callback: Live2DView => Any): Unit = {
+    live2DView.foreach(callback)
+  }
+
   override def init(drawable: GLAutoDrawable): Unit = {
     implicit val openGL: JavaOpenGLBinding = new JavaOpenGLBinding(drawable.getGL.getGL2)
     this.mLive2DView = Option(new Live2DView(canvasInfo))
