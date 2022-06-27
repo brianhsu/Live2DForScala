@@ -4,14 +4,14 @@ import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
 import moe.brianhsu.live2d.adapter.gateway.opengl.jogl.JavaOpenGLBinding
 import moe.brianhsu.live2d.adapter.gateway.renderer.jogl.JOGLCanvasInfoReader
-import moe.brianhsu.live2d.demo.app.Live2DDemoApp
+import moe.brianhsu.live2d.demo.app.DemoApp
 import moe.brianhsu.live2d.demo.swing.widget.{EffectSelector, ExpressionSelector, MotionSelector, StatusBar, Toolbar}
 
 import java.awt.event._
 import javax.swing.SwingUtilities
 
 
-class Live2DWidget(val canvas: GLCanvas) extends MouseAdapter with GLEventListener with KeyListener {
+class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener with KeyListener {
 
   val expressionSelector = new ExpressionSelector(this)
   val motionSelector = new MotionSelector(this)
@@ -21,11 +21,11 @@ class Live2DWidget(val canvas: GLCanvas) extends MouseAdapter with GLEventListen
 
   private var animator: Option[FixedFPSAnimator] = None
   private val canvasInfo = new JOGLCanvasInfoReader(canvas)
-  private var mDemoAppHolder: Option[Live2DDemoApp] = None
+  private var mDemoAppHolder: Option[DemoApp] = None
   private var lastMouseX: Option[Int] = None
   private var lastMouseY: Option[Int] = None
 
-  def demoAppHolder: Option[Live2DDemoApp] = mDemoAppHolder
+  def demoAppHolder: Option[DemoApp] = mDemoAppHolder
 
   private def runOnOpenGLThread(callback: => Any): Any = {
     canvas.invoke(true, (_: GLAutoDrawable) => {
@@ -40,12 +40,12 @@ class Live2DWidget(val canvas: GLCanvas) extends MouseAdapter with GLEventListen
     this.animator.foreach { x => x.start() }
   }
 
-  private def createLive2DDemoApp(drawable: GLAutoDrawable): Live2DDemoApp = {
+  private def createLive2DDemoApp(drawable: GLAutoDrawable): DemoApp = {
     implicit val openGL: JavaOpenGLBinding = new JavaOpenGLBinding(drawable.getGL.getGL2)
 
-    new Live2DDemoApp(canvasInfo, runOnOpenGLThread) {
+    new DemoApp(canvasInfo, runOnOpenGLThread) {
       override def onStatusUpdated(status: String): Unit = statusBar.setText(status)
-      override def onAvatarLoaded(live2DView: Live2DDemoApp): Unit = {
+      override def onAvatarLoaded(live2DView: DemoApp): Unit = {
         live2DView.avatarHolder.foreach { avatar =>
           expressionSelector.updateExpressionList(avatar)
           motionSelector.updateMotionTree(avatar)

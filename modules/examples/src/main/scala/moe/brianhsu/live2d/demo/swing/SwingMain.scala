@@ -6,7 +6,7 @@ import com.jogamp.opengl.{GLCapabilities, GLProfile}
 import java.awt.{BorderLayout, GridBagConstraints, GridBagLayout}
 import javax.swing._
 
-object SwingWithJavaOpenGL {
+object SwingMain {
   private val frame = new JFrame("Live 2D Scala Demo (Swing+JOGL)")
   private val live2DWidget = createGLCanvas()
 
@@ -58,18 +58,19 @@ object SwingWithJavaOpenGL {
   }
 
 
-  private def createGLCanvas(): Live2DWidget = {
+  private def createGLCanvas(): Live2DUI = {
     val profile = GLProfile.get(GLProfile.GL2)
     val capabilities = new GLCapabilities(profile)
 
     val canvas = new GLCanvas(capabilities)
-    val widget = new Live2DWidget(canvas)
+    val live2DUI = new Live2DUI(canvas)
 
-    canvas.addGLEventListener(widget)
-    canvas.addMouseListener(widget)
-    canvas.addMouseMotionListener(widget)
-    canvas.addMouseWheelListener(widget)
-    canvas.addKeyListener(widget)
-    widget
+    canvas.addGLEventListener(live2DUI)
+    canvas.addMouseListener(live2DUI)
+    canvas.addMouseMotionListener(live2DUI)
+    canvas.addMouseWheelListener(live2DUI)
+    canvas.addKeyListener(live2DUI)
+
+    live2DUI
   }
 }

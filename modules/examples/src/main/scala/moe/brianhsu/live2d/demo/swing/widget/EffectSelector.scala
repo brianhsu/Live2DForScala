@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.demo.swing.widget
 
-import moe.brianhsu.live2d.demo.app.Live2DDemoApp.{ClickAndDrag, FollowMouse}
-import moe.brianhsu.live2d.demo.swing.Live2DWidget
+import moe.brianhsu.live2d.demo.app.DemoApp.{ClickAndDrag, FollowMouse}
+import moe.brianhsu.live2d.demo.swing.Live2DUI
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 
@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent
 import javax.swing.{BorderFactory, JCheckBox, JComboBox, JPanel}
 import scala.annotation.unused
 
-class EffectSelector(live2DWidget: Live2DWidget) extends JPanel {
+class EffectSelector(live2DWidget: Live2DUI) extends JPanel {
 
   private val blink = new JCheckBox("Blink")
   private val breath = new JCheckBox("Breath")

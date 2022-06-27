@@ -1,12 +1,12 @@
 package moe.brianhsu.live2d.demo.swing.widget
 
-import moe.brianhsu.live2d.demo.swing.Live2DWidget
+import moe.brianhsu.live2d.demo.swing.Live2DUI
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 
 import java.awt.event.{MouseAdapter, MouseEvent}
 import javax.swing.{BorderFactory, JList, JScrollPane}
 
-class ExpressionSelector(live2DWidget: Live2DWidget) extends JScrollPane {
+class ExpressionSelector(live2DWidget: Live2DUI) extends JScrollPane {
   private val expressionSelector = new JList[String]()
   private var expressions: List[String] = Nil
 

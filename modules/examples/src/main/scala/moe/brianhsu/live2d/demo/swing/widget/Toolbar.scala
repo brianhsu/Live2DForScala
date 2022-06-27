@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.demo.swing.widget
 
-import moe.brianhsu.live2d.demo.swing.Live2DWidget
+import moe.brianhsu.live2d.demo.swing.Live2DUI
 
 import java.awt.Color
 import java.awt.event.ActionEvent
@@ -8,7 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing._
 import scala.annotation.unused
 
-class Toolbar(live2DWidget: Live2DWidget) extends JToolBar("Live 2D For Scala Swing Toolbar") {
+class Toolbar(live2DWidget: Live2DUI) extends JToolBar("Live 2D For Scala Swing Toolbar") {
 
   private val loadAvatar = new JButton("Load Avatar")
   private val pureBackground = new JButton("Pure Color Background")

@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.demo.swing.widget
 
-import moe.brianhsu.live2d.demo.swing.Live2DWidget
+import moe.brianhsu.live2d.demo.swing.Live2DUI
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 
 import java.awt.event.{MouseAdapter, MouseEvent}
@@ -8,7 +8,7 @@ import javax.swing.tree.{DefaultMutableTreeNode, DefaultTreeModel}
 import javax.swing._
 import scala.annotation.tailrec
 
-class MotionSelector(live2DWidget: Live2DWidget) extends JPanel {
+class MotionSelector(live2DWidget: Live2DUI) extends JPanel {
   private val scroll = new JScrollPane()
   private val motionTree = new JTree(new DefaultMutableTreeNode("Motions"))
   private val repeatCheckbox = new JCheckBox("Repeat motion")
