@@ -1,7 +1,7 @@
-package moe.brianhsu.porting.live2d.swing.widget
+package moe.brianhsu.live2d.demo.swing.widget
 
+import moe.brianhsu.live2d.demo.swing.Live2DWidget
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
-import moe.brianhsu.porting.live2d.swing.Live2DWidget
 
 import java.awt.event.{MouseAdapter, MouseEvent}
 import javax.swing.{BorderFactory, JList, JScrollPane}
@@ -22,7 +22,7 @@ class ExpressionSelector(live2DWidget: Live2DWidget) extends JScrollPane {
 
   private def handleExpressionSelection(e: MouseEvent): Unit = {
     if (e.getClickCount == 2) {
-      live2DWidget.doWithLive2DView { view =>
+      live2DWidget.demoAppHolder.foreach { view =>
         val index = expressionSelector.locationToIndex(e.getPoint)
         val expressionName = expressions(index)
         view.startExpression(expressionName)

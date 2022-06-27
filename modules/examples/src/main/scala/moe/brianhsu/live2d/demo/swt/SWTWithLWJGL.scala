@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.swtopengl
+package moe.brianhsu.live2d.demo.swt
 
 object SWTWithLWJGL {
 

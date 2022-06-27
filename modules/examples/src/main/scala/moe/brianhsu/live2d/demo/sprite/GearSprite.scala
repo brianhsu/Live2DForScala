@@ -1,20 +1,23 @@
-package moe.brianhsu.porting.live2d.demo.sprite
+package moe.brianhsu.live2d.demo.sprite
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureInfo
 import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
 
-class PowerSprite(drawCanvasInfo: DrawCanvasInfoReader,
-                  textureInfo: TextureInfo) extends Sprite(drawCanvasInfo, textureInfo) {
+class GearSprite(canvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo)
+                extends Sprite(canvasInfo, textureInfo) {
 
   override protected def calculatePositionAndSize(): Rectangle = {
-    val windowWidth = drawCanvasInfo.currentCanvasWidth
+    val windowWidth = canvasInfo.currentCanvasWidth
+    val windowHeight = canvasInfo.currentCanvasHeight
+
     Rectangle(
       windowWidth - textureInfo.width.toFloat,
-      textureInfo.height * 0.25f,
+      windowHeight - textureInfo.height.toFloat,
       textureInfo.width.toFloat,
       textureInfo.height.toFloat
     )
+
   }
 }

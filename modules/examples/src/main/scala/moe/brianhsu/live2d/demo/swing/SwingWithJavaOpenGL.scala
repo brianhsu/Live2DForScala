@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.swing
+package moe.brianhsu.live2d.demo.swing
 
 import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLCapabilities, GLProfile}

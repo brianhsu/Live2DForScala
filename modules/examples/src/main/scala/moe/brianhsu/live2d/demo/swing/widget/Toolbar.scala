@@ -1,6 +1,6 @@
-package moe.brianhsu.porting.live2d.swing.widget
+package moe.brianhsu.live2d.demo.swing.widget
 
-import moe.brianhsu.porting.live2d.swing.Live2DWidget
+import moe.brianhsu.live2d.demo.swing.Live2DWidget
 
 import java.awt.Color
 import java.awt.event.ActionEvent
@@ -43,7 +43,7 @@ class Toolbar(live2DWidget: Live2DWidget) extends JToolBar("Live 2D For Scala Sw
           filePath.toLowerCase.endsWith("jpeg")) {
 
         for {
-          live2D <- live2DWidget.live2DView
+          live2D <- live2DWidget.demoAppHolder
           exception <- live2D.changeBackground(filePath).failed
         } {
           exception.printStackTrace()
@@ -58,12 +58,12 @@ class Toolbar(live2DWidget: Live2DWidget) extends JToolBar("Live 2D For Scala Sw
   }
 
   private def switchToDefaultBackground(@unused actionEvent: ActionEvent): Unit = {
-    live2DWidget.live2DView.foreach(_.switchToDefaultBackground())
+    live2DWidget.demoAppHolder.foreach(_.switchToDefaultBackground())
   }
 
   private def switchToPureColor(@unused actionEvent: ActionEvent): Unit = {
     for {
-      live2d <- live2DWidget.live2DView
+      live2d <- live2DWidget.demoAppHolder
       selectedColor <- Option(JColorChooser.showDialog(this.getParent, "Choose Background", new Color(0.0f, 1.0f, 0.0f)))
     } {
       live2d.switchToPureColorBackground(selectedColor)
@@ -75,7 +75,7 @@ class Toolbar(live2DWidget: Live2DWidget) extends JToolBar("Live 2D For Scala Sw
     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
     val result = fileChooser.showOpenDialog(this.getParent)
     if (result == JFileChooser.APPROVE_OPTION) {
-      live2DWidget.doWithLive2DView { view =>
+      live2DWidget.demoAppHolder.foreach { view =>
         val avatarHolder = view.switchAvatar(fileChooser.getSelectedFile.getAbsolutePath)
         avatarHolder.failed.foreach(e => showErrorMessage("Cannot load avatar", e.getMessage))
       }

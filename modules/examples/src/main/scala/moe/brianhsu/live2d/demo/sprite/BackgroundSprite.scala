@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.demo.sprite
+package moe.brianhsu.live2d.demo.sprite
 
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.enitiy.math.Rectangle

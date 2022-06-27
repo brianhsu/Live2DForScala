@@ -1,9 +1,11 @@
-package moe.brianhsu.porting.live2d
+package moe.brianhsu.live2d.demo.app
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader, FaceDirectionByMouse}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
+import moe.brianhsu.live2d.demo.app.Live2DDemoApp.{ClickAndDrag, FaceDirectionMode, FollowMouse, OnOpenGLThread}
+import moe.brianhsu.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -16,14 +18,12 @@ import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
 import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.SpriteRenderer
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
-import moe.brianhsu.porting.live2d.Live2DView.{ClickAndDrag, FaceDirectionMode, FollowMouse, OnOpenGLThread}
-import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 
 import java.awt.Color
 import scala.annotation.unused
 import scala.util.Try
 
-object Live2DView {
+object Live2DDemoApp {
   type OnOpenGLThread = (=> Any) => Unit
 
   sealed trait FaceDirectionMode
@@ -31,8 +31,8 @@ object Live2DView {
   case object ClickAndDrag extends FaceDirectionMode
 }
 
-abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLThread)
-                         (private implicit val openGL: OpenGLBinding) {
+abstract class Live2DDemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLThread)
+                            (private implicit val openGL: OpenGLBinding) {
 
   import openGL.constants._
 
@@ -356,6 +356,6 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
     }
   }
 
-  def onAvatarLoaded(live2DView: Live2DView): Unit
+  def onAvatarLoaded(live2DView: Live2DDemoApp): Unit
   def onStatusUpdated(status: String): Unit
 }

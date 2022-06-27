@@ -1,9 +1,9 @@
-package moe.brianhsu.porting.live2d.swing.widget
+package moe.brianhsu.live2d.demo.swing.widget
 
+import moe.brianhsu.live2d.demo.app.Live2DDemoApp.{ClickAndDrag, FollowMouse}
+import moe.brianhsu.live2d.demo.swing.Live2DWidget
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
-import moe.brianhsu.porting.live2d.Live2DView.{ClickAndDrag, FollowMouse}
-import moe.brianhsu.porting.live2d.swing.Live2DWidget
 
 import java.awt.GridLayout
 import java.awt.event.ActionEvent
@@ -42,23 +42,23 @@ class EffectSelector(live2DWidget: Live2DWidget) extends JPanel {
 
   private def updateBlinkEffect(@unused actionEvent: ActionEvent): Unit = {
     if (this.blink.isSelected) {
-      live2DWidget.doWithLive2DView(_.enableEyeBlink())
+      live2DWidget.demoAppHolder.foreach(_.enableEyeBlink())
     } else {
-      live2DWidget.doWithLive2DView(_.disableEyeBlink())
+      live2DWidget.demoAppHolder.foreach(_.disableEyeBlink())
     }
   }
 
   private def updateBreathEffect(@unused actionEvent: ActionEvent): Unit = {
     if (this.breath.isSelected) {
-      live2DWidget.doWithLive2DView(_.enableBreath())
+      live2DWidget.demoAppHolder.foreach(_.enableBreath())
     } else {
-      live2DWidget.doWithLive2DView(_.disableBreath())
+      live2DWidget.demoAppHolder.foreach(_.disableBreath())
     }
   }
 
   private def updateFaceDirectionMode(@unused actionEvent: ActionEvent): Unit = {
     this.faceDirectionMode.setEnabled(this.faceDirection.isSelected)
-    live2DWidget.doWithLive2DView { live2D =>
+    live2DWidget.demoAppHolder.foreach { live2D =>
       live2D.disableFaceDirection()
       live2D.resetFaceDirection()
       live2D.faceDirectionMode = this.faceDirectionMode.getSelectedIndex match {
@@ -86,7 +86,7 @@ class EffectSelector(live2DWidget: Live2DWidget) extends JPanel {
     this.faceDirection.setSelected(hasFaceDirection)
     this.faceDirectionMode.setEnabled(hasFaceDirection)
 
-    live2DWidget.doWithLive2DView { live2D =>
+    live2DWidget.demoAppHolder.foreach { live2D =>
       live2D.faceDirectionMode match {
         case ClickAndDrag => this.faceDirectionMode.setSelectedIndex(0)
         case FollowMouse => this.faceDirectionMode.setSelectedIndex(1)

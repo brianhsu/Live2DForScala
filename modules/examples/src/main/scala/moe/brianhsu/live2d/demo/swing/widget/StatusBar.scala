@@ -1,4 +1,4 @@
-package moe.brianhsu.porting.live2d.swing.widget
+package moe.brianhsu.live2d.demo.swing.widget
 
 import javax.swing.{BorderFactory, JLabel}
 

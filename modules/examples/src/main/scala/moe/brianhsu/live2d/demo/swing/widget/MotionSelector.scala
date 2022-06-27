@@ -1,7 +1,7 @@
-package moe.brianhsu.porting.live2d.swing.widget
+package moe.brianhsu.live2d.demo.swing.widget
 
+import moe.brianhsu.live2d.demo.swing.Live2DWidget
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
-import moe.brianhsu.porting.live2d.swing.Live2DWidget
 
 import java.awt.event.{MouseAdapter, MouseEvent}
 import javax.swing.tree.{DefaultMutableTreeNode, DefaultTreeModel}
@@ -38,7 +38,7 @@ class MotionSelector(live2DWidget: Live2DWidget) extends JPanel {
     if (e.getClickCount == 2) {
       val selectedPath = motionTree.getPathForLocation(e.getX, e.getY)
       if (selectedPath.getPathCount == 3) {
-        live2DWidget.doWithLive2DView { view =>
+        live2DWidget.demoAppHolder.foreach { view =>
           val motionGroup = selectedPath.getParentPath.getLastPathComponent.toString
           val currentIndex = selectedPath.getLastPathComponent.toString.toInt
 
