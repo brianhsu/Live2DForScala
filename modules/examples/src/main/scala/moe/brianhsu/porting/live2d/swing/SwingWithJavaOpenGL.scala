@@ -4,7 +4,7 @@ import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLCapabilities, GLProfile}
 
 import java.awt.event.ActionEvent
-import java.awt.{BorderLayout, Component, Dimension, GridBagLayout, GridLayout}
+import java.awt.{BorderLayout, Component, GridBagConstraints, GridBagLayout}
 import javax.swing._
 
 object SwingWithJavaOpenGL {
@@ -20,7 +20,7 @@ object SwingWithJavaOpenGL {
     frame.setSize(1080, 720)
     frame.setVisible(true)
     frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
-    frame.getContentPane.add(BorderLayout.PAGE_START, createToolBar())
+    frame.getContentPane.add(BorderLayout.PAGE_START, createLoadButton(frame))
     frame.getContentPane.add(BorderLayout.LINE_START, createLeftPane())
     frame.getContentPane.add(BorderLayout.CENTER, live2DWidget.canvas)
     frame.getContentPane.add(BorderLayout.PAGE_END, statusLine)
@@ -28,40 +28,34 @@ object SwingWithJavaOpenGL {
     frame.setVisible(true)
   }
 
-  private def createToolBar() = {
-    val toolbar = new JToolBar()
-    val button = new JButton("Load Avatar")
-    val checkbox = new JCheckBox("Blink")
-    toolbar.add(button)
-    toolbar.add(checkbox)
-    toolbar
-  }
-
-  private def createEffectSelector() = {
-    val panel = new JPanel()
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
-    val blink = new JCheckBox("Blink")
-    val breath = new JCheckBox("Breath")
-    val faceDirection = new JCheckBox("Face direction")
-    val comboBox = new JComboBox[String](Array("Click and drag", "Follow mouse"))
-
-    panel.setBorder(BorderFactory.createTitledBorder("Effects"))
-    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS))
-    panel.add(blink)
-    panel.add(breath)
-    panel.add(faceDirection)
-    panel.add(comboBox)
-    val scrollPane = new JScrollPane(panel)
-    scrollPane
-  }
-
   private def createLeftPane() = {
     val panel = new JPanel()
-    panel.setLayout(new GridLayout(3, 1))
-    panel.add(createEffectSelector())
-    panel.add(live2DWidget.motionSelector)
-    panel.add(live2DWidget.expressionSelector)
-    panel.setPreferredSize(new Dimension(200, 100))
+    panel.setBorder(BorderFactory.createTitledBorder("Avatar Control"))
+    panel.setLayout(new GridBagLayout)
+
+    val gc = new GridBagConstraints()
+    gc.gridx = 0
+    gc.gridy = 0
+    gc.weighty = 0.1
+    gc.anchor = GridBagConstraints.NORTHWEST
+    gc.fill = GridBagConstraints.HORIZONTAL
+    panel.add(live2DWidget.effectSelector, gc)
+
+    gc.gridx = 0
+    gc.gridy = 1
+    gc.weightx = 0
+    gc.weighty = 2
+    gc.anchor = GridBagConstraints.NORTHWEST
+    gc.fill = GridBagConstraints.BOTH
+    panel.add(live2DWidget.motionSelector, gc)
+
+    gc.gridx = 0
+    gc.gridy = 2
+    gc.weightx = 0
+    gc.weighty = 2
+    gc.fill = GridBagConstraints.BOTH
+    panel.add(live2DWidget.expressionSelector, gc)
+
     panel
   }
 

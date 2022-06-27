@@ -4,10 +4,9 @@ import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
 import moe.brianhsu.live2d.adapter.gateway.opengl.jogl.JavaOpenGLBinding
 import moe.brianhsu.live2d.adapter.gateway.renderer.jogl.JOGLCanvasInfoReader
-import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.porting.live2d.Live2DView
 import moe.brianhsu.porting.live2d.demo.FixedFPSAnimator
-import moe.brianhsu.porting.live2d.swing.widget.{ExpressionSelector, MotionSelector}
+import moe.brianhsu.porting.live2d.swing.widget.{EffectSelector, ExpressionSelector, MotionSelector}
 
 import java.awt.event._
 import javax.swing.SwingUtilities
@@ -20,6 +19,7 @@ class Live2DWidget(val canvas: GLCanvas, afterInit: Live2DWidget => Any) extends
   private val canvasInfo = new JOGLCanvasInfoReader(canvas)
   val expressionSelector = new ExpressionSelector(this)
   val motionSelector = new MotionSelector(this)
+  val effectSelector = new EffectSelector(this)
 
   def live2DView: Option[Live2DView] = mLive2DViewHolder
 
@@ -38,9 +38,14 @@ class Live2DWidget(val canvas: GLCanvas, afterInit: Live2DWidget => Any) extends
     implicit val openGL: JavaOpenGLBinding = new JavaOpenGLBinding(drawable.getGL.getGL2)
 
     val live2DView = new Live2DView(canvasInfo, runOnOpenGLThread) {
-      override def onAvatarLoaded(avatar: Avatar): Unit = {
-        expressionSelector.updateExpressionList(avatar)
-        motionSelector.updateMotionTree(avatar)
+      override def onAvatarLoaded(live2DView: Live2DView): Unit = {
+        live2DView.avatarHolder.foreach { avatar =>
+          expressionSelector.updateExpressionList(avatar)
+          motionSelector.updateMotionTree(avatar)
+        }
+        live2DView.basicUpdateStrategyHolder.foreach { strategy =>
+          effectSelector.syncWithStrategy(strategy)
+        }
       }
     }
 
@@ -77,6 +82,9 @@ class Live2DWidget(val canvas: GLCanvas, afterInit: Live2DWidget => Any) extends
       this.lastX = Some(e.getX)
       this.lastY = Some(e.getY)
     }
+  }
+  override def mouseMoved(mouseEvent: MouseEvent): Unit = {
+    this.mLive2DViewHolder.foreach(_.onMouseMoved(mouseEvent.getX, mouseEvent.getY))
   }
 
   override def mouseReleased(mouseEvent: MouseEvent): Unit = {

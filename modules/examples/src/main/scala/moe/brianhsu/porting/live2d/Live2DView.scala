@@ -10,13 +10,13 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.opengl.sprite.Sprite
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureManager
-import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
+import moe.brianhsu.live2d.enitiy.updater.{SystemNanoTimeBasedFrameInfo, UpdateStrategy}
 import moe.brianhsu.live2d.usecase.renderer.opengl.AvatarRenderer
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.SpriteShader
 import moe.brianhsu.live2d.usecase.renderer.opengl.sprite.SpriteRenderer
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
-import moe.brianhsu.porting.live2d.Live2DView.{OnOpenGLThread, Logger}
+import moe.brianhsu.porting.live2d.Live2DView.{ClickAndDrag, FaceDirectionMode, FollowMouse, Logger, OnOpenGLThread}
 import moe.brianhsu.porting.live2d.demo.sprite.{BackgroundSprite, GearSprite, PowerSprite}
 
 import scala.annotation.unused
@@ -25,6 +25,10 @@ import scala.util.Try
 object Live2DView {
   type OnOpenGLThread = (=> Any) => Unit
   type Logger = String => Any
+
+  sealed trait FaceDirectionMode
+  case object FollowMouse extends FaceDirectionMode
+  case object ClickAndDrag extends FaceDirectionMode
 }
 
 abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnOpenGLThread)
@@ -49,11 +53,11 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
   private val gearSprite: Sprite = new GearSprite(drawCanvasInfo, gearTexture)
   private val sprites = this.backgroundSprite :: this.gearSprite :: this.powerSprite :: Nil
 
-  private var avatarHolder: Option[Avatar] = None // new AvatarFileReader("src/main/resources/Haru").loadAvatar()
-  private var modelHolder: Option[Live2DModel] = avatarHolder.map(_.model)
+  private var mAvatarHolder: Option[Avatar] = None // new AvatarFileReader("src/main/resources/Haru").loadAvatar()
+  private var modelHolder: Option[Live2DModel] = mAvatarHolder.map(_.model)
   private var rendererHolder: Option[AvatarRenderer] = modelHolder.map(model => AvatarRenderer(model))
   private val spriteRenderer = new SpriteRenderer(new SpriteShader)
-  private var updateStrategyHolder: Option[BasicUpdateStrategy] = avatarHolder.map(a => {
+  private var mUpdateStrategyHolder: Option[BasicUpdateStrategy] = mAvatarHolder.map(a => {
     a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
     a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
   })
@@ -64,10 +68,15 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
   private lazy val viewPortMatrixCalculator = new ViewPortMatrixCalculator
   private lazy val projectionMatrixCalculator = new ProjectionMatrixCalculator(drawCanvasInfo)
 
+  var faceDirectionMode: FaceDirectionMode = ClickAndDrag
+
   {
     setupAvatarEffects()
     initOpenGL()
   }
+
+  def avatarHolder: Option[Avatar] = mAvatarHolder
+  def basicUpdateStrategyHolder: Option[BasicUpdateStrategy] = mUpdateStrategyHolder
 
   def setLogger(callback: Logger): Unit = {
     this.loggerHolder = Some(callback)
@@ -75,6 +84,55 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
 
   def resetModel(): Unit = {
     modelHolder.foreach(_.reset())
+  }
+
+  def disableBreath(): Unit = {
+    for (strategy <- this.mUpdateStrategyHolder) {
+      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[Breath])
+    }
+  }
+
+  def enableBreath(): Unit = {
+    for {
+      _ <- this.avatarHolder
+      strategy <- this.mUpdateStrategyHolder
+    } {
+      strategy.effects ::= new Breath
+    }
+  }
+
+  def disableFaceDirection(): Unit = {
+    for (strategy <- this.mUpdateStrategyHolder) {
+      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[FaceDirection])
+    }
+  }
+
+  def resetFaceDirection(): Unit = {
+    targetPointCalculator.updateFaceTargetCoordinate(0, 0)
+  }
+
+  def enableFaceDirection(): Unit = {
+    for {
+      _ <- this.avatarHolder
+      strategy <- this.mUpdateStrategyHolder
+    } {
+      strategy.effects ::= faceDirection
+    }
+  }
+
+  def disableEyeBlink(): Unit = {
+    for (strategy <- this.mUpdateStrategyHolder) {
+      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[EyeBlink])
+    }
+  }
+
+  def enableEyeBlink(): Unit = {
+    for {
+      avatar <- this.avatarHolder
+      strategy <- this.mUpdateStrategyHolder
+    } {
+      strategy.effects ::= new EyeBlink(avatar.avatarSettings)
+    }
   }
 
   def display(isForceUpdate: Boolean = false): Unit = {
@@ -85,7 +143,7 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
     this.frameTimeCalculator.updateFrameTime()
 
     for {
-      avatar <- avatarHolder
+      avatar <- mAvatarHolder
       model <- modelHolder
       renderer <- rendererHolder
     } {
@@ -125,14 +183,26 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
     this.display()
   }
 
+  def onMouseMoved(x: Int, y: Int): Unit = {
+    if (faceDirectionMode == FollowMouse) {
+      val transformedX = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedX(x.toFloat)
+      val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
+      val viewX = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedX(transformedX)
+      val viewY = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedY(transformedY)
+      targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)
+    }
+  }
+
   def onMouseReleased(x: Int, y: Int): Unit = {
     val transformedX = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedX(x.toFloat)
     val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
 
+    if (faceDirectionMode == ClickAndDrag) {
+      resetFaceDirection()
+    }
 
-    targetPointCalculator.updateFaceTargetCoordinate(0.0f, 0.0f)
     for {
-      _ <- avatarHolder
+      _ <- mAvatarHolder
       model <- modelHolder
     } {
 
@@ -142,7 +212,7 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
         updateLog("Clicked on Power sprite.")
       } else {
         val hitAreaHolder = for {
-          avatar <- avatarHolder
+          avatar <- mAvatarHolder
           hitArea <- avatar.avatarSettings.hitArea.find(area => model.isHit(area.id, transformedX, transformedY))
         } yield {
           hitArea.name
@@ -161,11 +231,13 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
   }
 
   def onMouseDragged(x: Int, y: Int): Unit = {
-    val transformedX = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedX(x.toFloat)
-    val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
-    val viewX = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedX(transformedX)
-    val viewY = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedY(transformedY)
-    targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)
+    if (faceDirectionMode == ClickAndDrag) {
+      val transformedX = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedX(x.toFloat)
+      val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
+      val viewX = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedX(transformedX)
+      val viewY = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedY(transformedY)
+      targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)
+    }
   }
 
   private def initOpenGL(): Unit = {
@@ -183,8 +255,8 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
 
   private def setupAvatarEffects(): Unit = {
     for {
-      avatar <- avatarHolder
-      updateStrategy <- updateStrategyHolder
+      avatar <- mAvatarHolder
+      updateStrategy <- mUpdateStrategyHolder
     } {
       val poseHolder = new AvatarPoseReader(avatar.avatarSettings).loadPose
       val physicsHolder = new AvatarPhysicsReader(avatar.avatarSettings).loadPhysics
@@ -199,13 +271,13 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
   }
 
   def startMotion(group: String, i: Int, isLoop: Boolean): Unit = {
-    updateStrategyHolder.foreach { updateStrategy =>
+    mUpdateStrategyHolder.foreach { updateStrategy =>
       updateStrategy.startMotion(group, i, isLoop)
     }
   }
 
   def startExpression(name: String): Unit = {
-    updateStrategyHolder.foreach { updateStrategy =>
+    mUpdateStrategyHolder.foreach { updateStrategy =>
       updateStrategy.startExpression(name)
     }
   }
@@ -220,16 +292,16 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
     updateLog(s"Loading $directoryPath...")
 
     val newAvatarHolder = new AvatarFileReader(directoryPath).loadAvatar()
-    newAvatarHolder.foreach(onAvatarLoaded)
 
-    this.avatarHolder = newAvatarHolder.toOption.orElse(this.avatarHolder)
-    this.modelHolder = avatarHolder.map(_.model)
-    this.updateStrategyHolder = avatarHolder.map(a => {
+    this.mAvatarHolder = newAvatarHolder.toOption.orElse(this.mAvatarHolder)
+    this.modelHolder = mAvatarHolder.map(_.model)
+    this.mUpdateStrategyHolder = mAvatarHolder.map(a => {
       updateLog(s"$directoryPath loaded.")
       a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
       a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
     })
     setupAvatarEffects()
+    newAvatarHolder.foreach(_ => onAvatarLoaded(this))
 
     onOpenGLThread {
       this.rendererHolder = modelHolder.map(model => AvatarRenderer(model))
@@ -274,5 +346,5 @@ abstract class Live2DView(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: 
     }
   }
 
-  def onAvatarLoaded(avatar: Avatar): Unit
+  def onAvatarLoaded(live2DView: Live2DView): Unit
 }
