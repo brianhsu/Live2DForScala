@@ -1,81 +1,82 @@
 package moe.brianhsu.live2d.demo.swt
 
+import moe.brianhsu.live2d.adapter.gateway.opengl.lwjgl.{LWJGLBinding, SWTOpenGLCanvasInfoReader}
+import moe.brianhsu.live2d.demo.app.DemoApp
+import moe.brianhsu.live2d.demo.swt.widget.AvatarArea
+import org.eclipse.swt.SWT
+import org.eclipse.swt.events.{KeyEvent, KeyListener, MouseEvent, MouseListener}
+import org.eclipse.swt.layout.{FillLayout, GridLayout}
+import org.eclipse.swt.opengl.{GLCanvas, GLData}
+import org.eclipse.swt.widgets._
+import org.lwjgl.opengl.GL
+
+
 object SWTWithLWJGL {
 
-  /*
-  private var lastX: Option[Int] = None
-  private var lastY: Option[Int] = None
+  def createToolbar(parent: Composite) = {
+    val toolBar = new ToolBar(parent, SWT.NONE)
+    val loadAvatar = new ToolItem(toolBar, SWT.PUSH)
+    loadAvatar.setText("Load Avatar")
 
+    val separator1 = new ToolItem(toolBar, SWT.SEPARATOR)
+    val defaultBackground = new ToolItem(toolBar, SWT.PUSH)
+    defaultBackground.setText("Default Background")
+    val separator2 = new ToolItem(toolBar, SWT.SEPARATOR)
+
+    val selectBackground = new ToolItem(toolBar, SWT.PUSH)
+    selectBackground.setText("Select Background")
+    val separator3 = new ToolItem(toolBar, SWT.SEPARATOR)
+
+    val pureColorBackground = new ToolItem(toolBar, SWT.PUSH)
+    pureColorBackground.setText("Pure Color Background")
+
+    toolBar
+  }
+
+  private def createStatusLine(parent: Composite) = {
+    val label = new Label(parent, SWT.HORIZONTAL|SWT.SHADOW_OUT)
+    label.setText("Ready")
+    label
+  }
   def main(args: Array[String]): Unit = {
     val display = new Display()
     val shell = new Shell(display)
-    shell.setLayout(new FillLayout)
-    val comp = new Composite(shell, SWT.NONE)
-    comp.setLayout(new FillLayout)
-    val data = new GLData()
-    data.doubleBuffer = true
-    val canvas = new GLCanvas(comp, SWT.NONE, data)
-    canvas.setCurrent()
-    GL.createCapabilities()
+    shell.setLayout(new GridLayout(2, false))
+    import org.eclipse.swt.layout.GridData
+    val gridData = new GridData
+    gridData.horizontalSpan = 2
+    gridData.horizontalAlignment = GridData.FILL
+    gridData.grabExcessHorizontalSpace = true
+    val toolbar = createToolbar(shell)
+    toolbar.setLayoutData(gridData)
 
-    implicit val gl = new LWJGLBinding
-    val canvasInfo = new SWTOpenGLCanvasInfoReader(canvas)
-    val appView = new Live2DView(canvasInfo)
+    val gridData2 = new GridData
+    gridData2.horizontalSpan = 1
+    gridData2.verticalAlignment = GridData.FILL
+    gridData2.grabExcessHorizontalSpace = false
+    gridData2.grabExcessVerticalSpace = true
 
-    canvas.addListener(SWT.Resize, _ => {
-      canvas.setCurrent()
-      GL.createCapabilities()
-      appView.resize()
-      appView.display()
-    })
+    val leftPanel = new Button(shell, SWT.PUSH)
+    leftPanel.setText("Left Panel")
+    leftPanel.setLayoutData(gridData2)
 
-    val updater = new Runnable() {
-      override def run(): Unit = {
-        if (!canvas.isDisposed) {
-          canvas.setCurrent()
-          GL.createCapabilities()
-          appView.display()
-          canvas.swapBuffers()
-          display.asyncExec(this)
-        }
-      }
-    }
-    canvas.addPaintListener(_ => updater.run())
-    canvas.addKeyListener(new KeyListener {
-      override def keyPressed(e: KeyEvent): Unit = {}
-      override def keyReleased(e: KeyEvent): Unit = {
-        appView.keyReleased(e.character)
-      }
-    })
-    canvas.addMouseWheelListener { e: MouseEvent =>
-      appView.zoom(e.count * 0.01f)
-    }
-    canvas.addMouseListener(new MouseListener() {
-      override def mouseDoubleClick(e: MouseEvent): Unit = {}
-      override def mouseDown(e: MouseEvent): Unit = {}
-      override def mouseUp(e: MouseEvent): Unit = {
-        if ((e.stateMask & SWT.BUTTON1) != 0) {
-          appView.onMouseReleased(e.x, e.y)
-        }
-        lastX = None
-        lastY = None
-      }
-    })
-    canvas.addMouseMoveListener( mouseEvent => {
-      if ((mouseEvent.stateMask & SWT.BUTTON1) != 0) {
-        appView.onMouseDragged(mouseEvent.x, mouseEvent.y)
-      }
-      if ((mouseEvent.stateMask & SWT.BUTTON3) != 0) {
-        val offsetX = this.lastX.map(mouseEvent.x - _).getOrElse(0).toFloat * 0.0020f
-        val offsetY = this.lastY.map(_ - mouseEvent.y).getOrElse(0).toFloat * 0.0020f
+    val gridData3 = new GridData
+    gridData3.horizontalSpan = 1
+    gridData3.horizontalAlignment = GridData.FILL
+    gridData3.verticalAlignment = GridData.FILL
+    gridData3.grabExcessHorizontalSpace = true
+    gridData3.grabExcessVerticalSpace = true
 
-        appView.move(offsetX, offsetY)
+    val avatarArea = new AvatarArea(display, shell)
+    avatarArea.setLayoutData(gridData3)
 
-        this.lastX = Some(mouseEvent.x)
-        this.lastY = Some(mouseEvent.y)
-      }
-    })
-    display.asyncExec(updater)
+    val gridData4 = new GridData
+    gridData4.horizontalSpan = 2
+    gridData4.horizontalAlignment = GridData.FILL
+    gridData4.grabExcessHorizontalSpace = true
+    val statusBar = createStatusLine(shell)
+    statusBar.setLayoutData(gridData4)
+
     shell.setText("SWT/LWJGL Example")
     shell.setSize(640, 480)
     shell.open()
@@ -89,5 +90,4 @@ object SWTWithLWJGL {
 
   }
 
-   */
 }
