@@ -1,16 +1,7 @@
-ThisBuild / organization := "com.example"
-ThisBuild / version      := "0.0.1-SNAPSHOT"
+ThisBuild / organization := "moe.brianhsu.live2d"
 ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
-ThisBuild / assemblyMergeStrategy := {
-  case x if x.endsWith("module-info.class") => {
-    MergeStrategy.discard
-  }
-  case x => {
-    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
-    oldStrategy(x)
-  }
-}
+ThisBuild / publishArtifact := false
 
 val swtVersion = "3.120.0"
 val swtPackageName = {
@@ -36,34 +27,38 @@ val sharedSettings = Seq(
   Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-h", "target/test-reports-html"),
   Compile / doc / scalacOptions ++= Seq("-private"),
   autoAPIMappings := true,
-  libraryDependencies ++= testFramework
+  libraryDependencies ++= testFramework,
 )
 
 lazy val core = (project in file("modules/core"))
   .settings(
-    name := "Live2D For Scala Core",
+    name := "Core",
+    publishArtifact := true,
     sharedSettings
   )
 
 lazy val joglBinding = (project in file("modules/joglBinding"))
   .dependsOn(core)
   .settings(
-    name := "Live2D For Scala Java OpenGL Binding",
+    name := "JOGL Binding",
+    publishArtifact := true,
     sharedSettings
   )
 
 lazy val lwjglBinding = (project in file("modules/lwjglBinding"))
   .dependsOn(core)
   .settings(
-    name := "Live2D For Scala LWJGL Binding",
+    name := "LWJGL Binding",
+    publishArtifact := true,
     sharedSettings
   )
 
 lazy val swtBinding = (project in file("modules/swtBinding"))
   .dependsOn(core)
   .settings(
-    name := "Live2D For Scala SWT Binding",
+    name := "SWT Binding",
     fork := true,
+    publishArtifact := true,
     sharedSettings,
     libraryDependencies += swtFramework % "test,provided" 
   )
@@ -71,23 +66,26 @@ lazy val swtBinding = (project in file("modules/swtBinding"))
 lazy val exampleBase = (project in file("modules/examples/base"))
   .dependsOn(core, joglBinding, lwjglBinding, swtBinding)
   .settings(
-    name := "Live2D For Scala Examples Base",
+    name := "Examples Base",
+    publishArtifact := false,
     sharedSettings
   )
 
 lazy val exampleSwing = (project in file("modules/examples/swing"))
   .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleBase)
   .settings(
-    name := "Live2D For Scala Examples Swing+JOGL",
+    name := "Example Swing+JOGL",
     fork := true,
+    publishArtifact := false,
     sharedSettings
   )
 
 lazy val exampleSWT = (project in file("modules/examples/swt"))
   .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleBase)
   .settings(
-    name := "Live2D For Scala Examples SWT+JWJGL",
+    name := "Example SWT+JWJGL",
     fork := true,
+    publishArtifact := false,
     sharedSettings,
     libraryDependencies += swtFramework % "provided"
   )
@@ -95,8 +93,9 @@ lazy val exampleSWT = (project in file("modules/examples/swt"))
 lazy val exampleSWTLinux = (project in file("modules/examples/swt-linux-bundle"))
   .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleSWT)
   .settings(
-    name := "Live2D For Scala Examples SWT+JWJGL Windows",
+    name := "Example SWT+JWJGL Linux",
     fork := true,
+    publishArtifact := false,
     Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
     sharedSettings,
     libraryDependencies += swtLinux
@@ -105,8 +104,9 @@ lazy val exampleSWTLinux = (project in file("modules/examples/swt-linux-bundle")
 lazy val exampleSWTWin = (project in file("modules/examples/swt-windows-bundle"))
   .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleSWT)
   .settings(
-    name := "Live2D For Scala Examples SWT+JWJGL Windows",
+    name := "Example SWT+JWJGL Windows",
     fork := true,
+    publishArtifact := false,
     Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
     sharedSettings,
     libraryDependencies += swtWindows
