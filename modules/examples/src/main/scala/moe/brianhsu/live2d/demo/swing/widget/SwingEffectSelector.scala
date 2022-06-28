@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent
 import javax.swing.{BorderFactory, JCheckBox, JComboBox, JPanel}
 import scala.annotation.unused
 
-class EffectSelector(live2DWidget: Live2DUI) extends JPanel {
+class SwingEffectSelector(live2DWidget: Live2DUI) extends JPanel {
 
   private val blink = new JCheckBox("Blink")
   private val breath = new JCheckBox("Breath")

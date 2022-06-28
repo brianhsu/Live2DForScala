@@ -8,7 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing._
 import scala.annotation.unused
 
-class Toolbar(live2DWidget: Live2DUI) extends JToolBar("Live 2D For Scala Swing Toolbar") {
+class SwingToolbar(live2DWidget: Live2DUI) extends JToolBar("Live 2D For Scala Swing Toolbar") {
 
   private val loadAvatar = new JButton("Load Avatar")
   private val pureBackground = new JButton("Pure Color Background")

@@ -8,7 +8,7 @@ import javax.swing.tree.{DefaultMutableTreeNode, DefaultTreeModel}
 import javax.swing._
 import scala.annotation.tailrec
 
-class MotionSelector(live2DWidget: Live2DUI) extends JPanel {
+class SwingMotionSelector(live2DWidget: Live2DUI) extends JPanel {
   private val scroll = new JScrollPane()
   private val motionTree = new JTree(new DefaultMutableTreeNode("Motions"))
   private val repeatCheckbox = new JCheckBox("Repeat motion")

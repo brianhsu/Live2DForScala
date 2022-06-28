@@ -5,7 +5,7 @@ import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
 import moe.brianhsu.live2d.adapter.gateway.opengl.jogl.JavaOpenGLBinding
 import moe.brianhsu.live2d.adapter.gateway.renderer.jogl.JOGLCanvasInfoReader
 import moe.brianhsu.live2d.demo.app.DemoApp
-import moe.brianhsu.live2d.demo.swing.widget.{EffectSelector, ExpressionSelector, MotionSelector, StatusBar, Toolbar}
+import moe.brianhsu.live2d.demo.swing.widget.{SwingEffectSelector, SwingExpressionSelector, SwingMotionSelector, SwingStatusBar, SwingToolbar}
 
 import java.awt.event._
 import javax.swing.SwingUtilities
@@ -13,11 +13,11 @@ import javax.swing.SwingUtilities
 
 class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener with KeyListener {
 
-  val expressionSelector = new ExpressionSelector(this)
-  val motionSelector = new MotionSelector(this)
-  val effectSelector = new EffectSelector(this)
-  val toolbar = new Toolbar(this)
-  val statusBar = new StatusBar()
+  val expressionSelector = new SwingExpressionSelector(this)
+  val motionSelector = new SwingMotionSelector(this)
+  val effectSelector = new SwingEffectSelector(this)
+  val toolbar = new SwingToolbar(this)
+  val statusBar = new SwingStatusBar()
 
   private var animator: Option[FixedFPSAnimator] = None
   private val canvasInfo = new JOGLCanvasInfoReader(canvas)

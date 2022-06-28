@@ -215,7 +215,7 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
   }
 
   def zoom(level: Float): Unit = {
-    this.zoom += level
+    this.zoom = (level + zoom).max(0.5f)
     this.display(true)
   }
 
