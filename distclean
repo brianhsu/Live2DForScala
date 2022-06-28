@@ -1,1 +1,2 @@
-rm -rvf project/target/ project/project/ target/
+rm -rvf project/target/ project/project/ target/ */target */*/target */*/*/target
+

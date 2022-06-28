@@ -1,76 +1,113 @@
-name := "Live2D Cubism For Scala"
-
-organization := "moe.brianhsu.live2d"
-
-scalaVersion := "2.13.8"
-
-scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
-
-Compile / doc / scalacOptions ++= Seq("-private")
-
-Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-h", "target/test-reports-html")
-
-//javaOptions ++= Seq("-XX:+PrintGC")
-
-autoAPIMappings := true
-
-fork := true
+ThisBuild / organization := "com.example"
+ThisBuild / version      := "0.0.1-SNAPSHOT"
+ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
+ThisBuild / assemblyMergeStrategy := {
+  case x if x.endsWith("module-info.class") => {
+    MergeStrategy.discard
+  }
+  case x => {
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+  }
+}
 
 val swtVersion = "3.120.0"
-
-val swtFramework = {
+val swtPackageName = {
   System.getProperty("os.name").toLowerCase match {
-    case linux if linux.contains("linux") => "org.eclipse.platform" % "org.eclipse.swt.gtk.linux.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
-    case win if win.contains("win") => "org.eclipse.platform" % "org.eclipse.swt.win32.win32.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
-    case mac if mac.contains("mac")  => "org.eclipse.platform" % "org.eclipse.swt.cocoa.macosx.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
+    case osName if osName.contains("linux") => "org.eclipse.swt.gtk.linux.x86_64"
+    case osName if osName.contains("win") => "org.eclipse.swt.win32.win32.x86_64"
+    case osName if osName.contains("mac")  => "org.eclipse.swt.cocoa.macosx.x86_64"
     case osName => throw new RuntimeException(s"Unknown operating system $osName")
   }
 }
 
-val slf4jVersion = "1.7.36"
-val slfjFramework = Seq(
-  "org.slf4j" % "slf4j-api" % slf4jVersion,
-  "org.slf4j" % "slf4j-simple" % slf4jVersion
-)
-
-val lwjglVersion = "3.3.1"
-val lwjglFramework = Seq(
-  "org.lwjgl" % "lwjgl" % lwjglVersion,
-  "org.lwjgl" % "lwjgl-opengl" % lwjglVersion,                          
-  "org.lwjgl" % "lwjgl-opengles" % lwjglVersion,                          
-)
-
-val lwjglNatives = Seq(
-  "org.lwjgl" % "lwjgl" % lwjglVersion classifier "natives-linux",
-  "org.lwjgl" % "lwjgl-opengl" % lwjglVersion classifier "natives-linux",
-  "org.lwjgl" % "lwjgl-opengles" % lwjglVersion classifier "natives-linux",
-  "org.lwjgl" % "lwjgl" % lwjglVersion classifier "natives-windows",
-  "org.lwjgl" % "lwjgl-opengl" % lwjglVersion classifier "natives-windows",
-  "org.lwjgl" % "lwjgl-opengles" % lwjglVersion classifier "natives-windows",
-  "org.lwjgl" % "lwjgl" % lwjglVersion classifier "natives-macos",
-  "org.lwjgl" % "lwjgl-opengl" % lwjglVersion classifier "natives-macos",
-  "org.lwjgl" % "lwjgl-opengles" % lwjglVersion classifier "natives-macos",
-)
+val swtFramework = "org.eclipse.platform" % swtPackageName % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
+val swtWindows = "org.eclipse.platform" % "org.eclipse.swt.win32.win32.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
+val swtLinux = "org.eclipse.platform" % "org.eclipse.swt.gtk.linux.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
 
 val testFramework = Seq(
   "org.scalatest" %% "scalatest" % "3.2.11" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test,
+  "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test
 )
 
-libraryDependencies += swtFramework
-libraryDependencies ++= slfjFramework
-libraryDependencies ++= lwjglFramework
-libraryDependencies ++= lwjglNatives
-libraryDependencies ++= testFramework
-
-libraryDependencies ++= Seq(
-    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "net.java.dev.jna" % "jna" % "5.10.0",
-    "org.json4s" %% "json4s-native" % "4.0.4",
-    "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test
-//    "org.jogamp.gluegen" % "gluegen-rt" % "2.3.2",
-//    "org.jogamp.gluegen" % "gluegen-rt-main" % "2.3.2",
-//    "org.jogamp.jogl" % "jogl-all" % "2.3.2",
-//    "org.jogamp.jogl" % "jogl-all-main" % "2.3.2",
+val sharedSettings = Seq(
+  Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-h", "target/test-reports-html"),
+  Compile / doc / scalacOptions ++= Seq("-private"),
+  autoAPIMappings := true,
+  libraryDependencies ++= testFramework
 )
 
+lazy val core = (project in file("modules/core"))
+  .settings(
+    name := "Live2D For Scala Core",
+    sharedSettings
+  )
+
+lazy val joglBinding = (project in file("modules/joglBinding"))
+  .dependsOn(core)
+  .settings(
+    name := "Live2D For Scala Java OpenGL Binding",
+    sharedSettings
+  )
+
+lazy val lwjglBinding = (project in file("modules/lwjglBinding"))
+  .dependsOn(core)
+  .settings(
+    name := "Live2D For Scala LWJGL Binding",
+    sharedSettings
+  )
+
+lazy val swtBinding = (project in file("modules/swtBinding"))
+  .dependsOn(core)
+  .settings(
+    name := "Live2D For Scala SWT Binding",
+    fork := true,
+    sharedSettings,
+    libraryDependencies += swtFramework % "test,provided" 
+  )
+
+lazy val exampleBase = (project in file("modules/examples/base"))
+  .dependsOn(core, joglBinding, lwjglBinding, swtBinding)
+  .settings(
+    name := "Live2D For Scala Examples Base",
+    sharedSettings
+  )
+
+lazy val exampleSwing = (project in file("modules/examples/swing"))
+  .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleBase)
+  .settings(
+    name := "Live2D For Scala Examples Swing+JOGL",
+    fork := true,
+    sharedSettings
+  )
+
+lazy val exampleSWT = (project in file("modules/examples/swt"))
+  .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleBase)
+  .settings(
+    name := "Live2D For Scala Examples SWT+JWJGL",
+    fork := true,
+    sharedSettings,
+    libraryDependencies += swtFramework % "provided"
+  )
+
+lazy val exampleSWTLinux = (project in file("modules/examples/swt-linux-bundle"))
+  .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleSWT)
+  .settings(
+    name := "Live2D For Scala Examples SWT+JWJGL Windows",
+    fork := true,
+    Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
+    sharedSettings,
+    libraryDependencies += swtLinux
+  )
+
+lazy val exampleSWTWin = (project in file("modules/examples/swt-windows-bundle"))
+  .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleSWT)
+  .settings(
+    name := "Live2D For Scala Examples SWT+JWJGL Windows",
+    fork := true,
+    Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
+    sharedSettings,
+    libraryDependencies += swtWindows
+  )
