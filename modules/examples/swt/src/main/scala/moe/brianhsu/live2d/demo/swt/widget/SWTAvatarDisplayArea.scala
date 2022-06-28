@@ -17,7 +17,7 @@ object SWTAvatarDisplayArea {
   }
 }
 
-class SWTAvatarDisplayArea(display: Display, parent: Composite) extends Composite(parent, SWT.NONE) {
+class SWTAvatarDisplayArea(parent: Composite) extends Composite(parent, SWT.NONE) {
   private var lastX: Option[Int] = None
   private var lastY: Option[Int] = None
   private var avatarListenerHolder: Option[AvatarListener] = None
@@ -25,6 +25,7 @@ class SWTAvatarDisplayArea(display: Display, parent: Composite) extends Composit
   protected val canvas = createGLCanvas()
   private implicit val openGLBinding: LWJGLBinding = new LWJGLBinding
   private val canvasInfo = new SWTOpenGLCanvasInfoReader(canvas)
+  private val canvasUpdater: Runnable = new CanvasUpdater
 
   val demoApp: DemoApp = new DemoApp(canvasInfo, runOnOpenGLThread) {
     override def onAvatarLoaded(live2DView: DemoApp): Unit = {
@@ -40,7 +41,7 @@ class SWTAvatarDisplayArea(display: Display, parent: Composite) extends Composit
     setupResizeListener()
     setupMouseListener()
     setupKeyListener()
-    this.canvas.addPaintListener(_ => canvasUpdater.run())
+    this.canvasUpdater.run()
   }
 
   def setAvatarListener(listener: AvatarListener): Unit = {
@@ -131,23 +132,23 @@ class SWTAvatarDisplayArea(display: Display, parent: Composite) extends Composit
     callback
   }
 
-  private val canvasUpdater: Runnable = new Runnable() {
-    private val FrameRate = 60
+  private class CanvasUpdater extends Runnable {
+
+    private val FrameRate = System.getProperty("os.name") match {
+      case os if os.contains("win") => 144 // I don't know why Windows need a higher value to make it smooth
+      case os if os.contains("linux") => 60
+      case _ => 60
+    }
+
     private val threshold = ((1 / FrameRate.toFloat) * 1000).toInt
-    private var lastUpdateTime: Long = 0
 
     override def run(): Unit = {
       if (!canvas.isDisposed) {
-        val currentTime = System.currentTimeMillis()
-
-        if (lastUpdateTime == 0 || currentTime - lastUpdateTime > threshold) {
-          demoApp.display()
-          this.lastUpdateTime = currentTime
-        }
-
+        demoApp.display()
         canvas.swapBuffers()
-        display.asyncExec(this)
+        parent.getDisplay.timerExec(threshold, this)
       }
     }
   }
+
 }

@@ -12,7 +12,7 @@ object SWTWithLWJGLMain {
   private val shell = new Shell(display)
   private val toolbar = new SWTToolbar(shell)
   private val avatarControl = new SWTAvatarControlPanel(shell)
-  private val avatarArea = new SWTAvatarDisplayArea(display, shell)
+  private val avatarArea = new SWTAvatarDisplayArea(shell)
   private val statusBar = new SWTStatusBar(shell)
 
   def main(args: Array[String]): Unit = {

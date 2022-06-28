@@ -15,9 +15,9 @@ ThisBuild / assemblyMergeStrategy := {
 val swtVersion = "3.120.0"
 val swtPackageName = {
   System.getProperty("os.name").toLowerCase match {
-    case linux if linux.contains("linux") => "org.eclipse.swt.gtk.linux.x86_64"
-    case win if win.contains("win") => "org.eclipse.swt.win32.win32.x86_64"
-    case mac if mac.contains("mac")  => "org.eclipse.swt.cocoa.macosx.x86_64"
+    case osName if osName.contains("linux") => "org.eclipse.swt.gtk.linux.x86_64"
+    case osName if osName.contains("win") => "org.eclipse.swt.win32.win32.x86_64"
+    case osName if osName.contains("mac")  => "org.eclipse.swt.cocoa.macosx.x86_64"
     case osName => throw new RuntimeException(s"Unknown operating system $osName")
   }
 }
@@ -101,6 +101,7 @@ lazy val exampleSWTLinux = (project in file("modules/examples/swt-linux-bundle")
     sharedSettings,
     libraryDependencies += swtLinux
   )
+
 lazy val exampleSWTWin = (project in file("modules/examples/swt-windows-bundle"))
   .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleSWT)
   .settings(
