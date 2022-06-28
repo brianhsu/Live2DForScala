@@ -23,6 +23,8 @@ val swtPackageName = {
 }
 
 val swtFramework = "org.eclipse.platform" % swtPackageName % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
+val swtWindows = "org.eclipse.platform" % "org.eclipse.swt.win32.win32.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
+val swtLinux = "org.eclipse.platform" % "org.eclipse.swt.gtk.linux.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
 
 val testFramework = Seq(
   "org.scalatest" %% "scalatest" % "3.2.11" % Test,
@@ -66,12 +68,45 @@ lazy val swtBinding = (project in file("modules/swtBinding"))
     libraryDependencies += swtFramework % "test,provided" 
   )
 
-lazy val examples = (project in file("modules/examples"))
+lazy val exampleBase = (project in file("modules/examples/base"))
   .dependsOn(core, joglBinding, lwjglBinding, swtBinding)
   .settings(
-    name := "Live2D For Scala Examples",
+    name := "Live2D For Scala Examples Base",
+    sharedSettings
+  )
+
+lazy val exampleSwing = (project in file("modules/examples/swing"))
+  .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleBase)
+  .settings(
+    name := "Live2D For Scala Examples Swing+JOGL",
     fork := true,
-    assembly / mainClass := Some("moe.brianhsu.porting.live2d.swing.SwingWithJavaOpenGL"),
+    sharedSettings
+  )
+
+lazy val exampleSWT = (project in file("modules/examples/swt"))
+  .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleBase)
+  .settings(
+    name := "Live2D For Scala Examples SWT+JWJGL",
+    fork := true,
     sharedSettings,
-    libraryDependencies += swtFramework
+    libraryDependencies += swtFramework % "provided"
+  )
+
+lazy val exampleSWTLinux = (project in file("modules/examples/swt-linux-bundle"))
+  .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleSWT)
+  .settings(
+    name := "Live2D For Scala Examples SWT+JWJGL Windows",
+    fork := true,
+    Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
+    sharedSettings,
+    libraryDependencies += swtLinux
+  )
+lazy val exampleSWTWin = (project in file("modules/examples/swt-windows-bundle"))
+  .dependsOn(core, joglBinding, lwjglBinding, swtBinding, exampleSWT)
+  .settings(
+    name := "Live2D For Scala Examples SWT+JWJGL Windows",
+    fork := true,
+    Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
+    sharedSettings,
+    libraryDependencies += swtWindows
   )
