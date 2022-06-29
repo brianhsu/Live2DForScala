@@ -16,7 +16,7 @@ This project is heavily inspired by [facial-landmarks-for-cubism][0].
 
 I'm tired that there is no good webcam to Live2D program in Linux. Although the [facial-landmarks-for-cubism][0] provides a functional program, it requires user to have some decent knowledge about how to patch and build a C++ program in order to use.
 
-The ultimate goal of this project is provide something like [VTuber Studio][1] in Linux world. Maybe with less feature, but show be an out-of-box experience.
+The ultimate goal of this project is to provide something like [VTuber Studio][1] in the Linux world. Maybe with less features, but should be with a good out-of-box experience.
 
 The whole idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS without the change in the source code.
 
