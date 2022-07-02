@@ -31,7 +31,7 @@ class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int
         case 24 => decode24BitSamples(buffer, bytesRead)
         case 32 => decode32BitSamples(buffer, bytesRead)
       }
-      val event = AudioEvent(audioFormat, samples, buffer.take(bytesRead), totalBytesRead)
+      val event = AudioEvent(audioFormat, totalBytesRead, samples.toList, buffer.take(bytesRead).toList)
       processorList.foreach(_.process(event))
       totalBytesRead += 1
     }
