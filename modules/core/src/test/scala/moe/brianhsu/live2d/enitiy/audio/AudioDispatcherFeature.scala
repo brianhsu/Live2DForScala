@@ -18,7 +18,7 @@ class AudioDispatcherFeature extends AnyFeatureSpec with Matchers with GivenWhen
   Feature("Convert AudioInputStream to AudioEvent correctly") {
     Scenario("Convert 8 bit audio stream with 8 samples per batch") {
       Given("an AudioDispatcher with an 8 bit AudioInputStream")
-      val audioInputStream = AudioSystem.getAudioInputStream(new File("src/test/resources/sounds/8.wav"))
+      val audioInputStream = AudioSystem.getAudioInputStream(this.getClass.getResourceAsStream("/sounds/8.wav"))
       val dispatcher = new AudioDispatcher(audioInputStream, 8)
 
       And("append a ReadAllSamples processor to it")
@@ -30,7 +30,7 @@ class AudioDispatcherFeature extends AnyFeatureSpec with Matchers with GivenWhen
 
       Then("the processed events in the processor should contains the correct data")
       val events = processor.processedEvents
-      val expectationFile = Source.fromFile("src/test/resources/expectation/sounds/8bit.json")
+      val expectationFile = Source.fromInputStream(this.getClass.getResourceAsStream("/expectation/sounds/8bit.json"))
       val expectations = Using.resource(expectationFile)(_.getLines().toList)
 
       events.size shouldBe expectations.size

@@ -12,6 +12,7 @@ object NativeCubismAPI {
     val csmDrawOrderDidChange: Byte = (1 << 3).toByte
     val csmRenderOrderDidChange: Byte = (1 << 4).toByte
     val csmVertexPositionsDidChange: Byte = (1 << 5).toByte
+    val csmBlendColorChanged: Byte = (1 << 6).toByte
   }
 
   object ConstantDrawableFlagMask {

@@ -26,7 +26,12 @@ case object MocVersion33 extends MocVersion("3.3.00", "3.3.03")
 /**
  * Version above 4.0.00
  */
-case object MocVersion40 extends MocVersion("4.0.00", "*")
+case object MocVersion40 extends MocVersion("4.0.00", "4.1.0")
+
+/**
+ * Version above 4.2.00
+ */
+case object MocVersion42 extends MocVersion("4.2.00", "*")
 
 
 object MocVersion {
@@ -36,6 +41,7 @@ object MocVersion {
       case 1 => MocVersion30
       case 2 => MocVersion33
       case 3 => MocVersion40
+      case 4 => MocVersion42
     }
   }
 }
