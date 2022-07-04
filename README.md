@@ -58,13 +58,6 @@ The following is the list of such features.
 
   - Priority motion queue
 
-Limitation
---------------------
-
-This project is based on Live 2D Cubism Core C ABI that you will find in the Cubism Native SDK. Since current version of libLive2DCubismCore doesn't support version 4 `.moc` file, the Live 2D model use version 4 `.moc` file will not be loaded in this project.
-
-For example, you could NOT use the `Niziiro Mao` character which listed at Live 2D [sample data][7] page.
-
 Supported Platforms
 --------------------
 
@@ -243,25 +236,56 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
-LICENSE (3rd party)
-=======================
+3rd Party Component Licenses
+==============================
+
+This project is based on some 3rd party resources, the following denoted those resources and thier licenses.
 
 Live2D Cubism Core
 --------------------
 
+This project uses Live2D Cubism Core native library during runtime, it's located at `modules/core/src/main/resources/`.
+
+```
+modules/core/src/main/resources/linux-x86-64/libLive2DCubismCore.so
+modules/core/src/main/resources/win32-x86-64/Live2DCubismCore.dll
+modules/core/src/main/resources/win32-x86-64/Live2DCubismCore.lib
+modules/core/src/main/resources/darwin/libLive2DCubismCore.dylib
+modules/core/src/main/resources/LICENSE.md
+```
+
+Live2D Cubism Core is available under Live2D Proprietary Software License.
+
+* [Live2D Proprietary Software License Agreement](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)
+* [Live2D Proprietary Software 使用許諾契約書](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_jp.html)
+* [Live2D Proprietary Software 使用授权协议](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_cn.html)
+
 Live2D Model
 --------------------
 
-Icons
---------------
+In order to do proper unit test to make sure this project's quality, the Live2D model located at `modules/core/src/test/resources/models` are used during unit test. And is included in this project's git repository.
 
-- [Power icons created by Gregor Cresnar - Flaticon][8]
-- [Settings icons created by Gregor Cresnar Premium - Flaticon][9]
+We used it under the Free Material License Agreement from Live2D Inc.
+
+* [Free Material License Agreement](https://www.live2d.com/eula/live2d-free-material-license-agreement_en.html)
+* [無償提供マテリアルの使用許諾契約書](https://www.live2d.com/eula/live2d-free-material-license-agreement_jp.html)
+* [无偿提供素材使用授权协议](https://www.live2d.com/eula/live2d-free-material-license-agreement_cn.html)
 
 Background
 --------------
 
-- [Japanese koi vector created by rawpixel.com - www.freepik.com][10]
+The default background in the example program is provided by:
+
+- [Japanese koi vector created by rawpixel.com - www.freepik.com][7]
+
+Icons
+--------------
+
+The power / gear icons in the example are provided by:
+
+- [Power icons created by Gregor Cresnar - Flaticon][8]
+- [Settings icons created by Gregor Cresnar Premium - Flaticon][9]
+
 
 [0]: https://github.com/adrianiainlam/facial-landmarks-for-cubism
 [1]: https://store.steampowered.com/app/1325860/VTube_Studio/
@@ -270,7 +294,7 @@ Background
 [4]: https://www.lwjgl.org/
 [5]: https://www.eclipse.org/swt/
 [6]: https://www.scala-sbt.org/
-[7]: https://www.live2d.com/en/download/sample-data/
+[7]: https://www.freepik.com/vectors/japanese-koi
 [8]: https://www.flaticon.com/free-icons/power
 [9]: https://www.flaticon.com/free-icons/settings
-[10]: https://www.freepik.com/vectors/japanese-koi
+
