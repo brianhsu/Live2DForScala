@@ -3,27 +3,27 @@ package moe.brianhsu.live2d.enitiy.audio
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.sound.sampled.AudioInputStream
 
-class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int) extends Runnable {
-  private var processorList: List[AudioProcessor] = Nil
+class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int, processors: List[AudioProcessor] = Nil) extends Runnable {
   private val audioFormat = audioInputStream.getFormat
   private val endian = if (audioFormat.isBigEndian) ByteOrder.BIG_ENDIAN else ByteOrder.LITTLE_ENDIAN
   private val frameSize = audioFormat.getFrameSize
   private val channelCount = audioFormat.getChannels
   private val bitsPerSample = audioFormat.getSampleSizeInBits
+  private var shouldBeStopped: Boolean = false
 
-  def appendProcessor(processor: AudioProcessor): Unit = {
-    processorList = processorList.appended(processor)
+  def appendProcessor(processor: AudioProcessor): AudioDispatcher = {
+    new AudioDispatcher(audioInputStream, bufferSampleCount, processors.appended(processor))
   }
 
-  def removeProcessor(processor: AudioProcessor): Unit = {
-    processorList = processorList.filterNot(_ == processor)
+  def removeProcessor(processor: AudioProcessor): AudioDispatcher = {
+    new AudioDispatcher(audioInputStream, bufferSampleCount, processors.filterNot(_ == processor))
   }
 
   override def run(): Unit = {
     val buffer = new Array[Byte](bufferSampleCount * frameSize * channelCount)
     var totalBytesRead: Long = 0
 
-    while (audioInputStream.available() > 0) {
+    while (audioInputStream.available() > 0 && !shouldBeStopped) {
       val bytesRead = audioInputStream.read(buffer)
       val samples = bitsPerSample match {
         case 8  => decode8BitSamples(buffer)
@@ -32,11 +32,15 @@ class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int
         case 32 => decode32BitSamples(buffer, bytesRead)
       }
       val event = AudioEvent(audioFormat, totalBytesRead, samples.toList, buffer.take(bytesRead).toList)
-      processorList.foreach(_.process(event))
+      processors.foreach(_.process(event))
       totalBytesRead += 1
     }
 
-    processorList.foreach(_.end())
+    processors.foreach(_.end())
+  }
+
+  def stop(): Unit = {
+    this.shouldBeStopped = true
   }
 
   private def decode8BitSamples(buffer: Array[Byte]) = {
