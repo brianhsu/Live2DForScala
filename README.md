@@ -58,6 +58,13 @@ The following is the list of such features.
 
   - Priority motion queue
 
+Limitation
+--------------------
+
+This project is based on Live 2D Cubism Core C ABI that you will find in the Cubism Native SDK. Since current version of libLive2DCubismCore doesn't support version 4 `.moc` file, the Live 2D model use version 4 `.moc` file will not be loaded in this project.
+
+For example, you could NOT use the `Niziiro Mao` character which listed at Live 2D [sample data][7] page.
+
 Supported Platforms
 --------------------
 
@@ -243,3 +250,4 @@ sbt:live2dforscala> exampleSWTLinux/run
 [4]: https://www.lwjgl.org/
 [5]: https://www.eclipse.org/swt/
 [6]: https://www.scala-sbt.org/
+[7]: https://www.live2d.com/en/download/sample-data/
