@@ -243,6 +243,26 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
+LICENSE (3rd party)
+=======================
+
+Live2D Cubism Core
+--------------------
+
+Live2D Model
+--------------------
+
+Icons
+--------------
+
+- [Power icons created by Gregor Cresnar - Flaticon][8]
+- [Settings icons created by Gregor Cresnar Premium - Flaticon][9]
+
+Background
+--------------
+
+- [Japanese koi vector created by rawpixel.com - www.freepik.com][10]
+
 [0]: https://github.com/adrianiainlam/facial-landmarks-for-cubism
 [1]: https://store.steampowered.com/app/1325860/VTube_Studio/
 [2]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
@@ -251,3 +271,6 @@ sbt:live2dforscala> exampleSWTLinux/run
 [5]: https://www.eclipse.org/swt/
 [6]: https://www.scala-sbt.org/
 [7]: https://www.live2d.com/en/download/sample-data/
+[8]: https://www.flaticon.com/free-icons/power
+[9]: https://www.flaticon.com/free-icons/settings
+[10]: https://www.freepik.com/vectors/japanese-koi
