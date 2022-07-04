@@ -5,7 +5,6 @@ import javax.sound.sampled.AudioInputStream
 
 class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int, processors: List[AudioProcessor] = Nil) extends Runnable {
   private val audioFormat = audioInputStream.getFormat
-  private val endian = if (audioFormat.isBigEndian) ByteOrder.BIG_ENDIAN else ByteOrder.LITTLE_ENDIAN
   private val frameSize = audioFormat.getFrameSize
   private val channelCount = audioFormat.getChannels
   private val bitsPerSample = audioFormat.getSampleSizeInBits
@@ -49,7 +48,7 @@ class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int
 
   private def decode16BitSamples(buffer: Array[Byte], readInBytes: Int): Array[Float] = {
     val shortByteBuffer = ByteBuffer.allocate(readInBytes)
-      .order(endian)
+      .order(ByteOrder.LITTLE_ENDIAN)
       .put(buffer.take(readInBytes))
       .rewind()
       .asShortBuffer()
@@ -63,7 +62,7 @@ class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int
 
     val totalSamples: Int = readInBytes / 3
     val intArray = new Array[Int](totalSamples)
-    val intBuffer = ByteBuffer.allocate(readInBytes + readInBytes / 3).order(endian)
+    val intBuffer = ByteBuffer.allocate(readInBytes + readInBytes / 3).order(ByteOrder.LITTLE_ENDIAN)
     buffer.take(readInBytes).grouped(3).foreach { bytes =>
       intBuffer.put(0.toByte)
       intBuffer.put(bytes)
@@ -76,7 +75,7 @@ class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int
 
   private def decode32BitSamples(buffer: Array[Byte], readInBytes: Int): Array[Float] = {
     val intByteBuffer = ByteBuffer.allocate(readInBytes)
-      .order(endian)
+      .order(ByteOrder.LITTLE_ENDIAN)
       .put(buffer.take(readInBytes))
       .rewind()
       .asIntBuffer()
