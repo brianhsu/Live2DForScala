@@ -141,7 +141,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
   Feature("Start Motion with MotionSetting") {
     Scenario("Start Motion using MotionSetting object") {
       Given("a dummy MotionSetting")
-      val motionSetting = MotionSetting("3", None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+      val motionSetting = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
 
       And("a mocked motion manager expected start a motion")
       val motionManager = mock[MotionManager]
@@ -227,8 +227,8 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
 
     Scenario("The group name exist and index is correct") {
       Given("a Avatar Setting that has motion group")
-      val motionSetting1 = MotionSetting("3", None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
-      val motionSetting2 = MotionSetting("3", None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+      val motionSetting1 = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+      val motionSetting2 = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
 
       val motionGroups = Map("group1" -> List(motionSetting1, motionSetting2))
       val avatarSetting = Settings("mocFile", Nil, None, None, Nil, Nil, Map.empty, motionGroups, Nil)

@@ -248,6 +248,7 @@ class JsonSettingsReader(directory: String) extends SettingsReader {
           paredJson.version,
           motionFile.fadeInTime,
           motionFile.fadeOutTime,
+          motionFile.sound,
           paredJson.meta,
           paredJson.userData,
           paredJson.curves

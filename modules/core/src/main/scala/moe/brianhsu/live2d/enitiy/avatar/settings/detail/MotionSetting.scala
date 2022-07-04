@@ -51,4 +51,4 @@ object MotionSetting {
  * @param userData List of user data.
  * @param curves List of curve that defines the motion.
  */
-case class MotionSetting(version: String, fadeInTime: Option[Float], fadeOutTime: Option[Float], meta: Meta, userData: List[UserData], curves: List[Curve])
+case class MotionSetting(version: String, fadeInTime: Option[Float], fadeOutTime: Option[Float], sound: Option[String], meta: Meta, userData: List[UserData], curves: List[Curve])
