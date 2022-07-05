@@ -1,4 +1,4 @@
-name: CI
+name: Release
 
 # Controls when the workflow will run
 on:
@@ -53,8 +53,21 @@ jobs:
           git config --global user.name "GitHub Action"
           xvfb-run --auto-servernum sbt "release with-defaults"
 
-      - name: Push changes
+      - name: Push release change to original GitHub repository
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
+
+      - name: Push to maven repository
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@ssh-deploy-key
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        with:
+          source-directory: mavenRepository
+          destination-github-username: 'brianhsu'
+          destination-repository-name: 'mavenRepository'
+          user-email: brianhsu.hsu@gmail.com
+          commit-message: See ORIGIN_COMMIT from $GITHUB_REF
+          target-branch: master
