@@ -2,11 +2,13 @@ package moe.brianhsu.live2d.demo.app
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.FaceDirectionByMouse
 import moe.brianhsu.live2d.demo.app.DemoApp.{ClickAndDrag, FaceDirectionMode, FollowMouse}
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, LipSyncFromMotionSound}
+import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.MotionListener
 
 import scala.annotation.unused
 
-trait EffectControl {
+trait EffectControl extends MotionListener {
   this: DemoApp =>
 
   var faceDirectionMode: FaceDirectionMode = ClickAndDrag
@@ -14,9 +16,58 @@ trait EffectControl {
   protected val targetPointCalculator = new FaceDirectionByMouse(60)
   protected val faceDirection = new FaceDirection(targetPointCalculator)
 
+  override def onMotionStart(motion: MotionSetting): Unit = {
+    for (strategy <- this.mUpdateStrategyHolder) {
+      strategy.effects
+        .filter(_.isInstanceOf[LipSyncFromMotionSound])
+        .map(_.asInstanceOf[LipSyncFromMotionSound])
+        .foreach(_.startWith(motion.sound))
+    }
+
+  }
+
+  def updateMotionLipSyncVolume(volume: Int): Unit = {
+    for {
+      strategy <- this.mUpdateStrategyHolder
+      lipSync <- strategy.effects.filter(_.isInstanceOf[LipSyncFromMotionSound])
+    } {
+      lipSync.asInstanceOf[LipSyncFromMotionSound].volume = volume
+    }
+
+  }
+
+  def updateMotionLipSyncWeight(weight: Int): Unit = {
+    for {
+      strategy <- this.mUpdateStrategyHolder
+      lipSync <- strategy.effects.filter(_.isInstanceOf[LipSyncFromMotionSound])
+    } {
+      lipSync.asInstanceOf[LipSyncFromMotionSound].weight = weight / 10.0f
+    }
+  }
+
   def disableBreath(): Unit = {
     for (strategy <- this.mUpdateStrategyHolder) {
       strategy.effects = strategy.effects.filterNot(_.isInstanceOf[Breath])
+    }
+  }
+
+  def disableLipSyncFromMotionSound(): Unit = {
+    for (strategy <- this.mUpdateStrategyHolder) {
+      strategy.effects
+        .filter(_.isInstanceOf[LipSyncFromMotionSound])
+        .map(_.asInstanceOf[LipSyncFromMotionSound])
+        .foreach(_.stop())
+
+      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[LipSyncFromMotionSound])
+    }
+  }
+
+  def enableLipSyncFromMotionSound(): Unit = {
+    for {
+      avatar <- this.avatarHolder
+      strategy <- this.mUpdateStrategyHolder
+    } {
+      strategy.effects ::= new LipSyncFromMotionSound(avatar.avatarSettings, 100)
     }
   }
 

@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback}
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback, RepeatedCallback}
 import moe.brianhsu.live2d.enitiy.avatar.motion.Motion
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -179,6 +179,63 @@ class MotionManagerFeature extends AnyFeatureSpec with GivenWhenThen with Matche
       motion1.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion2.finishedCallbackHolder shouldBe Some(mockedCallback)
       motion3.finishedCallbackHolder shouldBe Some(mockedCallback)
+    }
+  }
+
+  Feature("Set repeated callback for all MotionWithTransition in queue") {
+    Scenario("Set repeated callback before motion is started") {
+      Given("several MotionWithTransition and a MotionManager")
+      val motion1 = stub[MotionWithTransition]
+      val motion2 = stub[MotionWithTransition]
+      val motion3 = stub[MotionWithTransition]
+      val motion4 = stub[MotionWithTransition]
+      val motionManger = new MotionManager
+
+      When("set callback on manager")
+      val mockedCallback = stub[RepeatedCallback]
+      motionManger.repeatedCallbackHolder = Some(mockedCallback)
+
+      Then("the repeatedCallbackHolder should be set")
+      motionManger.repeatedCallbackHolder shouldBe Some(mockedCallback)
+
+      And("start three motions")
+      motionManger.startMotion(motion1)
+      motionManger.startMotion(motion2)
+      motionManger.startMotion(motion3)
+
+      And("first three motion should all have a callback set")
+      motion1.repeatedCallbackHolder shouldBe Some(mockedCallback)
+      motion2.repeatedCallbackHolder shouldBe Some(mockedCallback)
+      motion3.repeatedCallbackHolder shouldBe Some(mockedCallback)
+
+      And("last motion should not have any callback set")
+      motion4.repeatedCallbackHolder shouldBe None
+    }
+
+    Scenario("Set finish callback after motion is started") {
+      Given("several MotionWithTransition and a MotionManager")
+      val motion1 = stub[MotionWithTransition]
+      val motion2 = stub[MotionWithTransition]
+      val motion3 = stub[MotionWithTransition]
+      val motionManger = new MotionManager
+
+
+      And("start three motions")
+      motionManger.startMotion(motion1)
+      motionManger.startMotion(motion2)
+      motionManger.startMotion(motion3)
+
+      When("set callback on manager")
+      val mockedCallback = stub[RepeatedCallback]
+      motionManger.repeatedCallbackHolder = Some(mockedCallback)
+
+      Then("the repeatedCallbackHolder should be set")
+      motionManger.repeatedCallbackHolder shouldBe Some(mockedCallback)
+
+      And("three motion should all have a callback set")
+      motion1.repeatedCallbackHolder shouldBe Some(mockedCallback)
+      motion2.repeatedCallbackHolder shouldBe Some(mockedCallback)
+      motion3.repeatedCallbackHolder shouldBe Some(mockedCallback)
     }
 
   }

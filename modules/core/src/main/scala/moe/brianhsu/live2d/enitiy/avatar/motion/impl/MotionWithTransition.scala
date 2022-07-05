@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback}
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback, RepeatedCallback}
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -8,12 +8,14 @@ import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
 
 object MotionWithTransition {
   type FinishedCallback = MotionWithTransition => Unit
+  type RepeatedCallback = MotionWithTransition => Unit
   type EventCallback = (MotionWithTransition, MotionEvent) => Unit
 }
 
 class MotionWithTransition(val baseMotion: Motion) {
   var eventCallbackHolder: Option[EventCallback] = None
   var finishedCallbackHolder: Option[FinishedCallback] = None
+  var repeatedCallbackHolder: Option[RepeatedCallback] = None
 
   private var mIsFinished: Boolean = false
   private var isStarted: Boolean = false
@@ -50,6 +52,8 @@ class MotionWithTransition(val baseMotion: Motion) {
           if (baseMotion.isLoopFadeIn) {
             this.fadeInStartTimeInSeconds = totalElapsedTimeInSeconds
           }
+          println("Prepare to callback")
+          repeatedCallbackHolder.foreach(_.apply(this))
         } else {
           finishedCallbackHolder.foreach(_.apply(this))
         }

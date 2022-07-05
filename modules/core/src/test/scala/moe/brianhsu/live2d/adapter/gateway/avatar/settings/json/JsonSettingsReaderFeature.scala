@@ -198,10 +198,11 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       }
 
     }
-    motionGroups("tapBody")(0).sound.value shouldBe "sounds/haru_normal_01.wav"
-    motionGroups("tapBody")(1).sound.value shouldBe "sounds/haru_normal_02.wav"
-    motionGroups("tapBody")(2).sound.value shouldBe "sounds/haru_normal_03.wav"
-    motionGroups("tapBody")(3).sound.value shouldBe "sounds/haru_normal_04.wav"
+
+    motionGroups("tapBody")(0).sound.value shouldBe "src/test/resources/models/Haru/sounds/haru_normal_01.wav"
+    motionGroups("tapBody")(1).sound.value shouldBe "src/test/resources/models/Haru/sounds/haru_normal_02.wav"
+    motionGroups("tapBody")(2).sound.value shouldBe "src/test/resources/models/Haru/sounds/haru_normal_03.wav"
+    motionGroups("tapBody")(3).sound.value shouldBe "src/test/resources/models/Haru/sounds/haru_normal_04.wav"
 
   }
 

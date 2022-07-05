@@ -6,7 +6,7 @@ import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.demo.app.DemoApp.OnOpenGLThread
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, LipSyncFromMotionSound}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
@@ -36,7 +36,7 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
   protected var modelHolder: Option[Live2DModel] = mAvatarHolder.map(_.model)
   protected var rendererHolder: Option[AvatarRenderer] = modelHolder.map(model => AvatarRenderer(model))
   protected var mUpdateStrategyHolder: Option[BasicUpdateStrategy] = mAvatarHolder.map(a => {
-    a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
+    a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model, motionListener = Some(this)))
     a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
   })
 
@@ -107,6 +107,15 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
 
   override def onMouseReleased(x: Int, y: Int): Unit = {
     super.onMouseReleased(x, y)
+
+    if (powerSprite.isHit(x.toFloat, y.toFloat)) {
+      onStatusUpdated("Clicked on Power sprite.")
+    } else if (gearSprite.isHit(x.toFloat, y.toFloat)) {
+      onStatusUpdated("Clicked on Gear sprite.")
+    } else {
+      onStatusUpdated("Clicked nothing.")
+    }
+
     for {
       _ <- mAvatarHolder
       model <- modelHolder
@@ -114,21 +123,15 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
       val transformedX = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedX(x.toFloat)
       val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
 
-      if (powerSprite.isHit(x.toFloat, y.toFloat)) {
-        onStatusUpdated("Clicked on Power sprite.")
-      } else if (gearSprite.isHit(x.toFloat, y.toFloat)) {
-        onStatusUpdated("Clicked on Power sprite.")
-      } else {
-        val hitAreaHolder = for {
-          avatar <- mAvatarHolder
-          hitArea <- avatar.avatarSettings.hitArea.find(area => model.isHit(area.id, transformedX, transformedY))
-        } yield {
-          hitArea.name
-        }
-        hitAreaHolder match {
-          case Some(area) => onStatusUpdated(s"Clicked on Avatar's $area.")
-          case None => onStatusUpdated("Clicked nothing.")
-        }
+      val hitAreaHolder = for {
+        avatar <- mAvatarHolder
+        hitArea <- avatar.avatarSettings.hitArea.find(area => model.isHit(area.id, transformedX, transformedY))
+      } yield {
+        hitArea.name
+      }
+      hitAreaHolder match {
+        case Some(area) => onStatusUpdated(s"Clicked on Avatar's $area.")
+        case None => onStatusUpdated("Clicked nothing.")
       }
     }
   }
@@ -158,7 +161,8 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
         Some(new EyeBlink(avatar.avatarSettings)),
         Some(faceDirection),
         physicsHolder,
-        poseHolder
+        poseHolder,
+        Some(new LipSyncFromMotionSound(avatar.avatarSettings, 100))
       ).flatten
     }
   }
@@ -195,7 +199,7 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
     this.modelHolder = mAvatarHolder.map(_.model)
     this.mUpdateStrategyHolder = mAvatarHolder.map(a => {
       onStatusUpdated(s"$directoryPath loaded.")
-      a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model))
+      a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model, motionListener = Some(this)))
       a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
     })
     setupAvatarEffects()

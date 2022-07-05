@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
-import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback}
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.{EventCallback, FinishedCallback, RepeatedCallback}
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{ParameterValueAdd, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import org.scalamock.scalatest.MockFactory
@@ -461,5 +461,39 @@ class MotionWithTransitionFeature extends AnyFeatureSpec with GivenWhenThen with
 
   }
 
+  Feature("Handle motion repeated event") {
+    Scenario("There is a motion repeated callback") {
+      Given("a base motion with duration 2 seconds and fade out time 0.5 second")
+      val baseMotion = stub[Motion]
+      (() => baseMotion.durationInSeconds).when().returning(Some(2))
+      (() => baseMotion.fadeInTimeInSeconds).when().returning(None)
+      (() => baseMotion.fadeOutTimeInSeconds).when().returning(Some(0.5f))
+      (() => baseMotion.isLoop).when().returning(true)
+
+      And("a MotionWithTransition based on that motion")
+      val motionWithTransition = new MotionWithTransition(baseMotion)
+
+      And("set a repeated event callback to it")
+      val stubbedCallback = stub[RepeatedCallback]
+      motionWithTransition.repeatedCallbackHolder = Some(stubbedCallback)
+
+      When("start the motion at first frame")
+      motionWithTransition.calculateOperations(model, 0, 0, 1.0f)
+      And("update the motion at 1.5 second")
+      motionWithTransition.calculateOperations(model, 1.5f, 0, 1.0f)
+      And("update the motion at 1.99 second")
+      motionWithTransition.calculateOperations(model, 1.99f, 0, 1.0f)
+      And("update the motion at 2 second")
+      motionWithTransition.calculateOperations(model, 2f, 0, 1.0f)
+      And("update the motion at 2.5 second")
+      motionWithTransition.calculateOperations(model, 2f, 0, 1.0f)
+      And("update the motion at 4 second")
+      motionWithTransition.calculateOperations(model, 4f, 0, 1.0f)
+
+      Then("the repeated callback should run twice")
+      (stubbedCallback.apply _).verify(motionWithTransition).twice()
+
+    }
+  }
 
 }

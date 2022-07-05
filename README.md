@@ -1,4 +1,4 @@
-Live2D For Scala (JVM / Linux / Windows / MacOS)
+Live2D For Scala (JVM / Linux / Windows / MacOS Intel)
 =================================================
 ![Maven metadata URL](https://img.shields.io/maven-metadata/v?label=maven&logo=github&metadataUrl=https%3A%2F%2Fmaven.pkg.github.com%2Fbrianhsu%2FLive2DForScala%2Fmoe%2Fbrianhsu%2Flive2d%2Fcore_2.13%2Fmaven-metadata.xml&style=for-the-badge) ![Code Coverage](doc/images/coverage.svg) ![Version](https://img.shields.io/github/v/tag/brianhsu/Live2DForScala?style=for-the-badge)
 
@@ -18,7 +18,7 @@ I'm tired that there is no good webcam to Live2D program in Linux. Although the 
 
 The ultimate goal of this project is to provide something like [VTuber Studio][1] in the Linux world. Maybe with less features, but should be with a good out-of-box experience.
 
-The whole idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS without the change in the source code.
+The whole idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS Intel without the change in the source code.
 
 Screenshots
 --------------------
@@ -65,16 +65,16 @@ Since this project is built on Clean Architecture concept and runs on Java Virtu
 
 In theory, it should able to use differnt combination of OpenGL Java libary and GUI toolkit, but the examples come with this project use the following comination.
 
-Due to some weired bug, I couldn't make the example program runs on SWT under MacOS.
+Due to some weired bug, I couldn't make the example program runs on SWT under MacOS. Also, currently it only support MacOS running on Intel processors, Apple M1 version of MacOS is not supported.
 
-| OS / Binding  | OpenGL Binding     | GUI Toolkit |Supported          | Note
-| ------------- | ------------------ |------------ |------------------ |------
-| Linux         | JavaOpenGL         | Swing       |:heavy_check_mark: |
-| Linux         | LWJGL              | SWT         |:heavy_check_mark: |
-| Windows 10    | JavaOpenGL         | Swing       |:heavy_check_mark: |
-| Windows 10    | LWJGL              | SWT         |:heavy_check_mark: |
-| MacOS         | JavaOpenGL         | Swing       |:heavy_check_mark: | 1
-| MacOS         | LWJGL              | SWT         |:x:                | 
+| OS / Binding  | Architecture | OpenGL Binding     | GUI Toolkit |Supported          | Note
+| ------------- |------------- | ------------------ |------------ |------------------ |------
+| Linux         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: |
+| Linux         | x86_64       | LWJGL              | SWT         |:heavy_check_mark: |
+| Windows 10    | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: |
+| Windows 10    | x86_64       | LWJGL              | SWT         |:heavy_check_mark: |
+| MacOS         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: | 1
+| MacOS         | x86_64       | LWJGL              | SWT         |:x:                | 
 
 1. Must use jogamp-fat-v2.4.0-rc-20210111.jar, auto pull-in dependency from Maven Central will not work.
 
@@ -281,11 +281,11 @@ The default background in the example program is provided by:
 Icons
 --------------
 
-The power / gear icons in the example are provided by:
+The power / gear / speaker icons in the example are provided by:
 
 - [Power icons created by Gregor Cresnar - Flaticon][8]
 - [Settings icons created by Gregor Cresnar Premium - Flaticon][9]
-
+- [Speaker icons created by Freepik - Flaticon][10]
 
 [0]: https://github.com/adrianiainlam/facial-landmarks-for-cubism
 [1]: https://store.steampowered.com/app/1325860/VTube_Studio/
@@ -297,4 +297,4 @@ The power / gear icons in the example are provided by:
 [7]: https://www.freepik.com/vectors/japanese-koi
 [8]: https://www.flaticon.com/free-icons/power
 [9]: https://www.flaticon.com/free-icons/settings
-
+[10]: https://www.flaticon.com/free-icons/speaker

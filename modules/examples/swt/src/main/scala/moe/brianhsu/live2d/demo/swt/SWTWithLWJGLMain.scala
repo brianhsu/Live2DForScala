@@ -39,9 +39,10 @@ object SWTWithLWJGLMain {
       override def onAvatarLoaded(live2DView: DemoApp): Unit = {
         live2DView.avatarHolder.foreach(avatarControl.expressionSelector.updateExpressionList)
         live2DView.avatarHolder.foreach(avatarControl.motionSelector.updateMotionTree)
-        live2DView
-          .basicUpdateStrategyHolder
-          .foreach(avatarControl.effectSelector.syncWithStrategy)
+        live2DView.basicUpdateStrategyHolder.foreach { strategy =>
+          avatarControl.effectSelector.syncWithStrategy(strategy)
+          avatarControl.motionSelector.syncWithStrategy(strategy)
+        }
       }
       override def onStatusUpdated(status: String): Unit = statusBar.updateStatus(status)
     })
