@@ -41,7 +41,7 @@ class SWTAvatarDisplayArea(parent: Composite) extends Composite(parent, SWT.NONE
     setupResizeListener()
     setupMouseListener()
     setupKeyListener()
-    this.canvasUpdater.run()
+    parent.getDisplay.asyncExec(this.canvasUpdater)
   }
 
   def setAvatarListener(listener: AvatarListener): Unit = {

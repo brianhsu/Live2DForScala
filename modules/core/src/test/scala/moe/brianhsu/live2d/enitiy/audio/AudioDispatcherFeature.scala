@@ -7,8 +7,7 @@ import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-import java.io.PrintWriter
-import javax.sound.sampled.{AudioFormat, AudioSystem}
+import javax.sound.sampled.{AudioFormat, AudioInputStream, AudioSystem}
 import scala.io.Source
 import scala.util.Using
 
@@ -151,13 +150,15 @@ class AudioDispatcherFeature extends AnyFeatureSpec with Matchers with GivenWhen
     class ReadAllSamples extends AudioProcessor {
       var processedEvents: List[AudioEvent] = Nil
 
-      override def process(event: AudioEvent): Unit = {
+      override def onProcess(event: AudioEvent): Unit = {
         processedEvents ::= event
       }
 
-      override def end(): Unit = {
+      override def end(audioInputStream: AudioInputStream): Unit = {
         processedEvents = processedEvents.reverse
       }
+
+      override def start(): Unit = {}
     }
   }
 
@@ -184,8 +185,8 @@ class AudioDispatcherFeature extends AnyFeatureSpec with Matchers with GivenWhen
       inSequence {
         (processor1.process _).verify(*).atLeastOnce()
         (processor2.process _).verify(*).atLeastOnce()
-        (() => processor1.end()).verify().once()
-        (() => processor2.end()).verify().once()
+        (processor1.end _).verify(audioInputStream).once()
+        (processor2.end _).verify(audioInputStream).once()
       }
     }
 
@@ -213,9 +214,9 @@ class AudioDispatcherFeature extends AnyFeatureSpec with Matchers with GivenWhen
         (processor2.process _).verify(*).never()
         (processor3.process _).verify(*).atLeastOnce()
 
-        (() => processor1.end()).verify().once()
-        (() => processor2.end()).verify().never()
-        (() => processor3.end()).verify().once()
+        (processor1.end _).verify(audioInputStream).once()
+        (processor2.end _).verify(audioInputStream).never()
+        (processor3.end _).verify(audioInputStream).once()
       }
 
     }
@@ -241,8 +242,8 @@ class AudioDispatcherFeature extends AnyFeatureSpec with Matchers with GivenWhen
       inSequence {
         (processor1.process _).verify(*).never()
         (processor2.process _).verify(*).never()
-        (() => processor1.end()).verify().once()
-        (() => processor2.end()).verify().once()
+        (processor1.end _).verify(audioInputStream).once()
+        (processor2.end _).verify(audioInputStream).once()
       }
     }
 

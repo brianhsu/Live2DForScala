@@ -15,8 +15,10 @@ trait LipSync extends Effect {
   override def calculateOperations(model: Live2DModel,
                                    totalElapsedTimeInSeconds: Float,
                                    deltaTimeInSeconds: Float): List[UpdateOperation] = {
-    lipSyncIds.map { lipSyncId =>
-      ParameterValueAdd(lipSyncId, currentRms, weight)
+    if (currentRms == 0) {
+      Nil
+    } else {
+      lipSyncIds.map(ParameterValueAdd(_, currentRms, weight))
     }
   }
 

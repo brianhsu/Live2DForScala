@@ -52,7 +52,6 @@ class MotionWithTransition(val baseMotion: Motion) {
           if (baseMotion.isLoopFadeIn) {
             this.fadeInStartTimeInSeconds = totalElapsedTimeInSeconds
           }
-          println("Prepare to callback")
           repeatedCallbackHolder.foreach(_.apply(this))
         } else {
           finishedCallbackHolder.foreach(_.apply(this))

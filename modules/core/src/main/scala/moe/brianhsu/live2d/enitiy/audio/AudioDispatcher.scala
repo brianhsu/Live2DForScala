@@ -3,11 +3,11 @@ package moe.brianhsu.live2d.enitiy.audio
 import java.nio.{ByteBuffer, ByteOrder}
 import javax.sound.sampled.AudioInputStream
 
-class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int, processors: List[AudioProcessor] = Nil) extends Runnable {
-  private val audioFormat = audioInputStream.getFormat
-  private val frameSize = audioFormat.getFrameSize
-  private val channelCount = audioFormat.getChannels
-  private val bitsPerSample = audioFormat.getSampleSizeInBits
+class AudioDispatcher(val audioInputStream: AudioInputStream, val bufferSampleCount: Int, val processors: List[AudioProcessor] = Nil) extends Runnable {
+  private lazy val audioFormat = audioInputStream.getFormat
+  private lazy val frameSize = audioFormat.getFrameSize
+  private lazy val channelCount = audioFormat.getChannels
+  private lazy val bitsPerSample = audioFormat.getSampleSizeInBits
   private var shouldBeStopped: Boolean = false
 
   def appendProcessor(processor: AudioProcessor): AudioDispatcher = {
@@ -35,7 +35,7 @@ class AudioDispatcher(audioInputStream: AudioInputStream, bufferSampleCount: Int
       totalBytesRead += 1
     }
 
-    processors.foreach(_.end())
+    processors.foreach(_.end(audioInputStream))
   }
 
   def stop(): Unit = {

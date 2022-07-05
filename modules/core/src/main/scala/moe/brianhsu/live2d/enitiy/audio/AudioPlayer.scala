@@ -6,28 +6,33 @@ object AudioPlayer {
   def apply(audio: AudioInputStream, defaultVolume: Int): AudioPlayer = {
     val info = new DataLine.Info(classOf[SourceDataLine], audio.getFormat)
     val line = AudioSystem.getLine(info).asInstanceOf[SourceDataLine]
-    new AudioPlayer(line, audio, defaultVolume)
+    new AudioPlayer(line, defaultVolume)
   }
 }
 
-class AudioPlayer(line: SourceDataLine, audio: AudioInputStream, defaultVolume: Int) extends AudioProcessor {
+class AudioPlayer(sourceDataLine: SourceDataLine, private[this] var mVolume: Int) extends AudioProcessor {
 
-  line.open()
-  line.start()
-  updateVolume(defaultVolume)
+  def volume: Int = mVolume
 
-  def updateVolume(volume: Int): Unit = {
-    line.getControl(FloatControl.Type.MASTER_GAIN)
+  def volume_=(volume: Int): Unit = {
+    sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN)
       .asInstanceOf[FloatControl]
       .setValue(20.0f * Math.log10(volume / 100.0).toFloat)
   }
 
-  override def process(event: AudioEvent): Unit = {
-    line.write(event.rawBytes.toArray, 0, event.rawBytes.length)
+  override def start(): Unit = {
+    sourceDataLine.open()
+    sourceDataLine.start()
+
+    this.volume = volume
   }
 
-  override def end(): Unit = {
-    line.drain()
-    audio.close()
+  override def onProcess(event: AudioEvent): Unit = {
+    sourceDataLine.write(event.rawBytes.toArray, 0, event.rawBytes.length)
+  }
+
+  override def end(audioInputStream: AudioInputStream): Unit = {
+    sourceDataLine.drain()
+    sourceDataLine.close()
   }
 }
