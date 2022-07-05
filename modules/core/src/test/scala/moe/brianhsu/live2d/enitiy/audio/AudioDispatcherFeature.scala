@@ -7,6 +7,7 @@ import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
+import java.io.PrintWriter
 import javax.sound.sampled.{AudioFormat, AudioSystem}
 import scala.io.Source
 import scala.util.Using
@@ -78,6 +79,7 @@ class AudioDispatcherFeature extends AnyFeatureSpec with Matchers with GivenWhen
         audioEvent.format.getSampleRate shouldBe 44100.0
         audioEvent.format.getSampleSizeInBits shouldBe 16
       }
+
     }
 
     Scenario("Convert 24bit audio stream") {
