@@ -44,7 +44,7 @@ The following list shows features that this project currently supports or plan t
   - [x] Auto eye-blink
   - [x] Auto breath effect
   - [x] Face direction control by mouse
-  - [ ] Lip sync from .WAV file
+  - [x] Lip sync from .WAV file in the avatar motion
 
 ### Advance Feature
   - [ ] Lip sync from microphone
