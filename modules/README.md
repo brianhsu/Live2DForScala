@@ -1,6 +1,6 @@
 Live2D For Scala (JVM / Linux / Windows / MacOS)
 =================================================
-![Maven metadata URL](https://img.shields.io/maven-metadata/v?label=maven&logo=github&metadataUrl=https%3A%2F%2Fmaven.pkg.github.com%2Fbrianhsu%2FLive2DForScala%2Fmoe%2Fbrianhsu%2Flive2d%2Fcore_2.13%2Fmaven-metadata.xml&style=for-the-badge) ![Code Coverage](../doc/images/coverage.svg) ![Version](https://img.shields.io/github/v/tag/brianhsu/Live2DForScala?style=for-the-badge)
+![Maven metadata URL](../doc/images/coverage.jpg) ![Code Coverage](../doc/images/coverage.svg) ![Version](https://img.shields.io/github/v/tag/brianhsu/Live2DForScala?style=for-the-badge)
 
 Disclaimer
 -----------
@@ -42,7 +42,7 @@ You could add the following code into your project's `build.sbt` to get the depe
 
 ```scala
 resolvers +=
-  "Live2DForScala" at "https://maven.pkg.github.com/brianhsu/Live2DForScala/"
+  "Live2DForScala" at "https://raw.githubusercontent.com/brianhsu/mavenRepository/master"
 
 libraryDependencies += "moe.brianhsu.live2d" %% "core" % "X.Y.Z"
 ```
