@@ -37,6 +37,13 @@ jobs:
           git config --global user.name "GitHub Action"
           xvfb-run --auto-servernum sbt coverage "release with-defaults" coverageAggregate
 
+      - name: Archive Test Results
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: test-results
+          path: target/test-reports-html/
+          
       - name: Update badges
         run: |
           ./doc/images/generateCoverageBadage.sh

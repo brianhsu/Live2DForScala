@@ -36,3 +36,10 @@ jobs:
       - name: Unit test
         run: |
           xvfb-run --auto-servernum sbt coverage test coverageAggregate
+
+      - name: Archive Test Results
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: test-results
+          path: target/test-reports-html/
