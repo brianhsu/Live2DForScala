@@ -236,6 +236,13 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
+License
+==============================
+
+The library and the example program of this project itself is licensed under the MIT license. Please note that this repository also contains files that are belong to other copyright holders, please see the following section for detail. Those files are not considered as "ths project itself" in previous sentence.
+
+You must agree to those license agreement in order to use this program.
+
 3rd Party Component Licenses
 ==============================
 
@@ -274,14 +281,14 @@ We used it under the Free Material License Agreement from Live2D Inc.
 Background
 --------------
 
-The default background in the example program is provided by:
+The default background in the example program is licensed under [Freepik License][11] by:
 
 - [Japanese koi vector created by rawpixel.com - www.freepik.com][7]
 
 Icons
 --------------
 
-The power / gear / speaker icons in the example are provided by:
+The power / gear / speaker icons in the example are licensed under [Flaticon License][12]  by:
 
 - [Power icons created by Gregor Cresnar - Flaticon][8]
 - [Settings icons created by Gregor Cresnar Premium - Flaticon][9]
@@ -298,3 +305,5 @@ The power / gear / speaker icons in the example are provided by:
 [8]: https://www.flaticon.com/free-icons/power
 [9]: https://www.flaticon.com/free-icons/settings
 [10]: https://www.flaticon.com/free-icons/speaker
+[11]: https://www.freepikcompany.com/legal#nav-freepik-license
+[12]: https://www.freepikcompany.com/legal#nav-flaticon
