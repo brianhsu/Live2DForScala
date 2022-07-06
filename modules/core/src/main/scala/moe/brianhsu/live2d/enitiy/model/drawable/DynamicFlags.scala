@@ -27,4 +27,6 @@ class DynamicFlags(private val pointer: Pointer) extends Flags {
   def drawOrderChanged: Boolean = isBitSet(byteValue, csmDrawOrderDidChange)
 
   def vertexPositionChanged: Boolean = isBitSet(byteValue, csmVertexPositionsDidChange)
+
+  def blendColorChanged: Boolean = isBitSet(byteValue, csmBlendColorChanged)
 }

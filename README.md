@@ -1,6 +1,6 @@
-Live2D For Scala (JVM / Linux / Windows / MacOS)
+Live2D For Scala (JVM / Linux / Windows / MacOS Intel)
 =================================================
-![Maven metadata URL](https://img.shields.io/maven-metadata/v?label=maven&logo=github&metadataUrl=https%3A%2F%2Fmaven.pkg.github.com%2Fbrianhsu%2FLive2DForScala%2Fmoe%2Fbrianhsu%2Flive2d%2Fcore_2.13%2Fmaven-metadata.xml&style=for-the-badge) ![Code Coverage](doc/images/coverage.svg) ![Version](https://img.shields.io/github/v/tag/brianhsu/Live2DForScala?style=for-the-badge)
+![Maven metadata URL](doc/images/version.svg) ![Code Coverage](doc/images/coverage.svg) ![Version](https://img.shields.io/github/v/tag/brianhsu/Live2DForScala?style=for-the-badge)
 
 Disclaimer
 -----------
@@ -18,7 +18,7 @@ I'm tired that there is no good webcam to Live2D program in Linux. Although the 
 
 The ultimate goal of this project is to provide something like [VTuber Studio][1] in the Linux world. Maybe with less features, but should be with a good out-of-box experience.
 
-The whole idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS without the change in the source code.
+The whole idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS Intel without the change in the source code.
 
 Screenshots
 --------------------
@@ -44,7 +44,7 @@ The following list shows features that this project currently supports or plan t
   - [x] Auto eye-blink
   - [x] Auto breath effect
   - [x] Face direction control by mouse
-  - [ ] Lip sync from .WAV file
+  - [x] Lip sync from .WAV file in the avatar motion
 
 ### Advance Feature
   - [ ] Lip sync from microphone
@@ -65,16 +65,16 @@ Since this project is built on Clean Architecture concept and runs on Java Virtu
 
 In theory, it should able to use differnt combination of OpenGL Java libary and GUI toolkit, but the examples come with this project use the following comination.
 
-Due to some weired bug, I couldn't make the example program runs on SWT under MacOS.
+Due to some weired bug, I couldn't make the example program runs on SWT under MacOS. Also, currently it only support MacOS running on Intel processors, Apple M1 version of MacOS is not supported.
 
-| OS / Binding  | OpenGL Binding     | GUI Toolkit |Supported          | Note
-| ------------- | ------------------ |------------ |------------------ |------
-| Linux         | JavaOpenGL         | Swing       |:heavy_check_mark: |
-| Linux         | LWJGL              | SWT         |:heavy_check_mark: |
-| Windows 10    | JavaOpenGL         | Swing       |:heavy_check_mark: |
-| Windows 10    | LWJGL              | SWT         |:heavy_check_mark: |
-| MacOS         | JavaOpenGL         | Swing       |:heavy_check_mark: | 1
-| MacOS         | LWJGL              | SWT         |:x:                | 
+| OS / Binding  | Architecture | OpenGL Binding     | GUI Toolkit |Supported          | Note
+| ------------- |------------- | ------------------ |------------ |------------------ |------
+| Linux         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: |
+| Linux         | x86_64       | LWJGL              | SWT         |:heavy_check_mark: |
+| Windows 10    | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: |
+| Windows 10    | x86_64       | LWJGL              | SWT         |:heavy_check_mark: |
+| MacOS         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: | 1
+| MacOS         | x86_64       | LWJGL              | SWT         |:x:                | 
 
 1. Must use jogamp-fat-v2.4.0-rc-20210111.jar, auto pull-in dependency from Maven Central will not work.
 
@@ -236,6 +236,64 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
+License
+==============================
+
+The library and the example program of this project itself is licensed under the MIT license. Please note that this repository also contains files that are belong to other copyright holders, please see the following section for detail. Those files are not considered as "ths project itself" in previous sentence.
+
+You must agree to those license agreement in order to use this program.
+
+3rd Party Component Licenses
+==============================
+
+This project is based on some 3rd party resources, the following denoted those resources and thier licenses.
+
+Live2D Cubism Core
+--------------------
+
+This project uses Live2D Cubism Core native library during runtime, it's located at `modules/core/src/main/resources/`.
+
+```
+modules/core/src/main/resources/linux-x86-64/libLive2DCubismCore.so
+modules/core/src/main/resources/win32-x86-64/Live2DCubismCore.dll
+modules/core/src/main/resources/win32-x86-64/Live2DCubismCore.lib
+modules/core/src/main/resources/darwin/libLive2DCubismCore.dylib
+modules/core/src/main/resources/LICENSE.md
+```
+
+Live2D Cubism Core is available under Live2D Proprietary Software License.
+
+* [Live2D Proprietary Software License Agreement](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)
+* [Live2D Proprietary Software 使用許諾契約書](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_jp.html)
+* [Live2D Proprietary Software 使用授权协议](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_cn.html)
+
+Live2D Model
+--------------------
+
+In order to do proper unit test to make sure this project's quality, the Live2D model located at `modules/core/src/test/resources/models` are used during unit test. And is included in this project's git repository.
+
+We used it under the Free Material License Agreement from Live2D Inc.
+
+* [Free Material License Agreement](https://www.live2d.com/eula/live2d-free-material-license-agreement_en.html)
+* [無償提供マテリアルの使用許諾契約書](https://www.live2d.com/eula/live2d-free-material-license-agreement_jp.html)
+* [无偿提供素材使用授权协议](https://www.live2d.com/eula/live2d-free-material-license-agreement_cn.html)
+
+Background
+--------------
+
+The default background in the example program is licensed under [Freepik License][11] by:
+
+- [Japanese koi vector created by rawpixel.com - www.freepik.com][7]
+
+Icons
+--------------
+
+The power / gear / speaker icons in the example are licensed under [Flaticon License][12]  by:
+
+- [Power icons created by Gregor Cresnar - Flaticon][8]
+- [Settings icons created by Gregor Cresnar Premium - Flaticon][9]
+- [Speaker icons created by Freepik - Flaticon][10]
+
 [0]: https://github.com/adrianiainlam/facial-landmarks-for-cubism
 [1]: https://store.steampowered.com/app/1325860/VTube_Studio/
 [2]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
@@ -243,3 +301,9 @@ sbt:live2dforscala> exampleSWTLinux/run
 [4]: https://www.lwjgl.org/
 [5]: https://www.eclipse.org/swt/
 [6]: https://www.scala-sbt.org/
+[7]: https://www.freepik.com/vectors/japanese-koi
+[8]: https://www.flaticon.com/free-icons/power
+[9]: https://www.flaticon.com/free-icons/settings
+[10]: https://www.flaticon.com/free-icons/speaker
+[11]: https://www.freepikcompany.com/legal#nav-freepik-license
+[12]: https://www.freepikcompany.com/legal#nav-flaticon

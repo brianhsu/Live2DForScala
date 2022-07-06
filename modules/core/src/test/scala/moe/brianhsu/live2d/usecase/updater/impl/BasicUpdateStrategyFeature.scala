@@ -4,12 +4,14 @@ import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.avatar.motion.Motion
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.RepeatedCallback
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{Expression, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.updater.{FrameTimeInfo, Updater}
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.MotionListener
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -30,7 +32,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         val settings = jsonSettingsReader.loadSettings().success.value
 
         When("create BasicUpdateStrategy using simplified constructor")
-        val updateStrategy = new BasicUpdateStrategy(settings, mock[Live2DModel])
+        val updateStrategy = new BasicUpdateStrategy(settings, mock[Live2DModel], None)
 
         Then("no exception should be thrown")
 
@@ -64,6 +66,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         stub[Settings], stub[Live2DModel],
         stub[AvatarExpressionReader], expressionManager,
         motionManager = mock[MotionManager],
+        motionListener = None,
         updater = mock[Updater]
       )
 
@@ -93,6 +96,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         stub[Settings], stub[Live2DModel],
         expressionReader, expressionManager,
         motionManager = mock[MotionManager],
+        motionListener = None,
         updater = mock[Updater]
       )
 
@@ -125,6 +129,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         stub[Settings], stub[Live2DModel],
         expressionReader, expressionManager,
         motionManager = mock[MotionManager],
+        motionListener = None,
         updater = mock[Updater]
       )
 
@@ -139,16 +144,21 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
   }
 
   Feature("Start Motion with MotionSetting") {
-    Scenario("Start Motion using MotionSetting object") {
+    Scenario("Start Motion using MotionSetting object and disable loop") {
       Given("a dummy MotionSetting")
-      val motionSetting = MotionSetting("3", None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+      val motionSetting = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
 
       And("a mocked motion manager expected start a motion")
       val motionManager = mock[MotionManager]
       val mockedMotionWithTransition = stub[MotionWithTransition]
+      (motionManager.repeatedCallbackHolder_= _)
+        .expects(None)
+        .once()
+
       (motionManager.startMotion: Motion => MotionWithTransition)
         .expects(*)
         .returns(mockedMotionWithTransition)
+        .once()
 
       And("a BasicUpdateStrategy based on that motion manager")
       val updateStrategy = new BasicUpdateStrategy(
@@ -156,6 +166,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         stub[AvatarExpressionReader],
         expressionManager = mock[MotionManager],
         motionManager,
+        motionListener = None,
         updater = mock[Updater]
       )
 
@@ -165,6 +176,84 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       Then("the motion should be the correct value")
       motionWithTransition shouldBe mockedMotionWithTransition
     }
+
+    Scenario("Start Motion using MotionSetting object and enable loop") {
+      Given("a dummy MotionSetting")
+      val motionSetting = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+
+      And("a stubbed motion listener")
+      val listener = stub[MotionListener]
+
+      And("a mocked motion manager expected start a motion")
+      val motionManager = mock[MotionManager]
+
+      And("pretend the repeated callback will execute once")
+      val mockedMotionWithTransition = stub[MotionWithTransition]
+      (motionManager.repeatedCallbackHolder_= _)
+        .expects(where { (callback: Option[RepeatedCallback]) => callback.isDefined })
+        .onCall((callbackHolder: Option[RepeatedCallback]) => callbackHolder.foreach(_.apply(stub[MotionWithTransition])))
+        .once()
+
+      (motionManager.startMotion: Motion => MotionWithTransition)
+        .expects(*)
+        .returns(mockedMotionWithTransition)
+        .once()
+
+      And("a BasicUpdateStrategy based on that motion manager")
+      val updateStrategy = new BasicUpdateStrategy(
+        stub[Settings], stub[Live2DModel],
+        stub[AvatarExpressionReader],
+        expressionManager = mock[MotionManager],
+        motionManager,
+        motionListener = Some(listener),
+        updater = mock[Updater]
+      )
+
+      When("start a motion")
+      val motionWithTransition = updateStrategy.startMotion(motionSetting, isLoop = true)
+
+      Then("the motion should be the correct value")
+      motionWithTransition shouldBe mockedMotionWithTransition
+
+      And("the motionListener.onMotionStart should be called twice")
+      (listener.onMotionStart _).verify(motionSetting).twice()
+
+    }
+
+    Scenario("Start Motion using MotionSetting object and enable loop - without listener") {
+      Given("a dummy MotionSetting")
+      val motionSetting = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+
+      And("a mocked motion manager expected start a motion")
+      val motionManager = mock[MotionManager]
+
+      val mockedMotionWithTransition = stub[MotionWithTransition]
+      (motionManager.repeatedCallbackHolder_= _)
+        .expects(None)
+        .once()
+
+      (motionManager.startMotion: Motion => MotionWithTransition)
+        .expects(*)
+        .returns(mockedMotionWithTransition)
+        .once()
+
+      And("a BasicUpdateStrategy based on that motion manager")
+      val updateStrategy = new BasicUpdateStrategy(
+        stub[Settings], stub[Live2DModel],
+        stub[AvatarExpressionReader],
+        expressionManager = mock[MotionManager],
+        motionManager,
+        motionListener = None,
+        updater = mock[Updater]
+      )
+
+      When("start a motion")
+      val motionWithTransition = updateStrategy.startMotion(motionSetting, isLoop = true)
+
+      Then("the motion should be the correct value")
+      motionWithTransition shouldBe mockedMotionWithTransition
+    }
+
   }
 
   Feature("Start Motion with group name and index") {
@@ -182,6 +271,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         stub[AvatarExpressionReader],
         expressionManager = mock[MotionManager],
         motionManager,
+        motionListener = None,
         updater = mock[Updater]
       )
 
@@ -214,6 +304,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
           stub[AvatarExpressionReader],
           expressionManager = mock[MotionManager],
           motionManager,
+          motionListener = None,
           updater = mock[Updater]
         )
 
@@ -225,10 +316,10 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       }
     }
 
-    Scenario("The group name exist and index is correct") {
+    Scenario("The group name exist and index is correct and disable loop") {
       Given("a Avatar Setting that has motion group")
-      val motionSetting1 = MotionSetting("3", None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
-      val motionSetting2 = MotionSetting("3", None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+      val motionSetting1 = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+      val motionSetting2 = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
 
       val motionGroups = Map("group1" -> List(motionSetting1, motionSetting2))
       val avatarSetting = Settings("mocFile", Nil, None, None, Nil, Nil, Map.empty, motionGroups, Nil)
@@ -236,9 +327,14 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       And("a mocked motion manager expected start motion")
       val motionManager = mock[MotionManager]
       val mockedMotionWithTransition = stub[MotionWithTransition]
+      (motionManager.repeatedCallbackHolder_= _)
+        .expects(None)
+        .once()
+
       (motionManager.startMotion: Motion => MotionWithTransition)
         .expects(*)
         .returns(mockedMotionWithTransition)
+        .once()
 
       And("a BasicUpdateStrategy based on that motion manager")
       val updateStrategy = new BasicUpdateStrategy(
@@ -246,11 +342,49 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         stub[AvatarExpressionReader],
         expressionManager = mock[MotionManager],
         motionManager,
+        motionListener = None,
         updater = mock[Updater]
       )
 
       When("start a motion with group name and index")
       val result = updateStrategy.startMotion("group1", 1, isLoop = false)
+
+      Then("the result should have correct MotionWithTransition")
+      result.value shouldBe mockedMotionWithTransition
+    }
+
+    Scenario("The group name exist and index is correct and enable loop") {
+      Given("a Avatar Setting that has motion group")
+      val motionSetting1 = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+      val motionSetting2 = MotionSetting("3", None, None, None, MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
+
+      val motionGroups = Map("group1" -> List(motionSetting1, motionSetting2))
+      val avatarSetting = Settings("mocFile", Nil, None, None, Nil, Nil, Map.empty, motionGroups, Nil)
+
+      And("a mocked motion manager expected start motion")
+      val motionManager = mock[MotionManager]
+      val mockedMotionWithTransition = stub[MotionWithTransition]
+      (motionManager.repeatedCallbackHolder_= _)
+        .expects(None)
+        .once()
+
+      (motionManager.startMotion: Motion => MotionWithTransition)
+        .expects(*)
+        .returns(mockedMotionWithTransition)
+        .once()
+
+      And("a BasicUpdateStrategy based on that motion manager")
+      val updateStrategy = new BasicUpdateStrategy(
+        avatarSetting, stub[Live2DModel],
+        stub[AvatarExpressionReader],
+        expressionManager = mock[MotionManager],
+        motionManager,
+        motionListener = None,
+        updater = mock[Updater]
+      )
+
+      When("start a motion with group name and index")
+      val result = updateStrategy.startMotion("group1", 1, isLoop = true)
 
       Then("the result should have correct MotionWithTransition")
       result.value shouldBe mockedMotionWithTransition
@@ -284,6 +418,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,
+        motionListener = None,
         updater
       )
 
@@ -329,6 +464,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,
+        motionListener = None,
         updater
       )
 
@@ -380,6 +516,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         stub[Settings], model,
         stub[AvatarExpressionReader],
         expressionManager, motionManager,
+        motionListener = None,
         updater
       )
 

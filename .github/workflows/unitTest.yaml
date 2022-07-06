@@ -1,0 +1,38 @@
+name: Unit Test
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches-ignore: master
+  pull_request:
+    branches: master
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    container:
+      image: openjdk:11
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install packages
+        run: |
+          apt-get update -yqq
+          apt-get install apt-transport-https -yqq
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list
+          curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add
+          apt-get update
+          apt-get -y install sbt
+          apt-get -y install xorg-dev libglu1-mesa libgl1-mesa-dev xvfb libxinerama1 libxcursor1 libswt-gtk-4-java libswt-gtk-4-jni libxml2-utils bc
+      - name: Unit test
+        run: |
+          xvfb-run --auto-servernum sbt coverage test coverageAggregate

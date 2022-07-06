@@ -33,7 +33,6 @@ Step 4. Download Live2D Model
     - `Tsumiki Harugasa` / `Chitose` and `Jin Natori` are good choices, as them contains both expressions and motions.
 
 2. Extract the zip file to somewhere of your computer. 
-3. There are also Live2D models inside the `Source Code` zip file, located under `modules/examples/swing/src/main/resources/` once you extracted it.
 
 Step 5. Controls
 ============================

@@ -13,8 +13,8 @@ class GearSprite(canvasInfo: DrawCanvasInfoReader, textureInfo: TextureInfo)
     val windowHeight = canvasInfo.currentCanvasHeight
 
     Rectangle(
-      windowWidth - textureInfo.width.toFloat,
-      windowHeight - textureInfo.height.toFloat,
+      windowWidth - textureInfo.width.toFloat - 10,
+      windowHeight - textureInfo.height.toFloat - 10,
       textureInfo.width.toFloat,
       textureInfo.height.toFloat
     )

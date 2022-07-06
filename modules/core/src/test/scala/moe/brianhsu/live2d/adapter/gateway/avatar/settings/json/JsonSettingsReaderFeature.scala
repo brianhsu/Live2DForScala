@@ -168,10 +168,11 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
     motionGroups("idle").size shouldBe 2
     motionGroups("tapBody").size shouldBe 4
     val firstIdleMotion = motionGroups("idle").head
-    inside(firstIdleMotion) { case MotionSetting(version, fadeInTime, fadeOutTime, meta, userData, curves) =>
+    inside(firstIdleMotion) { case MotionSetting(version, fadeInTime, fadeOutTime, sound, meta, userData, curves) =>
       version shouldBe "3"
       fadeInTime.value shouldBe 0.5
       fadeOutTime.value shouldBe 0.5
+      sound shouldBe None
       inside(meta) { case Meta(duration, fps, loop, areBeziersRestricted, curveCount, totalSegmentCount, totalPointCount, userDataCount) =>
         duration shouldBe 10
         fps shouldBe 30
@@ -197,6 +198,11 @@ class JsonSettingsReaderFeature extends AnyFeatureSpec with GivenWhenThen with M
       }
 
     }
+
+    motionGroups("tapBody")(0).sound.value shouldBe "src/test/resources/models/Haru/sounds/haru_normal_01.wav"
+    motionGroups("tapBody")(1).sound.value shouldBe "src/test/resources/models/Haru/sounds/haru_normal_02.wav"
+    motionGroups("tapBody")(2).sound.value shouldBe "src/test/resources/models/Haru/sounds/haru_normal_03.wav"
+    motionGroups("tapBody")(3).sound.value shouldBe "src/test/resources/models/Haru/sounds/haru_normal_04.wav"
 
   }
 

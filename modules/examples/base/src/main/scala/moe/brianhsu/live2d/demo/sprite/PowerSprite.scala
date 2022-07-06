@@ -11,7 +11,7 @@ class PowerSprite(drawCanvasInfo: DrawCanvasInfoReader,
   override protected def calculatePositionAndSize(): Rectangle = {
     val windowWidth = drawCanvasInfo.currentCanvasWidth
     Rectangle(
-      windowWidth - textureInfo.width.toFloat,
+      windowWidth - textureInfo.width.toFloat - 10,
       textureInfo.height * 0.25f,
       textureInfo.width.toFloat,
       textureInfo.height.toFloat

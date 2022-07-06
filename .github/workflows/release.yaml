@@ -1,0 +1,72 @@
+name: Release
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    container:
+      image: openjdk:11
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install packages
+        run: |
+          apt-get update -yqq
+          apt-get install apt-transport-https -yqq
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list
+          curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add
+          apt-get update
+          apt-get -y install sbt
+          apt-get -y install xorg-dev libglu1-mesa libgl1-mesa-dev xvfb libxinerama1 libxcursor1 libswt-gtk-4-java libswt-gtk-4-jni libxml2-utils bc
+      - name: Release
+        run: |
+          git config --global user.email "brianhsu.hsu+githu@gmail.com"
+          git config --global user.name "GitHub Action"
+          xvfb-run --auto-servernum sbt coverage "release with-defaults" coverageAggregate
+
+      - name: Update badges
+        run: |
+          ./doc/images/generateCoverageBadage.sh
+          ./doc/images/generateVersionBadage.sh
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: 'doc/images/'
+          message: Update badages
+
+      - name: Push release change to original GitHub repository
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Prepare mvn repository
+        run: |
+          git clone https://github.com/brianhsu/mavenRepository.git mavenToUpload
+          cp -rvf mavenRepository/* mavenToUpload
+
+      - name: Push to maven repository
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@ssh-deploy-key
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        with:
+          source-directory: mavenToUpload
+          destination-github-username: 'brianhsu'
+          destination-repository-name: 'mavenRepository'
+          user-email: brianhsu.hsu@gmail.com
+          commit-message: See ORIGIN_COMMIT from $GITHUB_REF
+          target-branch: master

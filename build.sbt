@@ -28,6 +28,7 @@ val sharedSettings = Seq(
   Compile / doc / scalacOptions ++= Seq("-private"),
   autoAPIMappings := true,
   libraryDependencies ++= testFramework,
+  coverageExcludedPackages := """moe\.brianhsu\.live2d\.demo\..*"""
 )
 
 lazy val core = (project in file("modules/core"))

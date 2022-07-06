@@ -41,7 +41,7 @@ class SWTAvatarDisplayArea(parent: Composite) extends Composite(parent, SWT.NONE
     setupResizeListener()
     setupMouseListener()
     setupKeyListener()
-    this.canvasUpdater.run()
+    parent.getDisplay.asyncExec(this.canvasUpdater)
   }
 
   def setAvatarListener(listener: AvatarListener): Unit = {
@@ -135,8 +135,8 @@ class SWTAvatarDisplayArea(parent: Composite) extends Composite(parent, SWT.NONE
   private class CanvasUpdater extends Runnable {
 
     private val FrameRate = System.getProperty("os.name") match {
-      case os if os.contains("win") => 144 // I don't know why Windows need a higher value to make it smooth
-      case os if os.contains("linux") => 60
+      case os if os.toLowerCase.contains("windows") => 144 // I don't know why Windows need a higher value to make it smooth
+      case os if os.toLowerCase.contains("linux")   => 60
       case _ => 60
     }
 

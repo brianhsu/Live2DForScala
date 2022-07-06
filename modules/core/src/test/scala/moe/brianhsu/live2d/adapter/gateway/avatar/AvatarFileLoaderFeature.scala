@@ -10,7 +10,7 @@ import org.scalatest.{GivenWhenThen, TryValues}
 import java.io.FileNotFoundException
 
 class AvatarFileLoaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues {
-  private implicit val cubismCore = new JnaNativeCubismAPILoader
+  private implicit val cubismCore: JnaNativeCubismAPILoader = new JnaNativeCubismAPILoader
 
   Feature("Error handling") {
     Scenario("Loading an avatar from non-exist directory") {

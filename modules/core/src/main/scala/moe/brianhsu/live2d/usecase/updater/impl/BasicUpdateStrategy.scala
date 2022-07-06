@@ -2,35 +2,53 @@ package moe.brianhsu.live2d.usecase.updater.impl
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
+import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.RepeatedCallback
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, Expression, MotionManager, MotionWithTransition}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.updater.{FrameTimeInfo, ModelUpdater, UpdateStrategy, Updater}
+import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.MotionListener
 
+object BasicUpdateStrategy {
+  trait MotionListener {
+    def onMotionStart(motion: MotionSetting): Unit
+  }
+}
 class BasicUpdateStrategy(val avatarSettings: Settings,
                           val model: Live2DModel,
                           val expressionReader: AvatarExpressionReader,
                           val expressionManager: MotionManager,
                           val motionManager: MotionManager,
+                          val motionListener: Option[MotionListener],
                           updater: Updater) extends UpdateStrategy {
 
 
   private val expressions = expressionReader.loadExpressions
   var effects: List[Effect] = Nil
 
-  def this(avatarSettings: Settings, model: Live2DModel) = {
+  def this(avatarSettings: Settings, model: Live2DModel, motionListener: Option[MotionListener]) = {
     this(
       avatarSettings, model,
       new AvatarExpressionReader(avatarSettings),
       expressionManager = new MotionManager,
       motionManager = new MotionManager,
-      updater = new ModelUpdater(model)
+      motionListener,
+      updater = new ModelUpdater(model),
     )
   }
 
   def startMotion(motionSetting: MotionSetting, isLoop: Boolean): MotionWithTransition = {
     val motion = AvatarMotion(motionSetting, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds, isLoop)
+    motionListener.foreach(_.onMotionStart(motionSetting))
+
+    if (isLoop) {
+      val callbackHolder: Option[RepeatedCallback] = motionListener.map(c => (_: MotionWithTransition) => c.onMotionStart(motionSetting))
+      motionManager.repeatedCallbackHolder = callbackHolder
+    } else {
+      motionManager.repeatedCallbackHolder = None
+    }
+
     motionManager.startMotion(motion)
   }
 
