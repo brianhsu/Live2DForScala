@@ -2,6 +2,7 @@ ThisBuild / organization := "moe.brianhsu.live2d"
 ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
 ThisBuild / publishArtifact := false
+ThisBuild / Test / testOptions += Tests.Argument("-l", sys.env.get("EXCLUDE_TEST_TAG").getOrElse("noExclude"))
 
 val swtVersion = "3.120.0"
 val swtPackageName = {

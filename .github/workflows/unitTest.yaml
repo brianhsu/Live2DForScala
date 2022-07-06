@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      EXCLUDE_TEST_TAG: moe.brianhsu.AudioOutputTest  
     container:
       image: openjdk:11
     steps:
