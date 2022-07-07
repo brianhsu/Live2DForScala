@@ -2,10 +2,11 @@ package moe.brianhsu.live2d.demo.app
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.FaceDirectionByMouse
 import moe.brianhsu.live2d.demo.app.DemoApp.{ClickAndDrag, FaceDirectionMode, FollowMouse}
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, LipSyncFromMotionSound}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, LipSyncFromMic, LipSyncFromMotionSound}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.MotionListener
 
+import javax.sound.sampled.Mixer
 import scala.annotation.unused
 
 trait EffectControl extends MotionListener {
@@ -48,6 +49,29 @@ trait EffectControl extends MotionListener {
   def disableBreath(): Unit = {
     for (strategy <- this.mUpdateStrategyHolder) {
       strategy.effects = strategy.effects.filterNot(_.isInstanceOf[Breath])
+    }
+  }
+
+  def enableLipSyncFromMic(mixer: Mixer): Unit = {
+    for {
+      avatar <- this.avatarHolder
+      strategy <- this.mUpdateStrategyHolder
+    } {
+      val lipSyncFromMic = LipSyncFromMic(avatar.avatarSettings, mixer)
+      lipSyncFromMic.failed.foreach(_.printStackTrace())
+      lipSyncFromMic.foreach(l => strategy.effects ::= l )
+    }
+
+  }
+
+  def disableLipSyncFromMic(): Unit = {
+    for (strategy <- this.mUpdateStrategyHolder) {
+      strategy.effects
+        .filter(_.isInstanceOf[LipSyncFromMic])
+        .map(_.asInstanceOf[LipSyncFromMic])
+        .foreach(_.stop())
+
+      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[LipSyncFromMic])
     }
   }
 
