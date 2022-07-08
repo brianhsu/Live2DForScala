@@ -12,4 +12,6 @@ abstract class AvatarShader(implicit gl: OpenGLBinding) extends Shader(gl) {
   def uniformChannelFlagLocation: Int = gl.glGetUniformLocation(programId, "u_channelFlag")
   def uniformBaseColorLocation: Int = gl.glGetUniformLocation(programId, "u_baseColor")
   def uniformMatrixLocation: Int = gl.glGetUniformLocation(programId, "u_matrix")
+  def uniformMultiplyColorLocation: Int = gl.glGetUniformLocation(programId, "u_multiplyColor")
+  def uniformScreenColorLocation: Int = gl.glGetUniformLocation(programId, "u_screenColor")
 }
