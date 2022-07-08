@@ -454,8 +454,8 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         (() => model.restoreParameters()).expects().once()
         (updater.executeOperations _).expects(Nil).once()   // Motion
         (() => model.snapshotParameters()).expects().once()
-        (updater.executeOperations _).expects(Nil).once()   // Expression
         (updater.executeOperations _).expects(effectOperationList1 ++ effectOperationList2) // Effect
+        (updater.executeOperations _).expects(Nil).once()   // Expression
         (() => model.update()).expects().once()
       }
 
@@ -506,8 +506,8 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
         (() => model.restoreParameters()).expects().once()
         (updater.executeOperations _).expects(motionOperations).once()   // Motion
         (() => model.snapshotParameters()).expects().once()
-        (updater.executeOperations _).expects(expressionOperations).once()   // Expression
         (updater.executeOperations _).expects(effectOperationList1 ++ effectOperationList2) // Effect
+        (updater.executeOperations _).expects(expressionOperations).once()   // Expression
         (() => model.update()).expects().once()
       }
 

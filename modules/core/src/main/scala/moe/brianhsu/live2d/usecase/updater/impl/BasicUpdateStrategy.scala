@@ -96,8 +96,8 @@ class BasicUpdateStrategy(val avatarSettings: Settings,
     executeMotionOperations(frameTimeInfo)
     model.snapshotParameters()
 
-    executeExpressionOperations(frameTimeInfo)
     executeEffectsOperations(frameTimeInfo)
+    executeExpressionOperations(frameTimeInfo)
 
     model.update()
   }
