@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.enitiy.model.drawable.{Drawable, VertexInfo}
+import moe.brianhsu.live2d.enitiy.model.drawable.{Drawable, DrawableColor, VertexInfo}
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureManager
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.shader.ShaderRenderer
@@ -67,7 +67,11 @@ class ClippingRenderer(model: Live2DModel, textureManager: TextureManager, shade
       for (maskDrawable <- clipContext.vertexPositionChangedMaskDrawable) {
         val textureFile = model.textureFiles(maskDrawable.textureIndex)
         val textureInfo = textureManager.loadTexture(textureFile)
-        this.drawClippingMesh(clipContext, textureInfo.textureId, maskDrawable.isCulling, maskDrawable.vertexInfo)
+        this.drawClippingMesh(
+          clipContext, textureInfo.textureId,
+          maskDrawable.isCulling, maskDrawable.vertexInfo,
+          maskDrawable.multiplyColorFetcher(), maskDrawable.screenColorFetcher()
+        )
       }
     }
 
@@ -77,14 +81,16 @@ class ClippingRenderer(model: Live2DModel, textureManager: TextureManager, shade
 
   private def drawClippingMesh(clippingContextBufferForMask: ClippingContext,
                                textureId: Int, isCulling: Boolean,
-                               vertexInfo: VertexInfo): Unit ={
+                               vertexInfo: VertexInfo,
+                               multiplyColor: DrawableColor, screenColor: DrawableColor): Unit ={
 
     gl.setCapabilityEnabled(GL_CULL_FACE, isCulling)
     gl.glFrontFace(GL_CCW)
 
     shaderRenderer.renderMask(
       clippingContextBufferForMask, textureId,
-      vertexInfo.vertexArrayDirectBuffer, vertexInfo.uvArrayDirectBuffer
+      vertexInfo.vertexArrayDirectBuffer, vertexInfo.uvArrayDirectBuffer,
+      multiplyColor, screenColor
     )
 
     gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.indexArrayDirectBuffer)

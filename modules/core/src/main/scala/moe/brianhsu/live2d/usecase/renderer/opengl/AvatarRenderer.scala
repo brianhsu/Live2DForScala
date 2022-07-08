@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.usecase.renderer.opengl
 
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
-import moe.brianhsu.live2d.enitiy.model.drawable.VertexInfo
+import moe.brianhsu.live2d.enitiy.model.drawable.{DrawableColor, VertexInfo}
 import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureColor, TextureManager}
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.{ClippingContext, ClippingRenderer}
@@ -56,15 +56,18 @@ class AvatarRenderer(model: Live2DModel,
         drawable.opacity,
         drawable.constantFlags.blendMode,
         drawable.constantFlags.isInvertedMask,
-        projection
+        drawable.multiplyColorFetcher(),
+        drawable.screenColorFetcher(),
+        projection,
       )
     }
   }
 
   private def drawMesh(clippingContextBufferForDraw: Option[ClippingContext],
                        drawTextureId: Int, isCulling: Boolean, vertexInfo: VertexInfo,
-                       opacity: Float, colorBlendMode: BlendMode,
-                       invertedMask: Boolean, projection: ProjectionMatrix): Unit ={
+                       opacity: Float, colorBlendMode: BlendMode, invertedMask: Boolean,
+                       multiplyColor: DrawableColor, screenColor: DrawableColor,
+                       projection: ProjectionMatrix): Unit ={
 
     gl.setCapabilityEnabled(GL_CULL_FACE, isCulling)
     gl.glFrontFace(GL_CCW)
@@ -76,8 +79,9 @@ class AvatarRenderer(model: Live2DModel,
       clippingRenderer.offscreenFrameHolder,
       drawTextureId,
       vertexInfo.vertexArrayDirectBuffer, vertexInfo.uvArrayDirectBuffer,
-      colorBlendMode, modelColorRGBA, projection,
-      invertedMask
+      colorBlendMode, modelColorRGBA,
+      multiplyColor, screenColor,
+      projection, invertedMask
     )
 
     gl.glDrawElements(GL_TRIANGLES, vertexInfo.numberOfTriangleIndex, GL_UNSIGNED_SHORT, vertexInfo.indexArrayDirectBuffer)

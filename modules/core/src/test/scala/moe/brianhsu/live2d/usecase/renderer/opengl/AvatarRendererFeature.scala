@@ -156,6 +156,8 @@ class AvatarRendererFeature extends AnyFeatureSpec with Matchers with GivenWhenT
               stubbedClippingContext1Holder, *, 123, *, *,
               MultiplicativeBlend,
               TextureColor(1.0f, 1.0f, 1.0f, 0.2f),
+              DrawableColor(1.0f, 2.0f, 3.0f, 4.0f),
+              DrawableColor(4.0f, 3.0f, 2.0f, 1.0f),
               ExpectedRendererProjection,
               false
             )
@@ -174,6 +176,8 @@ class AvatarRendererFeature extends AnyFeatureSpec with Matchers with GivenWhenT
               stubbedClippingContext2Holder, *, 789, *, *,
               AdditiveBlend,
               TextureColor(1.0f, 1.0f, 1.0f, 0.3f),
+              DrawableColor(1.0f, 2.0f, 3.0f, 4.0f),
+              DrawableColor(4.0f, 3.0f, 2.0f, 1.0f),
               ExpectedRendererProjection,
               true
             )
@@ -190,7 +194,9 @@ class AvatarRendererFeature extends AnyFeatureSpec with Matchers with GivenWhenT
   }
 
   private def createDrawable(id: String, index:Int, opacity: Float, isCulling: Boolean, blendMode: BlendMode, isInvertedMask: Boolean, isVisible: Boolean): Drawable = {
-    val mockedFetcher: ColorFetcher = () => DrawableColor(1.0f, 1.0f, 1.0f, 1.0f)
+    val multiplyColorFetcher: ColorFetcher = () => DrawableColor(1.0f, 2.0f, 3.0f, 4.0f)
+    val screenColorFetcher: ColorFetcher = () => DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
+
     val vertexInfo = new VertexInfo(index, index, null, null, null) {
       override def vertexArrayDirectBuffer: ByteBuffer = ByteBuffer.allocate(1)
       override def uvArrayDirectBuffer: ByteBuffer = ByteBuffer.allocate(1)
@@ -209,7 +215,11 @@ class AvatarRendererFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     (() => dynamicFlag.isVisible).when().returns(isVisible)
     val opacityPointer = new Memory(4)
     opacityPointer.setFloat(0, opacity)
-    Drawable(id, index, ConstantFlags(flagsValue), dynamicFlag, index, Nil, vertexInfo, null, null, opacityPointer, mockedFetcher, mockedFetcher)
+
+    Drawable(
+      id, index, ConstantFlags(flagsValue), dynamicFlag, index, Nil, vertexInfo,
+      null, null, opacityPointer, multiplyColorFetcher, screenColorFetcher
+    )
   }
 
   private def createStubbedLive2DModel(drawable: List[Drawable]) = {

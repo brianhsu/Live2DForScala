@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.usecase.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.math.Rectangle
 import moe.brianhsu.live2d.enitiy.math.matrix.GeneralMatrix
-import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags
+import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, DrawableColor}
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 import moe.brianhsu.live2d.enitiy.opengl.{BlendFunction, OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.OffscreenFrame
@@ -37,7 +37,7 @@ class ShaderRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       thisRenderer should be theSameInstanceAs thatRenderer
 
       And("should able to renderMask which has implicit conversion to RichOpenGLBinding")
-      thisRenderer.renderMask(new ClippingContext(Nil, Nil), 0, null, null)
+      thisRenderer.renderMask(new ClippingContext(Nil, Nil), 0, null, null, DrawableColor(1.0f, 2.0f, 3.0f, 4.0f), DrawableColor(4.0f, 3.0f, 2.0f, 1.0f))
     }
 
     Scenario("Get instance with different OpenGL binding") {
@@ -81,6 +81,8 @@ class ShaderRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val uvArray = ByteBuffer.allocate(1)
       val matrixForMask = new GeneralMatrix(Array(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f))
       val stubbedLayout = Layout(1, Rectangle(1.2f, 2.3f, 1024.0f, 768.0f))
+      val multiplyColor = DrawableColor(1.0f, 2.0f, 3.0f, 4.0f)
+      val screenColor = DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
       val clippingContext = ClippingContext(
         Nil, Nil,
         layout = stubbedLayout,
@@ -88,7 +90,7 @@ class ShaderRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       )
 
       When("render mask")
-      shaderRender.renderMask(clippingContext, stubbedTextureId, vertexArray, uvArray)
+      shaderRender.renderMask(clippingContext, stubbedTextureId, vertexArray, uvArray, multiplyColor, screenColor)
 
       Then("it should delegate it to underlay OpenGL binding")
       inSequence {
@@ -98,6 +100,9 @@ class ShaderRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
         (richOpenGLBinding.setColorChannel _).verify(stubbedLayout.channelColor, stubbedSetupMaskShader.uniformChannelFlagLocation).once()
         (binding.glUniformMatrix4fv _).verify(stubbedSetupMaskShader.uniformClipMatrixLocation, 1, false, matrixForMask.elements).once()
         (binding.glUniform4f _).verify(stubbedSetupMaskShader.uniformBaseColorLocation, 1.4000001f, 3.6f, 2049.4f, 1539.6f).once()
+        (binding.glUniform4f _).verify(stubbedSetupMaskShader.uniformMultiplyColorLocation, stubbedMultiplyColor.red, stubbedMultiplyColor.green, stubbedMultiplyColor.blue, stubbedMultiplyColor.alpha).once()
+        (binding.glUniform4f _).verify(stubbedSetupMaskShader.uniformScreenColorLocation, stubbedScreenColor.red, stubbedScreenColor.green, stubbedScreenColor.blue, stubbedScreenColor.alpha).once()
+
         (richOpenGLBinding.blendFunction_= _).verify(BlendFunction(GL_ZERO, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA)).once()
       }
 
@@ -156,7 +161,9 @@ class ShaderRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
         )
       }
     }
+
   }
+
 }
 
 trait ShaderRenderBehaviors {
@@ -186,6 +193,9 @@ trait ShaderRenderBehaviors {
     matrixForMask = stubbedMatrixForMask,
     matrixForDraw = stubbedMatrixForDraw
   )
+  protected val stubbedMultiplyColor = DrawableColor(1.0f, 2.0f, 3.0f, 4.0f)
+  protected val stubbedScreenColor = DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
+
 
   def noClippingContext(isInvertedMask: Boolean, colorBlendMode: ConstantFlags.BlendMode, expectedBlendFunction: BlendFunction): Unit = {
     Given("a ShaderRenderer")
@@ -200,6 +210,8 @@ trait ShaderRenderBehaviors {
       None, None, stubbedTextureId,
       stubbedVertex, stubbedUv, colorBlendMode,
       stubbedBaseColor,
+      stubbedMultiplyColor,
+      stubbedScreenColor,
       stubbedProjection,
       isInvertedMask
     )
@@ -217,6 +229,9 @@ trait ShaderRenderBehaviors {
       (richOpenGLBinding.activeAndUpdateTextureVariable _).verify(GL_TEXTURE0, stubbedTextureId, stubbedNormalShader.samplerTexture0Location, 0).once()
       (binding.glUniformMatrix4fv _).verify(stubbedNormalShader.uniformMatrixLocation, 1, false, stubbedProjection.elements).once()
       (binding.glUniform4f _).verify(stubbedNormalShader.uniformBaseColorLocation, stubbedBaseColor.red, stubbedBaseColor.green, stubbedBaseColor.blue, stubbedBaseColor.alpha).once()
+      (binding.glUniform4f _).verify(stubbedNormalShader.uniformMultiplyColorLocation, stubbedMultiplyColor.red, stubbedMultiplyColor.green, stubbedMultiplyColor.blue, stubbedMultiplyColor.alpha).once()
+      (binding.glUniform4f _).verify(stubbedNormalShader.uniformScreenColorLocation, stubbedScreenColor.red, stubbedScreenColor.green, stubbedScreenColor.blue, stubbedScreenColor.alpha).once()
+
       (richOpenGLBinding.blendFunction_= _).verify(expectedBlendFunction).once()
 
     }
@@ -235,6 +250,8 @@ trait ShaderRenderBehaviors {
       Some(stubbedClippingContext), None, stubbedTextureId,
       stubbedVertex, stubbedUv, colorBlendMode,
       stubbedBaseColor,
+      stubbedMultiplyColor,
+      stubbedScreenColor,
       stubbedProjection,
       isInvertedMask
     )
@@ -252,6 +269,9 @@ trait ShaderRenderBehaviors {
       (richOpenGLBinding.activeAndUpdateTextureVariable _).verify(GL_TEXTURE0, stubbedTextureId, expectedShader.samplerTexture0Location, 0).once()
       (binding.glUniformMatrix4fv _).verify(expectedShader.uniformMatrixLocation, 1, false, stubbedProjection.elements).once()
       (binding.glUniform4f _).verify(expectedShader.uniformBaseColorLocation, stubbedBaseColor.red, stubbedBaseColor.green, stubbedBaseColor.blue, stubbedBaseColor.alpha).once()
+      (binding.glUniform4f _).verify(expectedShader.uniformMultiplyColorLocation, stubbedMultiplyColor.red, stubbedMultiplyColor.green, stubbedMultiplyColor.blue, stubbedMultiplyColor.alpha).once()
+      (binding.glUniform4f _).verify(expectedShader.uniformScreenColorLocation, stubbedScreenColor.red, stubbedScreenColor.green, stubbedScreenColor.blue, stubbedScreenColor.alpha).once()
+
       (richOpenGLBinding.blendFunction_= _).verify(expectedBlendFunction).once()
 
     }
@@ -273,6 +293,8 @@ trait ShaderRenderBehaviors {
       stubbedTextureId,
       stubbedVertex, stubbedUv, colorBlendMode,
       stubbedBaseColor,
+      stubbedMultiplyColor,
+      stubbedScreenColor,
       stubbedProjection,
       isInvertedMask
     )
@@ -290,6 +312,9 @@ trait ShaderRenderBehaviors {
       (richOpenGLBinding.activeAndUpdateTextureVariable _).verify(GL_TEXTURE0, stubbedTextureId, expectedShader.samplerTexture0Location, 0).once()
       (binding.glUniformMatrix4fv _).verify(expectedShader.uniformMatrixLocation, 1, false, stubbedProjection.elements).once()
       (binding.glUniform4f _).verify(expectedShader.uniformBaseColorLocation, stubbedBaseColor.red, stubbedBaseColor.green, stubbedBaseColor.blue, stubbedBaseColor.alpha).once()
+      (binding.glUniform4f _).verify(expectedShader.uniformMultiplyColorLocation, stubbedMultiplyColor.red, stubbedMultiplyColor.green, stubbedMultiplyColor.blue, stubbedMultiplyColor.alpha).once()
+      (binding.glUniform4f _).verify(expectedShader.uniformScreenColorLocation, stubbedScreenColor.red, stubbedScreenColor.green, stubbedScreenColor.blue, stubbedScreenColor.alpha).once()
+
       (richOpenGLBinding.blendFunction_= _).verify(expectedBlendFunction).once()
     }
   }

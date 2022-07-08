@@ -19,7 +19,7 @@ val swtWindows = "org.eclipse.platform" % "org.eclipse.swt.win32.win32.x86_64" %
 val swtLinux = "org.eclipse.platform" % "org.eclipse.swt.gtk.linux.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
 
 val testFramework = Seq(
-  "org.scalatest" %% "scalatest" % "3.2.11" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.12" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test,
   "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test
 )
