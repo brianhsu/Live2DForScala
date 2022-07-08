@@ -2,8 +2,9 @@ package moe.brianhsu.utils.mock
 
 import com.sun.jna.Memory
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
 import moe.brianhsu.live2d.enitiy.model.{ModelCanvasInfo, Parameter, Part, drawable}
-import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags}
+import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DrawableColor, DynamicFlags}
 import org.scalamock.scalatest.MockFactory
 
 import scala.util.{Success, Try}
@@ -11,6 +12,7 @@ import scala.util.{Success, Try}
 trait Live2DModelMock {
   this: MockFactory =>
   private val mockedCanvasInfo = ModelCanvasInfo(1980, 1020, (0, 0), 1)
+  private val mockedFetcher: ColorFetcher = () => DrawableColor(1.0f, 1.0f, 1.0f, 1.0f)
 
   def createDrawable(id: String, index: Int, hasMask: Boolean = false, renderOrder: Int = 0): Drawable = {
     val masks = if (hasMask) List(1, 2, 3) else Nil
@@ -20,19 +22,17 @@ trait Live2DModelMock {
 
     drawable.Drawable(
       id, index, ConstantFlags(0), new DynamicFlags(null),
-      textureIndex = 0, masks,
-      vertexInfo = null, drawOrderPointer = null,
-      renderOrderPointer = renderOrderPointer, opacityPointer = null
+      textureIndex = 0, masks, vertexInfo = null, drawOrderPointer = null,
+      renderOrderPointer = renderOrderPointer,
+      opacityPointer = null, mockedFetcher, mockedFetcher
     )
   }
 
   def createDrawable(id: String, index: Int, masks: List[Int]): Drawable = {
     drawable.Drawable(
-      id, index, ConstantFlags(0), new DynamicFlags(null), textureIndex = 0, masks,
-      vertexInfo = null,
-      drawOrderPointer = null,
-      renderOrderPointer = null,
-      opacityPointer = null
+      id, index, ConstantFlags(0), new DynamicFlags(null), textureIndex = 0,
+      masks, vertexInfo = null, drawOrderPointer = null, renderOrderPointer = null,
+      opacityPointer = null, mockedFetcher, mockedFetcher
     )
   }
 

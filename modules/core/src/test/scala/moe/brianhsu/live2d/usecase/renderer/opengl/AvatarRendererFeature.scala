@@ -6,7 +6,8 @@ import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.ConstantDrawableFlagMask
 import moe.brianhsu.live2d.enitiy.math.matrix.ModelMatrix
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.{AdditiveBlend, BlendMode, MultiplicativeBlend, Normal}
-import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
+import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DrawableColor, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureColor, TextureInfo, TextureManager}
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.{ClippingContext, ClippingRenderer}
@@ -189,6 +190,7 @@ class AvatarRendererFeature extends AnyFeatureSpec with Matchers with GivenWhenT
   }
 
   private def createDrawable(id: String, index:Int, opacity: Float, isCulling: Boolean, blendMode: BlendMode, isInvertedMask: Boolean, isVisible: Boolean): Drawable = {
+    val mockedFetcher: ColorFetcher = () => DrawableColor(1.0f, 1.0f, 1.0f, 1.0f)
     val vertexInfo = new VertexInfo(index, index, null, null, null) {
       override def vertexArrayDirectBuffer: ByteBuffer = ByteBuffer.allocate(1)
       override def uvArrayDirectBuffer: ByteBuffer = ByteBuffer.allocate(1)
@@ -207,7 +209,7 @@ class AvatarRendererFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     (() => dynamicFlag.isVisible).when().returns(isVisible)
     val opacityPointer = new Memory(4)
     opacityPointer.setFloat(0, opacity)
-    Drawable(id, index, ConstantFlags(flagsValue), dynamicFlag, index, Nil, vertexInfo, null, null, opacityPointer)
+    Drawable(id, index, ConstantFlags(flagsValue), dynamicFlag, index, Nil, vertexInfo, null, null, opacityPointer, mockedFetcher, mockedFetcher)
   }
 
   private def createStubbedLive2DModel(drawable: List[Drawable]) = {

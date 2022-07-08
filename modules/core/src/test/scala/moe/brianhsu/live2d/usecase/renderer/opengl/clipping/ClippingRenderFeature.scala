@@ -3,7 +3,8 @@ package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.ConstantDrawableFlagMask.csmIsDoubleSided
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
+import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DrawableColor, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.ViewPort
 import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureInfo, TextureManager}
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
@@ -324,6 +325,7 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
 
 
   private def createDrawable(id: String, index:Int, isCulling: Boolean, isVertexChanged: Boolean): Drawable = {
+    val mockedFetcher: ColorFetcher = () => DrawableColor(1.0f, 1.0f, 1.0f, 1.0f)
     val vertexInfo = new VertexInfo(index, index, null, null, null) {
       override def vertexArrayDirectBuffer: ByteBuffer = ByteBuffer.allocate(1)
       override def uvArrayDirectBuffer: ByteBuffer = ByteBuffer.allocate(1)
@@ -332,7 +334,7 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     val flagsValue = if (isCulling) 0 | csmIsDoubleSided else 0
     val dynamicFlag = stub[DynamicFlags]
     (() => dynamicFlag.vertexPositionChanged).when().returns(isVertexChanged)
-    Drawable(id, index, ConstantFlags(flagsValue.toByte), dynamicFlag, index, Nil, vertexInfo, null, null, null)
+    Drawable(id, index, ConstantFlags(flagsValue.toByte), dynamicFlag, index, Nil, vertexInfo, null, null, null, mockedFetcher, mockedFetcher)
   }
 
   private def createClippingManager(): (Map[String, Drawable], ClippingManager) = {
