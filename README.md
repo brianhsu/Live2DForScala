@@ -1,6 +1,6 @@
 Live2D For Scala (JVM / Linux / Windows / MacOS Intel)
 =================================================
-[![Maven Version](doc/images/version.svg)](https://github.com/brianhsu/mavenRepository/) ![Code Coverage](doc/images/coverage.svg)
+[![Maven Version](doc/images/version.svg)](https://github.com/brianhsu/mavenRepository/) ![Build Status](https://img.shields.io/github/workflow/status/brianhsu/Live2DForScala/Release?logo=github&style=for-the-badge) ![Code Coverage](doc/images/coverage.svg)
 
 Disclaimer
 -----------
@@ -47,7 +47,7 @@ The following list shows features that this project currently supports or plan t
   - [x] Lip sync from .WAV file in the avatar motion
 
 ### Advance Feature
-  - [ ] Lip sync from microphone
+  - [x] Lip sync from microphone
   - [ ] Use webcam to control Live2D avatar (VTuber like)
 
 ### Won't Implemented Feature

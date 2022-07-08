@@ -162,7 +162,7 @@ class LipSyncFromMotionSoundFeature extends AnyFeatureSpec with GivenWhenThen wi
       val factory = stub[ProcessorsFactory]
       val lipSync = new LipSyncFromMotionSound(factory, lipSyncIds)
 
-      And("a stubbed audioRMSCalculator that will return different RMS at different time")
+      And("a stubbed audioRMSCalculator that will return RMS")
       val audioRMSCalculator = stub[AudioRMSCalculator]
       (() => audioRMSCalculator.currentRMS).when().returns(1.23f)
 

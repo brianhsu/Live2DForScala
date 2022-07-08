@@ -22,17 +22,21 @@ class AudioDispatcher(val audioInputStream: AudioInputStream, val bufferSampleCo
     val buffer = new Array[Byte](bufferSampleCount * frameSize * channelCount)
     var totalBytesRead: Long = 0
 
-    while (audioInputStream.available() > 0 && !shouldBeStopped) {
+    while (!shouldBeStopped) {
       val bytesRead = audioInputStream.read(buffer)
-      val samples = bitsPerSample match {
-        case 8  => decode8BitSamples(buffer)
-        case 16 => decode16BitSamples(buffer, bytesRead)
-        case 24 => decode24BitSamples(buffer, bytesRead)
-        case 32 => decode32BitSamples(buffer, bytesRead)
+      if (bytesRead < 0) {
+        this.shouldBeStopped = true
+      } else {
+        val samples = bitsPerSample match {
+          case 8 => decode8BitSamples(buffer)
+          case 16 => decode16BitSamples(buffer, bytesRead)
+          case 24 => decode24BitSamples(buffer, bytesRead)
+          case 32 => decode32BitSamples(buffer, bytesRead)
+        }
+        val event = AudioEvent(audioFormat, totalBytesRead, samples.toList, buffer.take(bytesRead).toList)
+        processors.foreach(_.process(event))
+        totalBytesRead += 1
       }
-      val event = AudioEvent(audioFormat, totalBytesRead, samples.toList, buffer.take(bytesRead).toList)
-      processors.foreach(_.process(event))
-      totalBytesRead += 1
     }
 
     processors.foreach(_.end(audioInputStream))

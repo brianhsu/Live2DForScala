@@ -1,8 +1,8 @@
 Step 1. Install Open JDK 11.
 ================================
 
-- For Windows, download [Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download)
 - For Linux, install it through your distro's package manager.
+- For Windows, download [Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download)
 - For MacOS
     1. Install Homebrew
     2. Run `brew install openjdk@11` to install
@@ -12,9 +12,9 @@ Step 2. Download corresponding JAR files.
 
 Please download JAR files from the `Release` tab on GitHub:
 
-- For Linux, both `Live2DForScala-Swing-0.0.X.jar` / `Live2DForScala-SWT-Linux-0.0.X.jar` should work.
-- For Windows,  both `Live2DForScala-Swing-0.0.X.jar` / `Live2DForScala-SWT-Windows-0.0.X.jar` should work.
-- For Mac, download `Live2DForScala-Swing-0.0.X.jar` 
+- For Linux, both `Live2DForScala-Swing-X.Y.Z.jar` / `Live2DForScala-SWT-Linux-X.Y.Z.jar` should work.
+- For Windows,  both `Live2DForScala-Swing-X.Y.Z.jar` / `Live2DForScala-SWT-Windows-X.Y.Z.jar` should work.
+- For Mac, download `Live2DForScala-Swing-X.Y.Z.jar` 
 
 Step 3. Run the Demo Application
 ==================================
@@ -29,8 +29,8 @@ Step 4. Download Live2D Model
 ==============================
 
 1. Download Live2D model from [here](https://www.live2d.com/en/download/sample-data/).
-    - Please note `Niziiro Mao` is NOT supported.
     - `Tsumiki Harugasa` / `Chitose` and `Jin Natori` are good choices, as them contains both expressions and motions.
+    - If you want to play with lip sync from motion sound file, please download `Cubism Native SDK` from [here](https://www.live2d.com/en/download/cubism-sdk/download-native/), unzip it, and use the model at the `Samples/Resources/Haru/` folder.    
 
 2. Extract the zip file to somewhere of your computer. 
 

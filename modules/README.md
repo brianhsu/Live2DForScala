@@ -1,6 +1,6 @@
 Live2D For Scala (JVM / Linux / Windows / MacOS)
 =================================================
-[![Maven Version](../doc/images/version.svg)](https://github.com/brianhsu/mavenRepository/) ![Code Coverage](../doc/images/coverage.svg)
+[![Maven Version](../doc/images/version.svg)](https://github.com/brianhsu/mavenRepository/) ![Build Status](https://img.shields.io/github/workflow/status/brianhsu/Live2DForScala/Release?logo=github&style=for-the-badge) ![Code Coverage](../doc/images/coverage.svg)
 
 Disclaimer
 -----------

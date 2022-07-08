@@ -8,6 +8,7 @@ import org.eclipse.swt.SWT
 import org.eclipse.swt.layout.{FillLayout, GridData, GridLayout}
 import org.eclipse.swt.widgets.{Button, Combo, Composite, Event, Group}
 
+import javax.sound.sampled.Mixer
 import scala.annotation.unused
 
 class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
@@ -18,22 +19,36 @@ class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
   private val breath = createCheckbox("Breath")
   private val faceDirection = createCheckbox("Face Direction", 2)
   private val faceDirectionMode = createDropdown("Click and drag" :: "Follow by mouse" :: Nil)
+  private val lipSyncFromMic = createCheckbox("Lip Sync", 2)
+  private val lipSyncDevice = new SWTMixerSelector(effectGroup, onMixerChanged)
 
   {
     this.setLayout(new FillLayout)
+
     effectGroup.setText("Effects")
     effectGroup.setLayout(new GridLayout(2, false))
 
+    val deviceSelectorLayoutData = new GridData
+    deviceSelectorLayoutData.horizontalAlignment = GridData.FILL
+    deviceSelectorLayoutData.grabExcessHorizontalSpace = true
+    deviceSelectorLayoutData.horizontalSpan = 2
+    lipSyncDevice.setLayoutData(deviceSelectorLayoutData)
+    lipSyncDevice.setEnabled(false)
     faceDirectionMode.setEnabled(false)
+
     blink.addListener(SWT.Selection, onBlinkChanged)
     breath.addListener(SWT.Selection, onBreathChanged)
     faceDirection.addListener(SWT.Selection, updateFaceDirectionMode)
     faceDirectionMode.addListener(SWT.Selection, updateFaceDirectionMode)
+    lipSyncFromMic.addListener(SWT.Selection, onLipSycFromMicChanged)
+    lipSyncDevice.sliderControl.addChangeListener(onMicLipSyncWeightChanged)
+
   }
 
   def setDemoApp(demoApp: DemoApp): Unit = {
     this.demoAppHolder = Some(demoApp)
   }
+
 
   def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
     val effects = basicUpdateStrategy.effects
@@ -44,6 +59,8 @@ class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
     this.breath.setSelection(hasBreath)
     this.faceDirection.setSelection(hasFaceDirection)
     this.faceDirectionMode.setEnabled(hasFaceDirection)
+    this.lipSyncFromMic.setSelection(false)
+    this.lipSyncDevice.setEnabled(false)
 
     demoAppHolder.foreach { live2D =>
       live2D.faceDirectionMode match {
@@ -52,6 +69,8 @@ class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
       }
     }
   }
+
+
 
   private def createCheckbox(title: String, rowSpan: Int = 1): Button = {
     val button = new Button(effectGroup, SWT.CHECK)
@@ -90,6 +109,41 @@ class SWTEffectSelector(parent: Composite) extends Composite(parent, SWT.NONE) {
     }
   }
 
+  private def onLipSycFromMicChanged(@unused event: Event): Unit = {
+    lipSyncDevice.setEnabled(lipSyncFromMic.getSelection)
+    demoAppHolder.foreach { demoApp =>
+      if (lipSyncFromMic.getSelection) {
+        lipSyncDevice.currentMixer.foreach { mixer =>
+          demoApp.enableMicLipSync(
+            mixer, lipSyncDevice.currentWeightPercentage,
+            lipSyncDevice.isForceLipSync
+          )
+        }
+      } else {
+        demoApp.disableMicLipSync()
+      }
+    }
+
+  }
+
+  private def onMicLipSyncWeightChanged(weight: Int): Unit = {
+    demoAppHolder.foreach(_.updateMicLipSyncWeight(weight))
+  }
+
+  private def onMixerChanged(mixerHolder: Option[Mixer]): Unit = {
+    demoAppHolder.foreach { demoApp =>
+      demoApp.disableMicLipSync()
+      mixerHolder
+        .filter(_ => lipSyncFromMic.getSelection)
+        .foreach { mixer =>
+          demoApp.enableMicLipSync(
+            mixer,
+            lipSyncDevice.currentWeightPercentage,
+            lipSyncDevice.isForceLipSync
+          )
+        }
+    }
+  }
 
   private def onBreathChanged(@unused event: Event): Unit = {
     demoAppHolder.foreach { demoApp =>

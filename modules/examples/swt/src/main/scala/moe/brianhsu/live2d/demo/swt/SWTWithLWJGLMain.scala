@@ -29,6 +29,7 @@ object SWTWithLWJGLMain {
       }
     }
     display.dispose()
+    System.exit(0)
 
   }
 

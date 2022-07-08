@@ -54,6 +54,8 @@ class SWTSliderControl(title: String, min: Int, max: Int, default: Int, parent: 
     this.scale.addListener(SWT.Selection, (_: Event) => callback(scale.getSelection))
   }
 
+  def percentage: Int = scale.getSelection
+
   def updatePercentage(value: Int): Unit = {
     scale.setSelection(value)
     valueLabel.setText(s"$value%")

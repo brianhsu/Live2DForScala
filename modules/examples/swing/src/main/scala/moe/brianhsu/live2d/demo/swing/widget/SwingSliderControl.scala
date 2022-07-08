@@ -42,6 +42,8 @@ class SwingSliderControl(title: String, min: Int, max: Int, default: Int) extend
     this.slider.setEnabled(isEnabled)
   }
 
+  def percentage: Int = slider.getValue
+
   def updatePercentage(value: Int): Unit = {
     this.slider.setValue(value)
     percentageLabel.setText(s"$value%")
