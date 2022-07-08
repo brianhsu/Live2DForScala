@@ -1,6 +1,7 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl.shader
 
 import moe.brianhsu.live2d.enitiy.model.drawable.ConstantFlags.BlendMode
+import moe.brianhsu.live2d.enitiy.model.drawable.DrawableColor
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 import moe.brianhsu.live2d.enitiy.opengl.{BlendFunction, OpenGLBinding, RichOpenGLBinding}
 import moe.brianhsu.live2d.usecase.renderer.opengl.OffscreenFrame
@@ -41,7 +42,13 @@ class ShaderRenderer(setupMaskShader: SetupMaskShader, normalShader: NormalShade
     )
   }
 
-  def renderDrawable(clippingContextBufferForDraw: Option[ClippingContext], offscreenFrameHolder: Option[OffscreenFrame], textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer, colorBlendMode: BlendMode, baseColor: TextureColor, projection: ProjectionMatrix, invertedMask: Boolean): Unit = {
+  def renderDrawable(clippingContextBufferForDraw: Option[ClippingContext],
+                     offscreenFrameHolder: Option[OffscreenFrame], textureId: Int,
+                     vertexArray: ByteBuffer, uvArray: ByteBuffer,
+                     colorBlendMode: BlendMode, baseColor: TextureColor,
+                     multiplyColor: DrawableColor, screenColor: DrawableColor,
+                     projection: ProjectionMatrix, invertedMask: Boolean): Unit = {
+
     val isMasked = clippingContextBufferForDraw.isDefined
     val currentShader = isMasked match {
       case true if invertedMask => invertedMaskedShader
@@ -67,10 +74,14 @@ class ShaderRenderer(setupMaskShader: SetupMaskShader, normalShader: NormalShade
     // Coordinate transform
     gl.glUniformMatrix4fv(currentShader.uniformMatrixLocation, 1, transpose = false, projection.elements)
     gl.glUniform4f(currentShader.uniformBaseColorLocation, baseColor.red, baseColor.green, baseColor.blue, baseColor.alpha)
+    gl.glUniform4f(currentShader.uniformMultiplyColorLocation, multiplyColor.red, multiplyColor.green, multiplyColor.blue, multiplyColor.alpha)
+    gl.glUniform4f(currentShader.uniformScreenColorLocation, screenColor.red, screenColor.green, screenColor.blue, screenColor.alpha)
+
     gl.blendFunction = BlendFunction(colorBlendMode)
   }
 
-  def renderMask(context: ClippingContext, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer): Unit = {
+  def renderMask(context: ClippingContext, textureId: Int, vertexArray: ByteBuffer, uvArray: ByteBuffer,
+                 multiplyColor: DrawableColor, screenColor: DrawableColor): Unit = {
 
     gl.glUseProgram(setupMaskShader.programId)
 
@@ -86,6 +97,8 @@ class ShaderRenderer(setupMaskShader: SetupMaskShader, normalShader: NormalShade
       context.layout.bounds.rightX * 2.0f - 1.0f,
       context.layout.bounds.topY * 2.0f - 1.0f
     )
+    gl.glUniform4f(setupMaskShader.uniformMultiplyColorLocation, multiplyColor.red, multiplyColor.green, multiplyColor.blue, multiplyColor.alpha)
+    gl.glUniform4f(setupMaskShader.uniformScreenColorLocation, screenColor.red, screenColor.green, screenColor.blue, screenColor.alpha)
 
     gl.blendFunction = BlendFunction(GL_ZERO, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA)
   }

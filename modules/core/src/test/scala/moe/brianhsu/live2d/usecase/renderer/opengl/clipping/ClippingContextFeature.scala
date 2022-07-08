@@ -1,7 +1,8 @@
 package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 
 import moe.brianhsu.live2d.enitiy.math.Rectangle
-import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
+import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DrawableColor, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 import moe.brianhsu.live2d.usecase.renderer.opengl.clipping.ClippingContext.Layout
 import org.scalamock.scalatest.MockFactory
@@ -252,16 +253,18 @@ class ClippingContextFeature extends AnyFeatureSpec with GivenWhenThen with Matc
 
   }
 
+  private val mockedFetcher: ColorFetcher = () => DrawableColor(1.0f, 1.0f, 1.0f, 1.0f)
+
   private def createStubbedDrawable(vertexPositions: List[(Float, Float)]): Drawable = {
     val vertexInfo = stub[VertexInfo]
     (() => vertexInfo.positions).when().returns(vertexPositions)
-    Drawable("1", 0, ConstantFlags(0), new DynamicFlags(null), 0, Nil, vertexInfo, null, null, null)
+    Drawable("1", 0, ConstantFlags(0), new DynamicFlags(null), 0, Nil, vertexInfo, null, null, null, mockedFetcher, mockedFetcher)
   }
 
   private def createStubbedDrawable(id: String, isVertexPositionChanged: Boolean): Drawable = {
     val dynamicFlags = stub[DynamicFlags]
     (() => dynamicFlags.vertexPositionChanged).when().returns(isVertexPositionChanged)
-    Drawable(id, 0, ConstantFlags(0), dynamicFlags, 0, Nil, null, null, null, null)
+    Drawable(id, 0, ConstantFlags(0), dynamicFlags, 0, Nil, null, null, null, null, mockedFetcher, mockedFetcher)
   }
 
 }

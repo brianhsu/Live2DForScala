@@ -162,6 +162,44 @@ class AvatarShaderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       uniformMatrixLocation shouldBe mockedUniformMatrixLocation
     }
 
+    Scenario("uniformMultiplyColorLocation") {
+      Given("a mocked programId and color location")
+      val mockedProgramId = 123
+      val mockedUniformMultiplyColorLocation = 789
+
+      And("a stubbed OpenGL binding")
+      val gl = stub[OpenGLBinding]
+      (gl.glGetUniformLocation _).when(mockedProgramId, "u_multiplyColor").returns(mockedUniformMultiplyColorLocation)
+
+      And("a dummy Shader")
+      val shader = createDummyAvatarShader(mockedProgramId, gl)
+
+      When("access a uniformMatrixLocation")
+      val uniformMultiplyColorLocation = shader.uniformMultiplyColorLocation
+
+      Then("it should be same as the value returned by OpenGL binding")
+      uniformMultiplyColorLocation shouldBe mockedUniformMultiplyColorLocation
+    }
+
+    Scenario("uniformScreenColorLocation") {
+      Given("a mocked programId and color location")
+      val mockedProgramId = 123
+      val mockedUniformScreenColorLocation = 912
+
+      And("a stubbed OpenGL binding")
+      val gl = stub[OpenGLBinding]
+      (gl.glGetUniformLocation _).when(mockedProgramId, "u_screenColor").returns(mockedUniformScreenColorLocation)
+
+      And("a dummy Shader")
+      val shader = createDummyAvatarShader(mockedProgramId, gl)
+
+      When("access a uniformMatrixLocation")
+      val uniformScreenColorLocation = shader.uniformScreenColorLocation
+
+      Then("it should be same as the value returned by OpenGL binding")
+      uniformScreenColorLocation shouldBe mockedUniformScreenColorLocation
+    }
+
   }
 
   private def createDummyAvatarShader(mockedProgramId: Int, openGLBinding: OpenGLBinding) = {
