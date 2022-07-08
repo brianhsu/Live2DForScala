@@ -52,19 +52,30 @@ trait EffectControl extends MotionListener {
     }
   }
 
-  def enableLipSyncFromMic(mixer: Mixer): Unit = {
+  def updateMicLipSyncWeight(weight: Int): Unit = {
+    for {
+      strategy <- this.mUpdateStrategyHolder
+      lipSync <- strategy.effects.filter(_.isInstanceOf[LipSyncFromMic])
+    } {
+      lipSync.asInstanceOf[LipSyncFromMic].weight = weight / 10.0f
+    }
+  }
+
+  def enableMicLipSync(mixer: Mixer, weight: Int, forceEvenNoSetting: Boolean): Unit = {
+    disableMicLipSync()
+
     for {
       avatar <- this.avatarHolder
       strategy <- this.mUpdateStrategyHolder
     } {
-      val lipSyncFromMic = LipSyncFromMic(avatar.avatarSettings, mixer)
+      val lipSyncFromMic = LipSyncFromMic(avatar.avatarSettings, mixer, weight / 10.0f, forceEvenNoSetting)
       lipSyncFromMic.failed.foreach(_.printStackTrace())
       lipSyncFromMic.foreach(l => strategy.effects ::= l )
     }
 
   }
 
-  def disableLipSyncFromMic(): Unit = {
+  def disableMicLipSync(): Unit = {
     for (strategy <- this.mUpdateStrategyHolder) {
       strategy.effects
         .filter(_.isInstanceOf[LipSyncFromMic])

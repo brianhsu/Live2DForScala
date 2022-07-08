@@ -193,6 +193,9 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
   def switchAvatar(directoryPath: String): Try[Avatar] = {
     onStatusUpdated(s"Loading $directoryPath...")
 
+    this.disableMicLipSync()
+    this.disableLipSyncFromMotionSound()
+
     val newAvatarHolder = new AvatarFileReader(directoryPath).loadAvatar()
 
     this.mAvatarHolder = newAvatarHolder.toOption.orElse(this.mAvatarHolder)

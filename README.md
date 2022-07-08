@@ -47,7 +47,7 @@ The following list shows features that this project currently supports or plan t
   - [x] Lip sync from .WAV file in the avatar motion
 
 ### Advance Feature
-  - [ ] Lip sync from microphone
+  - [x] Lip sync from microphone
   - [ ] Use webcam to control Live2D avatar (VTuber like)
 
 ### Won't Implemented Feature

@@ -3,13 +3,11 @@ package moe.brianhsu.live2d.enitiy.audio
 import org.json4s.native.{Serialization, parseJson}
 import org.json4s.{Formats, NoTypeHints}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{GivenWhenThen, ScalaTestVersion}
+import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-import java.io.ByteArrayOutputStream
-import javax.sound.sampled.AudioSystem.getTargetDataLine
-import javax.sound.sampled.{AudioFormat, AudioInputStream, AudioSystem, DataLine, Mixer, Port, SourceDataLine, TargetDataLine}
+import javax.sound.sampled.{AudioFormat, AudioInputStream, AudioSystem}
 import scala.io.Source
 import scala.util.Using
 

@@ -5,10 +5,13 @@ import moe.brianhsu.live2d.demo.swing.Live2DUI
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection}
 import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
 
-import java.awt.GridLayout
 import java.awt.event.ActionEvent
+import java.awt.{GridBagConstraints, GridBagLayout}
+import javax.sound.sampled.Mixer
+import javax.swing.event.ChangeEvent
 import javax.swing.{BorderFactory, JCheckBox, JComboBox, JPanel}
 import scala.annotation.unused
+
 
 class SwingEffectSelector(live2DWidget: Live2DUI) extends JPanel {
 
@@ -16,15 +19,57 @@ class SwingEffectSelector(live2DWidget: Live2DUI) extends JPanel {
   private val breath = new JCheckBox("Breath")
   private val faceDirection = new JCheckBox("Face direction")
   private val faceDirectionMode = new JComboBox[String](Array("Click and drag", "Follow mouse"))
+  private val lipSyncFromMic = new JCheckBox("Lip Sync")
+  private val lipSyncDevice = new SwingMixerSelector(onMixerChanged)
 
   {
-    this.setLayout(new GridLayout(2,2))
+    this.setLayout(new GridBagLayout)
     this.setBorder(BorderFactory.createTitledBorder("Effects"))
 
-    this.add(blink)
-    this.add(breath)
-    this.add(faceDirection)
-    this.add(faceDirectionMode)
+    val gc1 = new GridBagConstraints()
+    gc1.gridx = 0
+    gc1.gridy = 0
+    gc1.fill = GridBagConstraints.HORIZONTAL
+    gc1.anchor = GridBagConstraints.NORTHWEST
+    this.add(blink, gc1)
+
+    val gc2 = new GridBagConstraints()
+    gc2.gridx = 1
+    gc2.gridy = 0
+    gc2.fill = GridBagConstraints.HORIZONTAL
+    gc2.anchor = GridBagConstraints.NORTHWEST
+    this.add(breath, gc2)
+
+    val gc3 = new GridBagConstraints()
+    gc3.gridx = 0
+    gc3.gridy = 1
+    gc3.fill = GridBagConstraints.HORIZONTAL
+    gc3.anchor = GridBagConstraints.NORTHWEST
+    this.add(faceDirection, gc3)
+
+    val gc4 = new GridBagConstraints()
+    gc4.gridx = 1
+    gc4.gridy = 1
+    gc4.fill = GridBagConstraints.HORIZONTAL
+    gc4.anchor = GridBagConstraints.NORTHWEST
+    this.add(faceDirectionMode, gc4)
+
+    val gc5 = new GridBagConstraints()
+    gc5.gridx = 0
+    gc5.gridy = 2
+    gc5.fill = GridBagConstraints.HORIZONTAL
+    gc5.gridwidth = 2
+    gc5.anchor = GridBagConstraints.NORTHWEST
+    this.add(lipSyncFromMic, gc5)
+
+    val gc6 = new GridBagConstraints()
+    gc6.gridx = 0
+    gc6.gridy = 3
+    gc6.fill = GridBagConstraints.HORIZONTAL
+    gc6.gridwidth = 2
+    gc6.anchor = GridBagConstraints.NORTHWEST
+    this.add(lipSyncDevice, gc6)
+
 
     this.blink.setSelected(false)
     this.blink.addActionListener(updateBlinkEffect)
@@ -38,6 +83,32 @@ class SwingEffectSelector(live2DWidget: Live2DUI) extends JPanel {
     this.faceDirectionMode.setEnabled(false)
     this.faceDirectionMode.setSelectedIndex(0)
     this.faceDirectionMode.addActionListener(updateFaceDirectionMode)
+
+    this.lipSyncDevice.setEnabled(false)
+    this.lipSyncFromMic.addActionListener(onLipSycFromMicChanged)
+    this.lipSyncDevice.sliderControl.slider.addChangeListener { _: ChangeEvent =>
+      onMicLipSyncWeightChanged(lipSyncDevice.currentWeightPercentage)
+    }
+  }
+
+  def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
+    val effects = basicUpdateStrategy.effects
+    val hasEyeBlink = effects.exists(_.isInstanceOf[EyeBlink])
+    val hasBreath = effects.exists(_.isInstanceOf[Breath])
+    val hasFaceDirection = effects.exists(_.isInstanceOf[FaceDirection])
+    this.blink.setSelected(hasEyeBlink)
+    this.breath.setSelected(hasBreath)
+    this.faceDirection.setSelected(hasFaceDirection)
+    this.faceDirectionMode.setEnabled(hasFaceDirection)
+    lipSyncFromMic.setSelected(false)
+    this.lipSyncDevice.setEnabled(false)
+
+    live2DWidget.demoAppHolder.foreach { live2D =>
+      live2D.faceDirectionMode match {
+        case ClickAndDrag => this.faceDirectionMode.setSelectedIndex(0)
+        case FollowMouse => this.faceDirectionMode.setSelectedIndex(1)
+      }
+    }
   }
 
   private def updateBlinkEffect(@unused actionEvent: ActionEvent): Unit = {
@@ -75,23 +146,32 @@ class SwingEffectSelector(live2DWidget: Live2DUI) extends JPanel {
     }
   }
 
+  private def onMicLipSyncWeightChanged(weight: Int): Unit = {
+    live2DWidget.demoAppHolder.foreach(_.updateMicLipSyncWeight(weight))
+  }
 
-  def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
-    val effects = basicUpdateStrategy.effects
-    val hasEyeBlink = effects.exists(_.isInstanceOf[EyeBlink])
-    val hasBreath = effects.exists(_.isInstanceOf[Breath])
-    val hasFaceDirection = effects.exists(_.isInstanceOf[FaceDirection])
-    this.blink.setSelected(hasEyeBlink)
-    this.breath.setSelected(hasBreath)
-    this.faceDirection.setSelected(hasFaceDirection)
-    this.faceDirectionMode.setEnabled(hasFaceDirection)
-
-    live2DWidget.demoAppHolder.foreach { live2D =>
-      live2D.faceDirectionMode match {
-        case ClickAndDrag => this.faceDirectionMode.setSelectedIndex(0)
-        case FollowMouse => this.faceDirectionMode.setSelectedIndex(1)
-      }
+  private def onMixerChanged(mixerHolder: Option[Mixer]): Unit = {
+    live2DWidget.demoAppHolder.foreach { demoApp =>
+      demoApp.disableMicLipSync()
+      mixerHolder
+        .filter(_ => lipSyncFromMic.isSelected)
+        .foreach(mixer => demoApp.enableMicLipSync(mixer, lipSyncDevice.currentWeightPercentage, lipSyncDevice.isForceLipSync))
     }
   }
+
+  private def onLipSycFromMicChanged(@unused event: ActionEvent): Unit = {
+    lipSyncDevice.setEnabled(lipSyncFromMic.isSelected)
+    live2DWidget.demoAppHolder.foreach { demoApp =>
+      if (lipSyncFromMic.isSelected) {
+        lipSyncDevice.currentMixer.foreach { mixer =>
+          demoApp.enableMicLipSync(mixer, lipSyncDevice.currentWeightPercentage, lipSyncDevice.isForceLipSync)
+        }
+      } else {
+        demoApp.disableMicLipSync()
+      }
+    }
+
+  }
+
 
 }
