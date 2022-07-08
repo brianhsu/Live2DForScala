@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.enitiy.core
 
 import com.sun.jna._
 import com.sun.jna.ptr._
-import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction}
+import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfCsmColor, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction}
 
 object NativeCubismAPI {
   object DynamicDrawableFlagMask {
@@ -368,6 +368,24 @@ trait NativeCubismAPI extends Library {
    * @return  Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableIndices(model: CPointerToModel): CArrayOfArrayOfShort
+
+  /**
+   * Gets multiply color data for each drawable.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
+  def csmGetDrawableMultiplyColors(model: CPointerToModel): CArrayOfCsmColor
+
+  /**
+   * Gets screen color data for each drawable.
+   *
+   * @param  model  Model to query.
+   *
+   * @return  Valid pointer on success; '0' otherwise.
+   */
+  def csmGetDrawableScreenColors(model: CPointerToModel): CArrayOfCsmColor
 
   /**
    * Resets all dynamic drawable flags.
