@@ -142,13 +142,11 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       When("calculate the update operation")
       val operation1 = lipSyncFromMic.calculateOperations(model, 1, 1)
 
-      Then("the dispatcher should be started")
-      Thread.sleep(500) // Make sure the dispatcher thread is started.
-      (() => dispatcher.run()).verify().once()
-
-      And("the operation should add lip sync parameter correctly")
+      Then("the operation should add lip sync parameter correctly")
       operation1 should contain theSameElementsInOrderAs List(ParameterValueAdd("LipSyncId1", 1.23f, 5.0f), ParameterValueAdd("LipSyncId2", 1.23f, 5.0f))
 
+      Then("the dispatcher should be started")
+      (() => dispatcher.run()).verify().once()
     }
 
   }
