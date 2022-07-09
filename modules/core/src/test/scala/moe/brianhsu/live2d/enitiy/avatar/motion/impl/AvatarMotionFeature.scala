@@ -22,7 +22,8 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("idle").head
-      val motion = AvatarMotion(motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+      val motion = AvatarMotion(avatarMotionDataReader, motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
 
       Then("the event list in motion should be the same from motion settings")
       val motionData = new AvatarMotionDataReader(motionSetting).loadMotionData()
@@ -40,7 +41,8 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("idle").head
-      val motion = AvatarMotion(motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+      val motion = AvatarMotion(avatarMotionDataReader, motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
 
       Then("the event list in motion should be the same from motion settings")
       val motionData = new AvatarMotionDataReader(motionSetting).loadMotionData()
@@ -61,7 +63,8 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("idle").head
-      val motion = AvatarMotion(motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+      val motion = AvatarMotion(avatarMotionDataReader, motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
 
       And("test data points from recorded file")
       val dataPointList = ExpectedAvatarMotionOperation.fromFile("src/test/resources/expectation/motionOperations/markIdel01Motion.json")
@@ -84,7 +87,8 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("tapBody")(1)
-      val motion = AvatarMotion(motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+      val motion = AvatarMotion(avatarMotionDataReader, motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
 
       And("test data points from recorded file")
       val dataPointList = ExpectedAvatarMotionOperation.fromFile("src/test/resources/expectation/motionOperations/haruTapBody1.json")
@@ -107,7 +111,8 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("tapBody")(2)
-      val motion = AvatarMotion(motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+      val motion = AvatarMotion(avatarMotionDataReader, motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
 
       And("test data points from recorded file")
       val dataPointList = ExpectedAvatarMotionOperation.fromFile("src/test/resources/expectation/motionOperations/haruTapBody2.json")
@@ -130,7 +135,8 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("tapBody")(3)
-      val motion = AvatarMotion(motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+      val motion = AvatarMotion(avatarMotionDataReader, motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
 
       And("test data points from recorded file")
       val dataPointList = ExpectedAvatarMotionOperation.fromFile("src/test/resources/expectation/motionOperations/haruTapBody3.json")
@@ -153,7 +159,8 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("idle").head
-      val motion = AvatarMotion(motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+      val motion = AvatarMotion(avatarMotionDataReader, motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
 
       And("test data points from recorded file")
       val dataPointList = ExpectedAvatarMotionOperation.fromFile("src/test/resources/expectation/motionOperations/haruIdle0.json")
@@ -176,7 +183,8 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("idle")(1)
-      val motion = AvatarMotion(motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+      val motion = AvatarMotion(avatarMotionDataReader, motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
 
       And("test data points from recorded file")
       val dataPointList = ExpectedAvatarMotionOperation.fromFile("src/test/resources/expectation/motionOperations/natoriIdle1.json")
@@ -199,7 +207,8 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("tapBody").head
-      val motion = AvatarMotion(motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+      val motion = AvatarMotion(avatarMotionDataReader, motionSetting, settings.eyeBlinkParameterIds, settings.lipSyncParameterIds)
 
       And("test data points from recorded file")
       val dataPointList = ExpectedAvatarMotionOperation.fromFile("src/test/resources/expectation/motionOperations/riceTapBody1.json")
@@ -222,7 +231,9 @@ class AvatarMotionFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
       val jsonSettingsReader = new JsonSettingsReader(folderPath)
       val settings: Settings = jsonSettingsReader.loadSettings().success.value
       val motionSetting = settings.motionGroups("tapBody").head
+      val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
       val motion = AvatarMotion(
+        avatarMotionDataReader,
         motionSetting,
         settings.eyeBlinkParameterIds, settings.lipSyncParameterIds,
         isLoop = true
