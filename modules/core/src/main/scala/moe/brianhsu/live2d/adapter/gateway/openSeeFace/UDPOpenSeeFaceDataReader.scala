@@ -3,12 +3,12 @@ package moe.brianhsu.live2d.adapter.gateway.openSeeFace
 import moe.brianhsu.live2d.adapter.gateway.openSeeFace.UDPOpenSeeFaceDataReader.{DatagramPacketSize, TotalPoints}
 import moe.brianhsu.live2d.boundary.gateway.openSeeFace.OpenSeeFaceDataReader
 import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData
-import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData.{EyeOpenness, Features, Quaternion, Resolution}
+import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData.{EyeOpenness, Features, Point, Point3D, Quaternion, Resolution}
 import moe.brianhsu.live2d.exception.OpenSeeFaceException
 
 import java.net.{DatagramPacket, DatagramSocket, InetSocketAddress}
 import java.nio.{ByteBuffer, ByteOrder}
-import scala.util.Using
+import scala.util.Try
 
 object UDPOpenSeeFaceDataReader {
   private val TotalPoints = 68
@@ -29,24 +29,23 @@ object UDPOpenSeeFaceDataReader {
 
 }
 
-class UDPOpenSeeFaceDataReader(socket: DatagramSocket, hostname: String, port: Int)(implicit manager: Using.Manager) extends OpenSeeFaceDataReader {
+class UDPOpenSeeFaceDataReader(socket: DatagramSocket, hostname: String, port: Int, timeoutInMs: Int) extends OpenSeeFaceDataReader {
 
   private val buffer = new Array[Byte](DatagramPacketSize)
   private val packet = new DatagramPacket(buffer, DatagramPacketSize)
 
-  def this(hostname: String, port: Int)(implicit manager: Using.Manager) = this(new DatagramSocket(null), hostname, port)
-
-  manager.acquire(this)
+  def this(hostname: String, port: Int, timeoutInMs: Int = 0) = this(new DatagramSocket(null), hostname, port, timeoutInMs)
 
   override def open(): Unit = {
     try {
       socket.bind(new InetSocketAddress(hostname, port))
+      socket.setSoTimeout(timeoutInMs)
     } catch {
       case e: Exception => throw new OpenSeeFaceException(s"Cannot connect to UDP socket ($hostname, $port)", e)
     }
   }
 
-  override def readData(): OpenSeeFaceData = {
+  override def readData(): Try[OpenSeeFaceData] = Try {
     socket.receive(packet)
 
     val time = convertToDouble(buffer.slice(0, 8))
@@ -69,7 +68,8 @@ class UDPOpenSeeFaceDataReader(socket: DatagramSocket, hostname: String, port: I
     val landmarks = (0 until TotalPoints).map { index =>
       val offsetStart = 345 + index * 8
       val offsetEnd = offsetStart + 8
-      convertToFloatTuple2(buffer.slice(offsetStart, offsetEnd))
+      val (x, y) = convertToFloatTuple2(buffer.slice(offsetStart, offsetEnd))
+      Point(x, y)
     }.toList
 
     // 889
@@ -129,25 +129,25 @@ class UDPOpenSeeFaceDataReader(socket: DatagramSocket, hostname: String, port: I
     (x, y)
   }
 
-  private def convertToEuler(bytes: Array[Byte]): (Float, Float, Float) = {
+  private def convertToEuler(bytes: Array[Byte]): Point3D = {
     val x = convertToFloat(bytes.take(4))
     val y = convertToFloat(bytes.slice(4, 8))
     val z = convertToFloat(bytes.slice(8, 12))
-    (x, -y, z)
+    Point3D(x, -y, z)
   }
 
-  private def convertTo3DPoints(bytes: Array[Byte]): (Float, Float, Float) = {
+  private def convertTo3DPoints(bytes: Array[Byte]): Point3D = {
     val x = convertToFloat(bytes.take(4))
     val y = convertToFloat(bytes.slice(4, 8))
     val z = convertToFloat(bytes.slice(8, 12))
-    (x, -y, z)
+    Point3D(x, -y, z)
   }
 
-  private def convertToTranslation(bytes: Array[Byte]): (Float, Float, Float) = {
+  private def convertToTranslation(bytes: Array[Byte]): Point3D = {
     val x = convertToFloat(bytes.take(4))
     val y = convertToFloat(bytes.slice(4, 8))
     val z = convertToFloat(bytes.slice(8, 12))
-    (-y, x, -z)
+    Point3D(-y, x, -z)
   }
 
   private def convertToQuaternion(bytes: Array[Byte]): Quaternion[Float] = {

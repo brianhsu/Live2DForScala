@@ -5,25 +5,23 @@ import moe.brianhsu.live2d.exception.OpenSeeFaceException
 import org.json4s.DefaultFormats
 import org.json4s.native.JsonMethods
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{GivenWhenThen, TryValues}
 
 import java.net._
 import scala.io.Source
 import scala.util.Using
 
-class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory {
+class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory
+                                      with TryValues {
 
   Feature("Create the reader") {
     Scenario("Create from only hostname and port") {
-      When("create UDPOpenSeeFaceDataReader using hostname and port")
-      Then("no exception should be thrown")
+      info("No exception should be thrown")
       noException shouldBe thrownBy {
-        And("a reader based on that socket")
-        Using.Manager { implicit use =>
-          new UDPOpenSeeFaceDataReader("localhost", 11572)
-        }.get
+        When("create UDPOpenSeeFaceDataReader using hostname and port")
+        new UDPOpenSeeFaceDataReader("localhost", 11572)
       }
     }
   }
@@ -35,9 +33,7 @@ class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen 
       val socket = stub[MockableDatagramSocket]
 
       And("a reader based on that socket")
-      val reader = Using.Manager { implicit use =>
-        new UDPOpenSeeFaceDataReader(socket, "localhost", 11572)
-      }.get
+      val reader = new UDPOpenSeeFaceDataReader(socket, "localhost", 11572, 100)
 
       When("open the socket")
       reader.open()
@@ -47,6 +43,7 @@ class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen 
         address.asInstanceOf[InetSocketAddress].getHostName == "localhost" &&
           address.asInstanceOf[InetSocketAddress].getPort == 11572
       }).once()
+      (socket.setSoTimeout _).verify(100).once()
     }
 
     Scenario("The socket is already bind") {
@@ -59,9 +56,7 @@ class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen 
       }
 
       And("a reader based on that socket")
-      val reader = Using.Manager { implicit use =>
-        new UDPOpenSeeFaceDataReader(socket, "localhost", 11572)
-      }.get
+      val reader = new UDPOpenSeeFaceDataReader(socket, "localhost", 11572, 0)
 
       Then("it should throw a OpenSeeFaceException")
       a[OpenSeeFaceException] shouldBe thrownBy {
@@ -74,10 +69,10 @@ class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen 
 
   Feature("Convert OpenSeeFaceData from UDP datagram packet") {
 
-    Scenario("Read data from datagram packet") {
+    Scenario("Read data from datagram packet successfully") {
 
       val expectedDataList = Using.Manager { use =>
-        val inputStream = use(this.getClass.getResourceAsStream("/expectation/OpenSeeFaceDataExpectation.json"))
+        val inputStream = use(this.getClass.getResourceAsStream("/expectation/openSeeFaceDataExpectation.json"))
         val source = use(Source.fromInputStream(inputStream))
         val lines = source.getLines().toList
         implicit val jsonFormats: DefaultFormats.type = DefaultFormats
@@ -95,18 +90,32 @@ class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen 
         }
 
 
-        Using.Manager { implicit use =>
+        And("a UDPOpenSeeFaceDataReader based on that socket")
+        val reader = new UDPOpenSeeFaceDataReader(stubbedSocket, "localhost", 11527, 0)
 
-          And("a UDPOpenSeeFaceDataReader based on that socket")
-          val reader = new UDPOpenSeeFaceDataReader(stubbedSocket, "localhost", 11527)
+        When("Read the data from it")
+        val openSeeFaceData = reader.readData()
 
-          When("Read the data from it")
-          val openSeeFaceData = reader.readData()
-
-          Then("it should be the same as in the expectation")
-          openSeeFaceData shouldBe expectation.openSeeFaceData
-        }.get
+        Then("it should be the same as in the expectation")
+        openSeeFaceData.success.value shouldBe expectation.openSeeFaceData
       }
+    }
+
+    Scenario("Got SocketTimeoutException when read data") {
+      Given("a stubbed socket that throws SocketTimeoutException when read ata")
+      val socket = new MockableDatagramSocket {
+        override def receive(p: DatagramPacket): Unit = {
+          throw new SocketTimeoutException("Socket Time Out")
+        }
+      }
+
+      And("a reader based on that socket")
+      val reader = new UDPOpenSeeFaceDataReader(socket, "localhost", 11572, 0)
+
+      Then("it should receive a failure")
+      val result = reader.readData()
+      result.isFailure shouldBe true
+      result.failure.exception shouldBe a[SocketTimeoutException]
     }
   }
 
@@ -116,13 +125,13 @@ class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen 
     val socket = stub[MockableDatagramSocket]
 
     And("a reader based on that socket")
-    val reader = Using.Manager { implicit use => use(new UDPOpenSeeFaceDataReader(socket, "localhost", 11572)) }.get
+    val reader = new UDPOpenSeeFaceDataReader(socket, "localhost", 11572, 0)
 
     When("close the socket")
     reader.close()
 
     Then("the socket should be closed")
-    (() => socket.close()).verify().atLeastOnce()
+    (() => socket.close()).verify().once()
   }
 
   Feature("Close the socket") {
@@ -130,10 +139,10 @@ class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen 
       Given("a stubbed socket")
       val socket = stub[MockableDatagramSocket]
 
-      And("create the instance by UsingManager")
-      Using.Manager { implicit use =>
-        new UDPOpenSeeFaceDataReader(socket, "localhost", 11572)
-      }.get
+      And("access the instance by UsingManager")
+      Using.resource(new UDPOpenSeeFaceDataReader(socket, "localhost", 11572, 100)) { _ =>
+        // Do nothing
+      }
 
       Then("the socket should be closed automatically")
       (() => socket.close()).verify().once()
