@@ -24,7 +24,7 @@ object FaceTracking {
   )
 }
 
-class FaceTracking(trackingTaps: TrackingTaps) extends Effect {
+class FaceTracking(protected val trackingTaps: TrackingTaps) extends Effect {
 
   protected var trackingNoes: List[TrackingNode] = Nil
 
@@ -36,15 +36,15 @@ class FaceTracking(trackingTaps: TrackingTaps) extends Effect {
   }
 
   private def calculateOperations(): List[ParameterValueUpdate] = {
-    val faceXAngle = average(trackingNoes.takeRight(trackingTaps.faceXAngle).map(_.faceXAngle))
-    val faceYAngle = average(trackingNoes.takeRight(trackingTaps.faceYAngle).map(_.faceYAngle))
-    val faceZAngle = average(trackingNoes.takeRight(trackingTaps.faceZAngle).map(_.faceZAngle))
-    val leftEyeOpenness = average(trackingNoes.takeRight(trackingTaps.leftEyeOpenness).map(_.leftEyeOpenness))
-    val rightEyeOpenness = average(trackingNoes.takeRight(trackingTaps.rightEyeOpenness).map(_.rightEyeOpenness))
-    val mouthOpenness = average(trackingNoes.takeRight(trackingTaps.mouthOpenness).map(_.mouthOpenness))
-    val mouthForm = average(trackingNoes.takeRight(trackingTaps.mouthForm).map(_.mouthForm))
-    val leftEyeSmile = average(trackingNoes.takeRight(trackingTaps.leftEyeSmile).map(_.leftEyeSmile))
-    val rightEyeSmile = average(trackingNoes.takeRight(trackingTaps.rightEyeSmile).map(_.rightEyeSmile))
+    val faceXAngle = average(trackingNoes.take(trackingTaps.faceXAngle).map(_.faceXAngle))
+    val faceYAngle = average(trackingNoes.take(trackingTaps.faceYAngle).map(_.faceYAngle))
+    val faceZAngle = average(trackingNoes.take(trackingTaps.faceZAngle).map(_.faceZAngle))
+    val leftEyeOpenness = average(trackingNoes.take(trackingTaps.leftEyeOpenness).map(_.leftEyeOpenness))
+    val rightEyeOpenness = average(trackingNoes.take(trackingTaps.rightEyeOpenness).map(_.rightEyeOpenness))
+    val mouthOpenness = average(trackingNoes.take(trackingTaps.mouthOpenness).map(_.mouthOpenness))
+    val mouthForm = average(trackingNoes.take(trackingTaps.mouthForm).map(_.mouthForm))
+    val leftEyeSmile = average(trackingNoes.take(trackingTaps.leftEyeSmile).map(_.leftEyeSmile))
+    val rightEyeSmile = average(trackingNoes.take(trackingTaps.rightEyeSmile).map(_.rightEyeSmile))
 
     List(
       ParameterValueUpdate("ParamAngleX", faceXAngle),

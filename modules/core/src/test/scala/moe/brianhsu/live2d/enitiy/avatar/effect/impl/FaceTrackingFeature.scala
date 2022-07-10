@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.impl
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.FaceTracking.{TrackingNode, TrackingTaps}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{ParameterValueAdd, ParameterValueUpdate}
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.ParameterValueUpdate
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -43,15 +43,15 @@ class FaceTrackingFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       Then("it should return an list contains the expected operations at any given time")
       val expectedOperations = List(
-        ParameterValueUpdate("ParamAngleX", 1.0100001f),
-        ParameterValueUpdate("ParamAngleY", 0.97f),
-        ParameterValueUpdate("ParamAngleZ", 0.93f),
-        ParameterValueUpdate("ParamEyeLOpen", 0.8899999f),
-        ParameterValueUpdate("ParamEyeROpen", 0.85f),
-        ParameterValueUpdate("ParamMouthOpenY", 0.6975f),
-        ParameterValueUpdate("ParamMouthForm", 0.7700001f),
-        ParameterValueUpdate("ParamEyeLSmile", 0.72999996f),
-        ParameterValueUpdate("ParamEyeRSmile", 0.69000006f)
+        ParameterValueUpdate("ParamAngleX", 0.10999999f),
+        ParameterValueUpdate("ParamAngleY", 0.17f),
+        ParameterValueUpdate("ParamAngleZ", 0.21f),
+        ParameterValueUpdate("ParamEyeLOpen", 0.29f),
+        ParameterValueUpdate("ParamEyeROpen", 0.34999996f),
+        ParameterValueUpdate("ParamMouthOpenY", 0.41000003f),
+        ParameterValueUpdate("ParamMouthForm", 0.47f),
+        ParameterValueUpdate("ParamEyeLSmile", 0.53000003f),
+        ParameterValueUpdate("ParamEyeRSmile", 0.59f)
       )
 
       faceTracking.calculateOperations(model, 0, 0) should contain theSameElementsInOrderAs expectedOperations
