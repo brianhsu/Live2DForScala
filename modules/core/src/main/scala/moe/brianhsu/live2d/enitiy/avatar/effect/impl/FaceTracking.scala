@@ -26,7 +26,7 @@ object FaceTracking {
 
 class FaceTracking(protected val trackingTaps: TrackingTaps) extends Effect {
 
-  protected var trackingNoes: List[TrackingNode] = Nil
+  protected[impl] var trackingNoes: List[TrackingNode] = Nil
 
   override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[UpdateOperation] = {
     trackingNoes match {

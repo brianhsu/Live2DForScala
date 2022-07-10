@@ -449,6 +449,7 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
 
       And("a mocked Live2D model and updater with expectation")
       val model = mock[Live2DModel]
+
       val updater = mock[Updater]
       inSequence {
         (() => model.restoreParameters()).expects().once()
@@ -478,6 +479,8 @@ class BasicUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with 
       updateStrategy.update(frameTimeInfo)
 
       Then("no exception should be thrown")
+
+
     }
 
     Scenario("There are motion / expression and effects") {

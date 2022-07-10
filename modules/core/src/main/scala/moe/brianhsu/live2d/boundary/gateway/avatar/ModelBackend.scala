@@ -6,6 +6,7 @@ import moe.brianhsu.live2d.enitiy.model.{ModelCanvasInfo, Parameter, Part}
 import scala.util.Try
 
 trait ModelBackend {
+
   /**
    * The list of texture file path of this model.
    */

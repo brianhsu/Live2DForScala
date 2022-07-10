@@ -62,6 +62,14 @@ class Live2DModel(modelBackend: ModelBackend) {
   lazy val drawablesByIndex: List[Drawable] = sortDrawableByIndex()
 
   /**
+   * Is this Parameter ID old format
+   *
+   * The old format is like `PARAM_EYE_R_OPEN`, and the new format
+   * is `ParamEyeROpen`.
+   */
+  lazy val isOldParameterId = parameters.keySet.exists(_.contains("PARAM_"))
+
+  /**
    * Does the drawables of this model use masking?
    *
    * @return true if any drawable of this model has masks, otherwise false.

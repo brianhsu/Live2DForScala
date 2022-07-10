@@ -3,10 +3,11 @@ package moe.brianhsu.live2d.demo.app
 import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
+import moe.brianhsu.live2d.adapter.gateway.openSeeFace.UDPOpenSeeFaceDataReader
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.demo.app.DemoApp.OnOpenGLThread
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, LipSyncFromMotionSound}
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, LipSyncFromMotionSound, OpenSeeFaceTracking}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
@@ -156,6 +157,7 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
     } {
       val poseHolder = new AvatarPoseReader(avatar.avatarSettings).loadPose
       val physicsHolder = new AvatarPhysicsReader(avatar.avatarSettings).loadPhysics
+
       updateStrategy.effects = List(
         Some(new Breath()),
         Some(new EyeBlink(avatar.avatarSettings)),
