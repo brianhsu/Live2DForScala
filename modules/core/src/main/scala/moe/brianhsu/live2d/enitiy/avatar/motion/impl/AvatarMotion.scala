@@ -1,9 +1,9 @@
 package moe.brianhsu.live2d.enitiy.avatar.motion.impl
 
-import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarMotionDataReader
-import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
+import moe.brianhsu.live2d.boundary.gateway.avatar.motion.MotionDataReader
 import moe.brianhsu.live2d.enitiy.avatar.motion.data.{MotionCurve, MotionData}
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.AvatarMotion.{EffectNameEyeBlink, EffectNameLipSync}
+import moe.brianhsu.live2d.enitiy.avatar.motion.{Motion, MotionEvent}
 import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
 import moe.brianhsu.live2d.enitiy.math.Easing
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
@@ -14,9 +14,9 @@ object AvatarMotion {
   private val EffectNameEyeBlink = "EyeBlink"
   private val EffectNameLipSync  = "LipSync"
 
-  def apply(motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String], isLoop: Boolean = false): AvatarMotion = {
+  def apply(reader: MotionDataReader, motionInfo: MotionSetting, eyeBlinkParameterIds: List[String], lipSyncParameterIds: List[String], isLoop: Boolean = false): AvatarMotion = {
     new AvatarMotion(
-      new AvatarMotionDataReader(motionInfo).loadMotionData(),
+      reader.loadMotionData(),
       eyeBlinkParameterIds, lipSyncParameterIds,
       isLoop, isLoopFadeIn = false,
       Option(motionInfo.meta.duration).filter(_ > 0.0f),

@@ -14,7 +14,6 @@ import javax.sound.sampled._
 
 class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory with TryValues with AudioMock {
 
-  private val model: Live2DModel = mock[Live2DModel]
   private val lipSyncIds: List[String] = List("LipSyncId1", "LipSyncId2")
 
   Feature("Create LipSyncFromMic using avatar setting and mixer") {
@@ -47,6 +46,8 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       And("the targetDataLine should be opened and started")
       (targetDataLine.open: AudioFormat => Unit).verify(*).once()
       (() => targetDataLine.start()).verify().once()
+
+      lipSyncHolder.foreach(_.stop())
     }
 
     Scenario("Create LipSyncFromMic from avatar without lipSyncIds and force lip sync") {
@@ -78,7 +79,10 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       And("the targetDataLine should be opened and started")
       (targetDataLine.open: AudioFormat => Unit).verify(*).once()
       (() => targetDataLine.start()).verify().once()
+
+      lipSyncHolder.foreach(_.stop())
     }
+
     Scenario("Create LipSyncFromMic from avatar without lipSyncIds and NOT force lip sync") {
       Given("an avatar setting")
       val avatarSettings = Settings(null, Nil, None, None, Nil, Nil, Map.empty, Map.empty, Nil)
@@ -108,6 +112,8 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       And("the targetDataLine should be opened and started")
       (targetDataLine.open: AudioFormat => Unit).verify(*).once()
       (() => targetDataLine.start()).verify().once()
+
+      lipSyncHolder.foreach(_.stop())
     }
 
     Scenario("Create LipSyncFromMic failed") {
@@ -140,10 +146,14 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       val lipSyncFromMic = new LipSyncFromMic(lipSyncIds, dispatcher, audioRMSCalculator)
 
       When("calculate the update operation")
-      val operation1 = lipSyncFromMic.calculateOperations(model, 1, 1)
+      val operation1 = lipSyncFromMic.calculateOperations(mock[Live2DModel], 1, 1)
 
       Then("the operation should add lip sync parameter correctly")
       operation1 should contain theSameElementsInOrderAs List(ParameterValueAdd("LipSyncId1", 1.23f, 5.0f), ParameterValueAdd("LipSyncId2", 1.23f, 5.0f))
+
+      Thread.sleep(100)
+
+      lipSyncFromMic.stop()
 
       Then("the dispatcher should be started")
       (() => dispatcher.run()).verify().once()

@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.usecase.updater.impl
 
-import moe.brianhsu.live2d.adapter.gateway.avatar.motion.AvatarExpressionReader
+import moe.brianhsu.live2d.adapter.gateway.avatar.motion.{AvatarExpressionReader, AvatarMotionDataReader}
 import moe.brianhsu.live2d.enitiy.avatar.effect.Effect
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.MotionWithTransition.RepeatedCallback
 import moe.brianhsu.live2d.enitiy.avatar.motion.impl.{AvatarMotion, Expression, MotionManager, MotionWithTransition}
@@ -39,7 +39,8 @@ class BasicUpdateStrategy(val avatarSettings: Settings,
   }
 
   def startMotion(motionSetting: MotionSetting, isLoop: Boolean): MotionWithTransition = {
-    val motion = AvatarMotion(motionSetting, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds, isLoop)
+    val avatarMotionDataReader = new AvatarMotionDataReader(motionSetting)
+    val motion = AvatarMotion(avatarMotionDataReader, motionSetting, avatarSettings.eyeBlinkParameterIds, avatarSettings.lipSyncParameterIds, isLoop)
     motionListener.foreach(_.onMotionStart(motionSetting))
 
     if (isLoop) {

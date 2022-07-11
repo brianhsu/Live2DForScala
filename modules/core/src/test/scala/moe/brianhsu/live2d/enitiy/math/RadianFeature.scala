@@ -30,6 +30,17 @@ class RadianFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
       radian shouldBe 0.7853982f
     }
 
+    Scenario("Convert radian to degree") {
+      Given("a 0.7853982f radian")
+      val radian = 0.7853982f
+
+      When("calculate the degrees")
+      val degree = Radian.radianToDegrees(radian)
+
+      Then("the radian should be (45 * 180) / PI = 45.0")
+      degree shouldBe 45.0f
+    }
+
     Scenario("Convert direction to radian") {
 
       val table = Table(
