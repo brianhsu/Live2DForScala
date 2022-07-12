@@ -85,4 +85,38 @@ class EyeBlinkFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wi
     }
 
   }
+
+  Feature("Start / stop the effects") {
+    Scenario("Start the effect") {
+      Given("an avatar setting contains two eye openness parameter")
+      val eyeBlinkParameterIds = List("EyeOpen1", "EyeOpen2")
+      val avatarSettings = Settings(null, Nil, None, None, eyeBlinkParameterIds, Nil, Map.empty, Map.empty, Nil)
+
+      When("create EyeBlink effect from those settings")
+      val eyeBlink = new EyeBlink(avatarSettings, EyeBlink.Parameters(4.0f, () => 1.0f, 0.1f, 0.05f, 0.15f))
+
+      When("start the EyeBlink effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        eyeBlink.start()
+      }
+    }
+
+    Scenario("Stop the effect") {
+      Given("an avatar setting contains two eye openness parameter")
+      val eyeBlinkParameterIds = List("EyeOpen1", "EyeOpen2")
+      val avatarSettings = Settings(null, Nil, None, None, eyeBlinkParameterIds, Nil, Map.empty, Map.empty, Nil)
+
+      When("create EyeBlink effect from those settings")
+      val eyeBlink = new EyeBlink(avatarSettings, EyeBlink.Parameters(4.0f, () => 1.0f, 0.1f, 0.05f, 0.15f))
+
+      When("stop the EyeBlink effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        eyeBlink.stop()
+      }
+    }
+
+  }
+
 }

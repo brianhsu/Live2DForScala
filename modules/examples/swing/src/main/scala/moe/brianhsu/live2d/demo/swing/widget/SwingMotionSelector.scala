@@ -3,7 +3,8 @@ package moe.brianhsu.live2d.demo.swing.widget
 import moe.brianhsu.live2d.demo.swing.Live2DUI
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.LipSyncFromMotionSound
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy
+import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
 
 import java.awt.event.{ActionEvent, MouseAdapter, MouseEvent}
 import java.awt.{Component, GridBagConstraints, GridBagLayout}
@@ -93,8 +94,8 @@ class SwingMotionSelector(live2DWidget: Live2DUI) extends JPanel {
     expandAllNodes(motionTree, 0, motionTree.getRowCount)
   }
 
-  def syncWithStrategy(basicUpdateStrategy: BasicUpdateStrategy): Unit = {
-    val effects = basicUpdateStrategy.effects
+  def syncWithStrategy(strategy: GenericUpdateStrategy): Unit = {
+    val effects = strategy.effects(BeforeExpression) ++ strategy.effects(AfterExpression)
     val lipSyncHolder = effects.find(_.isInstanceOf[LipSyncFromMotionSound]).map(_.asInstanceOf[LipSyncFromMotionSound])
     lipSync.setSelected(lipSyncHolder.isDefined)
     lipSyncHolder.foreach { effect =>
@@ -123,19 +124,14 @@ class SwingMotionSelector(live2DWidget: Live2DUI) extends JPanel {
     } {
       lipSyncWeight.setEnabled(lipSync.isSelected)
       lipSyncVolume.setEnabled(lipSync.isSelected)
-
-      if (lipSync.isSelected) {
-        demoApp.enableLipSyncFromMotionSound()
-      } else {
-        demoApp.disableLipSyncFromMotionSound()
-      }
+      demoApp.enableLipSyncFromMotionSound(lipSync.isSelected)
     }
   }
 
   private def handleMotionSelection(e: MouseEvent): Unit = {
     if (e.getClickCount == 2) {
       val selectedPath = motionTree.getPathForLocation(e.getX, e.getY)
-      if (selectedPath.getPathCount == 3) {
+      if (selectedPath != null && selectedPath.getPathCount == 3) {
         live2DWidget.demoAppHolder.foreach { view =>
           val motionGroup = selectedPath.getParentPath.getLastPathComponent.toString
           val currentMotion = selectedPath.getLastPathComponent.asInstanceOf[DefaultMutableTreeNode]

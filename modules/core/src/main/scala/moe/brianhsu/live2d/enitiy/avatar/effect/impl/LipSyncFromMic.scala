@@ -53,9 +53,12 @@ class LipSyncFromMic(override val lipSyncIds: List[String],
 
   private val thread = new Thread(audioDispatcher)
 
-  thread.start()
 
   override def currentRms: Float = audioRMSCalculator.currentRMS
+
+  override def start(): Unit = {
+    thread.start()
+  }
 
   def stop(): Unit = {
     audioDispatcher.stop()

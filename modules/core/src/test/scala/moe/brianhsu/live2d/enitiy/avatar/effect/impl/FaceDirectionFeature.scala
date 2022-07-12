@@ -38,4 +38,36 @@ class FaceDirectionFeature extends AnyFeatureSpec with GivenWhenThen with Matche
     }
 
   }
+
+  Feature("Start / stop the effects") {
+    Scenario("Start the effect") {
+      Given("a mocked direction calculator")
+      val directionCalculator = stub[FaceDirectionCalculator]
+
+      And("a FaceDirection effect")
+      val faceDirection = new FaceDirection(directionCalculator)
+
+      When("start the FaceDirection effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        faceDirection.start()
+      }
+    }
+
+    Scenario("Stop the effect") {
+      Given("a mocked direction calculator")
+      val directionCalculator = stub[FaceDirectionCalculator]
+
+      And("a FaceDirection effect")
+      val faceDirection = new FaceDirection(directionCalculator)
+
+      When("stop the FaceDirection effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        faceDirection.stop()
+      }
+    }
+
+  }
+
 }

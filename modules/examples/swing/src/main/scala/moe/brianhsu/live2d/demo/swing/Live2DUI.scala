@@ -50,7 +50,7 @@ class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener w
           expressionSelector.updateExpressionList(avatar)
           motionSelector.updateMotionTree(avatar)
         }
-        live2DView.basicUpdateStrategyHolder.foreach { strategy =>
+        live2DView.strategyHolder.foreach { strategy =>
           effectSelector.syncWithStrategy(strategy)
           motionSelector.syncWithStrategy(strategy)
         }

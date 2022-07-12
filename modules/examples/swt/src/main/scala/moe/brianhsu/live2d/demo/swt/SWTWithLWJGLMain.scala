@@ -40,7 +40,7 @@ object SWTWithLWJGLMain {
       override def onAvatarLoaded(live2DView: DemoApp): Unit = {
         live2DView.avatarHolder.foreach(avatarControl.expressionSelector.updateExpressionList)
         live2DView.avatarHolder.foreach(avatarControl.motionSelector.updateMotionTree)
-        live2DView.basicUpdateStrategyHolder.foreach { strategy =>
+        live2DView.strategyHolder.foreach { strategy =>
           avatarControl.effectSelector.syncWithStrategy(strategy)
           avatarControl.motionSelector.syncWithStrategy(strategy)
         }

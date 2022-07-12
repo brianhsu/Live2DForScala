@@ -18,11 +18,11 @@ class OpenSeeFaceTracking(dataReader: OpenSeeFaceDataReader,
 
   private[impl] val readerThread: ReaderThread = new ReaderThread
 
-  def start(): Unit = {
+  override def start(): Unit = {
     readerThread.start()
   }
 
-  def stop(): Unit = {
+  override def stop(): Unit = {
     readerThread.shouldBeStopped = true
     readerThread.join()
   }

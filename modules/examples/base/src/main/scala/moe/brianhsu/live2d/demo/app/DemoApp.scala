@@ -1,19 +1,16 @@
 package moe.brianhsu.live2d.demo.app
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.AvatarFileReader
-import moe.brianhsu.live2d.adapter.gateway.avatar.effect.{AvatarPhysicsReader, AvatarPoseReader}
 import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
-import moe.brianhsu.live2d.adapter.gateway.openSeeFace.UDPOpenSeeFaceDataReader
 import moe.brianhsu.live2d.boundary.gateway.renderer.DrawCanvasInfoReader
 import moe.brianhsu.live2d.demo.app.DemoApp.OnOpenGLThread
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, LipSyncFromMotionSound, OpenSeeFaceTracking}
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.opengl.OpenGLBinding
 import moe.brianhsu.live2d.enitiy.updater.SystemNanoTimeBasedFrameInfo
 import moe.brianhsu.live2d.usecase.renderer.opengl.AvatarRenderer
 import moe.brianhsu.live2d.usecase.renderer.viewport.{ProjectionMatrixCalculator, ViewOrientation, ViewPortMatrixCalculator}
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy
+import moe.brianhsu.live2d.usecase.updater.impl.EasyUpdateStrategy
 
 import scala.annotation.unused
 import scala.util.Try
@@ -36,10 +33,7 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
   protected var mAvatarHolder: Option[Avatar] = None
   protected var modelHolder: Option[Live2DModel] = mAvatarHolder.map(_.model)
   protected var rendererHolder: Option[AvatarRenderer] = modelHolder.map(model => AvatarRenderer(model))
-  protected var mUpdateStrategyHolder: Option[BasicUpdateStrategy] = mAvatarHolder.map(a => {
-    a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model, motionListener = Some(this)))
-    a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
-  })
+  protected var mUpdateStrategyHolder: Option[EasyUpdateStrategy] = None
 
   private implicit val cubismCore: JnaNativeCubismAPILoader = new JnaNativeCubismAPILoader()
   private val frameTimeCalculator = new SystemNanoTimeBasedFrameInfo
@@ -49,12 +43,11 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
   private var offsetY: Float = 0.0f
 
   {
-    setupAvatarEffects()
     initOpenGL()
   }
 
   def avatarHolder: Option[Avatar] = mAvatarHolder
-  def basicUpdateStrategyHolder: Option[BasicUpdateStrategy] = mUpdateStrategyHolder
+  def strategyHolder: Option[EasyUpdateStrategy] = mUpdateStrategyHolder
 
   def resetModel(): Unit = {
     modelHolder.foreach(_.reset())
@@ -150,25 +143,6 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
     openGL.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
   }
 
-  private def setupAvatarEffects(): Unit = {
-    for {
-      avatar <- mAvatarHolder
-      updateStrategy <- mUpdateStrategyHolder
-    } {
-      val poseHolder = new AvatarPoseReader(avatar.avatarSettings).loadPose
-      val physicsHolder = new AvatarPhysicsReader(avatar.avatarSettings).loadPhysics
-
-      updateStrategy.effects = List(
-        Some(new Breath()),
-        Some(new EyeBlink(avatar.avatarSettings)),
-        Some(faceDirection),
-        physicsHolder,
-        poseHolder,
-        Some(new LipSyncFromMotionSound(avatar.avatarSettings, 100))
-      ).flatten
-    }
-  }
-
   def startMotion(group: String, i: Int, isLoop: Boolean): Unit = {
     mUpdateStrategyHolder.foreach { updateStrategy =>
       updateStrategy.startMotion(group, i, isLoop)
@@ -196,24 +170,24 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
     onStatusUpdated(s"Loading $directoryPath...")
 
     this.disableMicLipSync()
-    this.disableLipSyncFromMotionSound()
+    this.enableLipSyncFromMotionSound(false)
 
     val newAvatarHolder = new AvatarFileReader(directoryPath).loadAvatar()
 
     this.mAvatarHolder = newAvatarHolder.toOption.orElse(this.mAvatarHolder)
     this.modelHolder = mAvatarHolder.map(_.model)
-    this.mUpdateStrategyHolder = mAvatarHolder.map(a => {
+    this.mUpdateStrategyHolder = mAvatarHolder.map(avatar => new EasyUpdateStrategy(avatar, faceDirectionCalculator))
+    this.mAvatarHolder.foreach { avatar =>
+      avatar.updateStrategyHolder = this.mUpdateStrategyHolder
       onStatusUpdated(s"$directoryPath loaded.")
-      a.updateStrategyHolder = Some(new BasicUpdateStrategy(a.avatarSettings, a.model, motionListener = Some(this)))
-      a.updateStrategyHolder.get.asInstanceOf[BasicUpdateStrategy]
-    })
-    setupAvatarEffects()
-    newAvatarHolder.foreach(_ => onAvatarLoaded(this))
+    }
 
     onOpenGLThread {
       this.rendererHolder = modelHolder.map(model => AvatarRenderer(model))
       initOpenGL()
     }
+
+    newAvatarHolder.foreach(_ => onAvatarLoaded(this))
     newAvatarHolder
   }
 

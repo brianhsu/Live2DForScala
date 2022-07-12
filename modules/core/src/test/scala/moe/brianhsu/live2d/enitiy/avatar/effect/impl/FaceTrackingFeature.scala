@@ -64,6 +64,11 @@ class FaceTrackingFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
 
   class FixedFaceTracking(currentTrackingNoes: List[TrackingNode]) extends FaceTracking(DefaultFaceTrackingTaps) {
     this.trackingNoes = currentTrackingNoes
+
+    override def start(): Unit = {}
+
+    override def stop(): Unit = {}
+
   }
 
 }

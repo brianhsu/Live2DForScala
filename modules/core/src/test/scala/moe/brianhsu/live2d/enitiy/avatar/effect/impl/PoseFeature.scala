@@ -4,19 +4,18 @@ import com.sun.jna.{Memory, Pointer}
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.AvatarPoseReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel, Part}
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
+import moe.brianhsu.live2d.enitiy.updater.UpdateOperation._
+import org.json4s._
+import org.json4s.native.JsonMethods._
+import org.json4s.native.Serialization
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{GivenWhenThen, TryValues}
 
 import scala.io.Source
-import org.json4s._
-import org.json4s.native.JsonMethods._
-import org.json4s.native.Serialization
-
 import scala.util.Using
 
 class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with TryValues with MockFactory {
@@ -56,6 +55,43 @@ class PoseFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with T
       }
 
     }
+  }
+
+  Feature("Start / stop the effects") {
+    Scenario("Start the effect") {
+      Given("a folder path contains json files for Haru Live2D avatar model")
+      val folderPath = "src/test/resources/models/Haru"
+
+      When("create a Pose effect from this Live2D avatar settings")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val settings: Settings = jsonSettingsReader.loadSettings().success.value
+      val reader = new AvatarPoseReader(settings)
+      val pose = reader.loadPose.get
+
+      When("start the pose")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        pose.start()
+      }
+    }
+
+    Scenario("Stop the effect") {
+      Given("a folder path contains json files for Haru Live2D avatar model")
+      val folderPath = "src/test/resources/models/Haru"
+
+      When("create a Pose effect from this Live2D avatar settings")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val settings: Settings = jsonSettingsReader.loadSettings().success.value
+      val reader = new AvatarPoseReader(settings)
+      val pose = reader.loadPose.get
+
+      When("start the pose")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        pose.stop()
+      }
+    }
+
   }
 
   private def parseLog(line: String): LogData = parse(line).extract[LogData]

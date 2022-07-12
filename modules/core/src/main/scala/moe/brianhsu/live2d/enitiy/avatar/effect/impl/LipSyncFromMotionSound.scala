@@ -51,6 +51,8 @@ class LipSyncFromMotionSound(processorsFactory: ProcessorsFactory, override val 
     this.mVolume = value
   }
 
+  override def start(): Unit = {}
+
   def stop(): Unit = {
     processorsHolder.foreach(_.dispatcher.stop())
   }

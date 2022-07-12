@@ -24,7 +24,7 @@ object FaceTracking {
   )
 }
 
-class FaceTracking(protected val trackingTaps: TrackingTaps) extends Effect {
+abstract class FaceTracking(protected val trackingTaps: TrackingTaps) extends Effect {
 
   protected[impl] var trackingNoes: List[TrackingNode] = Nil
 

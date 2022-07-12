@@ -3,14 +3,13 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 import moe.brianhsu.live2d.enitiy.avatar.effect.data.OpenSeeFaceDataConverter
 import moe.brianhsu.live2d.enitiy.avatar.effect.impl.FaceTracking.TrackingNode
 import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData
-import org.json4s.native.{JsonMethods, Serialization}
+import org.json4s.native.JsonMethods
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 
-import java.io.PrintWriter
 import scala.io.Source
 import scala.util.Using
 
