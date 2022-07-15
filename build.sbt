@@ -29,6 +29,7 @@ val sharedSettings = Seq(
   Compile / doc / scalacOptions ++= Seq("-private"),
   autoAPIMappings := true,
   libraryDependencies ++= testFramework,
+  libraryDependencies += "com.github.sarxos" % "webcam-capture" % "0.3.12",
   coverageExcludedPackages := """moe\.brianhsu\.live2d\.demo\..*"""
 )
 
