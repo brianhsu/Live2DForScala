@@ -1,8 +1,9 @@
 package moe.brianhsu.live2d.demo.app
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.FaceDirectionByMouse
+import moe.brianhsu.live2d.boundary.gateway.openSeeFace.OpenSeeFaceDataReader
 import moe.brianhsu.live2d.demo.app.DemoApp.{ClickAndDrag, FaceDirectionMode, FollowMouse}
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.FaceDirection
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{FaceDirection, OpenSeeFaceTracking}
 
 import javax.sound.sampled.Mixer
 import scala.annotation.unused
@@ -14,6 +15,15 @@ trait EffectControl {
 
   protected val faceDirectionCalculator = new FaceDirectionByMouse(60)
   protected val faceDirection = new FaceDirection(faceDirectionCalculator)
+
+  def enableFaceTracking(dataReader: OpenSeeFaceDataReader): Unit = {
+    val x = new OpenSeeFaceTracking(dataReader, 1000)
+    this.mUpdateStrategyHolder.foreach(_.appendAndStartEffects(x :: Nil))
+  }
+
+  def disableFaceTracking(): Unit = {
+    this.mUpdateStrategyHolder.foreach(_.stopAndRemoveEffects(_.isInstanceOf[OpenSeeFaceTracking]))
+  }
 
   def updateMotionLipSyncVolume(volume: Int): Unit = {
     this.mUpdateStrategyHolder.foreach(_.updateLipSyncFromMotionVolume(volume))
