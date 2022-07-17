@@ -12,8 +12,17 @@ object SwingMain {
   private val live2DWidget = createGLCanvas()
   private val avatarControlPane = createLeftPane()
   private val avatarDisplayPane = createAvatarDisplayPane(live2DWidget.canvas)
-  @unused val splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, avatarControlPane, avatarDisplayPane)
+  private val splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createTab(), createAvatarDisplayPane(live2DWidget.canvas))
 
+  private def createTab() = {
+    val tabbedPane = new JTabbedPane()
+    val t2 = new JButton()
+    t2.setText("SSS")
+
+    tabbedPane.addTab("Avatar", avatarControlPane)
+    tabbedPane.addTab("Face Tracking", t2)
+    tabbedPane
+  }
   def main(args: Array[String]): Unit = {
 
     System.setProperty("sun.awt.noerasebackground", "true")
@@ -28,7 +37,6 @@ object SwingMain {
     gc1.fill = GridBagConstraints.HORIZONTAL
     frame.getContentPane.add(live2DWidget.toolbar, gc1)
 
-    val splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createLeftPane(), createAvatarDisplayPane(live2DWidget.canvas))
     val gc2 = new GridBagConstraints()
     gc2.gridx = 0
     gc2.gridy = 1
