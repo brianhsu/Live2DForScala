@@ -146,9 +146,15 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
     this.setBorder(BorderFactory.createTitledBorder("Outline"))
 
     override def paint(g: Graphics): Unit = {
+
+      if (!this.isShowing || !this.isDisplayable) {
+        return
+      }
+
       val gc = g.asInstanceOf[Graphics2D]
       val width = this.getBounds().width
       val height = this.getBounds().width
+
       gc.clearRect(0, 0, width, height)
 
       if (openSeeFaceReaderHolder.isDefined && openSeeFaceDataHolder.isEmpty) {
