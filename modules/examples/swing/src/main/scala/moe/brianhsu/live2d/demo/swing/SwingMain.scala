@@ -3,26 +3,17 @@ package moe.brianhsu.live2d.demo.swing
 import com.jogamp.opengl.awt.GLCanvas
 import com.jogamp.opengl.{GLCapabilities, GLProfile}
 
-import java.awt.{Dimension, GridBagConstraints, GridBagLayout, GridLayout}
+import java.awt._
 import javax.swing._
-import scala.annotation.unused
 
 object SwingMain {
   private val frame = new JFrame("Live 2D Scala Demo (Swing+JOGL)")
   private val live2DWidget = createGLCanvas()
   private val avatarControlPane = createLeftPane()
   private val avatarDisplayPane = createAvatarDisplayPane(live2DWidget.canvas)
-  private val splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createTab(), createAvatarDisplayPane(live2DWidget.canvas))
+  private val avatarControlTab = createTab()
+  private val splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, avatarControlTab, avatarDisplayPane)
 
-  private def createTab() = {
-    val tabbedPane = new JTabbedPane()
-    val t2 = new JButton()
-    t2.setText("SSS")
-
-    tabbedPane.addTab("Avatar", avatarControlPane)
-    tabbedPane.addTab("Face Tracking", t2)
-    tabbedPane
-  }
   def main(args: Array[String]): Unit = {
 
     System.setProperty("sun.awt.noerasebackground", "true")
@@ -55,6 +46,13 @@ object SwingMain {
     gc4.fill = GridBagConstraints.HORIZONTAL
     frame.getContentPane.add(live2DWidget.statusBar, gc4)
     frame.setVisible(true)
+  }
+
+  private def createTab() = {
+    val tabbedPane = new JTabbedPane()
+    tabbedPane.addTab("Avatar", avatarControlPane)
+    tabbedPane.addTab("Face Tracking", live2DWidget.faceTrackingPane)
+    tabbedPane
   }
 
   private def createAvatarDisplayPane(glCanvas: GLCanvas): JPanel = {
