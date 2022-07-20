@@ -11,6 +11,8 @@ import scala.util.Try
 
 object ExternalOpenSeeFaceDataReader {
   def apply(command: String, hostname: String, port: Int, onDataRead: OpenSeeFaceData => Unit): ExternalOpenSeeFaceDataReader = {
+
+    println("===> command:" + command)
     val process = new ProcessBuilder(command.split(" "):_*)
       .redirectErrorStream(true)
       .start()

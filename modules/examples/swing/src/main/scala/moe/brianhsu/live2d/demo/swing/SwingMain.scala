@@ -17,7 +17,6 @@ object SwingMain {
   def main(args: Array[String]): Unit = {
 
     System.setProperty("sun.awt.noerasebackground", "true")
-
     frame.setVisible(true)
     frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
     frame.getContentPane.setLayout(new GridBagLayout)

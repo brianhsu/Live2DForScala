@@ -1,12 +1,12 @@
 package moe.brianhsu.live2d.demo.swing.widget.faceTracking
 
-import moe.brianhsu.live2d.demo.openSeeFace.CameraListing
+import moe.brianhsu.live2d.demo.openSeeFace.{CameraListing, OpenSeeFaceSetting}
 
 import java.awt.{GridBagConstraints, GridBagLayout}
 import javax.swing._
 import scala.annotation.unused
 
-class SwingOpenSeeFaceBundle(cameraListing: CameraListing) extends JPanel with SwingOpenSeeFaceSetting {
+class SwingOpenSeeFaceBundle(cameraListing: CameraListing) extends JPanel with OpenSeeFaceSetting {
 
   this.setLayout(new GridBagLayout)
   this.setBorder(BorderFactory.createTitledBorder("OpenSeeFace Settings"))
@@ -80,10 +80,11 @@ class SwingOpenSeeFaceBundle(cameraListing: CameraListing) extends JPanel with S
   }
 
   override def getCommand: String = {
-    "python /home/brianhsu/WorkRoom/OpenSeeFace/facetracker.py " +
+    s"${OpenSeeFaceSetting.bundleExecution} " +
+      s"--model-dir ${OpenSeeFaceSetting.bundleModelDir} -M " +
       cameraIdSetting +
       cameraResolutionSetting +
-      Option(fpsCombo.getSelectedItem.toString).filter(_.nonEmpty).map("--fps " + _ + " ").getOrElse("")
+      Option(fpsCombo.getSelectedItem.toString).filter(_.nonEmpty).map("--fps " + _ + " ").getOrElse("") +
       Option(modelCombo.getSelectedItem.toString).filter(_.nonEmpty).map("--model " + _ + " ").getOrElse("") +
       Option(visualizeCombo.getSelectedItem.toString).filter(_.nonEmpty).map("--visualize " + _ + " ").getOrElse("")
   }
