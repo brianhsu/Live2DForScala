@@ -11,10 +11,10 @@ import scala.annotation.unused
 class SWTMixerSelector(parent: Composite, onMixerChanged: Option[Mixer] => Unit) extends Composite(parent, SWT.NONE) {
   private var mixers: List[Mixer] = Nil
 
-  val deviceRefresh = new Button(this, SWT.PUSH)
-  val lipSyncDevice = createSoundDeviceSelector()
-  val sliderControl = new SWTSliderControl("Weight:", 0, 100, 50, this)
-  val forceLipSync = createForceCheckbox()
+  val deviceRefresh: Button = new Button(this, SWT.PUSH)
+  val lipSyncDevice: Combo = createSoundDeviceSelector()
+  val sliderControl: SWTSliderControl = new SWTSliderControl("Weight:", 0, 100, 50, this)
+  val forceLipSync: Button = createForceCheckbox()
 
   {
     val gridLayout = new GridLayout(2, false)

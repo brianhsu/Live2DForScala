@@ -1,152 +1,68 @@
 package moe.brianhsu.live2d.demo.app
 
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.FaceDirectionByMouse
+import moe.brianhsu.live2d.boundary.gateway.openSeeFace.OpenSeeFaceDataReader
 import moe.brianhsu.live2d.demo.app.DemoApp.{ClickAndDrag, FaceDirectionMode, FollowMouse}
-import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{Breath, EyeBlink, FaceDirection, LipSyncFromMic, LipSyncFromMotionSound}
-import moe.brianhsu.live2d.enitiy.avatar.settings.detail.MotionSetting
-import moe.brianhsu.live2d.usecase.updater.impl.BasicUpdateStrategy.MotionListener
+import moe.brianhsu.live2d.enitiy.avatar.effect.impl.{FaceDirection, OpenSeeFaceTracking}
 
 import javax.sound.sampled.Mixer
 import scala.annotation.unused
 
-trait EffectControl extends MotionListener {
+trait EffectControl {
   this: DemoApp =>
 
   var faceDirectionMode: FaceDirectionMode = ClickAndDrag
 
-  protected val targetPointCalculator = new FaceDirectionByMouse(60)
-  protected val faceDirection = new FaceDirection(targetPointCalculator)
+  protected val faceDirectionCalculator = new FaceDirectionByMouse(60)
+  protected val faceDirection = new FaceDirection(faceDirectionCalculator)
 
-  override def onMotionStart(motion: MotionSetting): Unit = {
-    for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects
-        .filter(_.isInstanceOf[LipSyncFromMotionSound])
-        .map(_.asInstanceOf[LipSyncFromMotionSound])
-        .foreach(_.startWith(motion.sound))
-    }
+  def enableFaceTracking(dataReader: OpenSeeFaceDataReader): Unit = {
+    val x = new OpenSeeFaceTracking(dataReader, 1000)
+    this.mUpdateStrategyHolder.foreach(_.appendAndStartEffects(x :: Nil))
+  }
 
+  def disableFaceTracking(): Unit = {
+    this.mUpdateStrategyHolder.foreach(_.stopAndRemoveEffects(_.isInstanceOf[OpenSeeFaceTracking]))
   }
 
   def updateMotionLipSyncVolume(volume: Int): Unit = {
-    for {
-      strategy <- this.mUpdateStrategyHolder
-      lipSync <- strategy.effects.filter(_.isInstanceOf[LipSyncFromMotionSound])
-    } {
-      lipSync.asInstanceOf[LipSyncFromMotionSound].volume = volume
-    }
-
+    this.mUpdateStrategyHolder.foreach(_.updateLipSyncFromMotionVolume(volume))
   }
 
   def updateMotionLipSyncWeight(weight: Int): Unit = {
-    for {
-      strategy <- this.mUpdateStrategyHolder
-      lipSync <- strategy.effects.filter(_.isInstanceOf[LipSyncFromMotionSound])
-    } {
-      lipSync.asInstanceOf[LipSyncFromMotionSound].weight = weight / 10.0f
-    }
-  }
-
-  def disableBreath(): Unit = {
-    for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[Breath])
-    }
+    this.mUpdateStrategyHolder.foreach(_.updateLipSyncFromMotionWeight(weight))
   }
 
   def updateMicLipSyncWeight(weight: Int): Unit = {
-    for {
-      strategy <- this.mUpdateStrategyHolder
-      lipSync <- strategy.effects.filter(_.isInstanceOf[LipSyncFromMic])
-    } {
-      lipSync.asInstanceOf[LipSyncFromMic].weight = weight / 10.0f
-    }
+    this.mUpdateStrategyHolder.foreach(_.updateMicLipSyncWeight(weight))
   }
 
   def enableMicLipSync(mixer: Mixer, weight: Int, forceEvenNoSetting: Boolean): Unit = {
-    disableMicLipSync()
-
-    for {
-      avatar <- this.avatarHolder
-      strategy <- this.mUpdateStrategyHolder
-    } {
-      val lipSyncFromMic = LipSyncFromMic(avatar.avatarSettings, mixer, weight / 10.0f, forceEvenNoSetting)
-      lipSyncFromMic.failed.foreach(_.printStackTrace())
-      lipSyncFromMic.foreach(l => strategy.effects ::= l )
-    }
-
+    this.mUpdateStrategyHolder.foreach(_.enableMicLipSync(mixer, weight, forceEvenNoSetting))
   }
 
   def disableMicLipSync(): Unit = {
-    for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects
-        .filter(_.isInstanceOf[LipSyncFromMic])
-        .map(_.asInstanceOf[LipSyncFromMic])
-        .foreach(_.stop())
-
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[LipSyncFromMic])
-    }
+    this.mUpdateStrategyHolder.foreach(_.disableMicLipSync())
   }
 
-  def disableLipSyncFromMotionSound(): Unit = {
-    for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects
-        .filter(_.isInstanceOf[LipSyncFromMotionSound])
-        .map(_.asInstanceOf[LipSyncFromMotionSound])
-        .foreach(_.stop())
-
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[LipSyncFromMotionSound])
-    }
+  def enableLipSyncFromMotionSound(isEnabled: Boolean): Unit = {
+    this.mUpdateStrategyHolder.foreach(_.enableLipSyncFromMotion(isEnabled))
   }
 
-  def enableLipSyncFromMotionSound(): Unit = {
-    for {
-      avatar <- this.avatarHolder
-      strategy <- this.mUpdateStrategyHolder
-    } {
-      strategy.effects ::= new LipSyncFromMotionSound(avatar.avatarSettings, 100)
-    }
+  def enableBreath(isEnabled: Boolean): Unit = {
+    this.mUpdateStrategyHolder.foreach(_.enableBreath(isEnabled))
   }
 
-  def enableBreath(): Unit = {
-    for {
-      _ <- this.avatarHolder
-      strategy <- this.mUpdateStrategyHolder
-    } {
-      strategy.effects ::= new Breath
-    }
-  }
-
-  def disableFaceDirection(): Unit = {
-    for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[FaceDirection])
-    }
-  }
-
-  def enableFaceDirection(): Unit = {
-    for {
-      _ <- this.avatarHolder
-      strategy <- this.mUpdateStrategyHolder
-    } {
-      strategy.effects ::= faceDirection
-    }
+  def enableFaceDirection(isEnabled: Boolean): Unit = {
+    this.mUpdateStrategyHolder.foreach(_.enableFaceDirection(isEnabled))
   }
 
   def resetFaceDirection(): Unit = {
-    targetPointCalculator.updateFaceTargetCoordinate(0, 0)
+    faceDirectionCalculator.updateFaceTargetCoordinate(0, 0)
   }
 
-  def disableEyeBlink(): Unit = {
-    for (strategy <- this.mUpdateStrategyHolder) {
-      strategy.effects = strategy.effects.filterNot(_.isInstanceOf[EyeBlink])
-    }
-  }
-
-  def enableEyeBlink(): Unit = {
-    for {
-      avatar <- this.avatarHolder
-      strategy <- this.mUpdateStrategyHolder
-    } {
-      strategy.effects ::= new EyeBlink(avatar.avatarSettings)
-    }
+  def enableEyeBlink(isEnabled: Boolean): Unit = {
+    this.mUpdateStrategyHolder.foreach(_.enableEyeBlink(isEnabled))
   }
 
   def onMouseMoved(x: Int, y: Int): Unit = {
@@ -155,7 +71,7 @@ trait EffectControl extends MotionListener {
       val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
       val viewX = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedX(transformedX)
       val viewY = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedY(transformedY)
-      targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)
+      faceDirectionCalculator.updateFaceTargetCoordinate(viewX, viewY)
     }
   }
 
@@ -165,7 +81,7 @@ trait EffectControl extends MotionListener {
       val transformedY = viewPortMatrixCalculator.drawCanvasToModelMatrix.transformedY(y.toFloat)
       val viewX = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedX(transformedX)
       val viewY = viewPortMatrixCalculator.viewPortMatrix.invertedTransformedY(transformedY)
-      targetPointCalculator.updateFaceTargetCoordinate(viewX, viewY)
+      faceDirectionCalculator.updateFaceTargetCoordinate(viewX, viewY)
     }
   }
 

@@ -12,13 +12,16 @@ Disclaimer
 Background
 -----------
 
-This project is heavily inspired by [facial-landmarks-for-cubism][0]. 
 
 I'm tired that there is no good webcam to Live2D program in Linux. Although the [facial-landmarks-for-cubism][0] provides a functional program, it requires user to have some decent knowledge about how to patch and build a C++ program in order to use.
 
 The ultimate goal of this project is to provide something like [VTuber Studio][1] in the Linux world. Maybe with less features, but should be with a good out-of-box experience.
 
 The whole idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS Intel without the change in the source code.
+
+### Acknowledgement
+
+This project is heavily inspired by [facial-landmarks-for-cubism][0]. More specifically, the algorithm about how to convert OpenSeeFace data point into Live2D parameter in this project, are ported from [facial-landmarks-for-cubism][0].
 
 Screenshots
 --------------------
@@ -277,6 +280,37 @@ We used it under the Free Material License Agreement from Live2D Inc.
 * [Free Material License Agreement](https://www.live2d.com/eula/live2d-free-material-license-agreement_en.html)
 * [無償提供マテリアルの使用許諾契約書](https://www.live2d.com/eula/live2d-free-material-license-agreement_jp.html)
 * [无偿提供素材使用授权协议](https://www.live2d.com/eula/live2d-free-material-license-agreement_cn.html)
+
+facial-landmarks-for-cubism
+-----------------------------
+
+The OpenSeeFace data point to Live2D parameters' algorithm in this project is mainly from [adrianiainlam/facial-landmarks-for-cubism][0]. 
+
+Although this project does not include the original C++ version source code, it includes comments which could be found at above project regrading the explanation of various calculation.
+
+[facial-landmarks-for-cubism][0] is released under MIT License with the following declaration:
+
+```
+Copyright (c) 2020 Adrian I. Lam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
 Background
 --------------

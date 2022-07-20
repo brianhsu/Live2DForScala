@@ -7,9 +7,10 @@ import moe.brianhsu.live2d.enitiy.core.CsmCoordinate
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.model
-import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
-import moe.brianhsu.live2d.enitiy.model.{ModelCanvasInfo, MocInfo, Parameter, Part}
-import moe.brianhsu.live2d.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
+import moe.brianhsu.live2d.enitiy.model.drawable._
+import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Parameter, Part}
+import moe.brianhsu.live2d.exception._
 
 import scala.util.Try
 
@@ -234,27 +235,38 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
 
     val range = (0 until drawableCounts).toList
 
-    range.map { i =>
-      val drawableId = drawableIdList(i)
-      val constantFlags = ConstantFlags(constantFlagsList(i))
-      val dynamicFlags = new DynamicFlags(dynamicFlagsList.pointerToByte(i))
-      val textureIndex = textureIndexList(i)
-      val drawOrderPointer = drawOrderList.pointerToInt(i)
-      val renderOrderPointer = renderOrderList.pointerToInt(i)
-      val opacityPointer = opacityList.pointerToFloat(i)
-      val maskCount = maskCountList(i)
-      val masks = (0 until maskCount).toList.map(j => masksList(i)(j))
+    range.map { index =>
+      val drawableId = drawableIdList(index)
+      val constantFlags = ConstantFlags(constantFlagsList(index))
+      val dynamicFlags = new DynamicFlags(dynamicFlagsList.pointerToByte(index))
+      val textureIndex = textureIndexList(index)
+      val drawOrderPointer = drawOrderList.pointerToInt(index)
+      val renderOrderPointer = renderOrderList.pointerToInt(index)
+      val opacityPointer = opacityList.pointerToFloat(index)
+      val maskCount = maskCountList(index)
+      val masks = (0 until maskCount).toList.map(j => masksList(index)(j))
       val vertexInfo = new VertexInfo(
-        vertexCountList(i),
-        indexCountList(i),
-        positionList(i),
-        textureCoordinateList(i),
-        indexList(i)
+        vertexCountList(index),
+        indexCountList(index),
+        positionList(index),
+        textureCoordinateList(index),
+        indexList(index)
       )
 
+      val multiplyColorFetcher: ColorFetcher = () => {
+        val nativeColor = core.cubismAPI.csmGetDrawableMultiplyColors(cubismModel)(index)
+        DrawableColor(nativeColor.red, nativeColor.green, nativeColor.blue, nativeColor.alpha)
+      }
+
+      val screenColorFetcher: ColorFetcher = () => {
+        val nativeColor = core.cubismAPI.csmGetDrawableScreenColors(cubismModel)(index)
+        DrawableColor(nativeColor.red, nativeColor.green, nativeColor.blue, nativeColor.alpha)
+      }
+
       val drawable = Drawable(
-        drawableId, i, constantFlags, dynamicFlags, textureIndex, masks,
-        vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer
+        drawableId, index, constantFlags, dynamicFlags, textureIndex,
+        masks, vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer,
+        multiplyColorFetcher, screenColorFetcher
       )
 
       drawableId -> drawable

@@ -87,6 +87,41 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
 
   }
 
+  Feature("Start / stop the effects") {
+    Scenario("Start the effect") {
+      Given("a folder path contains json files for Rice Live2D avatar model")
+      val folderPath = "src/test/resources/models/Rice"
+
+      When("create a Physics effect from this Live2D avatar settings")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val settings: Settings = jsonSettingsReader.loadSettings().success.value
+      val physics = new AvatarPhysicsReader(settings).loadPhysics.value
+
+      When("start the Physics effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        physics.start()
+      }
+    }
+
+    Scenario("Stop the effect") {
+      Given("a folder path contains json files for Rice Live2D avatar model")
+      val folderPath = "src/test/resources/models/Rice"
+
+      When("create a Physics effect from this Live2D avatar settings")
+      val jsonSettingsReader = new JsonSettingsReader(folderPath)
+      val settings: Settings = jsonSettingsReader.loadSettings().success.value
+      val physics = new AvatarPhysicsReader(settings).loadPhysics.value
+
+      When("stop the Physics effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        physics.stop()
+      }
+    }
+
+  }
+
   private def parseLog(line: String): LogData = parse(line).extract[LogData]
 
   private def createStubbedModel(logData: LogData): Live2DModel = {

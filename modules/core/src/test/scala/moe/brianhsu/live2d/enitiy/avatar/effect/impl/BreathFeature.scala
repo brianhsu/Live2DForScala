@@ -57,4 +57,30 @@ class BreathFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with
     }
 
   }
+
+  Feature("Start / stop the effects") {
+    Scenario("Start the effect") {
+      Given("a breath effect")
+      val breath = new Breath()
+
+      When("start the Breath effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        breath.start()
+      }
+    }
+
+    Scenario("Stop the effect") {
+      Given("a breath effect")
+      val breath = new Breath()
+
+      When("stop the Breath effect")
+      Then("nothing should happen")
+      noException shouldBe thrownBy {
+        breath.stop()
+      }
+    }
+
+  }
+
 }

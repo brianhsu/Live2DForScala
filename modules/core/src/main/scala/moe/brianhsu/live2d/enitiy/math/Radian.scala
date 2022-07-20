@@ -12,6 +12,8 @@ object Radian {
 
   def degreesToRadian(degrees: Float): Float = (degrees / 180.0f) * PI
 
+  def radianToDegrees(radian: Float): Float = (radian * 180.0f) / PI
+
   def directionToRadian(from: EuclideanVector, to: EuclideanVector): Float = {
     val q1 = Math.atan2(to.y, to.x).toFloat
     val q2 = Math.atan2(from.y, from.x).toFloat

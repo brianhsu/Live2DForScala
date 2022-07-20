@@ -7,8 +7,8 @@ import moe.brianhsu.live2d.adapter.gateway.model.MocInfoFileReader
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types._
-import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, ModelCanvasInfo, MocInfo, Part}
+import moe.brianhsu.live2d.enitiy.model.drawable.{Drawable, DrawableColor}
+import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, MocInfo, ModelCanvasInfo, Part}
 import moe.brianhsu.live2d.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.utils.MockedNativeCubismAPILoader
 import moe.brianhsu.utils.expectation.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableIndex, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter}
@@ -168,7 +168,9 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
         val drawable = drawables(expectedBasicInfo.id)
         inside(drawable) { case Drawable(id, index, constantFlags, dynamicFlags, textureIndex, masks,
-                                         vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer) =>
+                                         vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer,
+                                         multiplyColorFetcher, screenColorFetcher) =>
+
           id shouldBe expectedBasicInfo.id
           index shouldBe >= (0)
           constantFlags.bitmask shouldBe expectedBasicInfo.constFlags
@@ -181,6 +183,8 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
           drawOrderPointer should not be null
           renderOrderPointer should not be null
           opacityPointer should not be null
+          multiplyColorFetcher() shouldBe DrawableColor(1.0f, 1.0f, 1.0f, 1.0f)
+          screenColorFetcher() shouldBe DrawableColor(0.0f, 0.0f, 0.0f, 1.0f)
         }
         drawable.renderOrder shouldBe expectedBasicInfo.renderOrder
         drawable.drawOrder shouldBe expectedBasicInfo.drawOrder

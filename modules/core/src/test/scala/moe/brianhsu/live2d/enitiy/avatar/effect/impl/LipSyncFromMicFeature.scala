@@ -4,7 +4,7 @@ import moe.brianhsu.live2d.enitiy.audio.{AudioDispatcher, AudioRMSCalculator}
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.ParameterValueAdd
-import moe.brianhsu.utils.mock.AudioMock
+import moe.brianhsu.utils.mock.{AudioMock, MixerMock}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -12,9 +12,9 @@ import org.scalatest.{GivenWhenThen, TryValues}
 
 import javax.sound.sampled._
 
-class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory with TryValues with AudioMock {
+class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory with TryValues
+                            with AudioMock with MixerMock {
 
-  private val model: Live2DModel = mock[Live2DModel]
   private val lipSyncIds: List[String] = List("LipSyncId1", "LipSyncId2")
 
   Feature("Create LipSyncFromMic using avatar setting and mixer") {
@@ -23,14 +23,7 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       val avatarSettings = Settings(null, Nil, None, None, Nil, lipSyncIds, Map.empty, Map.empty, Nil)
 
       And("a stubbed mixer")
-      val audioFormat = new AudioFormat(44100, 16, 1, true,false)
-      val mixer = stub[Mixer]
-      val targetDataLine = stub[TargetDataLine]
-      val targetLineInfo = new DataLine.Info(classOf[TargetDataLine], audioFormat)
-      (() => mixer.getTargetLineInfo).when().returns(Array(targetLineInfo))
-      (mixer.getLine _).when(*).returns(targetDataLine)
-      (() => targetDataLine.getFormat).when().returns(audioFormat)
-      (targetDataLine.read _).when(*, *, *).returns(-1)
+      val (mixer, targetDataLine) = createStubbedMixer()
 
       When("create a LipSyncFromMic from them")
       val lipSyncHolder = LipSyncFromMic(avatarSettings, mixer, 3.5f, forceEvenNoSetting = false)
@@ -47,6 +40,8 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       And("the targetDataLine should be opened and started")
       (targetDataLine.open: AudioFormat => Unit).verify(*).once()
       (() => targetDataLine.start()).verify().once()
+
+      lipSyncHolder.foreach(_.stop())
     }
 
     Scenario("Create LipSyncFromMic from avatar without lipSyncIds and force lip sync") {
@@ -54,14 +49,7 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       val avatarSettings = Settings(null, Nil, None, None, Nil, Nil, Map.empty, Map.empty, Nil)
 
       And("a stubbed mixer")
-      val audioFormat = new AudioFormat(44100, 16, 1, true,false)
-      val mixer = stub[Mixer]
-      val targetDataLine = stub[TargetDataLine]
-      val targetLineInfo = new DataLine.Info(classOf[TargetDataLine], audioFormat)
-      (() => mixer.getTargetLineInfo).when().returns(Array(targetLineInfo))
-      (mixer.getLine _).when(*).returns(targetDataLine)
-      (() => targetDataLine.getFormat).when().returns(audioFormat)
-      (targetDataLine.read _).when(*, *, *).returns(-1)
+      val (mixer, targetDataLine) = createStubbedMixer()
 
       When("create a LipSyncFromMic from them")
       val lipSyncHolder = LipSyncFromMic(avatarSettings, mixer, 3.5f, forceEvenNoSetting = true)
@@ -78,20 +66,16 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       And("the targetDataLine should be opened and started")
       (targetDataLine.open: AudioFormat => Unit).verify(*).once()
       (() => targetDataLine.start()).verify().once()
+
+      lipSyncHolder.foreach(_.stop())
     }
+
     Scenario("Create LipSyncFromMic from avatar without lipSyncIds and NOT force lip sync") {
       Given("an avatar setting")
       val avatarSettings = Settings(null, Nil, None, None, Nil, Nil, Map.empty, Map.empty, Nil)
 
       And("a stubbed mixer")
-      val audioFormat = new AudioFormat(44100, 16, 1, true,false)
-      val mixer = stub[Mixer]
-      val targetDataLine = stub[TargetDataLine]
-      val targetLineInfo = new DataLine.Info(classOf[TargetDataLine], audioFormat)
-      (() => mixer.getTargetLineInfo).when().returns(Array(targetLineInfo))
-      (mixer.getLine _).when(*).returns(targetDataLine)
-      (() => targetDataLine.getFormat).when().returns(audioFormat)
-      (targetDataLine.read _).when(*, *, *).returns(-1)
+      val (mixer, targetDataLine) = createStubbedMixer()
 
       When("create a LipSyncFromMic from them")
       val lipSyncHolder = LipSyncFromMic(avatarSettings, mixer, 3.5f, forceEvenNoSetting = false)
@@ -108,6 +92,8 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       And("the targetDataLine should be opened and started")
       (targetDataLine.open: AudioFormat => Unit).verify(*).once()
       (() => targetDataLine.start()).verify().once()
+
+      lipSyncHolder.foreach(_.stop())
     }
 
     Scenario("Create LipSyncFromMic failed") {
@@ -139,16 +125,20 @@ class LipSyncFromMicFeature extends AnyFeatureSpec with GivenWhenThen with Match
       val dispatcher = stub[AudioDispatcher]
       val lipSyncFromMic = new LipSyncFromMic(lipSyncIds, dispatcher, audioRMSCalculator)
 
-      When("calculate the update operation")
-      val operation1 = lipSyncFromMic.calculateOperations(model, 1, 1)
+      When("start and calculate the update operation")
+      lipSyncFromMic.start()
+      Thread.sleep(100) // Make sure the dispatcher thread is started.
+      val operation1 = lipSyncFromMic.calculateOperations(mock[Live2DModel], 1, 1)
 
-      Then("the dispatcher should be started")
-      Thread.sleep(500) // Make sure the dispatcher thread is started.
-      (() => dispatcher.run()).verify().once()
-
-      And("the operation should add lip sync parameter correctly")
+      Then("the operation should add lip sync parameter correctly")
       operation1 should contain theSameElementsInOrderAs List(ParameterValueAdd("LipSyncId1", 1.23f, 5.0f), ParameterValueAdd("LipSyncId2", 1.23f, 5.0f))
 
+      Thread.sleep(100)
+
+      lipSyncFromMic.stop()
+
+      Then("the dispatcher should be started")
+      (() => dispatcher.run()).verify().once()
     }
 
   }

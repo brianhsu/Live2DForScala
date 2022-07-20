@@ -5,7 +5,7 @@ import com.jogamp.opengl.{GLAutoDrawable, GLEventListener}
 import moe.brianhsu.live2d.adapter.gateway.opengl.jogl.JavaOpenGLBinding
 import moe.brianhsu.live2d.adapter.gateway.renderer.jogl.JOGLCanvasInfoReader
 import moe.brianhsu.live2d.demo.app.DemoApp
-import moe.brianhsu.live2d.demo.swing.widget.{SwingEffectSelector, SwingExpressionSelector, SwingMotionSelector, SwingStatusBar, SwingToolbar}
+import moe.brianhsu.live2d.demo.swing.widget.{SwingEffectSelector, SwingExpressionSelector, SwingFaceTrackingPane, SwingMotionSelector, SwingStatusBar, SwingToolbar}
 
 import java.awt.event._
 import javax.swing.SwingUtilities
@@ -18,6 +18,7 @@ class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener w
   val effectSelector = new SwingEffectSelector(this)
   val toolbar = new SwingToolbar(this)
   val statusBar = new SwingStatusBar()
+  val faceTrackingPane = new SwingFaceTrackingPane(this)
 
   private var animator: Option[FixedFPSAnimator] = None
   private val canvasInfo = new JOGLCanvasInfoReader(canvas)
@@ -46,11 +47,12 @@ class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener w
     new DemoApp(canvasInfo, runOnOpenGLThread) {
       override def onStatusUpdated(status: String): Unit = statusBar.setText(status)
       override def onAvatarLoaded(live2DView: DemoApp): Unit = {
+        faceTrackingPane.enableStartButton()
         live2DView.avatarHolder.foreach { avatar =>
           expressionSelector.updateExpressionList(avatar)
           motionSelector.updateMotionTree(avatar)
         }
-        live2DView.basicUpdateStrategyHolder.foreach { strategy =>
+        live2DView.strategyHolder.foreach { strategy =>
           effectSelector.syncWithStrategy(strategy)
           motionSelector.syncWithStrategy(strategy)
         }

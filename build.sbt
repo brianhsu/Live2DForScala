@@ -19,7 +19,7 @@ val swtWindows = "org.eclipse.platform" % "org.eclipse.swt.win32.win32.x86_64" %
 val swtLinux = "org.eclipse.platform" % "org.eclipse.swt.gtk.linux.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
 
 val testFramework = Seq(
-  "org.scalatest" %% "scalatest" % "3.2.11" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.12" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test,
   "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test
 )
@@ -29,6 +29,7 @@ val sharedSettings = Seq(
   Compile / doc / scalacOptions ++= Seq("-private"),
   autoAPIMappings := true,
   libraryDependencies ++= testFramework,
+  libraryDependencies += "com.github.sarxos" % "webcam-capture" % "0.3.12",
   coverageExcludedPackages := """moe\.brianhsu\.live2d\.demo\..*"""
 )
 
@@ -79,6 +80,7 @@ lazy val exampleSwing = (project in file("modules/examples/swing"))
     name := "Example Swing+JOGL",
     fork := true,
     publishArtifact := false,
+    assembly / assemblyJarName := s"Live2DForScala-Swing-${version.value}.jar",
     sharedSettings
   )
 
@@ -100,6 +102,7 @@ lazy val exampleSWTLinux = (project in file("modules/examples/swt-linux-bundle")
     publishArtifact := false,
     Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
     sharedSettings,
+    assembly / assemblyJarName := s"Live2DForScala-SWT-Linux-${version.value}.jar",
     libraryDependencies += swtLinux
   )
 
@@ -111,5 +114,6 @@ lazy val exampleSWTWin = (project in file("modules/examples/swt-windows-bundle")
     publishArtifact := false,
     Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
     sharedSettings,
+    assembly / assemblyJarName := s"Live2DForScala-SWT-Windows-${version.value}.jar",
     libraryDependencies += swtWindows
   )

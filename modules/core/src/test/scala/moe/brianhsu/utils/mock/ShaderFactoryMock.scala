@@ -32,7 +32,8 @@ trait ShaderFactoryMock {
       override val uniformClipMatrixLocation: Int = 1006
       override val uniformBaseColorLocation: Int = 1007
       override val uniformMatrixLocation: Int = 1008
-
+      override val uniformMultiplyColorLocation: Int = 1009
+      override val uniformScreenColorLocation: Int = 1010
       override def createShaderProgram(): Int = 1000
     }
   }
@@ -48,7 +49,8 @@ trait ShaderFactoryMock {
       override val uniformClipMatrixLocation: Int = 2006
       override val uniformBaseColorLocation: Int = 2007
       override val uniformMatrixLocation: Int = 2008
-
+      override val uniformMultiplyColorLocation: Int = 2009
+      override val uniformScreenColorLocation: Int = 2010
       override def createShaderProgram(): Int = 2000
 
     }
@@ -65,6 +67,8 @@ trait ShaderFactoryMock {
       override val uniformClipMatrixLocation: Int = 3006
       override val uniformBaseColorLocation: Int = 3007
       override val uniformMatrixLocation: Int = 3008
+      override val uniformMultiplyColorLocation: Int = 3009
+      override val uniformScreenColorLocation: Int = 3010
 
       override def createShaderProgram(): Int = 3009
     }
@@ -81,7 +85,8 @@ trait ShaderFactoryMock {
       override val uniformClipMatrixLocation: Int = 4006
       override val uniformBaseColorLocation: Int = 4007
       override val uniformMatrixLocation: Int = 4008
-
+      override val uniformMultiplyColorLocation: Int = 4009
+      override val uniformScreenColorLocation: Int = 4010
       override def createShaderProgram(): Int = 4000
     }
   }

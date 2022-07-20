@@ -3,7 +3,8 @@ package moe.brianhsu.live2d.usecase.renderer.opengl.clipping
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI.ConstantDrawableFlagMask.csmIsDoubleSided
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
-import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
+import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DrawableColor, DynamicFlags, VertexInfo}
 import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.ViewPort
 import moe.brianhsu.live2d.enitiy.opengl.texture.{TextureInfo, TextureManager}
 import moe.brianhsu.live2d.enitiy.opengl.{OpenGLBinding, RichOpenGLBinding}
@@ -227,7 +228,11 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
           // First mask drawable
           (binding.setCapabilityEnabled _).verify(GL_CULL_FACE, true)
           (binding.glFrontFace _).verify(GL_CCW).once()
-          (shaderRenderer.renderMask _).verify(clippingContextList.head, 0, *, *).once()
+          (shaderRenderer.renderMask _).verify(
+            clippingContextList.head, 0, *, *,
+            DrawableColor(1.0f, 2.0f, 3.0f, 4.0f),
+            DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
+          ).once()
           (binding.glDrawElements _).verify(GL_TRIANGLES, 0, *, *).once()
           (binding.glUseProgram _).verify(0).once()
         }
@@ -236,7 +241,11 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
           // Second mask drawable
           (binding.setCapabilityEnabled _).verify(GL_CULL_FACE, false)
           (binding.glFrontFace _).verify(GL_CCW).once()
-          (shaderRenderer.renderMask _).verify(clippingContextList(1), 2, *, *).once()
+          (shaderRenderer.renderMask _).verify(
+            clippingContextList(1), 2, *, *,
+            DrawableColor(1.0f, 2.0f, 3.0f, 4.0f),
+            DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
+          ).once()
           (binding.glDrawElements _).verify(GL_TRIANGLES, 2, *, *).once()
           (binding.glUseProgram _).verify(0).once()
         }
@@ -302,7 +311,11 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
           // First mask drawable
           (binding.setCapabilityEnabled _).verify(GL_CULL_FACE, true)
           (binding.glFrontFace _).verify(GL_CCW).once()
-          (shaderRenderer.renderMask _).verify(clippingContextList.head, 0, *, *).once()
+          (shaderRenderer.renderMask _).verify(
+            clippingContextList.head, 0, *, *,
+            DrawableColor(1.0f, 2.0f, 3.0f, 4.0f),
+            DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
+          ).once()
           (binding.glDrawElements _).verify(GL_TRIANGLES, 0, *, *).once()
           (binding.glUseProgram _).verify(0).once()
         }
@@ -311,7 +324,11 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
           // Second mask drawable
           (binding.setCapabilityEnabled _).verify(GL_CULL_FACE, false)
           (binding.glFrontFace _).verify(GL_CCW).once()
-          (shaderRenderer.renderMask _).verify(clippingContextList(1), 2, *, *).once()
+          (shaderRenderer.renderMask _).verify(
+            clippingContextList(1), 2, *, *,
+            DrawableColor(1.0f, 2.0f, 3.0f, 4.0f),
+            DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
+          ).once()
           (binding.glDrawElements _).verify(GL_TRIANGLES, 2, *, *).once()
           (binding.glUseProgram _).verify(0).once()
         }
@@ -322,6 +339,8 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     }
   }
 
+  val multiplyColorFetcher: ColorFetcher = () => DrawableColor(1.0f, 2.0f, 3.0f, 4.0f)
+  val screenColorFetcher: ColorFetcher = () => DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
 
   private def createDrawable(id: String, index:Int, isCulling: Boolean, isVertexChanged: Boolean): Drawable = {
     val vertexInfo = new VertexInfo(index, index, null, null, null) {
@@ -332,7 +351,11 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     val flagsValue = if (isCulling) 0 | csmIsDoubleSided else 0
     val dynamicFlag = stub[DynamicFlags]
     (() => dynamicFlag.vertexPositionChanged).when().returns(isVertexChanged)
-    Drawable(id, index, ConstantFlags(flagsValue.toByte), dynamicFlag, index, Nil, vertexInfo, null, null, null)
+
+    Drawable(
+      id, index, ConstantFlags(flagsValue.toByte), dynamicFlag, index, Nil,
+      vertexInfo, null, null, null, multiplyColorFetcher, screenColorFetcher
+    )
   }
 
   private def createClippingManager(): (Map[String, Drawable], ClippingManager) = {

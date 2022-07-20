@@ -56,6 +56,10 @@ class EyeBlink (avatarSettings: Settings,
     }
   }
 
+  override def start(): Unit = {}
+
+  override def stop(): Unit = {}
+
   private def closedEye(currentTimeInSeconds: Float) = {
     val portion: Float = (currentTimeInSeconds - currentStateStartTimeInSeconds) / parameters.closedInSeconds
 

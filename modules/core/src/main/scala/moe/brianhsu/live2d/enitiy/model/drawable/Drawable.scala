@@ -1,6 +1,11 @@
 package moe.brianhsu.live2d.enitiy.model.drawable
 
 import com.sun.jna.Pointer
+import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
+
+object Drawable {
+  type ColorFetcher = () => DrawableColor
+}
 
 /**
  * This class represent the drawable objects inside a Live2D model.
@@ -16,11 +21,7 @@ import com.sun.jna.Pointer
  * @param renderOrderPointer The pointer to the actual memory address of render order value.
  * @param opacityPointer     The pointer to the actual memory address of opacity order value.
  */
-case class Drawable(id: String, index: Int, constantFlags: ConstantFlags, dynamicFlags: DynamicFlags,
-                    textureIndex: Int, masks: List[Int], vertexInfo: VertexInfo,
-                    private val drawOrderPointer: Pointer,
-                    private val renderOrderPointer: Pointer,
-                    private val opacityPointer: Pointer) {
+case class Drawable(id: String, index: Int, constantFlags: ConstantFlags, dynamicFlags: DynamicFlags, textureIndex: Int, masks: List[Int], vertexInfo: VertexInfo, private val drawOrderPointer: Pointer, private val renderOrderPointer: Pointer, private val opacityPointer: Pointer, multiplyColorFetcher: ColorFetcher, screenColorFetcher: ColorFetcher) {
 
   /**
    * Should renderer use face culling on this drawable?

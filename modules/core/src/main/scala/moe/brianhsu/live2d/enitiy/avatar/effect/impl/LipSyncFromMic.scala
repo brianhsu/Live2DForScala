@@ -11,9 +11,10 @@ object LipSyncFromMic {
   private val DefaultWeight = 5f
   private val InputAudioFormat = new AudioFormat(44100, 16, 1, true,false)
 
-  def findInputMixers() = {
-    AudioSystem.getMixerInfo
-      .map(AudioSystem.getMixer)
+  def findInputMixers(getMixerInfo: => Array[Mixer.Info] = AudioSystem.getMixerInfo,
+                      getMixer: Mixer.Info => Mixer = AudioSystem.getMixer) = {
+    getMixerInfo
+      .map(getMixer)
       .filter(_.isLineSupported(new DataLine.Info(classOf[TargetDataLine], InputAudioFormat)))
       .toList
   }
@@ -52,9 +53,12 @@ class LipSyncFromMic(override val lipSyncIds: List[String],
 
   private val thread = new Thread(audioDispatcher)
 
-  thread.start()
 
   override def currentRms: Float = audioRMSCalculator.currentRMS
+
+  override def start(): Unit = {
+    thread.start()
+  }
 
   def stop(): Unit = {
     audioDispatcher.stop()
