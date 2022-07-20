@@ -114,6 +114,6 @@ lazy val exampleSWTWin = (project in file("modules/examples/swt-windows-bundle")
     publishArtifact := false,
     Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
     sharedSettings,
-    assembly / assemblyJarName := s"Live2DForScala-Windows-Linux-${version.value}.jar",
+    assembly / assemblyJarName := s"Live2DForScala-SWT-Windows-${version.value}.jar",
     libraryDependencies += swtWindows
   )

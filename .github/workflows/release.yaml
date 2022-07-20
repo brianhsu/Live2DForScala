@@ -64,6 +64,24 @@ jobs:
           tar -cvzf Live2DForScala-SWT-Linux-$version.tar.gz Live2DForScala-SWT-Linux/
           ls -l
 
+      - name: Upload Swing Version
+        uses: actions/upload-artifact@v1
+        with:
+          name: Live2DForScala-Swing
+          path: Live2DForScala-Swing-*.zip
+
+      - name: Upload SWT Linux Version
+        uses: actions/upload-artifact@v1
+        with:
+          name: Live2DForScala-SWT-Linux
+          path: Live2DForScala-SWT-Linux-*.tar.gz
+
+      - name: Upload SWT Windows Version
+        uses: actions/upload-artifact@v1
+        with:
+          name: Live2DForScala-SWT-Windows
+          path: Live2DForScala-SWT-Windows-*.zip
+
       - name: Update badges
         run: |
           ./doc/images/generateCoverageBadage.sh
