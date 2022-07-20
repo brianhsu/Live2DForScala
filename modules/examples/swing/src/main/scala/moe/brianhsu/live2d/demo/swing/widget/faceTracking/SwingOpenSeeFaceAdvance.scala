@@ -1,12 +1,14 @@
 package moe.brianhsu.live2d.demo.swing.widget.faceTracking
 
+import moe.brianhsu.live2d.demo.openSeeFace.OpenSeeFaceSetting
+
 import java.awt.event.ActionEvent
 import java.awt.{GridBagConstraints, GridBagLayout}
 import javax.swing._
 import javax.swing.event.{DocumentEvent, DocumentListener}
 import scala.annotation.unused
 
-class SwingOpenSeeFaceAdvance extends JPanel with SwingOpenSeeFaceSetting  {
+class SwingOpenSeeFaceAdvance extends JPanel with OpenSeeFaceSetting  {
 
   this.setLayout(new GridBagLayout)
   this.setBorder(BorderFactory.createTitledBorder("OpenSeeFace Settings"))

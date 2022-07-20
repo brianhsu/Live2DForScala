@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.demo.swt.widget
 
 import moe.brianhsu.live2d.demo.app.DemoApp
-import moe.brianhsu.live2d.demo.openSeeFace.{CameraListing, ExternalOpenSeeFaceDataReader}
-import moe.brianhsu.live2d.demo.swt.widget.faceTracking.{SWTOpenSeeFaceAdvance, SWTOpenSeeFaceBundle, SWTOpenSeeFaceSetting}
+import moe.brianhsu.live2d.demo.openSeeFace.{CameraListing, ExternalOpenSeeFaceDataReader, OpenSeeFaceSetting}
+import moe.brianhsu.live2d.demo.swt.widget.faceTracking.{SWTOpenSeeFaceAdvance, SWTOpenSeeFaceBundle}
 import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData
 import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData.Point
 import org.eclipse.swt.SWT
@@ -98,7 +98,7 @@ class SWTFaceTrackingComposite(parent: Composite) extends Composite(parent, SWT.
     (startButton, stopButton, composite, stackLayout)
   }
 
-  private def getOpenSeeFaceSetting: SWTOpenSeeFaceSetting = {
+  private def getOpenSeeFaceSetting: OpenSeeFaceSetting = {
     this.combo.getSelectionIndex match {
       case 0 => bundle
       case 1 => advanced

@@ -1,11 +1,11 @@
 package moe.brianhsu.live2d.demo.swt.widget.faceTracking
 
-import moe.brianhsu.live2d.demo.openSeeFace.CameraListing
+import moe.brianhsu.live2d.demo.openSeeFace.{CameraListing, OpenSeeFaceSetting}
 import org.eclipse.swt.SWT
 import org.eclipse.swt.layout.{GridData, GridLayout}
 import org.eclipse.swt.widgets.{Combo, Composite, Label}
 
-class SWTOpenSeeFaceBundle(parent: Composite, cameraListing: CameraListing) extends Composite(parent, SWT.NONE) with SWTOpenSeeFaceSetting {
+class SWTOpenSeeFaceBundle(parent: Composite, cameraListing: CameraListing) extends Composite(parent, SWT.NONE) with OpenSeeFaceSetting {
   private val cameraCombo = createComboField(this, "Camera:", cameraListing.listing.map(_.title), 0, "Select camera for face tracking")
   private val fpsCombo = createComboField(
     this, "FPS:", List("24", "30", "60"), 1,
@@ -37,10 +37,11 @@ class SWTOpenSeeFaceBundle(parent: Composite, cameraListing: CameraListing) exte
   }
 
   override def getCommand: String = {
-    "python /home/brianhsu/WorkRoom/OpenSeeFace/facetracker.py " +
+    s"${OpenSeeFaceSetting.bundleExecution} " +
+      s"--model-dir ${OpenSeeFaceSetting.bundleModelDir} -M " +
       cameraIdSetting +
       cameraResolutionSetting +
-      Option(fpsCombo.getText).filter(_.nonEmpty).map("--fps " + _ + " ").getOrElse("")
+      Option(fpsCombo.getText).filter(_.nonEmpty).map("--fps " + _ + " ").getOrElse("") +
       Option(modelCombo.getText).filter(_.nonEmpty).map("--model " + _ + " ").getOrElse("") +
       Option(visualizeCombo.getText).filter(_.nonEmpty).map("--visualize " + _ + " ").getOrElse("")
   }

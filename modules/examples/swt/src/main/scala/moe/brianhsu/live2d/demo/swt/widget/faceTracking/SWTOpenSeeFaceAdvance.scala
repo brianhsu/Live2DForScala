@@ -1,12 +1,13 @@
 package moe.brianhsu.live2d.demo.swt.widget.faceTracking
 
+import moe.brianhsu.live2d.demo.openSeeFace.OpenSeeFaceSetting
 import org.eclipse.swt.SWT
 import org.eclipse.swt.layout.{GridData, GridLayout}
 import org.eclipse.swt.widgets._
 
 import scala.annotation.unused
 
-class SWTOpenSeeFaceAdvance(parent: Composite) extends Composite(parent, SWT.NONE) with SWTOpenSeeFaceSetting {
+class SWTOpenSeeFaceAdvance(parent: Composite) extends Composite(parent, SWT.NONE) with OpenSeeFaceSetting {
 
   private val commandText = createTextField(this, "Command:", "python /home/brianhsu/WorkRoom/OpenSeeFace/facetracker.py")
   private val ipText = createTextField(this,"IP:", "127.0.0.1", "Set IP address for sending tracking data")

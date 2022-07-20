@@ -1,8 +1,8 @@
 package moe.brianhsu.live2d.demo.swing.widget
 
-import moe.brianhsu.live2d.demo.openSeeFace.{CameraListing, ExternalOpenSeeFaceDataReader}
+import moe.brianhsu.live2d.demo.openSeeFace.{CameraListing, ExternalOpenSeeFaceDataReader, OpenSeeFaceSetting}
 import moe.brianhsu.live2d.demo.swing.Live2DUI
-import moe.brianhsu.live2d.demo.swing.widget.faceTracking.{SwingOpenSeeFaceAdvance, SwingOpenSeeFaceBundle, SwingOpenSeeFaceSetting}
+import moe.brianhsu.live2d.demo.swing.widget.faceTracking.{SwingOpenSeeFaceAdvance, SwingOpenSeeFaceBundle}
 import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData
 import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData.Point
 
@@ -134,7 +134,7 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
     }
   }
 
-  private def getOpenSeeFaceSetting: SwingOpenSeeFaceSetting = {
+  private def getOpenSeeFaceSetting: OpenSeeFaceSetting = {
     this.openSeeFaceModeCombo.getSelectedIndex match {
       case 0 => openSeeFaceBundle
       case 1 => openSeeFaceAdvance

@@ -80,6 +80,7 @@ lazy val exampleSwing = (project in file("modules/examples/swing"))
     name := "Example Swing+JOGL",
     fork := true,
     publishArtifact := false,
+    assembly / assemblyJarName := s"Live2DForScala-Swing-${version.value}.jar",
     sharedSettings
   )
 
@@ -101,6 +102,7 @@ lazy val exampleSWTLinux = (project in file("modules/examples/swt-linux-bundle")
     publishArtifact := false,
     Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
     sharedSettings,
+    assembly / assemblyJarName := s"Live2DForScala-SWT-Linux-${version.value}.jar",
     libraryDependencies += swtLinux
   )
 
@@ -112,5 +114,6 @@ lazy val exampleSWTWin = (project in file("modules/examples/swt-windows-bundle")
     publishArtifact := false,
     Compile / mainClass := Some("moe.brianhsu.live2d.demo.swt.SWTWithLWJGLMain"),
     sharedSettings,
+    assembly / assemblyJarName := s"Live2DForScala-SWT-Windows-${version.value}.jar",
     libraryDependencies += swtWindows
   )

@@ -11,4 +11,3 @@ ThisBuild / assemblyMergeStrategy := {
     oldStrategy(x)
   }
 }
-
