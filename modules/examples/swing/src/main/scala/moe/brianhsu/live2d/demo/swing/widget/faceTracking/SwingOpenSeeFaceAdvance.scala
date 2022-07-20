@@ -13,7 +13,7 @@ class SwingOpenSeeFaceAdvance extends JPanel with OpenSeeFaceSetting  {
   this.setLayout(new GridBagLayout)
   this.setBorder(BorderFactory.createTitledBorder("OpenSeeFace Settings"))
 
-  private val commandText = createTextField(this, 0, "Command:", "python /home/brianhsu/WorkRoom/OpenSeeFace/facetracker.py")
+  private val commandText = createTextField(this, 0, "Command:", "python facetracker.py")
   private val ipText = createTextField(this, 1, "IP:", "127.0.0.1", "Set IP address for sending tracking data")
   private val portText = createTextField(this, 2, "Port:", "11573", "Set port for sending tracking data")
   private val cameraIdText = createTextField(this, 3, "Camera ID:", "0", "Set camera ID (0, 1...)")

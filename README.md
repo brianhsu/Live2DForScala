@@ -27,10 +27,15 @@ Screenshots
 --------------------
 
 ### Swing + JOGL Version Under Linux
-![Screenshot of Swing Demo](doc/images/swing.png)
+![Screenshot of Swing Demo](doc/images/swing1.png)
+
+![Screenshot of Swing Demo Face Tracking](doc/images/swing2.png)
 
 ### SWT+LWJGL Version under Linux
-![Screenshot of SWT Demo](doc/images/swt.png)
+![Screenshot of SWT Demo](doc/images/swt1.png)
+
+![Screenshot of SWT Demo Face Tracking](doc/images/swt2.png)
+
 
 Feature
 --------------------
@@ -51,7 +56,7 @@ The following list shows features that this project currently supports or plan t
 
 ### Advance Feature
   - [x] Lip sync from microphone
-  - [ ] Use webcam to control Live2D avatar (VTuber like)
+  - [x] Use webcam to control Live2D avatar (VTuber like)
 
 ### Won't Implemented Feature
 
@@ -60,6 +65,12 @@ Some feature inside Cubism SDK for Native is dropped intended. Because I think t
 The following is the list of such features.
 
   - Priority motion queue
+
+TODO List
+--------------------
+
+  - [ ] Control OpenSeeFace -> Live2D model motion parameter through UI.
+  - [ ] Live2D model body movement by face tracking.
 
 Supported Platforms
 --------------------
@@ -122,6 +133,7 @@ See [modules/README.md](modules/README.md) for detailed documentation of each co
 │      ├── swt-linux-bundle   # The SWT version demo application with Linux SWT runtime.
 │      └── swt-windows-bundle # The SWT version demo application with Windows SWT runtime.
 ├── publish.sbt # Maven publish settings
+├── release.sbt # Release settings
 ├── README.md  
 └── version.sbt # Version settings
 ```
@@ -311,6 +323,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+OpenSeeFace
+--------------
+
+### OpenSeeFace
+
+The released package contains a bundled pre-built [OpenSeeFace][0] executable binary, which is released under `BSD-2-Clause` license.
+
+### Dependencies
+
+The bunlded OpenSeeFace package also contains it's dependencies, namely:
+
+ - [OpenCV](https://opencv.org/) released under Apache License.
+ - [ONNX Runtime](https://pypi.org/project/ort-nightly/) released under MIT License.
+ - [Pillow](https://pypi.org/project/Pillow/) released under Historical Permission Notice and Disclaimer.
+ - [Numpy](https://pypi.org/project/numpy/) released under BSD License.
 
 Background
 --------------

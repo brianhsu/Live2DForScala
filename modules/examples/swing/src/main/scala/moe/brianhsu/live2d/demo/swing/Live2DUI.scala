@@ -12,6 +12,11 @@ import javax.swing.SwingUtilities
 
 
 class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener with KeyListener {
+  private var animator: Option[FixedFPSAnimator] = None
+  private val canvasInfo = new JOGLCanvasInfoReader(canvas)
+  private var mDemoAppHolder: Option[DemoApp] = None
+  private var lastMouseX: Option[Int] = None
+  private var lastMouseY: Option[Int] = None
 
   val expressionSelector = new SwingExpressionSelector(this)
   val motionSelector = new SwingMotionSelector(this)
@@ -20,11 +25,6 @@ class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener w
   val statusBar = new SwingStatusBar()
   val faceTrackingPane = new SwingFaceTrackingPane(this)
 
-  private var animator: Option[FixedFPSAnimator] = None
-  private val canvasInfo = new JOGLCanvasInfoReader(canvas)
-  private var mDemoAppHolder: Option[DemoApp] = None
-  private var lastMouseX: Option[Int] = None
-  private var lastMouseY: Option[Int] = None
 
   def demoAppHolder: Option[DemoApp] = mDemoAppHolder
 

@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.demo.swing.widget
 
 import moe.brianhsu.live2d.demo.openSeeFace.{CameraListing, ExternalOpenSeeFaceDataReader, OpenSeeFaceSetting}
 import moe.brianhsu.live2d.demo.swing.Live2DUI
-import moe.brianhsu.live2d.demo.swing.widget.faceTracking.{SwingOpenSeeFaceAdvance, SwingOpenSeeFaceBundle}
+import moe.brianhsu.live2d.demo.swing.widget.faceTracking.{SwingOpenSeeFaceAdvance, SwingOpenSeeFaceBundle, SwingOpenSeeFacePlaceholder}
 import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData
 import moe.brianhsu.live2d.enitiy.openSeeFace.OpenSeeFaceData.Point
 
@@ -20,7 +20,7 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
   private val openSeeFaceModeLabel = new JLabel("Mode:")
   private val openSeeFaceModeCombo = new JComboBox[String](Array("Bundle", "Advanced"))
   private val openSeeFaceAdvance = new SwingOpenSeeFaceAdvance
-  private val openSeeFaceBundle = new SwingOpenSeeFaceBundle(CameraListing.createByOS())
+  private val openSeeFaceBundle = createBundleByOS()
   private val cardLayout = new CardLayout
   private val openSeeFacePanel = new JPanel(cardLayout)
   private val (startButton, stopButton, buttonPanel, buttonCardLayout) = createStartStopButton()
@@ -83,6 +83,14 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
     this.startButton.setEnabled(true)
   }
 
+  private def createBundleByOS() = {
+    if (System.getProperty("os.name").toLowerCase.contains("mac")) {
+      new SwingOpenSeeFacePlaceholder
+    } else {
+      new SwingOpenSeeFaceBundle(CameraListing.createByOS())
+    }
+  }
+
   private def onStartSelected(@unused event: ActionEvent): Unit = {
     live2DWidget.demoAppHolder.foreach(_.disableFaceTracking())
 
@@ -130,7 +138,7 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
   private def onDataRead(data: OpenSeeFaceData): Unit = {
     this.openSeeFaceDataHolder = Some(data)
     SwingUtilities.invokeLater { () =>
-      this.outlinePanel.update(this.outlinePanel.getGraphics)
+      this.outlinePanel.repaint()
     }
   }
 
@@ -145,8 +153,9 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
 
     this.setBorder(BorderFactory.createTitledBorder("Outline"))
 
-    override def paint(g: Graphics): Unit = {
+    override def paintComponent(g: Graphics): Unit = {
 
+      super.paintComponent(g)
       if (!this.isShowing || !this.isDisplayable) {
         return
       }
@@ -155,13 +164,12 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
       val width = this.getBounds().width
       val height = this.getBounds().width
 
-      gc.clearRect(0, 0, width, height)
 
       if (openSeeFaceReaderHolder.isDefined && openSeeFaceDataHolder.isEmpty) {
 
         if (System.currentTimeMillis() / 500 % 2 == 0) {
           gc.setColor(new Color(255, 0, 0))
-          gc.fillOval(10, 10, 20, 20)
+          gc.fillOval(20, 20, 20, 20)
         }
 
 
@@ -169,7 +177,7 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
           override def call(): Unit = {
             SwingUtilities.invokeLater { () =>
               if (OutlinePanel.this.isValid) {
-                OutlinePanel.this.paint(OutlinePanel.this.getGraphics)
+                OutlinePanel.this.repaint()
               }
             }
           }
@@ -180,7 +188,7 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
 
         if (System.currentTimeMillis() / 500 % 2 == 0) {
           gc.setColor(new Color(255, 0, 0))
-          gc.fillOval(10, 10, 20, 20)
+          gc.fillOval(20, 20, 20, 20)
         }
 
         gc.setColor(new Color(0, 0, 255))
@@ -190,7 +198,7 @@ class SwingFaceTrackingPane(live2DWidget: Live2DUI) extends JPanel {
 
 
         def convert(p: Point): List[Int] = {
-          List((p.x * scaleX - (width / 4)).toInt * 2, (p.y * scaleY - (height / 3)).toInt * 2)
+          List((p.x * scaleX).toInt , (p.y * scaleY).toInt)
         }
 
         val (faceOutlineX, faceOutlineY) = splitXY(data.landmarks.slice(0, 17).flatMap(convert).toArray)

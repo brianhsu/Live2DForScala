@@ -9,7 +9,7 @@ import scala.annotation.unused
 
 class SWTOpenSeeFaceAdvance(parent: Composite) extends Composite(parent, SWT.NONE) with OpenSeeFaceSetting {
 
-  private val commandText = createTextField(this, "Command:", "python /home/brianhsu/WorkRoom/OpenSeeFace/facetracker.py")
+  private val commandText = createTextField(this, "Command:", "python facetracker.py")
   private val ipText = createTextField(this,"IP:", "127.0.0.1", "Set IP address for sending tracking data")
   private val portText = createTextField(this,"Port:", "11573", "Set port for sending tracking data")
   private val cameraIdText = createTextField(this,"Camera ID:", "0", "Set camera ID (0, 1...)")

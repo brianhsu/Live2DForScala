@@ -20,6 +20,7 @@ object SwingMain {
     frame.setVisible(true)
     frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
     frame.getContentPane.setLayout(new GridBagLayout)
+    frame.setSize(Toolkit.getDefaultToolkit.getScreenSize)
 
     val gc1 = new GridBagConstraints()
     gc1.gridx = 0

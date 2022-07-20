@@ -45,6 +45,11 @@ jobs:
           name: test-results
           path: target/test-reports-html/
 
+      - name: Assembly JAR
+        run: |
+          ./distclean
+          sbt clean assembly
+
       - name: Package runnable JAR files
         run: |
           ./scripts/packageBundles.sh
