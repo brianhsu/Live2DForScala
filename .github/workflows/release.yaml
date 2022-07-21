@@ -45,6 +45,16 @@ jobs:
           name: test-results
           path: target/test-reports-html/
 
+      - name: Update badges
+        run: |
+          ./doc/images/generateCoverageBadage.sh
+          ./doc/images/generateVersionBadage.sh
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: 'doc/images/'
+          message: Update badages
+
       - name: Assembly JAR
         run: |
           ./distclean
@@ -76,16 +86,6 @@ jobs:
         with:
           name: Live2DForScala-SWT-Windows
           path: Live2DForScala-SWT-Windows-${{ steps.runnableJAR.outputs.CURRENT_VERSION }}.zip
-
-      - name: Update badges
-        run: |
-          ./doc/images/generateCoverageBadage.sh
-          ./doc/images/generateVersionBadage.sh
-
-      - uses: EndBug/add-and-commit@v9
-        with:
-          add: 'doc/images/'
-          message: Update badages
 
       - name: Push release change to original GitHub repository
         uses: ad-m/github-push-action@master
