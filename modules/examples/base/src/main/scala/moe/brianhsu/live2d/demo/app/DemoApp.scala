@@ -180,6 +180,7 @@ abstract class DemoApp(drawCanvasInfo: DrawCanvasInfoReader, onOpenGLThread: OnO
     this.mAvatarHolder.foreach { avatar =>
       avatar.updateStrategyHolder = this.mUpdateStrategyHolder
       onStatusUpdated(s"$directoryPath loaded.")
+      avatar.model.parameters.keySet.foreach(println)
     }
 
     onOpenGLThread {

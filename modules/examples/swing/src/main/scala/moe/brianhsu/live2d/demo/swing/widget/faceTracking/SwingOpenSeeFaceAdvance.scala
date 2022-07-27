@@ -13,10 +13,10 @@ class SwingOpenSeeFaceAdvance extends JPanel with OpenSeeFaceSetting  {
   this.setLayout(new GridBagLayout)
   this.setBorder(BorderFactory.createTitledBorder("OpenSeeFace Settings"))
 
-  private val commandText = createTextField(this, 0, "Command:", "python facetracker.py")
+  private val commandText = createTextField(this, 0, "Command:", "/home/brianhsu/Downloads/Live2DForScala-Swing/openSeeFace/linux/facetracker")
   private val ipText = createTextField(this, 1, "IP:", "127.0.0.1", "Set IP address for sending tracking data")
   private val portText = createTextField(this, 2, "Port:", "11573", "Set port for sending tracking data")
-  private val cameraIdText = createTextField(this, 3, "Camera ID:", "0", "Set camera ID (0, 1...)")
+  private val cameraIdText = createTextField(this, 3, "Camera ID:", "2", "Set camera ID (0, 1...)")
   private val modelCombo = createComboField(
     this, 4, "Model:", List("-3", "-2", "-1", "0", "1", "2", "3", "4"), 6,
     "<html>This can be used to select the tracking model.<br>\n" +
@@ -31,7 +31,7 @@ class SwingOpenSeeFaceAdvance extends JPanel with OpenSeeFaceSetting  {
     "Set this to 1 to visualize the tracking, to 2 to also show face ids, " +
       "to 3 to add confidence values or to 4 to add numbers to the point display."
   )
-  private val extraParameterText = createTextField(this, 6, "Extra Parameters:", "--width 640 --height 480 --fps 30")
+  private val extraParameterText = createTextField(this, 6, "Extra Parameters:", "--width 640 --height 480 --fps 30 --model-dir /home/brianhsu/Downloads/Live2DForScala-Swing/openSeeFace/models")
   private val mirrorCheckbox = createCheckbox(this, 7, "Mirror Input", "Process a mirror image of the input video")
   private val commandPreviewText = createCommandPreview(this, 8, "Command Preview:")
 

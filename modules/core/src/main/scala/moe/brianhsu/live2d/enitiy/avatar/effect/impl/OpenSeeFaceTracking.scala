@@ -8,7 +8,7 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.impl.OpenSeeFaceTracking._
 import scala.util.Using
 
 object OpenSeeFaceTracking {
-  val DefaultTrackingTaps: TrackingTaps = TrackingTaps(7, 7, 7, 3, 3, 3, 3, 1, 1, 7)
+  val DefaultTrackingTaps: TrackingTaps = TrackingTaps(5, 5, 5, 3, 3, 3, 3, 1, 1, 7)
 }
 
 class OpenSeeFaceTracking(dataReader: OpenSeeFaceDataReader,

@@ -46,6 +46,7 @@ class FaceTrackingFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
         ParameterValueUpdate("ParamAngleX", 0.10999999f),
         ParameterValueUpdate("ParamAngleY", 0.17f),
         ParameterValueUpdate("ParamAngleZ", 0.21f),
+        ParameterValueUpdate("ParamBodyAngleX", 0.10999999f, 0.75f),
         ParameterValueUpdate("ParamEyeLOpen", 0.29f),
         ParameterValueUpdate("ParamEyeROpen", 0.34999996f),
         ParameterValueUpdate("ParamMouthOpenY", 0.41000003f),
