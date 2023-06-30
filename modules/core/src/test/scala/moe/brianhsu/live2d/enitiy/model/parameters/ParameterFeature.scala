@@ -1,5 +1,6 @@
-package moe.brianhsu.live2d.enitiy.model
+package moe.brianhsu.live2d.enitiy.model.parameters
 
+import moe.brianhsu.live2d.enitiy.model.parameter.JavaVMParameter
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

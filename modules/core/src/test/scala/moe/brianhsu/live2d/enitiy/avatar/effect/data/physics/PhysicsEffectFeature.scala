@@ -2,7 +2,8 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.data
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
-import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.enitiy.model.parameter.JavaVMParameter
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

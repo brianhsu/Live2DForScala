@@ -8,7 +8,8 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types._
 import moe.brianhsu.live2d.enitiy.model.drawable.{Drawable, DrawableColor}
-import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, MocInfo, ModelCanvasInfo, Part}
+import moe.brianhsu.live2d.enitiy.model.parameter.CPointerParameter
+import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Part}
 import moe.brianhsu.live2d.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
 import moe.brianhsu.utils.MockedNativeCubismAPILoader
 import moe.brianhsu.utils.expectation.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableIndex, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter}

@@ -9,7 +9,8 @@ import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, Mo
 import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
 import moe.brianhsu.live2d.enitiy.model.drawable._
-import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Parameter, Part}
+import moe.brianhsu.live2d.enitiy.model.parameter.{CPointerParameter, Parameter}
+import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Part}
 import moe.brianhsu.live2d.exception._
 
 import scala.util.Try
@@ -186,7 +187,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.pointerToFloat(i)
-      val parameter = model.CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
+      val parameter = CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
       parameter
     }
 

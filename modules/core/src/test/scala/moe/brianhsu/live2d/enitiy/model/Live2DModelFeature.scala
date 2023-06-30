@@ -4,6 +4,7 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.math.matrix.ModelMatrix
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DrawableColor, DynamicFlags, VertexInfo}
+import moe.brianhsu.live2d.enitiy.model.parameter.{JavaVMParameter, Parameter}
 import moe.brianhsu.utils.mock.Live2DModelMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{GivenWhenThen, Inside}

@@ -3,8 +3,9 @@ package moe.brianhsu.utils.mock
 import com.sun.jna.Memory
 import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
-import moe.brianhsu.live2d.enitiy.model.{ModelCanvasInfo, Parameter, Part, drawable}
+import moe.brianhsu.live2d.enitiy.model.{ModelCanvasInfo, Part, drawable}
 import moe.brianhsu.live2d.enitiy.model.drawable.{ConstantFlags, Drawable, DrawableColor, DynamicFlags}
+import moe.brianhsu.live2d.enitiy.model.parameter.Parameter
 import org.scalamock.scalatest.MockFactory
 
 import scala.util.{Success, Try}

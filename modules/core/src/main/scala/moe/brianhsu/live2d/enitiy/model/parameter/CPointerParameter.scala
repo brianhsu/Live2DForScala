@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.enitiy.model
+package moe.brianhsu.live2d.enitiy.model.parameter
 
 import com.sun.jna.Pointer
 import moe.brianhsu.live2d.exception.ParameterInvalidException

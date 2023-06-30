@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.enitiy.model
+package moe.brianhsu.live2d.enitiy.model.parameter
 
 /**
  * @param id        The parameter id.
