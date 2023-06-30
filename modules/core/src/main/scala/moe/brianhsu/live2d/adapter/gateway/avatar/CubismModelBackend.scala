@@ -9,7 +9,7 @@ import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, Mo
 import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
 import moe.brianhsu.live2d.enitiy.model.drawable._
-import moe.brianhsu.live2d.enitiy.model.parameter.{CPointerParameter, Parameter}
+import moe.brianhsu.live2d.enitiy.model.parameter.{CPointerParameter, Parameter, ParameterType}
 import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Part}
 import moe.brianhsu.live2d.exception._
 
@@ -39,8 +39,9 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       this.modelSize
     )
 
-    if (textureFiles.size != calculateTextureCountFromModel(model)) {
-      throw new TextureSizeMismatchException
+    val expectedTextureFileCount = calculateTextureCountFromModel(model)
+    if (textureFiles.size != expectedTextureFileCount) {
+      throw new TextureSizeMismatchException(expectedTextureFileCount)
     }
 
     model
@@ -173,9 +174,10 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     val defaultValues = core.cubismAPI.csmGetParameterDefaultValues(this.cubismModel)
     val minValues = core.cubismAPI.csmGetParameterMinimumValues(this.cubismModel)
     val maxValues = core.cubismAPI.csmGetParameterMaximumValues(this.cubismModel)
+    val parameterTypes = core.cubismAPI.csmGetParameterTypes(this.cubismModel)
 
     if (parametersCount == -1 || parametersIds == null || currentValues == null ||
-      defaultValues == null || minValues == null || maxValues == null) {
+      defaultValues == null || minValues == null || maxValues == null || parameterTypes == null) {
       throw new ParameterInitException
     }
 
@@ -187,7 +189,8 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.pointerToFloat(i)
-      val parameter = CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
+      val parameterType = ParameterType(parameterTypes(i))
+      val parameter = CPointerParameter(currentValuePointer, id, parameterType, minValue, maxValue, defaultValue)
       parameter
     }
 

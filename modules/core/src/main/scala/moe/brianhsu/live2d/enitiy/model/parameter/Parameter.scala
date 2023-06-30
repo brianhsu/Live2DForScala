@@ -7,6 +7,11 @@ trait Parameter {
   val id: String
 
   /**
+   * The parameter type
+   */
+  val parameterType: ParameterType
+
+  /**
    * The minimum value of this parameter
    */
   val min: Float

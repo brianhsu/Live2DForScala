@@ -58,6 +58,7 @@ class Live2DModelFileReaderFeature extends AnyFeatureSpec with GivenWhenThen wit
       Then("it should be a Failure because Live2DModel does not pass validation")
       modelHolder shouldBe a[Failure[_]]
       modelHolder.failure.exception shouldBe a[TextureSizeMismatchException]
+      modelHolder.failure.exception.asInstanceOf[TextureSizeMismatchException].expectedSize shouldBe 2
     }
   }
 }

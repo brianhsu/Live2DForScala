@@ -8,11 +8,11 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types._
 import moe.brianhsu.live2d.enitiy.model.drawable.{Drawable, DrawableColor}
-import moe.brianhsu.live2d.enitiy.model.parameter.CPointerParameter
+import moe.brianhsu.live2d.enitiy.model.parameter.{CPointerParameter, ParameterType}
 import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Part}
-import moe.brianhsu.live2d.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
+import moe.brianhsu.live2d.exception._
 import moe.brianhsu.utils.MockedNativeCubismAPILoader
-import moe.brianhsu.utils.expectation.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableIndex, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter}
+import moe.brianhsu.utils.expectation._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -146,9 +146,10 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       expectedParameters.foreach { expectedParameter =>
         And(s"${expectedParameter.id} should have correct values")
         val parameter = parameters.get(expectedParameter.id).value
-        inside(parameter) { case CPointerParameter(pointer, id, min, max, default) =>
+        inside(parameter) { case CPointerParameter(pointer, id, parameterType, min, max, default) =>
           pointer should not be null
           id shouldBe expectedParameter.id
+          parameterType shouldBe ParameterType.Normal
           default shouldBe expectedParameter.default
           min shouldBe expectedParameter.min
           max shouldBe expectedParameter.max
@@ -156,6 +157,44 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
         parameter.current shouldBe expectedParameter.current
 
       }
+    }
+
+    Scenario("reading parameter types from model") {
+      Given("a Cubism Mao Model")
+      val modelFile = "src/test/resources/models/Mao/Mao.moc3"
+      val textureFiles = List("texture_00.png")
+      val model = createModelBackend(modelFile, textureFiles)
+
+      When("get the parameters")
+      val parameters = model.parameters
+
+      Then("the count of ParameterType.Normal parameter should be 92")
+      parameters.values.count(_.parameterType == ParameterType.Normal) shouldBe 92
+
+      And("the count of ParameterType.BlendShape parameter should be 20")
+      parameters.values.count(_.parameterType == ParameterType.BlendShape) shouldBe 20
+
+      And("the following parameter should have parameterType as ParameterType.BlendShape")
+      parameters("ParamMouthDown").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamRibbon").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthAngryLine").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamoHairMesh").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthUp").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamHairBackR").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamHairBackL").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamHatTop").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowRY").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthU").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowLAngle").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowLX").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthO").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthA").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowRAngle").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowRX").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthI").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowLY").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthE").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthAngry").parameterType shouldBe ParameterType.BlendShape
     }
 
     Scenario("reading drawables from the model") {
@@ -298,18 +337,20 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     Scenario("The C library return invalid data when reading parameters") {
       val cStrings = new CStringArray
       val cFloats = new CArrayOfFloat
+      val cInts = new CArrayOfInt
 
       val invalidCombos = Table(
-        ("count",    "ids", "current", "default",   "min",   "max"),
-        (-1,      cStrings,   cFloats,   cFloats, cFloats, cFloats),
-        ( 1,          null,   cFloats,   cFloats, cFloats, cFloats),
-        ( 1,      cStrings,      null,   cFloats, cFloats, cFloats),
-        ( 1,      cStrings,   cFloats,      null, cFloats, cFloats),
-        ( 1,      cStrings,   cFloats,   cFloats,    null, cFloats),
-        ( 1,      cStrings,   cFloats,   cFloats, cFloats,    null)
+        ("count",    "ids", "current", "default",   "min",   "max",  "types"),
+        (-1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,    cInts),
+        ( 1,          null,   cFloats,   cFloats, cFloats, cFloats,    cInts),
+        ( 1,      cStrings,      null,   cFloats, cFloats, cFloats,    cInts),
+        ( 1,      cStrings,   cFloats,      null, cFloats, cFloats,    cInts),
+        ( 1,      cStrings,   cFloats,   cFloats,    null, cFloats,    cInts),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats,    null,    cInts),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,     null)
       )
 
-      forAll(invalidCombos) { (count, ids, current, default, min, max) =>
+      forAll(invalidCombos) { (count, ids, current, default, min, max, types) =>
         Given("a mocked Cubism Core Library and pointer to model")
         val mockedCLibrary = mock[NativeCubismAPI]
         val mockedCubismCore = new MockedNativeCubismAPILoader(mockedCLibrary)
@@ -321,6 +362,7 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
         (mockedCLibrary.csmGetParameterDefaultValues _).expects(*).returning(default)
         (mockedCLibrary.csmGetParameterMinimumValues _).expects(*).returning(min)
         (mockedCLibrary.csmGetParameterMaximumValues _).expects(*).returning(max)
+        (mockedCLibrary.csmGetParameterTypes _).expects(*).returning(types)
 
 
         And("a Live2D model")

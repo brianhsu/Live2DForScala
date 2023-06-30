@@ -393,5 +393,14 @@ trait NativeCubismAPI extends Library {
    * @param  model  Model containing flags.
    */
   def csmResetDrawableDynamicFlags(model: CPointerToModel): Unit
+
+  /**
+   * Gets parameter types.
+   *
+   * @param model Model to query.
+   * @return Valid pointer on success; '0' otherwise.
+   */
+  def csmGetParameterTypes(model: CPointerToModel): CArrayOfInt
+
 }
 

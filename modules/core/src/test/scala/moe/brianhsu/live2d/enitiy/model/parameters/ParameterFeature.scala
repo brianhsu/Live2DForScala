@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.enitiy.model.parameters
 
-import moe.brianhsu.live2d.enitiy.model.parameter.JavaVMParameter
+import moe.brianhsu.live2d.enitiy.model.parameter.{JavaVMParameter, ParameterType}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -31,7 +31,7 @@ class ParameterFeature extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
     Scenario("The new value is over [min] value") {
       Given("a parameter backed by JVM with min=10, max=20")
-      val parameter = new JavaVMParameter("parameterId", 10, 20)
+      val parameter = new JavaVMParameter("parameterId", ParameterType.Normal, max = 20)
 
       When("update the value to 100")
       parameter.update(100)

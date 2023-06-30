@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 
 import moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
-import moe.brianhsu.live2d.enitiy.model.parameter.JavaVMParameter
+import moe.brianhsu.live2d.enitiy.model.parameter.{JavaVMParameter, ParameterType => ModelParameterType}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -37,13 +37,13 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("calculate new angle")
-        val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, false, weight)
+        val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, isInverted = false, weight)
 
         Then("the translation should be the same")
         newUpdateParameter.translation shouldBe originalTranslation
 
         And("the angle should be the original angle plus normalization multiply weight")
-        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, false)
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted = false)
         newUpdateParameter.angle shouldBe (5.6f + normalizedValue * weight)
       }
     }
@@ -74,13 +74,13 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("calculate new inverted angle")
-        val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, true, weight)
+        val newUpdateParameter = particleUpdateParameter.calculateNewAngle(parameter, normalization, isInverted = true, weight)
 
         Then("the translation should be the same")
         newUpdateParameter.translation shouldBe originalTranslation
 
         And("the angle should be the original angle plus normalization multiply weight")
-        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, true)
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted = true)
         newUpdateParameter.angle shouldBe (5.6f + normalizedValue * weight)
       }
     }
@@ -114,7 +114,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("calculate new X")
-        val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, false, weight)
+        val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, isInverted = false, weight)
 
         Then("the angle should be the same")
         newUpdateParameter.angle shouldBe originalAngle
@@ -123,7 +123,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         newUpdateParameter.translation.y shouldBe originalTranslation.y
 
         And("the X should be the original X plus normalization multiply weight")
-        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, false)
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted = false)
         newUpdateParameter.translation.x shouldBe (originalTranslation.x + normalizedValue * weight)
       }
     }
@@ -155,7 +155,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("calculate new X")
-        val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, true, weight)
+        val newUpdateParameter = particleUpdateParameter.calculateNewX(parameter, normalization, isInverted = true, weight)
 
         Then("the angle should be the same")
         newUpdateParameter.angle shouldBe originalAngle
@@ -164,7 +164,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         newUpdateParameter.translation.y shouldBe originalTranslation.y
 
         And("the X should be the original X plus normalization multiply weight")
-        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, true)
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted = true)
         newUpdateParameter.translation.x shouldBe (originalTranslation.x + normalizedValue * weight)
       }
     }
@@ -198,7 +198,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("calculate new X")
-        val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, false, weight)
+        val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, isInverted = false, weight)
 
         Then("the angle should be the same")
         newUpdateParameter.angle shouldBe originalAngle
@@ -207,7 +207,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         newUpdateParameter.translation.x shouldBe originalTranslation.x
 
         And("the Y should be the original Y plus normalization multiply weight")
-        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, false)
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted = false)
         newUpdateParameter.translation.y shouldBe (originalTranslation.y + normalizedValue * weight)
       }
     }
@@ -239,7 +239,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         val normalization = PhysicsNormalization(min = 1, max = 6, default = 3.0f)
 
         When("calculate new X")
-        val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, true, weight)
+        val newUpdateParameter = particleUpdateParameter.calculateNewY(parameter, normalization, isInverted = true, weight)
 
         Then("the angle should be the same")
         newUpdateParameter.angle shouldBe originalAngle
@@ -248,7 +248,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
         newUpdateParameter.translation.x shouldBe originalTranslation.x
 
         And("the Y should be the original Y plus normalization multiply weight")
-        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, true)
+        val normalizedValue = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted = true)
         newUpdateParameter.translation.y shouldBe (originalTranslation.y + normalizedValue * weight)
       }
     }
@@ -364,7 +364,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       forAll(table) { (inputValue, parameterMinimum, parameterMaximum, normalizedMinimum, normalizedMaximum, normalizedDefault, isInverted, expectedResult) =>
         val particleUpdateParameter = physics.ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0)
         val normalization = PhysicsNormalization(normalizedMinimum, normalizedMaximum, normalizedDefault)
-        val parameter = new JavaVMParameter("id", min = parameterMinimum, max = parameterMaximum, default = 0, inputValue)
+        val parameter = new JavaVMParameter("id", ModelParameterType.Normal, min = parameterMinimum, max = parameterMaximum, default = 0, inputValue)
         val result = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted)
         result shouldBe expectedResult
       }
