@@ -57,7 +57,7 @@ trait NativeCubismAPI extends Library {
    *
    * @return csmMocVersion
    */
-  def csmGetMocVersion(address: CPointerToMoc, size: Int): Int
+  def csmGetMocVersion(address: Pointer, size: Int): Int
 
   /* ------- *
    * LOGGING *

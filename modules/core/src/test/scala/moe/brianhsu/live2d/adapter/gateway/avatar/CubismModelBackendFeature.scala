@@ -320,9 +320,10 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("Cannot revive the moc file") {
-      Given("a not initialized memory of MocInfo")
+      Given("a uninitialized memory of MocInfo")
+      val core = new JnaNativeCubismAPILoader()
       val memoryInfo = JnaMemoryAllocator.allocate(1024, MocAlignment)
-      val mocInfo = MocInfo(memoryInfo, 1024)
+      val mocInfo = MocInfo(memoryInfo, 1024)(core)
 
       And("create a Live2D model from that memory")
       val model = new CubismModelBackend(mocInfo, mockedTextureFiles)(new JnaNativeCubismAPILoader())

@@ -3,7 +3,6 @@ package moe.brianhsu.live2d.adapter.gateway.model
 import moe.brianhsu.live2d.boundary.gateway.core.NativeCubismAPILoader
 import moe.brianhsu.live2d.boundary.gateway.model.MocInfoReader
 import moe.brianhsu.live2d.enitiy.core.types.MocAlignment
-import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.MocInfo
 
 import java.nio.file.{Files, Paths}
@@ -23,6 +22,6 @@ class MocInfoFileReader(filePath: String)(implicit core: NativeCubismAPILoader) 
 
     memoryInfo.alignedMemory.write(0, fileContent, 0, fileContent.size)
 
-    model.MocInfo(memoryInfo, fileContent.size)
+    MocInfo(memoryInfo, fileContent.size)(core)
   }
 }

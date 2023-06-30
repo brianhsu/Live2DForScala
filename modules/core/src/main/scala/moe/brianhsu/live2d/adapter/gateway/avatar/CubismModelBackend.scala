@@ -5,7 +5,7 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.boundary.gateway.core.NativeCubismAPILoader
 import moe.brianhsu.live2d.enitiy.core.CsmCoordinate
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
-import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
+import moe.brianhsu.live2d.enitiy.core.types.{CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
 import moe.brianhsu.live2d.enitiy.model.drawable._
@@ -14,7 +14,6 @@ import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Part}
 import moe.brianhsu.live2d.exception._
 
 import scala.util.Try
-
 
 /**
  * The Live 2D model that represent an .moc file.
@@ -27,19 +26,19 @@ import scala.util.Try
  */
 class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[String])(implicit core: NativeCubismAPILoader) extends ModelBackend {
 
-  private lazy val revivedMoc: CPointerToMoc = reviveMoc()
-  private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.revivedMoc)
+  private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.mocInfo.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
   protected lazy val cubismModel: CPointerToModel = createCubsimModel()
 
   private def createCubsimModel(): CPointerToModel = {
+
     val model = core.cubismAPI.csmInitializeModelInPlace(
-      this.revivedMoc,
+      this.mocInfo.revivedMoc,
       this.modelMemoryInfo.alignedMemory,
       this.modelSize
     )
-
     val expectedTextureFileCount = calculateTextureCountFromModel(model)
+
     if (textureFiles.size != expectedTextureFileCount) {
       throw new TextureSizeMismatchException(expectedTextureFileCount)
     }
@@ -94,7 +93,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
    * @return  The model itself.
    */
   override def validatedBackend: Try[ModelBackend] = Try {
-    this.revivedMoc
+    this.mocInfo.revivedMoc
     this.modelSize
     this.drawables
     this.modelMemoryInfo
@@ -126,15 +125,6 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     )
   }
 
-  private def reviveMoc(): CPointerToMoc = {
-    val revivedMoc = core.cubismAPI.csmReviveMocInPlace(mocInfo.memory.alignedMemory, mocInfo.originalSize)
-
-    if (revivedMoc == null) {
-      throw new MocNotRevivedException
-    }
-
-    revivedMoc
-  }
 
   private def createPartList(): List[Part] = {
     val partCount = core.cubismAPI.csmGetPartCount(this.cubismModel)
