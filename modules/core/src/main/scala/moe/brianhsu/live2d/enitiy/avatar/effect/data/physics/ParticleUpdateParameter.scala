@@ -1,7 +1,7 @@
 package moe.brianhsu.live2d.enitiy.avatar.effect.data.physics
 
 import moe.brianhsu.live2d.enitiy.math._
-import moe.brianhsu.live2d.enitiy.model.Parameter
+import moe.brianhsu.live2d.enitiy.model.parameter.Parameter
 
 case class ParticleUpdateParameter(translation: EuclideanVector, angle: Float) {
   def calculateNewAngle(parameter: Parameter, normalizationAngle: PhysicsNormalization, isInverted: Boolean, weight: Float): ParticleUpdateParameter = {

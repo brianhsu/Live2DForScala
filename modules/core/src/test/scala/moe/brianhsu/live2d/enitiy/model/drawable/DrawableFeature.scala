@@ -19,7 +19,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     Scenario("get draw order value from pointer") {
       Given("a drawable with a mocked pointer to draw order value")
       val drawOrderPointer = stub[MockablePointer]
-      val drawable = Drawable("drawableId", index = 0, ConstantFlags(0), new DynamicFlags(stub[MockablePointer]), textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer, renderOrderPointer = null, opacityPointer = null, mockedFetcher, mockedFetcher)
+      val drawable = Drawable("drawableId", index = 0, None, ConstantFlags(0), new DynamicFlags(stub[MockablePointer]), textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer, renderOrderPointer = null, opacityPointer = null, mockedFetcher, mockedFetcher)
 
       And("the mocked pointer return integer value 123 when request with offset=0")
       (drawOrderPointer.getInt _).when(0).returning(123)
@@ -36,7 +36,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     Scenario("get render order value from pointer") {
       Given("a drawable with a mocked pointer to render order value")
       val renderOrderPointer = stub[MockablePointer]
-      val drawable = Drawable("drawableId", index = 0, ConstantFlags(0), new DynamicFlags(stub[MockablePointer]), textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer = null, renderOrderPointer, opacityPointer = null, mockedFetcher, mockedFetcher)
+      val drawable = Drawable("drawableId", index = 0, None, ConstantFlags(0), new DynamicFlags(stub[MockablePointer]), textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer = null, renderOrderPointer, opacityPointer = null, mockedFetcher, mockedFetcher)
 
       And("the mocked pointer return integer value 456 when request with offset=0")
       (renderOrderPointer.getInt _).when(0).returning(456)
@@ -53,7 +53,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
     Scenario("Get opacity value from pointer") {
       Given("a drawable with a mocked pointer to opacity value")
       val opacityPointer = stub[MockablePointer]
-      val drawable = Drawable("drawableId", index = 0, ConstantFlags(0), new DynamicFlags(stub[MockablePointer]), textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer = null, renderOrderPointer = null, opacityPointer, mockedFetcher, mockedFetcher)
+      val drawable = Drawable("drawableId", index = 0, None, ConstantFlags(0), new DynamicFlags(stub[MockablePointer]), textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer = null, renderOrderPointer = null, opacityPointer, mockedFetcher, mockedFetcher)
 
       And("the mocked pointer return integer value 0.65 when request with offset=0")
       (opacityPointer.getFloat _).when(0).returning(0.65f)
@@ -83,7 +83,7 @@ class DrawableFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
         Given(s"a drawable with constantFlag with bitValue=$flagsInBinary")
         val flagByte = java.lang.Byte.parseByte(flagsInBinary, 2)
-        val drawable = Drawable("drawableId", index = 0, ConstantFlags(flagByte), new DynamicFlags(stub[MockablePointer]), textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer = null, renderOrderPointer = null, opacityPointer = null, mockedFetcher, mockedFetcher)
+        val drawable = Drawable("drawableId", index = 0, None, ConstantFlags(flagByte), new DynamicFlags(stub[MockablePointer]), textureIndex = 0, masks = Nil, stub[VertexInfo], drawOrderPointer = null, renderOrderPointer = null, opacityPointer = null, mockedFetcher, mockedFetcher)
 
         When("request for isCulling attribute")
         val isCulling = drawable.isCulling

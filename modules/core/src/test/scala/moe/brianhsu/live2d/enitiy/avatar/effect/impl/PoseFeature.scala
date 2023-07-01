@@ -4,7 +4,8 @@ import com.sun.jna.{Memory, Pointer}
 import moe.brianhsu.live2d.adapter.gateway.avatar.effect.AvatarPoseReader
 import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsReader
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
-import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel, Part}
+import moe.brianhsu.live2d.enitiy.model.parameter.JavaVMParameter
+import moe.brianhsu.live2d.enitiy.model.{Live2DModel, Part}
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation._
 import org.json4s._

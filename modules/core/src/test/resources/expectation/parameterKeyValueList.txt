@@ -1,0 +1,42 @@
+ParamAngleX -30.0 0.0 30.0
+ParamAngleY -30.0 0.0 30.0
+ParamAngleZ -30.0 0.0 30.0
+ParamTere 0.0 0.5 1.0
+ParamFaceForm 0.0 0.5 1.0
+ParamEyeLOpen 0.0 0.8 1.0 2.0
+ParamEyeLSmile 0.0 1.0
+ParamEyeROpen 0.0 0.8 1.0 2.0
+ParamEyeRSmile 0.0 1.0
+ParamEyeForm -1.0 0.0 1.0
+ParamEyeBallForm -1.0 0.0
+ParamTear 0.0 1.0
+ParamEyeBallX -1.0 0.0 1.0
+ParamEyeBallY -1.0 0.0 1.0
+ParamBrowLY -1.0 0.0 1.0
+ParamBrowRY -1.0 0.0 1.0
+ParamBrowLX -1.0 0.0 1.0
+ParamBrowRX -1.0 0.0 1.0
+ParamBrowLAngle -1.0 0.0 1.0
+ParamBrowRAngle -1.0 0.0 1.0
+ParamBrowLForm -1.0 0.0 1.0
+ParamBrowRForm -1.0 0.0 1.0
+ParamMouthForm -1.0 0.0 1.0
+ParamMouthOpenY 0.0 1.0
+ParamScarf -1.0 0.0 1.0
+ParamBodyAngleX -10.0 0.0 10.0
+ParamBodyAngleY -10.0 0.0 10.0
+ParamBodyAngleZ -10.0 0.0 10.0
+ParamBodyUpper -10.0 0.0 10.0
+ParamBreath 0.0 1.0
+ParamBustY -1.0 0.0 1.0
+ParamArmLA -1.0 0.0 0.5 1.0
+ParamArmRA -1.0 0.0 0.5 1.0
+ParamArmLB -1.0 0.0 3.5 5.0
+ParamArmRB -1.0 0.0 3.5 5.0
+ParamHandChangeR 0.0 0.5 1.0
+ParamHandAngleR -1.0 0.0 1.0
+ParamHandDhangeL 0.0 0.5 1.0
+ParamHandAngleL -1.0 0.0 1.0
+ParamHairFront -1.0 0.0 1.0
+ParamHairSide -1.0 0.0 1.0
+ParamHairBack -1.0 0.0 1.0

@@ -1,10 +1,15 @@
-package moe.brianhsu.live2d.enitiy.model
+package moe.brianhsu.live2d.enitiy.model.parameter
 
 trait Parameter {
   /**
    * The parameter id.
    */
   val id: String
+
+  /**
+   * The parameter type
+   */
+  val parameterType: ParameterType
 
   /**
    * The minimum value of this parameter
@@ -20,6 +25,11 @@ trait Parameter {
    * The default value of this parameter.
    */
   val default: Float
+
+  /**
+   * The key values of this parameter
+   */
+  val keyValues: List[Float]
 
   /**
    * Get the current value of this parameter.

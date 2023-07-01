@@ -144,12 +144,14 @@ class OpenSeeFaceDataConverter(settings: Settings = DefaultSettings) {
 
     // Correct for smiles / laughs - this increases the angle
     val afterSmileCorrection = afterXCorrection * (1 - mouthForm * settings.faceYAngleSmileCorrection)
-
-    if (afterSmileCorrection >= settings.faceYAngleZeroValue) {
-      -30 * linearScaleFrom0To1(afterSmileCorrection, settings.faceYAngleZeroValue, settings.faceYAngleDownThreshold, clipMin = false, clipMax = false)
+    val rawFaceY = if (afterSmileCorrection >= settings.faceYAngleZeroValue) {
+      linearScaleFrom0To1(afterSmileCorrection, settings.faceYAngleZeroValue, settings.faceYAngleDownThreshold, clipMin = false, clipMax = false)
     } else {
-      30 * (1 - linearScaleFrom0To1(afterSmileCorrection, settings.faceYAngleUpThreshold, settings.faceYAngleZeroValue, clipMin = false, clipMax = false))
+      (1 - linearScaleFrom0To1(afterSmileCorrection, settings.faceYAngleUpThreshold, settings.faceYAngleZeroValue, clipMin = false, clipMax = false))
     }
+
+    val scalar = if (afterSmileCorrection >= settings.faceYAngleZeroValue) -30 else 30
+    scalar * rawFaceY
   }
 
   private def calcFaceZAngle(currentData: OpenSeeFaceData): Float = {

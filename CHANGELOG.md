@@ -1,18 +1,66 @@
 CHANGELOG
 ================
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+[Unreleased]
+-------------
+
+2.0.0
+-------------
+This version basically aligned to Cubism Native SDK 4-r.5-beta.4.
+
+### Added
+
+- Added `csmGetParameterTypes` function to `NativeCubismAPI` trait.
+- Added `csmHasMocConsistency' function to 'NativeCubismAPI` trait.
+- Added `csmGetParameterKeyValues` function to `NativeCubismAPI` trait.
+- Added `csmGetParameterKeyCounts` function to `NativeCubismAPI` trait.
+- Added `csmGetDrawableParentPartIndices` function to `NativeCubismAPI` trait.
+
+- Added `parameterType` field to Parameter trait, to inidicate is this parameter a normal one or a blend shape one.
+- Added 'keyValues' field to Parameter trait, to indicate the key values of a certian parameter.
+- Added `revivedMoc` and `mocVersion` field to `MocInfo` class.
+- Added 'shouldCheckConsistent' parameter to constructor of `MocInfoFileReader` / `AvatarFileReader`, which controls should we check consistency of the loaded `.moc3` file or not.
+- Added `parentPartIndexHolder` field to `Drawable` class, to inidicate the parent part index of that drawable.
+
+### Changed
+
+- Update Cubism Core Native Library to version 4.2.4.
+- Make face tracking motion more smoothly.
+
+### Fixed
+
+- Fix the signature of `NativeCubismAPI#csmGetMocVersion`
+
+### Breaking API Changes
+
+- Move Parameter / JVMParameter / CPointerParameter to separate package `moe.brianhsu.live2d.enitiy.model.parameter`.
+
+
 1.0.0
----------
+-------------
 
-### Core API
+### Added
 
-- Added Features
-  - `UDPOpenSeeFaceDataReader' API.
-  - `FaceTracking` / `OpenSeeFaceTracking` effect.
-  - `Live2DModel` has new `isOldParameterId` attribute indicates if it use old parameter id form.
-  - `ModelUpdater` now will convert new parameter id format to old format when using old model.
-  - `EasyUpdateStrategy` that has a easy to use API.
-- Breaking API Changes
-  - Remove the adapter dependency in AvatarMotion factory method.
-  - Rename `BasicUpdateStrategy` to `GenericUpdateStrategyFeature`
-  - Major change on `GenericUpdateStrategyFeature` API.
+- Added `UDPOpenSeeFaceDataReader' API.
+- Added `FaceTracking` / `OpenSeeFaceTracking` effect.
+- Added `isOldParameterId` field to 'Live2DModel` to indicates if it use old parameter id form.
+- Added `EasyUpdateStrategy` that has a easy to use API.
+
+### Changed
+
+- `ModelUpdater` now will convert new parameter id format to old format when using old model.
+
+### Removed
+
+- Remove the adapter dependency in AvatarMotion factory method.
+
+### Breaking API Changes
+
+- Rename `BasicUpdateStrategy` to `GenericUpdateStrategyFeature`
+- Major change on `GenericUpdateStrategyFeature` API.
+

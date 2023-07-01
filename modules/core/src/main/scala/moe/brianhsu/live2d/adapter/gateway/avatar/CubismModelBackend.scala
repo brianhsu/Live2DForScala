@@ -5,15 +5,14 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.boundary.gateway.core.NativeCubismAPILoader
 import moe.brianhsu.live2d.enitiy.core.CsmCoordinate
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
-import moe.brianhsu.live2d.enitiy.core.types.{CPointerToMoc, CPointerToModel, ModelAlignment}
-import moe.brianhsu.live2d.enitiy.model
+import moe.brianhsu.live2d.enitiy.core.types.{CPointerToModel, ModelAlignment}
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
 import moe.brianhsu.live2d.enitiy.model.drawable._
-import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Parameter, Part}
+import moe.brianhsu.live2d.enitiy.model.parameter.{CPointerParameter, Parameter, ParameterType}
+import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Part}
 import moe.brianhsu.live2d.exception._
 
 import scala.util.Try
-
 
 /**
  * The Live 2D model that represent an .moc file.
@@ -26,20 +25,21 @@ import scala.util.Try
  */
 class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[String])(implicit core: NativeCubismAPILoader) extends ModelBackend {
 
-  private lazy val revivedMoc: CPointerToMoc = reviveMoc()
-  private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.revivedMoc)
+  private lazy val modelSize: Int =  core.cubismAPI.csmGetSizeofModel(this.mocInfo.revivedMoc)
   private lazy val modelMemoryInfo: MemoryInfo = core.memoryAllocator.allocate(this.modelSize, ModelAlignment)
   protected lazy val cubismModel: CPointerToModel = createCubsimModel()
 
   private def createCubsimModel(): CPointerToModel = {
+
     val model = core.cubismAPI.csmInitializeModelInPlace(
-      this.revivedMoc,
+      this.mocInfo.revivedMoc,
       this.modelMemoryInfo.alignedMemory,
       this.modelSize
     )
+    val expectedTextureFileCount = calculateTextureCountFromModel(model)
 
-    if (textureFiles.size != calculateTextureCountFromModel(model)) {
-      throw new TextureSizeMismatchException
+    if (textureFiles.size != expectedTextureFileCount) {
+      throw new TextureSizeMismatchException(expectedTextureFileCount)
     }
 
     model
@@ -92,7 +92,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
    * @return  The model itself.
    */
   override def validatedBackend: Try[ModelBackend] = Try {
-    this.revivedMoc
+    this.mocInfo.revivedMoc
     this.modelSize
     this.drawables
     this.modelMemoryInfo
@@ -124,15 +124,6 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     )
   }
 
-  private def reviveMoc(): CPointerToMoc = {
-    val revivedMoc = core.cubismAPI.csmReviveMocInPlace(mocInfo.memory.alignedMemory, mocInfo.originalSize)
-
-    if (revivedMoc == null) {
-      throw new MocNotRevivedException
-    }
-
-    revivedMoc
-  }
 
   private def createPartList(): List[Part] = {
     val partCount = core.cubismAPI.csmGetPartCount(this.cubismModel)
@@ -155,9 +146,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
         case _ => None
       }
 
-      val part = model.Part(opacityPointer, partId, parentId)
-
-      part
+      Part(opacityPointer, partId, parentId)
     }
   }
 
@@ -172,9 +161,13 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     val defaultValues = core.cubismAPI.csmGetParameterDefaultValues(this.cubismModel)
     val minValues = core.cubismAPI.csmGetParameterMinimumValues(this.cubismModel)
     val maxValues = core.cubismAPI.csmGetParameterMaximumValues(this.cubismModel)
+    val parameterTypes = core.cubismAPI.csmGetParameterTypes(this.cubismModel)
+    val keyCounts = core.cubismAPI.csmGetParameterKeyCounts(this.cubismModel)
+    val keyValues = core.cubismAPI.csmGetParameterKeyValues(this.cubismModel)
 
     if (parametersCount == -1 || parametersIds == null || currentValues == null ||
-      defaultValues == null || minValues == null || maxValues == null) {
+      defaultValues == null || minValues == null || maxValues == null || parameterTypes == null ||
+      keyCounts == null || keyValues == null) {
       throw new ParameterInitException
     }
 
@@ -186,8 +179,15 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val maxValue = maxValues(i)
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.pointerToFloat(i)
-      val parameter = model.CPointerParameter(currentValuePointer, id, minValue, maxValue, defaultValue)
-      parameter
+      val parameterType = ParameterType(parameterTypes(i))
+      val keyCount = keyCounts(i)
+      val parameterKeyValues = (0 until keyCount).map(keyValues(i)(_)).toList
+
+      CPointerParameter(
+        currentValuePointer, id, parameterType,
+        minValue, maxValue, defaultValue,
+        parameterKeyValues
+      )
     }
 
   }
@@ -205,10 +205,11 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     val drawOrderList = core.cubismAPI.csmGetDrawableDrawOrders(this.cubismModel)
     val renderOrderList = core.cubismAPI.csmGetDrawableRenderOrders(this.cubismModel)
     val opacityList = core.cubismAPI.csmGetDrawableOpacities(this.cubismModel)
+    val parentPartIndices = core.cubismAPI.csmGetDrawableParentPartIndices(this.cubismModel)
 
     if (drawableCounts == -1 || drawableIdList == null || constantFlagsList == null ||
       dynamicFlagsList == null || textureIndexList == null || drawOrderList == null ||
-      renderOrderList == null || opacityList == null) {
+      renderOrderList == null || opacityList == null || parentPartIndices == null) {
       throw new DrawableInitException
     }
 
@@ -244,6 +245,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val renderOrderPointer = renderOrderList.pointerToInt(index)
       val opacityPointer = opacityList.pointerToFloat(index)
       val maskCount = maskCountList(index)
+      val parentPartIndex = Option(parentPartIndices(index)).filter(_ != -1)
       val masks = (0 until maskCount).toList.map(j => masksList(index)(j))
       val vertexInfo = new VertexInfo(
         vertexCountList(index),
@@ -264,7 +266,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       }
 
       val drawable = Drawable(
-        drawableId, index, constantFlags, dynamicFlags, textureIndex,
+        drawableId, index, parentPartIndex, constantFlags, dynamicFlags, textureIndex,
         masks, vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer,
         multiplyColorFetcher, screenColorFetcher
       )

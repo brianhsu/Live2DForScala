@@ -18,15 +18,16 @@ import scala.util.Try
  *
  * You might obtain sample avatar from https://www.live2d.com/en/download/sample-data/
  *
- * @param modelDirectory The directory contains the Cubism model and settings.
- * @param core           The CubismCore to load the data from model file.
+ * @param modelDirectory          The directory contains the Cubism model and settings.
+ * @param shouldCheckConsistent   Should we check consistent of the .moc3 file after reading it or not.
+ * @param core                    The CubismCore to load the data from model file.
  */
-class AvatarFileReader(modelDirectory: String)(implicit core: NativeCubismAPILoader) extends AvatarReader {
+class AvatarFileReader(modelDirectory: String, shouldCheckConsistent: Boolean = true)(implicit core: NativeCubismAPILoader) extends AvatarReader {
   override def loadAvatar(): Try[Avatar] = {
 
     for {
       settings <- new JsonSettingsReader(modelDirectory).loadSettings()
-      mocInfoReader = new MocInfoFileReader(settings.mocFile)
+      mocInfoReader = new MocInfoFileReader(settings.mocFile, shouldCheckConsistent)
       live2dModel <- new Live2DModelFileReader(mocInfoReader, settings.textureFiles).loadModel()
     } yield {
       Avatar(settings, live2dModel)
