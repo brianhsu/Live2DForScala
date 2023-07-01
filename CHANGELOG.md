@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]
 -------------
 
+2.0.0
+-------------
 This version basically aligned to Cubism Native SDK 4-r.5-beta.4.
 
 ### Added
@@ -28,6 +30,7 @@ This version basically aligned to Cubism Native SDK 4-r.5-beta.4.
 ### Changed
 
 - Update Cubism Core Native Library to version 4.2.4.
+- Make face tracking motion more smoothly.
 
 ### Fixed
 
