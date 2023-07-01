@@ -7,6 +7,8 @@ import moe.brianhsu.live2d.boundary.gateway.core.memory.MemoryAllocator
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.{MocAlignment, MocVersion42}
+import moe.brianhsu.live2d.enitiy.model.MocInfo
+import moe.brianhsu.live2d.exception.MocInconsistentException
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -18,7 +20,7 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
 
   Feature("Read .moc3 from file") {
 
-    Scenario("Read exist and correct .mocFile into mocInfo") {
+    Scenario("Read exist and correct .moc3 file into allocated mocInfo memory") {
       Given("a exist .moc3 file")
       val modelFile = "src/test/resources/models/Mao/Mao.moc3"
       val fileContent = Files.readAllBytes(Paths.get(modelFile))
@@ -34,7 +36,7 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
       (mockedAlignedMemory.write: (Long, Array[Byte], Int, Int) => Unit).expects(0, *, 0, fileContent.size).once()
 
       When("read .moc file using MocInfoFileReader")
-      val mocInfoFileReader = new MocInfoFileReader(modelFile)
+      val mocInfoFileReader = new MocInfoFileReader(modelFile, shouldCheckConsistent = false)
 
       Then("it should be a success")
       val mocInfo = mocInfoFileReader.loadMocInfo().success.value
@@ -72,6 +74,60 @@ class MocInfoFileReaderFeature extends AnyFeatureSpec with GivenWhenThen with Ma
       exception shouldBe a[NoSuchFileException]
     }
 
+  }
+
+  Feature("Check consistency of a .moc file") {
+    Scenario("Enable consistent check and .moc is inconsistent") {
+      Given("a corrupted .moc3 file")
+      val modelFile = "src/test/resources/models/corruptedModel/corruptedMoc3/haru_greeter_t03.moc3"
+
+      When("read .moc file using MocInfoFileReader and enable consistent check")
+      implicit val core: NativeCubismAPILoader = new JnaNativeCubismAPILoader()
+      val mocInfoFileReader = new MocInfoFileReader(modelFile, shouldCheckConsistent = true)
+
+      Then("it should be a Failure[MocInconsistentException]")
+      val exception = mocInfoFileReader.loadMocInfo().failure.exception
+      exception shouldBe a[MocInconsistentException]
+    }
+
+    Scenario("Enable consistent check and .moc is consistent") {
+      Given("a exist .moc3 file")
+      val modelFile = "src/test/resources/models/Mao/Mao.moc3"
+
+      When("read .moc file using MocInfoFileReader and enable consistent check")
+      implicit val core: NativeCubismAPILoader = new JnaNativeCubismAPILoader()
+      val mocInfoFileReader = new MocInfoFileReader(modelFile, shouldCheckConsistent = true)
+
+      Then("it should be a Success[MocInfo]")
+      val mocInfo = mocInfoFileReader.loadMocInfo().success.value
+      mocInfo shouldBe a[MocInfo]
+    }
+
+    Scenario("Disable consistent check and .moc is inconsistent") {
+      Given("a corrupted .moc3 file")
+      val modelFile = "src/test/resources/models/corruptedModel/corruptedMoc3/haru_greeter_t03.moc3"
+
+      When("read .moc file using MocInfoFileReader and disable consistent check")
+      implicit val core: NativeCubismAPILoader = new JnaNativeCubismAPILoader()
+      val mocInfoFileReader = new MocInfoFileReader(modelFile, shouldCheckConsistent = false)
+
+      Then("it should be a Success[MocInfo]")
+      val mocInfo = mocInfoFileReader.loadMocInfo().success.value
+      mocInfo shouldBe a[MocInfo]
+    }
+
+    Scenario("Disable consistent check and .moc is consistent") {
+      Given("a exist .moc3 file")
+      val modelFile = "src/test/resources/models/Mao/Mao.moc3"
+
+      When("read .moc file using MocInfoFileReader and enable consistent check")
+      implicit val core: NativeCubismAPILoader = new JnaNativeCubismAPILoader()
+      val mocInfoFileReader = new MocInfoFileReader(modelFile, shouldCheckConsistent = false)
+
+      Then("it should be a Success[MocInfo]")
+      val mocInfo = mocInfoFileReader.loadMocInfo().success.value
+      mocInfo shouldBe a[MocInfo]
+    }
   }
 
   private def createMockedCubismCore(mockedMemoryAllocator: MemoryAllocator) = {

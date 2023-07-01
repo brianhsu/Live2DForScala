@@ -23,6 +23,13 @@ case class MocInfo(memory: MemoryInfo, originalSize: Int)(implicit core: NativeC
    */
   lazy val mocVersion: MocVersion = getMocVersion()
 
+  /**
+   * Is this moc consistent
+   */
+  def isConsistent: Boolean = {
+    core.cubismAPI.csmHasMocConsistency(memory.alignedMemory, originalSize) == 1
+  }
+
   private def getMocVersion(): MocVersion = {
     revivedMoc
     MocVersion(core.cubismAPI.csmGetMocVersion(memory.alignedMemory, originalSize))

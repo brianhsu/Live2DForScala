@@ -134,6 +134,19 @@ trait NativeCubismAPI extends Library {
    */
   def csmReadCanvasInfo(model: CPointerToModel, outSizeInPixels: CsmCoordinate, outOriginInPixels: CsmCoordinate, outPixelsPerUnit: FloatByReference): CStringArray
 
+  /* ----------- *
+   * CONSISTENCY *
+   * ----------- */
+
+  /**
+   * Checks consistency of a moc.
+   *
+   * @param address Address of unrevived moc. The address must be aligned to 'csmAlignofMoc'.
+   * @param size    Size of moc (in bytes).
+   * @return        '1' if Moc is valid; '0' otherwise.
+   */
+  def csmHasMocConsistency(address: Pointer, size: Int): Int
+
   /* ---------- *
    * PARAMETERS *
    * ---------- */
@@ -191,6 +204,14 @@ trait NativeCubismAPI extends Library {
    * @return  Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterValues(model: CPointerToModel): CArrayOfFloat
+
+  /**
+   * Gets parameter types.
+   *
+   * @param model Model to query.
+   * @return Valid pointer on success; '0' otherwise.
+   */
+  def csmGetParameterTypes(model: CPointerToModel): CArrayOfInt
 
   /* ----- *
    * PARTS *
@@ -394,13 +415,6 @@ trait NativeCubismAPI extends Library {
    */
   def csmResetDrawableDynamicFlags(model: CPointerToModel): Unit
 
-  /**
-   * Gets parameter types.
-   *
-   * @param model Model to query.
-   * @return Valid pointer on success; '0' otherwise.
-   */
-  def csmGetParameterTypes(model: CPointerToModel): CArrayOfInt
 
 }
 
