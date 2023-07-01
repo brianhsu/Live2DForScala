@@ -141,18 +141,21 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
 
       Then("it should have correct number of parameters")
       val expectedParameters = ExpectedParameter.getExpectedParameters
+      val expectedKeyValues = ExpectedParameter.getExpectedKeyValues
+      println(expectedKeyValues)
       parameters.size shouldBe expectedParameters.size
 
       expectedParameters.foreach { expectedParameter =>
         And(s"${expectedParameter.id} should have correct values")
         val parameter = parameters.get(expectedParameter.id).value
-        inside(parameter) { case CPointerParameter(pointer, id, parameterType, min, max, default) =>
+        inside(parameter) { case CPointerParameter(pointer, id, parameterType, min, max, default, keyValues) =>
           pointer should not be null
           id shouldBe expectedParameter.id
           parameterType shouldBe ParameterType.Normal
           default shouldBe expectedParameter.default
           min shouldBe expectedParameter.min
           max shouldBe expectedParameter.max
+          keyValues should contain theSameElementsAs expectedKeyValues(id)
         }
         parameter.current shouldBe expectedParameter.current
 
@@ -336,22 +339,27 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("The C library return invalid data when reading parameters") {
+
       val cStrings = new CStringArray
       val cFloats = new CArrayOfFloat
       val cInts = new CArrayOfInt
+      val cArrayOfArrayOfFloat = new CArrayOfArrayOfFloat
 
       val invalidCombos = Table(
-        ("count",    "ids", "current", "default",   "min",   "max",  "types"),
-        (-1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,    cInts),
-        ( 1,          null,   cFloats,   cFloats, cFloats, cFloats,    cInts),
-        ( 1,      cStrings,      null,   cFloats, cFloats, cFloats,    cInts),
-        ( 1,      cStrings,   cFloats,      null, cFloats, cFloats,    cInts),
-        ( 1,      cStrings,   cFloats,   cFloats,    null, cFloats,    cInts),
-        ( 1,      cStrings,   cFloats,   cFloats, cFloats,    null,    cInts),
-        ( 1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,     null)
+        ("count",    "ids", "current", "default",   "min",   "max", "types", "keyCounts",          "keyValues"),
+        (-1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,          null,   cFloats,   cFloats, cFloats, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,      null,   cFloats, cFloats, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,      null, cFloats, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats,    null, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats,    null,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,    null,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,    cInts,       null, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,    cInts,      cInts,                 null),
+
       )
 
-      forAll(invalidCombos) { (count, ids, current, default, min, max, types) =>
+      forAll(invalidCombos) { (count, ids, current, default, min, max, types, keyCounts, keyValues) =>
         Given("a mocked Cubism Core Library and pointer to model")
         val mockedCLibrary = mock[NativeCubismAPI]
         val mockedCubismCore = new MockedNativeCubismAPILoader(mockedCLibrary)
@@ -364,6 +372,8 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
         (mockedCLibrary.csmGetParameterMinimumValues _).expects(*).returning(min)
         (mockedCLibrary.csmGetParameterMaximumValues _).expects(*).returning(max)
         (mockedCLibrary.csmGetParameterTypes _).expects(*).returning(types)
+        (mockedCLibrary.csmGetParameterKeyCounts _).expects(*).returning(keyCounts)
+        (mockedCLibrary.csmGetParameterKeyValues _).expects(*).returning(keyValues)
 
 
         And("a Live2D model")

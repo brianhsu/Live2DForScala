@@ -165,9 +165,12 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     val minValues = core.cubismAPI.csmGetParameterMinimumValues(this.cubismModel)
     val maxValues = core.cubismAPI.csmGetParameterMaximumValues(this.cubismModel)
     val parameterTypes = core.cubismAPI.csmGetParameterTypes(this.cubismModel)
+    val keyCounts = core.cubismAPI.csmGetParameterKeyCounts(this.cubismModel)
+    val keyValues = core.cubismAPI.csmGetParameterKeyValues(this.cubismModel)
 
     if (parametersCount == -1 || parametersIds == null || currentValues == null ||
-      defaultValues == null || minValues == null || maxValues == null || parameterTypes == null) {
+      defaultValues == null || minValues == null || maxValues == null || parameterTypes == null ||
+      keyCounts == null || keyValues == null) {
       throw new ParameterInitException
     }
 
@@ -180,8 +183,14 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val defaultValue = defaultValues(i)
       val currentValuePointer = currentValues.pointerToFloat(i)
       val parameterType = ParameterType(parameterTypes(i))
-      val parameter = CPointerParameter(currentValuePointer, id, parameterType, minValue, maxValue, defaultValue)
-      parameter
+      val keyCount = keyCounts(i)
+      val parameterKeyValues = (0 until keyCount).map(keyValues(i)(_)).toList
+
+      CPointerParameter(
+        currentValuePointer, id, parameterType,
+        minValue, maxValue, defaultValue,
+        parameterKeyValues
+      )
     }
 
   }

@@ -27,6 +27,11 @@ trait Parameter {
   val default: Float
 
   /**
+   * The key values of this parameter
+   */
+  val keyValues: List[Float]
+
+  /**
    * Get the current value of this parameter.
    *
    * @return The current value of this parameter.

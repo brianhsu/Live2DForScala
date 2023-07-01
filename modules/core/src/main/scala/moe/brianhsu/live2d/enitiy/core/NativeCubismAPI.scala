@@ -2,7 +2,7 @@ package moe.brianhsu.live2d.enitiy.core
 
 import com.sun.jna._
 import com.sun.jna.ptr._
-import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfCsmColor, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction}
+import moe.brianhsu.live2d.enitiy.core.types.{CArrayOfArrayOfCsmVector, CArrayOfArrayOfFloat, CArrayOfArrayOfInt, CArrayOfArrayOfShort, CArrayOfByte, CArrayOfCsmColor, CArrayOfFloat, CArrayOfInt, CPointerToMoc, CPointerToModel, CStringArray, CsmLogFunction}
 
 object NativeCubismAPI {
   object DynamicDrawableFlagMask {
@@ -204,6 +204,22 @@ trait NativeCubismAPI extends Library {
    * @return  Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterValues(model: CPointerToModel): CArrayOfFloat
+
+  /**
+   * Gets number of key values of each parameter.
+   *
+   * @param model Model to query.
+   * @return Valid pointer on success; '0' otherwise.
+   */
+  def csmGetParameterKeyCounts(model: CPointerToModel): CArrayOfInt
+
+  /**
+   * Gets key values of each parameter.
+   *
+   * @param model Model to query.
+   * @return Valid pointer on success; '0' otherwise.
+   */
+  def csmGetParameterKeyValues(model: CPointerToModel): CArrayOfArrayOfFloat
 
   /**
    * Gets parameter types.

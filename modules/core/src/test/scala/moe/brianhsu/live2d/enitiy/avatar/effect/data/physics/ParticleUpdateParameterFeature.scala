@@ -364,7 +364,7 @@ class ParticleUpdateParameterFeature extends AnyFeatureSpec with GivenWhenThen w
       forAll(table) { (inputValue, parameterMinimum, parameterMaximum, normalizedMinimum, normalizedMaximum, normalizedDefault, isInverted, expectedResult) =>
         val particleUpdateParameter = physics.ParticleUpdateParameter(EuclideanVector(0.0f, 0.0f), 0)
         val normalization = PhysicsNormalization(normalizedMinimum, normalizedMaximum, normalizedDefault)
-        val parameter = new JavaVMParameter("id", ModelParameterType.Normal, min = parameterMinimum, max = parameterMaximum, default = 0, inputValue)
+        val parameter = new JavaVMParameter("id", ModelParameterType.Normal, min = parameterMinimum, max = parameterMaximum, default = 0, keyValues = Nil, inputValue)
         val result = particleUpdateParameter.normalizeParameterValue(parameter, normalization, isInverted)
         result shouldBe expectedResult
       }

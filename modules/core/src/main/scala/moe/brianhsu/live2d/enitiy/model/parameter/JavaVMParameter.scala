@@ -13,6 +13,7 @@ class JavaVMParameter(
   override val min: Float = Float.MinValue,
   override val max: Float = Float.MaxValue,
   override val default: Float = 0,
+  override val keyValues: List[Float] = Nil,
   private var value: Float = 0) extends Parameter {
 
   /**

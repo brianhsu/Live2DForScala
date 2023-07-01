@@ -19,7 +19,8 @@ case class CPointerParameter(
                               override val parameterType: ParameterType,
                               override val min: Float,
                               override val max: Float,
-                              override val default: Float) extends Parameter {
+                              override val default: Float,
+                              override val keyValues: List[Float]) extends Parameter {
 
   /**
    * Get the current value of this parameter.
