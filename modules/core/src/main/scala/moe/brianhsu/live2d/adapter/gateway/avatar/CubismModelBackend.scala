@@ -6,7 +6,6 @@ import moe.brianhsu.live2d.boundary.gateway.core.NativeCubismAPILoader
 import moe.brianhsu.live2d.enitiy.core.CsmCoordinate
 import moe.brianhsu.live2d.enitiy.core.memory.MemoryInfo
 import moe.brianhsu.live2d.enitiy.core.types.{CPointerToModel, ModelAlignment}
-import moe.brianhsu.live2d.enitiy.model
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable.ColorFetcher
 import moe.brianhsu.live2d.enitiy.model.drawable._
 import moe.brianhsu.live2d.enitiy.model.parameter.{CPointerParameter, Parameter, ParameterType}
@@ -147,9 +146,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
         case _ => None
       }
 
-      val part = model.Part(opacityPointer, partId, parentId)
-
-      part
+      Part(opacityPointer, partId, parentId)
     }
   }
 
@@ -208,10 +205,11 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
     val drawOrderList = core.cubismAPI.csmGetDrawableDrawOrders(this.cubismModel)
     val renderOrderList = core.cubismAPI.csmGetDrawableRenderOrders(this.cubismModel)
     val opacityList = core.cubismAPI.csmGetDrawableOpacities(this.cubismModel)
+    val parentPartIndices = core.cubismAPI.csmGetDrawableParentPartIndices(this.cubismModel)
 
     if (drawableCounts == -1 || drawableIdList == null || constantFlagsList == null ||
       dynamicFlagsList == null || textureIndexList == null || drawOrderList == null ||
-      renderOrderList == null || opacityList == null) {
+      renderOrderList == null || opacityList == null || parentPartIndices == null) {
       throw new DrawableInitException
     }
 
@@ -247,6 +245,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       val renderOrderPointer = renderOrderList.pointerToInt(index)
       val opacityPointer = opacityList.pointerToFloat(index)
       val maskCount = maskCountList(index)
+      val parentPartIndex = Option(parentPartIndices(index)).filter(_ != -1)
       val masks = (0 until maskCount).toList.map(j => masksList(index)(j))
       val vertexInfo = new VertexInfo(
         vertexCountList(index),
@@ -267,7 +266,7 @@ class CubismModelBackend(mocInfo: MocInfo, override val textureFiles: List[Strin
       }
 
       val drawable = Drawable(
-        drawableId, index, constantFlags, dynamicFlags, textureIndex,
+        drawableId, index, parentPartIndex, constantFlags, dynamicFlags, textureIndex,
         masks, vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer,
         multiplyColorFetcher, screenColorFetcher
       )

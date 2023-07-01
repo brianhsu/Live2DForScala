@@ -9,17 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]
 -------------
 
+This version basically aligned to Cubism Native SDK 4-r.5-beta.4.
+
 ### Added
 
 - Added `csmGetParameterTypes` function to `NativeCubismAPI` trait.
 - Added `csmHasMocConsistency' function to 'NativeCubismAPI` trait.
 - Added `csmGetParameterKeyValues` function to `NativeCubismAPI` trait.
 - Added `csmGetParameterKeyCounts` function to `NativeCubismAPI` trait.
+- Added `csmGetDrawableParentPartIndices` function to `NativeCubismAPI` trait.
 
 - Added `parameterType` field to Parameter trait, to inidicate is this parameter a normal one or a blend shape one.
 - Added 'keyValues' field to Parameter trait, to indicate the key values of a certian parameter.
 - Added `revivedMoc` and `mocVersion` field to `MocInfo` class.
 - Added 'shouldCheckConsistent' parameter to constructor of `MocInfoFileReader` / `AvatarFileReader`, which controls should we check consistency of the loaded `.moc3` file or not.
+- Added `parentPartIndexHolder` field to `Drawable` class, to inidicate the parent part index of that drawable.
 
 ### Changed
 

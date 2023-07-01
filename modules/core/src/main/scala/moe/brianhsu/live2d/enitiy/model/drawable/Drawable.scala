@@ -10,18 +10,26 @@ object Drawable {
 /**
  * This class represent the drawable objects inside a Live2D model.
  *
- * @param id                 The drawable id.
- * @param index              The zero-based index that the drawable inside the original C drawables array.
- * @param constantFlags      The constant flags.
- * @param dynamicFlags       The dynamic flags.
- * @param textureIndex       The texture index indicates which texture should be used when rendering.
- * @param masks              The masks information.
- * @param vertexInfo         The vertex info for rendering.
- * @param drawOrderPointer   The pointer to the actual memory address of draw order value.
- * @param renderOrderPointer The pointer to the actual memory address of render order value.
- * @param opacityPointer     The pointer to the actual memory address of opacity order value.
+ * @param id                      The drawable id.
+ * @param index                   The zero-based index that the drawable inside the original C drawables array.
+ * @param parentPartIndexHolder   The parent part zero-based index holder.
+ * @param constantFlags           The constant flags.
+ * @param dynamicFlags            The dynamic flags.
+ * @param textureIndex            The texture index indicates which texture should be used when rendering.
+ * @param masks                   The masks information.
+ * @param vertexInfo              The vertex info for rendering.
+ * @param drawOrderPointer        The pointer to the actual memory address of draw order value.
+ * @param renderOrderPointer      The pointer to the actual memory address of render order value.
+ * @param opacityPointer          The pointer to the actual memory address of opacity order value.
  */
-case class Drawable(id: String, index: Int, constantFlags: ConstantFlags, dynamicFlags: DynamicFlags, textureIndex: Int, masks: List[Int], vertexInfo: VertexInfo, private val drawOrderPointer: Pointer, private val renderOrderPointer: Pointer, private val opacityPointer: Pointer, multiplyColorFetcher: ColorFetcher, screenColorFetcher: ColorFetcher) {
+case class Drawable(id: String, index: Int, parentPartIndexHolder: Option[Int], constantFlags: ConstantFlags,
+                    dynamicFlags: DynamicFlags, textureIndex: Int,
+                    masks: List[Int], vertexInfo: VertexInfo,
+                    private val drawOrderPointer: Pointer,
+                    private val renderOrderPointer: Pointer,
+                    private val opacityPointer: Pointer,
+                    multiplyColorFetcher: ColorFetcher,
+                    screenColorFetcher: ColorFetcher) {
 
   /**
    * Should renderer use face culling on this drawable?

@@ -405,7 +405,7 @@ class Live2DModelFeature extends AnyFeatureSpec with GivenWhenThen with Matchers
 
     (() => vertexInfo.positions).when().returning(boundary)
 
-    drawable.Drawable(id, 0, ConstantFlags(0), new DynamicFlags(null), textureIndex = 0, Nil, vertexInfo, drawOrderPointer = null, renderOrderPointer = null, opacityPointer = null, mockedFetcher, mockedFetcher)
+    Drawable(id, 0, None, ConstantFlags(0), new DynamicFlags(null), textureIndex = 0, Nil, vertexInfo, drawOrderPointer = null, renderOrderPointer = null, opacityPointer = null, mockedFetcher, mockedFetcher)
 
   }
 }

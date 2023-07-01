@@ -217,7 +217,7 @@ class AvatarRendererFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     opacityPointer.setFloat(0, opacity)
 
     Drawable(
-      id, index, ConstantFlags(flagsValue), dynamicFlag, index, Nil, vertexInfo,
+      id, index, None, ConstantFlags(flagsValue), dynamicFlag, index, Nil, vertexInfo,
       null, null, opacityPointer, multiplyColorFetcher, screenColorFetcher
     )
   }

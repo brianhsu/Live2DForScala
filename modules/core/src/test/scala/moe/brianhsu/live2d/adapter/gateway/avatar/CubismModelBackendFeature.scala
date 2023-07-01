@@ -210,12 +210,14 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       Then("the basic information of drawables should be correct")
       ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
         val drawable = drawables(expectedBasicInfo.id)
-        inside(drawable) { case Drawable(id, index, constantFlags, dynamicFlags, textureIndex, masks,
+
+        inside(drawable) { case Drawable(id, index, parentPartIndexHolder, constantFlags, dynamicFlags, textureIndex, masks,
                                          vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer,
                                          multiplyColorFetcher, screenColorFetcher) =>
 
           id shouldBe expectedBasicInfo.id
           index shouldBe >= (0)
+          parentPartIndexHolder shouldBe Some(expectedBasicInfo.parentPartIndex)
           constantFlags.bitmask shouldBe expectedBasicInfo.constFlags
           dynamicFlags.bitmask shouldBe expectedBasicInfo.dynamicFlags
           textureIndex shouldBe expectedBasicInfo.textureIndex
@@ -437,27 +439,28 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       val cAAVector = new CArrayOfArrayOfCsmVector
 
       val invalidCombos = Table(
-        ("count",    "ids", "cFlags", "dFlags", "textureIndex", "drawOrder", "renderOrder", "opacities", "maskCounts", "maskLists", "indexCountList", "indexList", "vCountList",   "vList",   "uvList"),
-        (-1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,          null,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,     null,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,     null,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,           null,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,        null,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,          null,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,        null,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,         null,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,        null,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,             null,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,        null,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,         null, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts,      null,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,       null),
+        ("count",    "ids", "cFlags", "dFlags", "textureIndex", "drawOrder", "renderOrder", "opacities", "maskCounts", "maskLists", "indexCountList", "indexList", "vCountList",   "vList",   "uvList", "parentPartIndex"),
+        (-1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,          null,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,     null,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,     null,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,           null,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,        null,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,          null,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,        null,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,         null,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,        null,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,             null,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,        null,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,         null, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts,      null,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,       null, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector,  null),
       )
 
       forAll(invalidCombos) { (count, ids, cFlags, dFlags, textureIndex, drawOrder,
                                renderOrder, opacities, maskCounts, maskLists, indexCountList,
-                               indexList, vCountList, vList, uvList) =>
+                               indexList, vCountList, vList, uvList, parentPartIndices) =>
 
         Given("a mocked Cubism Core Library and pointer to model")
         val mockedCLibrary = mock[NativeCubismAPI]
@@ -472,6 +475,8 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
         (mockedCLibrary.csmGetDrawableDrawOrders _).expects(*).returning(drawOrder)
         (mockedCLibrary.csmGetDrawableRenderOrders _).expects(*).returning(renderOrder)
         (mockedCLibrary.csmGetDrawableOpacities _).expects(*).returning(opacities)
+        (mockedCLibrary.csmGetDrawableParentPartIndices _).expects(*).returning(parentPartIndices)
+
         (mockedCLibrary.csmGetDrawableMaskCounts _).expects(*).anyNumberOfTimes().returning(maskCounts)
         (mockedCLibrary.csmGetDrawableMasks _).expects(*).anyNumberOfTimes().returning(maskLists)
         (mockedCLibrary.csmGetDrawableIndexCounts _).expects(*).anyNumberOfTimes().returning(indexCountList)

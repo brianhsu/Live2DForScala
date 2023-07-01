@@ -141,9 +141,9 @@ trait NativeCubismAPI extends Library {
   /**
    * Checks consistency of a moc.
    *
-   * @param address Address of unrevived moc. The address must be aligned to 'csmAlignofMoc'.
-   * @param size    Size of moc (in bytes).
-   * @return        '1' if Moc is valid; '0' otherwise.
+   * @param   address   Address of unrevived moc. The address must be aligned to 'csmAlignofMoc'.
+   * @param   size      Size of moc (in bytes).
+   * @return            '1' if Moc is valid; '0' otherwise.
    */
   def csmHasMocConsistency(address: Pointer, size: Int): Int
 
@@ -154,8 +154,7 @@ trait NativeCubismAPI extends Library {
    * Gets number of parameters.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid count on success; '-1' otherwise.
+   * @return        Valid count on success; '-1' otherwise.
    */
   def csmGetParameterCount(model: CPointerToModel): Int
 
@@ -164,8 +163,7 @@ trait NativeCubismAPI extends Library {
    * All IDs are null-terminated ANSI strings.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterIds(model: CPointerToModel): CStringArray
 
@@ -173,8 +171,7 @@ trait NativeCubismAPI extends Library {
    * Gets minimum parameter values.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterMinimumValues(model: CPointerToModel): CArrayOfFloat
 
@@ -182,8 +179,7 @@ trait NativeCubismAPI extends Library {
    * Gets maximum parameter values.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterMaximumValues(model: CPointerToModel): CArrayOfFloat
 
@@ -191,8 +187,7 @@ trait NativeCubismAPI extends Library {
    * Gets default parameter values.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterDefaultValues(model: CPointerToModel): CArrayOfFloat
 
@@ -200,32 +195,31 @@ trait NativeCubismAPI extends Library {
    * Gets read/write parameter values buffer.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterValues(model: CPointerToModel): CArrayOfFloat
 
   /**
    * Gets number of key values of each parameter.
    *
-   * @param model Model to query.
-   * @return Valid pointer on success; '0' otherwise.
+   * @param   model   Model to query.
+   * @return          Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterKeyCounts(model: CPointerToModel): CArrayOfInt
 
   /**
    * Gets key values of each parameter.
    *
-   * @param model Model to query.
-   * @return Valid pointer on success; '0' otherwise.
+   * @param   model   Model to query.
+   * @return          Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterKeyValues(model: CPointerToModel): CArrayOfArrayOfFloat
 
   /**
    * Gets parameter types.
    *
-   * @param model Model to query.
-   * @return Valid pointer on success; '0' otherwise.
+   * @param   model Model to query.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetParameterTypes(model: CPointerToModel): CArrayOfInt
 
@@ -236,8 +230,7 @@ trait NativeCubismAPI extends Library {
    * Gets number of parts.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid count on success; '-1' otherwise.
+   * @return        Valid count on success; '-1' otherwise.
    */
   def csmGetPartCount(model: CPointerToModel): Int
 
@@ -246,8 +239,7 @@ trait NativeCubismAPI extends Library {
    * All IDs are null-terminated ANSI strings.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetPartIds(model: CPointerToModel): CStringArray
 
@@ -255,8 +247,7 @@ trait NativeCubismAPI extends Library {
    * Gets read/write part opacities buffer.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetPartOpacities(model: CPointerToModel): CArrayOfFloat
 
@@ -264,8 +255,7 @@ trait NativeCubismAPI extends Library {
    * Gets part's parent part indices.
    *
    * @param   model   Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return          Valid pointer on success; '0' otherwise.
    */
   def csmGetPartParentPartIndices(model: CPointerToModel): CArrayOfInt
 
@@ -273,8 +263,7 @@ trait NativeCubismAPI extends Library {
    * Gets number of drawables.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid count on success; '-1' otherwise.
+   * @return        Valid count on success; '-1' otherwise.
    */
   def csmGetDrawableCount(model: CPointerToModel): Int
 
@@ -283,8 +272,7 @@ trait NativeCubismAPI extends Library {
    * All IDs are null-terminated ANSI strings.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableIds(model: CPointerToModel): CStringArray
 
@@ -292,8 +280,7 @@ trait NativeCubismAPI extends Library {
    * Gets constant drawable flags.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableConstantFlags(model: CPointerToModel): CArrayOfByte
 
@@ -301,8 +288,7 @@ trait NativeCubismAPI extends Library {
    * Gets dynamic drawable flags.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableDynamicFlags(model: CPointerToModel): CArrayOfByte
 
@@ -310,8 +296,7 @@ trait NativeCubismAPI extends Library {
    * Gets drawable texture indices.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableTextureIndices(model: CPointerToModel): CArrayOfInt
 
@@ -319,8 +304,7 @@ trait NativeCubismAPI extends Library {
    * Gets drawable draw orders.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableDrawOrders(model: CPointerToModel): CArrayOfInt
 
@@ -329,8 +313,7 @@ trait NativeCubismAPI extends Library {
    * The higher the order, the more up front a drawable is.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0'otherwise.
+   * @return        Valid pointer on success; '0'otherwise.
    */
   def csmGetDrawableRenderOrders(model: CPointerToModel): CArrayOfInt
 
@@ -338,8 +321,7 @@ trait NativeCubismAPI extends Library {
    * Gets drawable opacities.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableOpacities(model: CPointerToModel): CArrayOfFloat
 
@@ -347,8 +329,7 @@ trait NativeCubismAPI extends Library {
    * Gets numbers of masks of each drawable.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableMaskCounts(model: CPointerToModel): CArrayOfInt
 
@@ -356,8 +337,7 @@ trait NativeCubismAPI extends Library {
    * Gets mask indices of each drawable.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableMasks(model: CPointerToModel): CArrayOfArrayOfInt
 
@@ -365,8 +345,7 @@ trait NativeCubismAPI extends Library {
    * Gets number of vertices of each drawable.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableVertexCounts(model: CPointerToModel): CArrayOfInt
 
@@ -374,8 +353,7 @@ trait NativeCubismAPI extends Library {
    * Gets vertex position data of each drawable.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; a null pointer otherwise.
+   * @return        Valid pointer on success; a null pointer otherwise.
    */
   def csmGetDrawableVertexPositions(model: CPointerToModel): CArrayOfArrayOfCsmVector
 
@@ -383,8 +361,7 @@ trait NativeCubismAPI extends Library {
    * Gets texture coordinate data of each drawables.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableVertexUvs(model: CPointerToModel): CArrayOfArrayOfCsmVector
 
@@ -392,8 +369,7 @@ trait NativeCubismAPI extends Library {
    * Gets number of triangle indices for each drawable.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableIndexCounts(model: CPointerToModel): CArrayOfInt
 
@@ -401,8 +377,7 @@ trait NativeCubismAPI extends Library {
    * Gets triangle index data for each drawable.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableIndices(model: CPointerToModel): CArrayOfArrayOfShort
 
@@ -410,17 +385,15 @@ trait NativeCubismAPI extends Library {
    * Gets multiply color data for each drawable.
    *
    * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @return        Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableMultiplyColors(model: CPointerToModel): CArrayOfCsmColor
 
   /**
    * Gets screen color data for each drawable.
    *
-   * @param  model  Model to query.
-   *
-   * @return  Valid pointer on success; '0' otherwise.
+   * @param   model  Model to query.
+   * @return         Valid pointer on success; '0' otherwise.
    */
   def csmGetDrawableScreenColors(model: CPointerToModel): CArrayOfCsmColor
 
@@ -431,6 +404,13 @@ trait NativeCubismAPI extends Library {
    */
   def csmResetDrawableDynamicFlags(model: CPointerToModel): Unit
 
+  /**
+   * Gets drawable's parent part indices.
+   *
+   * @param   model   Model to query.
+   * @return          Valid pointer on success; '0' otherwise.
+   */
+  def csmGetDrawableParentPartIndices (model: CPointerToModel): CArrayOfInt
 
 }
 

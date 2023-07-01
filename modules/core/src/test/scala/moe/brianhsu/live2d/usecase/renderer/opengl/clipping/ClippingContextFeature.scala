@@ -258,13 +258,13 @@ class ClippingContextFeature extends AnyFeatureSpec with GivenWhenThen with Matc
   private def createStubbedDrawable(vertexPositions: List[(Float, Float)]): Drawable = {
     val vertexInfo = stub[VertexInfo]
     (() => vertexInfo.positions).when().returns(vertexPositions)
-    Drawable("1", 0, ConstantFlags(0), new DynamicFlags(null), 0, Nil, vertexInfo, null, null, null, mockedFetcher, mockedFetcher)
+    Drawable("1", 0, None, ConstantFlags(0), new DynamicFlags(null), 0, Nil, vertexInfo, null, null, null, mockedFetcher, mockedFetcher)
   }
 
   private def createStubbedDrawable(id: String, isVertexPositionChanged: Boolean): Drawable = {
     val dynamicFlags = stub[DynamicFlags]
     (() => dynamicFlags.vertexPositionChanged).when().returns(isVertexPositionChanged)
-    Drawable(id, 0, ConstantFlags(0), dynamicFlags, 0, Nil, null, null, null, null, mockedFetcher, mockedFetcher)
+    Drawable(id, 0, None, ConstantFlags(0), dynamicFlags, 0, Nil, null, null, null, null, mockedFetcher, mockedFetcher)
   }
 
 }
