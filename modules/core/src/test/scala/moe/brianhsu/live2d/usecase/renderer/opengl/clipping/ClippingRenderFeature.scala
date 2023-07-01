@@ -353,7 +353,7 @@ class ClippingRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenT
     (() => dynamicFlag.vertexPositionChanged).when().returns(isVertexChanged)
 
     Drawable(
-      id, index, ConstantFlags(flagsValue.toByte), dynamicFlag, index, Nil,
+      id, index, None, ConstantFlags(flagsValue.toByte), dynamicFlag, index, Nil,
       vertexInfo, null, null, null, multiplyColorFetcher, screenColorFetcher
     )
   }

@@ -1,4 +1,4 @@
-package moe.brianhsu.live2d.enitiy.model
+package moe.brianhsu.live2d.enitiy.model.parameter
 
 import com.sun.jna.Pointer
 import moe.brianhsu.live2d.exception.ParameterInvalidException
@@ -6,18 +6,21 @@ import moe.brianhsu.live2d.exception.ParameterInvalidException
 /**
  * This class represent parameters of a Live 2D Cubism model.
  *
- * @param pointer The pointer to the actual memory address of current value of this parameter.
- * @param id      The parameter id.
- * @param min     The minimum value of this parameter.
- * @param max     The maximum value of this parameter.
- * @param default The default value of this parameter.
+ * @param pointer         The pointer to the actual memory address of current value of this parameter.
+ * @param id              The parameter id.
+ * @param parameterType   The parameter type.
+ * @param min             The minimum value of this parameter.
+ * @param max             The maximum value of this parameter.
+ * @param default         The default value of this parameter.
  */
 case class CPointerParameter(
                               private val pointer: Pointer,
                               override val id: String,
+                              override val parameterType: ParameterType,
                               override val min: Float,
                               override val max: Float,
-                              override val default: Float) extends Parameter {
+                              override val default: Float,
+                              override val keyValues: List[Float]) extends Parameter {
 
   /**
    * Get the current value of this parameter.

@@ -2,6 +2,7 @@ package moe.brianhsu.live2d.adapter.gateway.avatar
 
 import moe.brianhsu.live2d.adapter.gateway.core.JnaNativeCubismAPILoader
 import moe.brianhsu.live2d.enitiy.avatar.Avatar
+import moe.brianhsu.live2d.exception.{MocInconsistentException, MocNotRevivedException}
 import org.json4s.MappingException
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -45,6 +46,30 @@ class AvatarFileLoaderFeature extends AnyFeatureSpec with GivenWhenThen with Mat
       Then("it should return a Failure")
       avatarHolder.failure.exception shouldBe an[MappingException]
     }
+
+    Scenario("Loading an avatar from an exist directory that has corrupted .moc3 when enable consistent check") {
+      Given("a directory that exist but not a runtime")
+      val directory = "src/test/resources/models/corruptedModel/corruptedMoc3"
+
+      When("loading an avatar from it")
+      val avatarHolder = new AvatarFileReader(directory, shouldCheckConsistent = true).loadAvatar()
+
+      Then("it should return a Failure")
+      avatarHolder.failure.exception shouldBe an[MocInconsistentException]
+    }
+
+    Scenario("Loading an avatar from an exist directory that has corrupted .moc3 when disable consistent check") {
+      Given("a directory that exist but not a runtime")
+      val directory = "src/test/resources/models/corruptedModel/corruptedMoc3"
+
+      When("loading an avatar from it")
+      val avatarHolder = new AvatarFileReader(directory, shouldCheckConsistent = false).loadAvatar()
+
+      Then("it should return a Failure")
+      avatarHolder.failure.exception shouldBe an[MocNotRevivedException]
+    }
+
+
   }
 
   Feature("Loading an avatar") {

@@ -1,7 +1,8 @@
 package moe.brianhsu.live2d.boundary.gateway.avatar
 
 import moe.brianhsu.live2d.enitiy.model.drawable.Drawable
-import moe.brianhsu.live2d.enitiy.model.{ModelCanvasInfo, Parameter, Part}
+import moe.brianhsu.live2d.enitiy.model.parameter.Parameter
+import moe.brianhsu.live2d.enitiy.model.{ModelCanvasInfo, Part}
 
 import scala.util.Try
 

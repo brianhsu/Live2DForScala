@@ -8,10 +8,11 @@ import moe.brianhsu.live2d.boundary.gateway.avatar.ModelBackend
 import moe.brianhsu.live2d.enitiy.core.NativeCubismAPI
 import moe.brianhsu.live2d.enitiy.core.types._
 import moe.brianhsu.live2d.enitiy.model.drawable.{Drawable, DrawableColor}
-import moe.brianhsu.live2d.enitiy.model.{CPointerParameter, MocInfo, ModelCanvasInfo, Part}
-import moe.brianhsu.live2d.exception.{DrawableInitException, MocNotRevivedException, ParameterInitException, PartInitException, TextureSizeMismatchException}
+import moe.brianhsu.live2d.enitiy.model.parameter.{CPointerParameter, ParameterType}
+import moe.brianhsu.live2d.enitiy.model.{MocInfo, ModelCanvasInfo, Part}
+import moe.brianhsu.live2d.exception._
 import moe.brianhsu.utils.MockedNativeCubismAPILoader
-import moe.brianhsu.utils.expectation.{ExpectedDrawableBasic, ExpectedDrawableCoordinate, ExpectedDrawableIndex, ExpectedDrawableMask, ExpectedDrawablePosition, ExpectedParameter}
+import moe.brianhsu.utils.expectation._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -140,21 +141,63 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
 
       Then("it should have correct number of parameters")
       val expectedParameters = ExpectedParameter.getExpectedParameters
+      val expectedKeyValues = ExpectedParameter.getExpectedKeyValues
+      println(expectedKeyValues)
       parameters.size shouldBe expectedParameters.size
 
       expectedParameters.foreach { expectedParameter =>
         And(s"${expectedParameter.id} should have correct values")
         val parameter = parameters.get(expectedParameter.id).value
-        inside(parameter) { case CPointerParameter(pointer, id, min, max, default) =>
+        inside(parameter) { case CPointerParameter(pointer, id, parameterType, min, max, default, keyValues) =>
           pointer should not be null
           id shouldBe expectedParameter.id
+          parameterType shouldBe ParameterType.Normal
           default shouldBe expectedParameter.default
           min shouldBe expectedParameter.min
           max shouldBe expectedParameter.max
+          keyValues should contain theSameElementsAs expectedKeyValues(id)
         }
         parameter.current shouldBe expectedParameter.current
 
       }
+    }
+
+    Scenario("reading parameter types from model") {
+      Given("a Cubism Mao Model")
+      val modelFile = "src/test/resources/models/Mao/Mao.moc3"
+      val textureFiles = List("texture_00.png")
+      val model = createModelBackend(modelFile, textureFiles)
+
+      When("get the parameters")
+      val parameters = model.parameters
+
+      Then("the count of ParameterType.Normal parameter should be 92")
+      parameters.values.count(_.parameterType == ParameterType.Normal) shouldBe 92
+
+      And("the count of ParameterType.BlendShape parameter should be 20")
+      parameters.values.count(_.parameterType == ParameterType.BlendShape) shouldBe 20
+
+      And("the following parameter should have parameterType as ParameterType.BlendShape")
+      parameters("ParamMouthDown").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamRibbon").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthAngryLine").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamoHairMesh").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthUp").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamHairBackR").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamHairBackL").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamHatTop").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowRY").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthU").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowLAngle").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowLX").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthO").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthA").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowRAngle").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowRX").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthI").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamBrowLY").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthE").parameterType shouldBe ParameterType.BlendShape
+      parameters("ParamMouthAngry").parameterType shouldBe ParameterType.BlendShape
     }
 
     Scenario("reading drawables from the model") {
@@ -167,12 +210,14 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       Then("the basic information of drawables should be correct")
       ExpectedDrawableBasic.getList.foreach { expectedBasicInfo =>
         val drawable = drawables(expectedBasicInfo.id)
-        inside(drawable) { case Drawable(id, index, constantFlags, dynamicFlags, textureIndex, masks,
+
+        inside(drawable) { case Drawable(id, index, parentPartIndexHolder, constantFlags, dynamicFlags, textureIndex, masks,
                                          vertexInfo, drawOrderPointer, renderOrderPointer, opacityPointer,
                                          multiplyColorFetcher, screenColorFetcher) =>
 
           id shouldBe expectedBasicInfo.id
           index shouldBe >= (0)
+          parentPartIndexHolder shouldBe Some(expectedBasicInfo.parentPartIndex)
           constantFlags.bitmask shouldBe expectedBasicInfo.constFlags
           dynamicFlags.bitmask shouldBe expectedBasicInfo.dynamicFlags
           textureIndex shouldBe expectedBasicInfo.textureIndex
@@ -280,9 +325,10 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("Cannot revive the moc file") {
-      Given("a not initialized memory of MocInfo")
+      Given("a uninitialized memory of MocInfo")
+      val core = new JnaNativeCubismAPILoader()
       val memoryInfo = JnaMemoryAllocator.allocate(1024, MocAlignment)
-      val mocInfo = MocInfo(memoryInfo, 1024)
+      val mocInfo = MocInfo(memoryInfo, 1024)(core)
 
       And("create a Live2D model from that memory")
       val model = new CubismModelBackend(mocInfo, mockedTextureFiles)(new JnaNativeCubismAPILoader())
@@ -295,20 +341,27 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
     }
 
     Scenario("The C library return invalid data when reading parameters") {
+
       val cStrings = new CStringArray
       val cFloats = new CArrayOfFloat
+      val cInts = new CArrayOfInt
+      val cArrayOfArrayOfFloat = new CArrayOfArrayOfFloat
 
       val invalidCombos = Table(
-        ("count",    "ids", "current", "default",   "min",   "max"),
-        (-1,      cStrings,   cFloats,   cFloats, cFloats, cFloats),
-        ( 1,          null,   cFloats,   cFloats, cFloats, cFloats),
-        ( 1,      cStrings,      null,   cFloats, cFloats, cFloats),
-        ( 1,      cStrings,   cFloats,      null, cFloats, cFloats),
-        ( 1,      cStrings,   cFloats,   cFloats,    null, cFloats),
-        ( 1,      cStrings,   cFloats,   cFloats, cFloats,    null)
+        ("count",    "ids", "current", "default",   "min",   "max", "types", "keyCounts",          "keyValues"),
+        (-1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,          null,   cFloats,   cFloats, cFloats, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,      null,   cFloats, cFloats, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,      null, cFloats, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats,    null, cFloats,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats,    null,   cInts,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,    null,       cInts, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,    cInts,       null, cArrayOfArrayOfFloat),
+        ( 1,      cStrings,   cFloats,   cFloats, cFloats, cFloats,    cInts,      cInts,                 null),
+
       )
 
-      forAll(invalidCombos) { (count, ids, current, default, min, max) =>
+      forAll(invalidCombos) { (count, ids, current, default, min, max, types, keyCounts, keyValues) =>
         Given("a mocked Cubism Core Library and pointer to model")
         val mockedCLibrary = mock[NativeCubismAPI]
         val mockedCubismCore = new MockedNativeCubismAPILoader(mockedCLibrary)
@@ -320,6 +373,9 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
         (mockedCLibrary.csmGetParameterDefaultValues _).expects(*).returning(default)
         (mockedCLibrary.csmGetParameterMinimumValues _).expects(*).returning(min)
         (mockedCLibrary.csmGetParameterMaximumValues _).expects(*).returning(max)
+        (mockedCLibrary.csmGetParameterTypes _).expects(*).returning(types)
+        (mockedCLibrary.csmGetParameterKeyCounts _).expects(*).returning(keyCounts)
+        (mockedCLibrary.csmGetParameterKeyValues _).expects(*).returning(keyValues)
 
 
         And("a Live2D model")
@@ -383,27 +439,28 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
       val cAAVector = new CArrayOfArrayOfCsmVector
 
       val invalidCombos = Table(
-        ("count",    "ids", "cFlags", "dFlags", "textureIndex", "drawOrder", "renderOrder", "opacities", "maskCounts", "maskLists", "indexCountList", "indexList", "vCountList",   "vList",   "uvList"),
-        (-1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,          null,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,     null,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,     null,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,           null,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,        null,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,          null,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,        null,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,         null,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,        null,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,             null,    cAAShort,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,        null,        cInts, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,         null, cAAVector,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts,      null,  cAAVector),
-        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,       null),
+        ("count",    "ids", "cFlags", "dFlags", "textureIndex", "drawOrder", "renderOrder", "opacities", "maskCounts", "maskLists", "indexCountList", "indexList", "vCountList",   "vList",   "uvList", "parentPartIndex"),
+        (-1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,          null,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,     null,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,     null,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,           null,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,        null,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,          null,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,        null,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,         null,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,        null,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,             null,    cAAShort,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,        null,        cInts, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,         null, cAAVector,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts,      null,  cAAVector, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,       null, cInts),
+        ( 1,      cStrings,   cBytes,   cBytes,          cInts,       cInts,         cInts,     cFloats,        cInts,      cAAInt,            cInts,    cAAShort,        cInts, cAAVector,  cAAVector,  null),
       )
 
       forAll(invalidCombos) { (count, ids, cFlags, dFlags, textureIndex, drawOrder,
                                renderOrder, opacities, maskCounts, maskLists, indexCountList,
-                               indexList, vCountList, vList, uvList) =>
+                               indexList, vCountList, vList, uvList, parentPartIndices) =>
 
         Given("a mocked Cubism Core Library and pointer to model")
         val mockedCLibrary = mock[NativeCubismAPI]
@@ -418,6 +475,8 @@ class CubismModelBackendFeature extends AnyFeatureSpec with GivenWhenThen
         (mockedCLibrary.csmGetDrawableDrawOrders _).expects(*).returning(drawOrder)
         (mockedCLibrary.csmGetDrawableRenderOrders _).expects(*).returning(renderOrder)
         (mockedCLibrary.csmGetDrawableOpacities _).expects(*).returning(opacities)
+        (mockedCLibrary.csmGetDrawableParentPartIndices _).expects(*).returning(parentPartIndices)
+
         (mockedCLibrary.csmGetDrawableMaskCounts _).expects(*).anyNumberOfTimes().returning(maskCounts)
         (mockedCLibrary.csmGetDrawableMasks _).expects(*).anyNumberOfTimes().returning(maskLists)
         (mockedCLibrary.csmGetDrawableIndexCounts _).expects(*).anyNumberOfTimes().returning(indexCountList)

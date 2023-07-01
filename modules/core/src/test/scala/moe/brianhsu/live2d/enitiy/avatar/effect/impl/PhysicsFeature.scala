@@ -5,7 +5,8 @@ import moe.brianhsu.live2d.adapter.gateway.avatar.settings.json.JsonSettingsRead
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.{FallbackParameterValueAdd, FallbackParameterValueUpdate, ParameterValueAdd, ParameterValueMultiply, ParameterValueUpdate, PartOpacityUpdate}
 import moe.brianhsu.live2d.enitiy.math.EuclideanVector
-import moe.brianhsu.live2d.enitiy.model.{JavaVMParameter, Live2DModel}
+import moe.brianhsu.live2d.enitiy.model.Live2DModel
+import moe.brianhsu.live2d.enitiy.model.parameter.{JavaVMParameter, ParameterType}
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation
 import org.json4s._
 import org.json4s.native.JsonMethods._
@@ -127,7 +128,7 @@ class PhysicsFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
   private def createStubbedModel(logData: LogData): Live2DModel = {
     val model: Live2DModel = stub[Live2DModel]
     val mockedParameters = logData.parameters.map { case (id, parameter) =>
-      id -> new JavaVMParameter(id, parameter.min, parameter.max, parameter.default, parameter.current)
+      id -> new JavaVMParameter(id, ParameterType.Normal, parameter.min, parameter.max, parameter.default, Nil, parameter.current)
     }
 
     (() => model.parameters).when().returns(mockedParameters)
