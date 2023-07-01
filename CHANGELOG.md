@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]
 -------------
 
+### Changed
+
+- Updated all Java / Scala dependency to latest version.
+
 2.0.0
 -------------
 This version basically aligned to Cubism Native SDK 4-r.5-beta.4.

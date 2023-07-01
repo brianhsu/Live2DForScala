@@ -1,4 +1,4 @@
-val lwjglVersion = "3.3.1"
+val lwjglVersion = "3.3.2"
 val lwjglFramework = Seq(
   "org.lwjgl" % "lwjgl" % lwjglVersion,
   "org.lwjgl" % "lwjgl-opengl" % lwjglVersion,                          

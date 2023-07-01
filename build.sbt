@@ -4,7 +4,7 @@ ThisBuild / scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
 ThisBuild / publishArtifact := false
 ThisBuild / Test / testOptions += Tests.Argument("-l", sys.env.get("EXCLUDE_TEST_TAG").getOrElse("noExclude"))
 
-val swtVersion = "3.120.0"
+val swtVersion = "3.124.0"
 val swtPackageName = {
   System.getProperty("os.name").toLowerCase match {
     case osName if osName.contains("linux") => "org.eclipse.swt.gtk.linux.x86_64"
@@ -19,9 +19,9 @@ val swtWindows = "org.eclipse.platform" % "org.eclipse.swt.win32.win32.x86_64" %
 val swtLinux = "org.eclipse.platform" % "org.eclipse.swt.gtk.linux.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
 
 val testFramework = Seq(
-  "org.scalatest" %% "scalatest" % "3.2.12" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.16" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test,
-  "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test
+  "com.vladsch.flexmark" % "flexmark-all" % "0.64.8" % Test
 )
 
 val sharedSettings = Seq(

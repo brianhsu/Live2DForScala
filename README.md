@@ -43,7 +43,7 @@ Screenshots
 Feature
 --------------------
 
-The core library support much the same functionality you will find in the official Cubism SDK for Native and the sample application of it.
+The core library support much the same functionality you will find in the official Cubism SDK for Native and the sample application of it. Currenlty it is basically aligned with Cubism Native SDK 4-r.5-beta.4.
 
 The following list shows features that this project currently supports or plan to be implemented.
 
@@ -63,7 +63,7 @@ The following list shows features that this project currently supports or plan t
 
 ### Won't Implemented Feature
 
-Some feature inside Cubism SDK for Native is dropped intended. Because I think these feature are not really useful for create a VTuber program. 
+Some feature inside Cubism SDK for Native is dropped intended. Because I think these feature are not really useful for create a VTuber program. But pull requests are welecome.
 
 The following is the list of such features.
 
