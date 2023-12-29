@@ -32,11 +32,16 @@ jobs:
           apt-get update
           apt-get -y install sbt
           apt-get -y install xorg-dev libglu1-mesa libgl1-mesa-dev xvfb libxinerama1 libxcursor1 libswt-gtk-4-java libswt-gtk-4-jni libxml2-utils bc zip
-      - name: Release
+
+      - name: Setup Git Information
         run: |
           git config --global user.email "brianhsu.hsu+githu@gmail.com"
           git config --global user.name "GitHub Action"
-          xvfb-run --auto-servernum sbt coverage "release with-defaults" coverageAggregate
+
+      - name: Test and Coverage
+        run: |
+          ./distclean
+          xvfb-run --auto-servernum sbt coverage test coverageAggregate
 
       - name: Archive Test Results
         if: always()
@@ -45,53 +50,19 @@ jobs:
           name: test-results
           path: target/test-reports-html/
 
-      - name: Update badges
+      - name: Update Coverage badges
         run: |
           ./doc/images/generateCoverageBadage.sh
-          ./doc/images/generateVersionBadage.sh
 
-      - uses: EndBug/add-and-commit@v9
-        with:
-          add: 'doc/images/'
-          message: Update badages
-
-      - name: Assembly JAR
+      - name: Release
         run: |
           ./distclean
-          sbt clean assembly
-
-      - name: Package runnable JAR files
-        run: |
-          ./scripts/packageBundles.sh
+          xvfb-run --auto-servernum sbt "release with-defaults"
 
       - name: Export Version
-        id: runnableJAR
+        id: VersionExport
         run: |
           echo "::set-output name=CURRENT_VERSION::$(git tag | tail -n1)"
-
-      - name: Upload Swing Version
-        uses: actions/upload-artifact@v1
-        with:
-          name: Live2DForScala-Swing
-          path: Live2DForScala-Swing-${{ steps.runnableJAR.outputs.CURRENT_VERSION }}.zip
-
-      - name: Upload SWT Linux Version
-        uses: actions/upload-artifact@v1
-        with:
-          name: Live2DForScala-SWT-Linux
-          path: Live2DForScala-SWT-Linux-${{ steps.runnableJAR.outputs.CURRENT_VERSION }}.tar.gz
-
-      - name: Upload SWT Windows Version
-        uses: actions/upload-artifact@v1
-        with:
-          name: Live2DForScala-SWT-Windows
-          path: Live2DForScala-SWT-Windows-${{ steps.runnableJAR.outputs.CURRENT_VERSION }}.zip
-
-      - name: Push release change to original GitHub repository
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
 
       - name: Prepare mvn repository
         run: |
@@ -110,3 +81,48 @@ jobs:
           user-email: brianhsu.hsu@gmail.com
           commit-message: See ORIGIN_COMMIT from $GITHUB_REF
           target-branch: master
+
+      - name: Update Version badges
+        run: |
+          ./doc/images/generateVersionBadage.sh
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: 'doc/images/'
+          message: Update badages for ${{ steps.VersionExport.outputs.CURRENT_VERSION }}
+
+      - name: Assembly JAR
+        run: |
+          ./distclean
+          sbt clean assembly
+
+      - name: Package runnable JAR files
+        run: |
+          ./scripts/packageBundles.sh
+
+
+      - name: Upload Swing Version
+        uses: actions/upload-artifact@v1
+        with:
+          name: Live2DForScala-Swing
+          path: Live2DForScala-Swing-${{ steps.VersionExport.outputs.CURRENT_VERSION }}.zip
+
+      - name: Upload SWT Linux Version
+        uses: actions/upload-artifact@v1
+        with:
+          name: Live2DForScala-SWT-Linux
+          path: Live2DForScala-SWT-Linux-${{ steps.VersionExport.outputs.CURRENT_VERSION }}.tar.gz
+
+      - name: Upload SWT Windows Version
+        uses: actions/upload-artifact@v1
+        with:
+          name: Live2DForScala-SWT-Windows
+          path: Live2DForScala-SWT-Windows-${{ steps.VersionExport.outputs.CURRENT_VERSION }}.zip
+
+      - name: Push release change to original GitHub repository
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+

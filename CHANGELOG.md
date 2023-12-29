@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]
 -------------
 
+2.0.1
+-------------
+
+- Fix `FileNotFound` exception when use pre-built Maven JAR files and loading avatar through AvatarFileReader. (Issue #2).
+
 2.0.0
 -------------
 This version basically aligned to Cubism Native SDK 4-r.5-beta.4.
