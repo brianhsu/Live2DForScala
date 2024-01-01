@@ -50,14 +50,15 @@ jobs:
           name: test-results
           path: target/test-reports-html/
 
-      - name: Update Coverage badges
+      - name: Set Coverage rate for badges
+        id: CoverageExport
         run: |
-          ./doc/images/generateCoverageBadage.sh
+          echo "::set-output name=COVERAGE_RATE::$(xmllint --xpath "string(/scoverage/@branch-rate)" target/scala-2.13/scoverage-report/scoverage.xml)"
 
       - name: Release
         run: |
           ./distclean
-          xvfb-run --auto-servernum sbt "release with-defaults"
+          sbt "release with-defaults"
 
       - name: Export Version
         id: VersionExport
@@ -82,8 +83,9 @@ jobs:
           commit-message: See ORIGIN_COMMIT from $GITHUB_REF
           target-branch: master
 
-      - name: Update Version badges
+      - name: Update Coverage / Version badges
         run: |
+          ./doc/images/generateCoverageBadage.sh ${{ steps.CoverageExport.outputs.COVERAGE_RATE }}
           ./doc/images/generateVersionBadage.sh
 
       - uses: EndBug/add-and-commit@v9

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-total=`xmllint --xpath "string(/scoverage/@branch-rate)" target/scala-2.13/scoverage-report/scoverage.xml`
+total=$1
 
 echo $total
 
