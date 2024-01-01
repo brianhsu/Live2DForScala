@@ -511,19 +511,94 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
       val uvArray = ByteBuffer.allocate(1)
       val attributePositionLocation = 1
       val attributeTexCoordLocation = 2
-      richOpenGL.updateVertexInfo(vertexArray, vertexArray, attributePositionLocation, attributeTexCoordLocation)
+      richOpenGL.updateVertexInfo(vertexArray, uvArray, attributePositionLocation, attributeTexCoordLocation)
 
       Then("it should delegated to underlay OpenGL binding")
       type MethodType = (Int, Int, Int, Boolean, Int, ByteBuffer) => Unit
       inSequence {
         (binding.glEnableVertexAttribArray _).verify(attributePositionLocation).once()
-        (binding.glVertexAttribPointer: MethodType).verify(attributePositionLocation, 2, GL_FLOAT, false, 4 * 2, vertexArray)
+        (binding.glVertexAttribPointer: MethodType).verify(attributePositionLocation, 2, GL_FLOAT, false, 4 * 2, vertexArray).once()
+        // テクスチャ頂点の設定
+        (binding.glEnableVertexAttribArray _).verify(attributeTexCoordLocation).once()
+        (binding.glVertexAttribPointer: MethodType).verify(attributeTexCoordLocation, 2, GL_FLOAT, false, 4 * 2, uvArray).once()
+      }
+
+    }
+
+    Scenario("Update when vertexArray buffer does not have remaining bytes") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      When("update vertex info with vertexArray ByteBuffer is empty")
+      val vertexArray = ByteBuffer.allocate(0)
+      val uvArray = ByteBuffer.allocate(1)
+      val attributePositionLocation = 1
+      val attributeTexCoordLocation = 2
+      richOpenGL.updateVertexInfo(vertexArray, uvArray, attributePositionLocation, attributeTexCoordLocation)
+
+      Then("it should NOT delegated glVertexAttribPointer of vertexArray to underlay OpenGL binding")
+      type MethodType = (Int, Int, Int, Boolean, Int, ByteBuffer) => Unit
+      inSequence {
+        (binding.glEnableVertexAttribArray _).verify(attributePositionLocation).never()
+        (binding.glVertexAttribPointer: MethodType).verify(attributePositionLocation, 2, GL_FLOAT, false, 4 * 2, vertexArray).never()
         // テクスチャ頂点の設定
         (binding.glEnableVertexAttribArray _).verify(attributeTexCoordLocation).once()
         (binding.glVertexAttribPointer: MethodType).verify(attributeTexCoordLocation, 2, GL_FLOAT, false, 4 * 2, uvArray)
       }
 
     }
+
+    Scenario("Update when uvArray buffer does not have remaining bytes") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      When("update vertex info with uvArray ByteBuffer is empty")
+      val vertexArray = ByteBuffer.allocate(1)
+      val uvArray = ByteBuffer.allocate(0)
+      val attributePositionLocation = 1
+      val attributeTexCoordLocation = 2
+      richOpenGL.updateVertexInfo(vertexArray, uvArray, attributePositionLocation, attributeTexCoordLocation)
+
+      Then("it should NOT delegated glVertexAttribPointer of uvArray to underlay OpenGL binding")
+      type MethodType = (Int, Int, Int, Boolean, Int, ByteBuffer) => Unit
+      inSequence {
+        (binding.glEnableVertexAttribArray _).verify(attributePositionLocation).once()
+        (binding.glVertexAttribPointer: MethodType).verify(attributePositionLocation, 2, GL_FLOAT, false, 4 * 2, vertexArray).once()
+
+        // テクスチャ頂点の設定
+        (binding.glEnableVertexAttribArray _).verify(attributeTexCoordLocation).never()
+        (binding.glVertexAttribPointer: MethodType).verify(attributeTexCoordLocation, 2, GL_FLOAT, false, 4 * 2, uvArray).never()
+      }
+
+    }
+
+    Scenario("Update when both vertexArray / uvArray buffer does not have remaining bytes") {
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
+
+      When("update vertex info with both vertexArray / uvArray ByteBuffer are empty")
+      val vertexArray = ByteBuffer.allocate(0)
+      val uvArray = ByteBuffer.allocate(0)
+      val attributePositionLocation = 1
+      val attributeTexCoordLocation = 2
+      richOpenGL.updateVertexInfo(vertexArray, uvArray, attributePositionLocation, attributeTexCoordLocation)
+
+      Then("it should NOT delegated glVertexAttribPointer of uvArray to underlay OpenGL binding")
+      type MethodType = (Int, Int, Int, Boolean, Int, ByteBuffer) => Unit
+      inSequence {
+        (binding.glEnableVertexAttribArray _).verify(attributePositionLocation).never()
+        (binding.glVertexAttribPointer: MethodType).verify(attributePositionLocation, 2, GL_FLOAT, false, 4 * 2, vertexArray).never()
+
+        // テクスチャ頂点の設定
+        (binding.glEnableVertexAttribArray _).verify(attributeTexCoordLocation).never()
+        (binding.glVertexAttribPointer: MethodType).verify(attributeTexCoordLocation, 2, GL_FLOAT, false, 4 * 2, uvArray).never()
+      }
+
+    }
+
   }
   Feature("Pre drawing") {
     Scenario("Call preDraw method on RichOpenGL object") {
