@@ -174,12 +174,17 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
   }
 
   def updateVertexInfo(vertexArray: ByteBuffer, uvArray: ByteBuffer, attributePositionLocation: Int, attributeTexCoordLocation: Int): Unit = {
+
     // 頂点配列の設定
-    binding.glEnableVertexAttribArray(attributePositionLocation)
-    binding.glVertexAttribPointer(attributePositionLocation, 2, GL_FLOAT, normalized = false, 4 * 2, vertexArray)
-    // テクスチャ頂点の設定
-    binding.glEnableVertexAttribArray(attributeTexCoordLocation)
-    binding.glVertexAttribPointer(attributeTexCoordLocation, 2, GL_FLOAT, normalized = false, 4 * 2, uvArray)
+    if (vertexArray != null && vertexArray.hasRemaining) {
+      binding.glEnableVertexAttribArray(attributePositionLocation)
+      binding.glVertexAttribPointer(attributePositionLocation, 2, GL_FLOAT, normalized = false, 4 * 2, vertexArray)
+    }
+
+    if (uvArray != null && uvArray.hasRemaining) {
+      binding.glEnableVertexAttribArray(attributeTexCoordLocation)
+      binding.glVertexAttribPointer(attributeTexCoordLocation, 2, GL_FLOAT, normalized = false, 4 * 2, uvArray)
+    }
   }
 
   def blendFunction_=(blending: BlendFunction): Unit = {

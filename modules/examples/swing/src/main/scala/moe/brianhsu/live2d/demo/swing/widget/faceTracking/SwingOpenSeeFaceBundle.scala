@@ -59,7 +59,10 @@ class SwingOpenSeeFaceBundle(cameraListing: CameraListing) extends JPanel with O
 
     values.foreach(comboBox.addItem)
     comboBox.setToolTipText(tooltip)
-    comboBox.setSelectedIndex(defaultIndex)
+
+    if (values.nonEmpty) {
+      comboBox.setSelectedIndex(defaultIndex)
+    }
 
     val gc1 = new GridBagConstraints()
     gc1.gridx = 0
