@@ -1,10 +1,10 @@
 ThisBuild / organization := "moe.brianhsu.live2d"
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalaVersion := "2.13.11"
 ThisBuild / scalacOptions := Seq("-deprecation", "-Ywarn-unused", "-feature")
 ThisBuild / publishArtifact := false
 ThisBuild / Test / testOptions += Tests.Argument("-l", sys.env.get("EXCLUDE_TEST_TAG").getOrElse("noExclude"))
 
-val swtVersion = "3.120.0"
+val swtVersion = "3.125.0"
 val swtPackageName = {
   System.getProperty("os.name").toLowerCase match {
     case osName if osName.contains("linux") => "org.eclipse.swt.gtk.linux.x86_64"
@@ -20,7 +20,7 @@ val swtLinux = "org.eclipse.platform" % "org.eclipse.swt.gtk.linux.x86_64" % swt
 
 val testFramework = Seq(
   "org.scalatest" %% "scalatest" % "3.2.12" % Test,
-  "org.scalamock" %% "scalamock" % "5.2.0" % Test,
+  "org.scalamock" %% "scalamock" % "6.0.0-M1" % Test,
   "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test
 )
 

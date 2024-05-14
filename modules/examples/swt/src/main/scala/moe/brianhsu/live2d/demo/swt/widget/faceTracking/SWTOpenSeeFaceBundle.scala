@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.{Combo, Composite, Label}
 class SWTOpenSeeFaceBundle(parent: Composite, cameraListing: CameraListing) extends Composite(parent, SWT.NONE) with OpenSeeFaceSetting {
   private val cameraCombo = createComboField(this, "Camera:", cameraListing.listing.map(_.title), 0, "Select camera for face tracking")
   private val fpsCombo = createComboField(
-    this, "FPS:", List("24", "30", "60"), 1,
+    this, "FPS:", List("24", "30", "60", "120"), 1,
     "Set camera frames per second"
   )
 
