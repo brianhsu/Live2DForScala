@@ -13,27 +13,29 @@ object SWTWithLWJGLMain {
   private val display = new Display()
   private val shell = new Shell(display)
   private val toolbar = new SWTToolbar(shell)
-  private val sashForm = new SashForm(shell, SWT.HORIZONTAL|SWT.SMOOTH)
+  private val sashForm = new SashForm(shell, SWT.HORIZONTAL | SWT.SMOOTH)
   private val avatarControl = new SWTAvatarControlPanel(sashForm)
   private val avatarArea = new SWTAvatarDisplayArea(sashForm)
   private val statusBar = new SWTStatusBar(shell)
 
   def main(args: Array[String]): Unit = {
-    setupUILayout()
-    setupAvatarEventListener()
+    try {
+      setupUILayout()
+      setupAvatarEventListener()
 
-    shell.setText("Live 2D Scala Demo (SWT+LWJGL)")
-    shell.setSize(1080, 720)
-    shell.open()
+      shell.setText("Live 2D Scala Demo (SWT+LWJGL)")
+      shell.setSize(1080, 720)
+      shell.open()
 
-    while (!shell.isDisposed) {
-      if (!display.readAndDispatch()) {
-        display.sleep()
+      while (!shell.isDisposed) {
+        if (!display.readAndDispatch()) {
+          display.sleep()
+        }
       }
+    } finally {
+      display.dispose()
+      System.exit(0)
     }
-    display.dispose()
-    System.exit(0)
-
   }
 
   private def setupAvatarEventListener(): Unit = {
@@ -51,7 +53,6 @@ object SWTWithLWJGLMain {
       }
       override def onStatusUpdated(status: String): Unit = statusBar.updateStatus(status)
     })
-
   }
 
   private def setupUILayout(): Unit = {
@@ -77,3 +78,5 @@ object SWTWithLWJGLMain {
   }
 
 }
+
+//using try-finally to reduce  resource leakage
