@@ -15,19 +15,17 @@ object ShaderRenderer {
   private var shaderRendererHolder: Map[OpenGLBinding, ShaderRenderer] = Map.empty
 
   def getInstance(implicit gl: OpenGLBinding): ShaderRenderer = {
+
     val shaderFactory = new DefaultShaderFactory
 
     shaderRendererHolder.get(gl) match {
       case Some(renderer) => renderer
       case None =>
-        val createRichOpenGLBinding: OpenGLBinding => RichOpenGLBinding = x => new RichOpenGLBinding(x)
-        shaderRendererHolder += (gl -> new ShaderRenderer(shaderFactory)(gl, createRichOpenGLBinding))
-        shaderRendererHolder(gl)
+        this.shaderRendererHolder += (gl -> new ShaderRenderer(shaderFactory)(gl, {x: OpenGLBinding => new RichOpenGLBinding(x)}))
+        this.shaderRendererHolder(gl)
     }
   }
 }
-// update scala 2.12 to scala 3
-
 
 class ShaderRenderer(setupMaskShader: SetupMaskShader, normalShader: NormalShader,
                      maskedShader: MaskedShader, invertedMaskedShader: InvertedMaskedShader)

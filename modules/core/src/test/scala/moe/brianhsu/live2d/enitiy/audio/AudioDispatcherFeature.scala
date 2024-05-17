@@ -250,7 +250,7 @@ class AudioDispatcherFeature extends AnyFeatureSpec with Matchers with GivenWhen
     Scenario("Stop processing after call AudioDispatcher.run()") {
       Given("a stubbed processor that will sleep 200 milliseconds every run")
       val processor = stub[AudioProcessor]
-      (processor.process _).when(*).onCall { ((_: AudioEvent)) => Thread.sleep(200) }
+      (processor.process _).when(*).onCall { _: AudioEvent => Thread.sleep(200) }
 
       And("an AudioDispatcher with an 32 bit AudioInputStream with those processors")
       val audioInputStream = AudioSystem.getAudioInputStream(this.getClass.getResourceAsStream("/sounds/32.wav"))

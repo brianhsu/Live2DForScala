@@ -9,7 +9,7 @@ val slfjFramework = Seq(
 libraryDependencies ++= slfjFramework
 
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-reflect" % "2.13.11",
+  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
   "net.java.dev.jna" % "jna" % "5.10.0",
   "org.json4s" %% "json4s-native" % "4.0.4",
   "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test

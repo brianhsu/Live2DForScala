@@ -9,7 +9,7 @@ import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
-import cucumber.api.scala.ScalaDsl
+
 import java.nio.ByteBuffer
 
 class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory
@@ -66,18 +66,17 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
 
     }
 
-
     Scenario("Read boolean parameter") {
-      given Binding = createOpenGLStub() // Scala 3中使用given替代Scala 2的implicit关键字
+      Given("a RichOpenGL with a stubbed OpenGL binding")
+      val binding = createOpenGLStub()
+      val richOpenGL = new RichOpenGLBinding(binding)
 
-      val richOpenGL = new RichOpenGLBinding()
-
-      // 假设我们直接检查方法的返回值来判断是否抛出了异常（根据实际逻辑调整）
-      val result = richOpenGL.openGLParameters(GL_COLOR_WRITEMASK)
-      assert(result != expectedErrorValue, "Expected an exception-like condition")
+      an[Exception] should be thrownBy {
+        When("read a boolean parameter")
+        Then("it should thrown exception")
+        richOpenGL.openGLParameters[Boolean](GL_COLOR_WRITEMASK)
       }
     }
-
 
   }
   Feature("Enable / Disable capability") {
@@ -638,4 +637,4 @@ class RichOpenGLBindingFeature extends AnyFeatureSpec with Matchers with GivenWh
         buffer(index) = value
       }
   }
-
+}

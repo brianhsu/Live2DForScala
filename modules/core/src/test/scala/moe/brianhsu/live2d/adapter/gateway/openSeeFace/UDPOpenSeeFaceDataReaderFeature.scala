@@ -39,7 +39,7 @@ class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen 
       reader.open()
 
       Then("the socket should be bind to the hostname and port")
-      (socket.bind _).verify(where { ((address: SocketAddress)) =>
+      (socket.bind _).verify(where { address: SocketAddress =>
         address.asInstanceOf[InetSocketAddress].getHostName == "localhost" &&
           address.asInstanceOf[InetSocketAddress].getPort == 11572
       }).once()
@@ -83,7 +83,7 @@ class UDPOpenSeeFaceDataReaderFeature extends AnyFeatureSpec with GivenWhenThen 
       expectedDataList.foreach { expectation =>
         Given("a stubbed socket return some bytes when requested")
         val stubbedSocket = stub[MockableDatagramSocket]
-        (stubbedSocket.receive _).when(*).onCall { ((packet: DatagramPacket)) =>
+        (stubbedSocket.receive _).when(*).onCall { packet: DatagramPacket =>
           expectation.rawBytes.zipWithIndex.foreach { case (byte, index) =>
             packet.getData.update(index, byte)
           }

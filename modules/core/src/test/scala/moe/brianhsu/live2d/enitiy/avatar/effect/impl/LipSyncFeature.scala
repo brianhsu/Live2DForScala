@@ -20,7 +20,7 @@ class LipSyncFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
     Scenario("There is no mixer at all") {
       Given("a input mixer list without any mixer")
       val getMixerInfo: Array[Mixer.Info] = Array.empty
-      val getMixer = { ((_: Mixer.Info)) => stub[Mixer] }
+      val getMixer = { _: Mixer.Info => stub[Mixer] }
 
       When("try to find the input mixer")
       val inputMixer = LipSyncFromMic.findInputMixers(getMixerInfo, getMixer)
@@ -32,7 +32,7 @@ class LipSyncFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
     Scenario("All mixer are not support the input format we requested") {
       Given("a input mixer list mixers that does not support the input format we requested")
       val getMixerInfo: Array[Mixer.Info] = Array(stub[Mixer.Info], stub[Mixer.Info], stub[Mixer.Info])
-      val getMixer = { ((_: Mixer.Info)) =>
+      val getMixer = { _: Mixer.Info =>
         val stubbedMixer = stub[Mixer]
         (stubbedMixer.isLineSupported _).when(*).returns(false)
         stubbedMixer
@@ -59,7 +59,7 @@ class LipSyncFeature extends AnyFeatureSpec with GivenWhenThen with Matchers wit
       )
 
       val getMixerInfo: Array[Mixer.Info] = Array(stubbedMixerInfo1, stubbedMixerInfo2, stubbedMixerInfo3, stubbedMixerInfo4)
-      val getMixer = { ((mixerInfo: Mixer.Info)) =>
+      val getMixer = { mixerInfo: Mixer.Info =>
         val stubbedMixer = mixerInfoToMixer(mixerInfo)
         val isLineSupported = mixerInfo == stubbedMixerInfo2 || mixerInfo == stubbedMixerInfo3
         (stubbedMixer.isLineSupported _).when(*).returns(isLineSupported)
