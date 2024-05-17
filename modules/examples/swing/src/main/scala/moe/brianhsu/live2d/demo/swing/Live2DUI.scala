@@ -9,15 +9,14 @@ import moe.brianhsu.live2d.demo.swing.widget.{SwingEffectSelector, SwingExpressi
 
 import java.awt.event._
 import javax.swing.SwingUtilities
-import scala.util.Try
-import java.util.concurrent.atomic.AtomicReference
+
 
 class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener with KeyListener {
-  private val animatorRef = new AtomicReference[Option[FixedFPSAnimator]](None)
+  private var animator: Option[FixedFPSAnimator] = None
   private val canvasInfo = new JOGLCanvasInfoReader(canvas)
-  private val mDemoAppHolderRef = new AtomicReference[Option[DemoApp]](None)
-  private val lastMouseX = new AtomicReference[Option[Int]](None)
-  private val lastMouseY = new AtomicReference[Option[Int]](None)
+  private var mDemoAppHolder: Option[DemoApp] = None
+  private var lastMouseX: Option[Int] = None
+  private var lastMouseY: Option[Int] = None
 
   val expressionSelector = new SwingExpressionSelector(this)
   val motionSelector = new SwingMotionSelector(this)
@@ -27,24 +26,19 @@ class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener w
   val faceTrackingPane = new SwingFaceTrackingPane(this)
 
 
-  def demoAppHolder: Option[DemoApp] = mDemoAppHolderRef.get()
+  def demoAppHolder: Option[DemoApp] = mDemoAppHolder
 
-  private def runOnOpenGLThread(callback: => Any): Unit = {
+  private def runOnOpenGLThread(callback: => Any): Any = {
     canvas.invoke(true, (_: GLAutoDrawable) => {
-      Try(callback)
+      callback
       true
     })
   }
 
   override def init(drawable: GLAutoDrawable): Unit = {
-    runOnOpenGLThread {
-      Try {
-        val demoApp = createLive2DDemoApp(drawable)
-        mDemoAppHolderRef.set(Option(demoApp))
-        animatorRef.set(Option(new FixedFPSAnimator(60, drawable)))
-        animatorRef.get().foreach(_.start())
-      }
-    }
+    this.mDemoAppHolder = Option(createLive2DDemoApp(drawable))
+    this.animator = Option(new FixedFPSAnimator(60, drawable))
+    this.animator.foreach { x => x.start() }
   }
 
   private def createLive2DDemoApp(drawable: GLAutoDrawable): DemoApp = {
@@ -67,65 +61,48 @@ class Live2DUI(val canvas: GLCanvas) extends MouseAdapter with GLEventListener w
   }
 
   override def dispose(drawable: GLAutoDrawable): Unit = {
-    runOnOpenGLThread {
-      animatorRef.get().foreach(_.stop())
-    }
+    this.animator.foreach(_.stop())
   }
 
   override def display(drawable: GLAutoDrawable): Unit = {
-    runOnOpenGLThread {
-      mDemoAppHolderRef.get().foreach(_.display())
-    }
+    this.mDemoAppHolder.foreach(_.display())
   }
 
   override def reshape(drawable: GLAutoDrawable, x: Int, y: Int, width: Int, height: Int): Unit = {
-    runOnOpenGLThread {
-      mDemoAppHolderRef.get().foreach(_.resize())
-    }
+    this.mDemoAppHolder.foreach(_.resize())
   }
 
-  // Optimized event handlers
   override def mouseDragged(e: MouseEvent): Unit = {
-    runOnOpenGLThread {
-      if (SwingUtilities.isLeftMouseButton(e)) {
-        mDemoAppHolderRef.get().foreach(_.onMouseDragged(e.getX, e.getY))
-      }
-      if (SwingUtilities.isRightMouseButton(e)) {
-        val offsetX = lastMouseX.get.map(e.getX - _).getOrElse(0).toFloat * 0.002f
-        val offsetY = lastMouseY.get.map(_ - e.getY).getOrElse(0).toFloat * 0.002f
+    if (SwingUtilities.isLeftMouseButton(e)) {
+      this.mDemoAppHolder.foreach(_.onMouseDragged(e.getX, e.getY))
+    }
+    if (SwingUtilities.isRightMouseButton(e)) {
+      val offsetX = this.lastMouseX.map(e.getX - _).getOrElse(0).toFloat * 0.002f
+      val offsetY = this.lastMouseY.map(_ - e.getY).getOrElse(0).toFloat * 0.002f
 
-        mDemoAppHolderRef.get().foreach(_.move(offsetX, offsetY))
+      this.mDemoAppHolder.foreach(_.move(offsetX, offsetY))
 
-        lastMouseX.set(Some(e.getX))
-        lastMouseY.set(Some(e.getY))
-      }
+      this.lastMouseX = Some(e.getX)
+      this.lastMouseY = Some(e.getY)
     }
   }
   override def mouseMoved(mouseEvent: MouseEvent): Unit = {
-    runOnOpenGLThread {
-      mDemoAppHolderRef.get().foreach(_.onMouseMoved(mouseEvent.getX, mouseEvent.getY))
-    }
+    this.mDemoAppHolder.foreach(_.onMouseMoved(mouseEvent.getX, mouseEvent.getY))
   }
 
   override def mouseReleased(mouseEvent: MouseEvent): Unit = {
-    runOnOpenGLThread {
-      mDemoAppHolderRef.get().foreach(_.onMouseReleased(mouseEvent.getX, mouseEvent.getY))
-      lastMouseX.set(None)
-      lastMouseY.set(None)
-    }
+    this.mDemoAppHolder.foreach(_.onMouseReleased(mouseEvent.getX, mouseEvent.getY))
+    this.lastMouseX = None
+    this.lastMouseY = None
   }
 
   override def keyTyped(keyEvent: KeyEvent): Unit = {}
   override def keyPressed(keyEvent: KeyEvent): Unit = {}
   override def keyReleased(keyEvent: KeyEvent): Unit = {
-    runOnOpenGLThread {
-      mDemoAppHolderRef.get().foreach(_.keyReleased(keyEvent.getKeyChar))
-    }
+    this.mDemoAppHolder.foreach(_.keyReleased(keyEvent.getKeyChar))
   }
   override def mouseWheelMoved(e: MouseWheelEvent): Unit = {
-    runOnOpenGLThread {
-      mDemoAppHolderRef.get().foreach(_.zoom(e.getScrollAmount * -e.getWheelRotation * 0.01f))
-    }
+    this.mDemoAppHolder.foreach(_.zoom(e.getScrollAmount * -e.getWheelRotation * 0.01f))
   }
 
 }
