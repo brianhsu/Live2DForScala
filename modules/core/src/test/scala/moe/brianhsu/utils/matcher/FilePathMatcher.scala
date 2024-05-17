@@ -8,7 +8,7 @@ trait FilePathMatcher {
 
   class FileEndsWithPathMatcher(expectedPath: String) extends Matcher[String] {
 
-    def apply(left: String) = {
+    def apply(left: String): MatchResult = {
       MatchResult(
         left.replace(File.separator, "/").endsWith(expectedPath),
         s"""File $left did not end with extension "$expectedPath"""",

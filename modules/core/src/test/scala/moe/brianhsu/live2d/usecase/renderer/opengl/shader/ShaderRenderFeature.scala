@@ -74,7 +74,7 @@ class ShaderRenderFeature extends AnyFeatureSpec with Matchers with GivenWhenThe
       val richOpenGLBinding = stub[RichOpenGLBinding]
 
       And("create a ShaderRenderer with above objects")
-      val shaderRender = new ShaderRenderer(shaderFactory)(binding, {_: OpenGLBinding => richOpenGLBinding})
+      val shaderRender = new ShaderRenderer(shaderFactory)(binding, {((_: OpenGLBinding)) => richOpenGLBinding})
 
       And("the following clipping context / vertex array / uv array")
       val vertexArray = ByteBuffer.allocate(1)
@@ -193,15 +193,15 @@ trait ShaderRenderBehaviors {
     matrixForMask = stubbedMatrixForMask,
     matrixForDraw = stubbedMatrixForDraw
   )
-  protected val stubbedMultiplyColor = DrawableColor(1.0f, 2.0f, 3.0f, 4.0f)
-  protected val stubbedScreenColor = DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
+  protected val stubbedMultiplyColor: DrawableColor = DrawableColor(1.0f, 2.0f, 3.0f, 4.0f)
+  protected val stubbedScreenColor: DrawableColor = DrawableColor(4.0f, 3.0f, 2.0f, 1.0f)
 
 
   def noClippingContext(isInvertedMask: Boolean, colorBlendMode: ConstantFlags.BlendMode, expectedBlendFunction: BlendFunction): Unit = {
     Given("a ShaderRenderer")
     val binding = createOpenGLStub()
     val richOpenGLBinding = stub[RichOpenGLBinding]
-    val shaderRender = new ShaderRenderer(shaderFactory)(binding, { _: OpenGLBinding => richOpenGLBinding })
+    val shaderRender = new ShaderRenderer(shaderFactory)(binding, { ((_: OpenGLBinding)) => richOpenGLBinding })
 
     import binding.constants._
 
@@ -241,7 +241,7 @@ trait ShaderRenderBehaviors {
     Given("a ShaderRenderer")
     val binding = createOpenGLStub()
     val richOpenGLBinding = stub[RichOpenGLBinding]
-    val shaderRender = new ShaderRenderer(shaderFactory)(binding, { _: OpenGLBinding => richOpenGLBinding })
+    val shaderRender = new ShaderRenderer(shaderFactory)(binding, { ((_: OpenGLBinding)) => richOpenGLBinding })
 
     import binding.constants._
 
@@ -281,7 +281,7 @@ trait ShaderRenderBehaviors {
     Given("a ShaderRenderer")
     val binding = createOpenGLStub()
     val richOpenGLBinding = stub[RichOpenGLBinding]
-    val shaderRender = new ShaderRenderer(shaderFactory)(binding, { _: OpenGLBinding => richOpenGLBinding })
+    val shaderRender = new ShaderRenderer(shaderFactory)(binding, { ((_: OpenGLBinding)) => richOpenGLBinding })
     import binding.constants._
 
     When(s"render mask with isInvertedMask = $isInvertedMask, colorBlendMode = $colorBlendMode")

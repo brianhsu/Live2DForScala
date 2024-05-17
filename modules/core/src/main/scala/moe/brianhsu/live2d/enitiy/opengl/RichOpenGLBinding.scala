@@ -4,7 +4,7 @@ import moe.brianhsu.live2d.enitiy.opengl.RichOpenGLBinding.{ColorWriteMask, View
 import moe.brianhsu.live2d.enitiy.opengl.texture.TextureColor
 
 import java.nio.ByteBuffer
-import reflect.runtime.universe._
+
 
 object RichOpenGLBinding {
   private var wrapper: Map[OpenGLBinding, RichOpenGLBinding] = Map.empty
@@ -41,16 +41,12 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
     booleanBuffer.indices.foreach(booleanBuffer(_) = false)
   }
 
-  def openGLParameters[T: TypeTag](pname: Int): T = {
+  def openGLParameters(pname: Int): Int = {
     clearIntBuffer()
-    pname match {
-      case _ if typeOf[T] <:< typeOf[Int] =>
-        binding.glGetIntegerv(pname, intBuffer, 0)
-        intBuffer(0).asInstanceOf[T]
-      case _  =>
-        throw new Exception("Unknown Type")
-    }
+    binding.glGetIntegerv(pname, intBuffer, 0)
+    intBuffer(0)
   }
+
 
   def generateTextures(count: Int): List[Int] = {
     require(count > 0, s"$count should >= 1")
@@ -82,7 +78,7 @@ class RichOpenGLBinding(binding: OpenGLBinding) {
 
   def textureBinding2D(textureUnit: Int): Int = {
     binding.glActiveTexture(textureUnit)
-    openGLParameters[Int](GL_TEXTURE_BINDING_2D)
+    openGLParameters(GL_TEXTURE_BINDING_2D)
   }
 
   def activeAndBinding2DTexture(textureUnit: Int, textureName: Int): Unit = {

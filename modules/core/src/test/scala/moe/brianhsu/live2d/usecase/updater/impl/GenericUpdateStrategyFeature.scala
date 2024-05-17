@@ -191,8 +191,8 @@ class GenericUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen wit
       And("pretend the repeated callback will execute once")
       val mockedMotionWithTransition = stub[MotionWithTransition]
       (motionManager.repeatedCallbackHolder_= _)
-        .expects(where { (callback: Option[RepeatedCallback]) => callback.isDefined })
-        .onCall((callbackHolder: Option[RepeatedCallback]) => callbackHolder.foreach(_.apply(stub[MotionWithTransition])))
+        .expects(where { (((callback: Option[RepeatedCallback]))) => callback.isDefined })
+        .onCall((((callbackHolder: Option[RepeatedCallback]))) => callbackHolder.foreach(_.apply(stub[MotionWithTransition])))
         .once()
 
       (motionManager.startMotion: Motion => MotionWithTransition)

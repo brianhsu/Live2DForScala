@@ -12,7 +12,7 @@ object LipSyncFromMic {
   private val InputAudioFormat = new AudioFormat(44100, 16, 1, true,false)
 
   def findInputMixers(getMixerInfo: => Array[Mixer.Info] = AudioSystem.getMixerInfo,
-                      getMixer: Mixer.Info => Mixer = AudioSystem.getMixer) = {
+                      getMixer: Mixer.Info => Mixer = AudioSystem.getMixer): List[Mixer] = {
     getMixerInfo
       .map(getMixer)
       .filter(_.isLineSupported(new DataLine.Info(classOf[TargetDataLine], InputAudioFormat)))

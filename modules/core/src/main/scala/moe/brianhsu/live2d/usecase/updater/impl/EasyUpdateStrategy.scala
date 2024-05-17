@@ -32,11 +32,17 @@ class EasyUpdateStrategy(avatar: Avatar, eyeBlink: EyeBlink, breath: Breath,
     physicsHolder, poseHolder
   ).flatten
 
-  override val motionListener: Option[MotionListener] = Some((motion: MotionSetting) => {
-    findEffects(_.isInstanceOf[LipSyncFromMotionSound], AfterExpression)
-      .map(_.asInstanceOf[LipSyncFromMotionSound])
-      .foreach(_.startWith(motion.sound))
-  })
+  override val motionListener: Option[MotionListener] = {
+    def onMotionStart(motion: MotionSetting): Unit = {
+      findEffects(_.isInstanceOf[LipSyncFromMotionSound], AfterExpression)
+        .map(_.asInstanceOf[LipSyncFromMotionSound])
+        .foreach(_.startWith(motion.sound))
+    }
+
+    Some(onMotionStart)
+  }
+  // for upgrade scala 2.12 to scala 3
+
 
   this.appendAndStartEffects(beforeExpressionEffects, BeforeExpression)
   this.appendAndStartEffects(afterExpressionEffects, AfterExpression)

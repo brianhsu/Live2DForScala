@@ -16,25 +16,27 @@ object OffscreenFrame {
     }
   }
 
-  protected def createColorTextureBufferAndFrameBuffer(displayBufferWidth: Int, displayBufferHeight: Int)(implicit gl: OpenGLBinding, converter: OpenGLBinding => RichOpenGLBinding): (Int, Int) = {
-    import gl.constants._
-    val colorTextureBufferId = gl.generateTextures(10).head
-    gl.glBindTexture(GL_TEXTURE_2D, colorTextureBufferId)
-    gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, displayBufferWidth, displayBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null)
-    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    gl.glBindTexture(GL_TEXTURE_2D, 0)
+ protected def createColorTextureBufferAndFrameBuffer(displayBufferWidth: Int, displayBufferHeight: Int)(implicit gl: OpenGLBinding, converter: OpenGLBinding => RichOpenGLBinding): (Int, Int) = {
+  import gl.constants._
+  val colorTextureBufferId = gl.generateTextures(10).head
+  gl.glBindTexture(GL_TEXTURE_2D, colorTextureBufferId)
+  gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, displayBufferWidth, displayBufferHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null)
+  gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+  gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+  gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+  gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+  gl.glBindTexture(GL_TEXTURE_2D, 0)
 
-    val frameBufferId = gl.generateFrameBuffers(10).head
-    val originalFrameBuffer = gl.openGLParameters[Int](GL_FRAMEBUFFER_BINDING)
-    gl.glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId)
-    gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTextureBufferId, 0)
-    gl.glBindFramebuffer(GL_FRAMEBUFFER, originalFrameBuffer)
+  val frameBufferId = gl.generateFrameBuffers(10).head
+  val originalFrameBuffer = gl.openGLParameters(GL_FRAMEBUFFER_BINDING)
+  gl.glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId)
+  gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTextureBufferId, 0)
+  gl.glBindFramebuffer(GL_FRAMEBUFFER, originalFrameBuffer)
 
-    (colorTextureBufferId, frameBufferId)
-  }
+  (colorTextureBufferId, frameBufferId)
+}
+
+
 
 }
 

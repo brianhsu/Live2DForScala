@@ -49,7 +49,7 @@ class GenericUpdateStrategy(val avatarSettings: Settings,
     )
   }
 
-  def effects(timing: EffectTiming) = timing match {
+  def effects(timing: EffectTiming): List[Effect] = timing match {
     case BeforeExpression => this.beforeExpressionEffects
     case AfterExpression => this.afterExpressionEffects
   }
@@ -93,11 +93,16 @@ class GenericUpdateStrategy(val avatarSettings: Settings,
     motionListener.foreach(_.onMotionStart(motionSetting))
 
     if (isLoop) {
-      val callbackHolder: Option[RepeatedCallback] = motionListener.map(c => (_: MotionWithTransition) => c.onMotionStart(motionSetting))
+     // val callbackHolder: Option[RepeatedCallback] = motionListener.map(c => ((_: MotionWithTransition)) => c.onMotionStart(motionSetting))
+     val callbackHolder: Option[RepeatedCallback] = motionListener.map { c =>
+       val f: MotionWithTransition => Unit = _ => c.onMotionStart(motionSetting)
+       f
+     }
       motionManager.repeatedCallbackHolder = callbackHolder
     } else {
       motionManager.repeatedCallbackHolder = None
     }
+// for upgrade scala 2.12 to scala 3
 
     motionManager.startMotion(motion)
   }

@@ -68,7 +68,7 @@ class Live2DModel(modelBackend: ModelBackend) {
    * The old format is like `PARAM_EYE_R_OPEN`, and the new format
    * is `ParamEyeROpen`.
    */
-  lazy val isOldParameterId = parameters.keySet.exists(_.contains("PARAM_"))
+  lazy val isOldParameterId: Boolean = parameters.keySet.exists(_.contains("PARAM_"))
 
   /**
    * Does the drawables of this model use masking?
