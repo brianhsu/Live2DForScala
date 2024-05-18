@@ -6,7 +6,7 @@ Live2D For Scala (JVM / Linux / Windows / MacOS Intel)
 ![Code Coverage](doc/images/coverage.svg)
 
 zh_CN [简体中文](README.zh_CN.md)
-
+--
 Disclaimer
 -----------
 
