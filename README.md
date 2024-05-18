@@ -5,6 +5,8 @@ Live2D For Scala (JVM / Linux / Windows / MacOS Intel)
 ![Development Build Status](https://img.shields.io/github/actions/workflow/status/brianhsu/Live2DForScala/unitTest.yaml?branch=develop&logo=github&style=for-the-badge&label=DEV%20BUILD) 
 ![Code Coverage](doc/images/coverage.svg)
 
+zh_CN [简体中文](README.zh_CN.md)
+
 Disclaimer
 -----------
 
