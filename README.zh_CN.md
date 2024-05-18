@@ -107,15 +107,15 @@ TODO List
 
 演示应用程序的Swing和SWT版本提供相同的功能。以下是一些基本控制方案：
 
-  在顶部左角点击“加载头像”按钮以加载Live2D模型。
+1. 在顶部左角点击“加载头像”按钮以加载Live2D模型。
 
  1.1 您必须选择一个包含有效 .moc3 文件的文件夹。
     
-   左侧的用户面板用于控制效果/动作/表情。
+   2. 左侧的用户面板用于控制效果/动作/表情。
 
-  右键点击头像并拖动以移动头像。
+  3. 右键点击头像并拖动以移动头像。
 
- 使用鼠标滚轮进行放大/缩小头像。
+4. 使用鼠标滚轮进行放大/缩小头像。
 
 项目结构和设计
 -----------------------------
@@ -151,19 +151,19 @@ TODO List
 Build Instruction
 --------------------
 
-1. 安装 OpenJDK 11
+### 1. 安装 OpenJDK 11
 
-    对于 Windows，请下载 Microsoft Build of OpenJDK 并安装它。
-    对于 Linux，请通过您的发行版的包管理器安装它。
-    对于 macOS
-        安装 Homebrew。
-        运行 brew install openjdk@11 以安装。
+- 对于 Windows，请下载 Microsoft Build of OpenJDK 并安装它。
+ -    对于 Linux，请通过您的发行版的包管理器安装它。
+  -   对于 macOS
+      1.  安装 Homebrew。
+       2.  运行 brew install openjdk@11 以安装。
 
-2. 安装 [SBT][6]（Simple Build Tool）
+### 2. 安装 [SBT][6]（Simple Build Tool）
 
     遵循 SBT 的 下载 页面以安装它。
 
-3. 编译
+### 3. 编译
 
 1. 在安装完 SBT 之后，运行以下命令从 GitHub 克隆这个项目。
 
