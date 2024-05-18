@@ -161,7 +161,7 @@ macOS上でSWTを使用して動作させることができず、いくつかの
 
 ### 3. コンパイル
 
-1. SBTがインストールされた後、以下のコマンドを実行してGitHubからこのプロジェクトを克隆してください。
+1. SBTがインストールされた後、以下のコマンドを実行してGitHubからこのプロジェクトを克隆してください。（以上の上游プロジェクトを例に）
 
 ```console
 username@hostname:~$ git clone https://github.com/brianhsu/Live2DForScala.git
