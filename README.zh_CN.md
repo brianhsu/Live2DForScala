@@ -261,22 +261,19 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
-License
+许可协议
+
 ==============================
 
-The library and the example program of this project itself is licensed under the MIT license. Please note that this repository also contains files that are belong to other copyright holders, please see the following section for detail. Those files are not considered as "ths project itself" in previous sentence.
+本项目的库和示例程序本身遵循 MIT 许可协议。请注意，此存储库还包含属于其他版权持有者的文件，请参阅以下部分获取详细信息。前一句中的“本项目本身”不包括这些文件。
 
-You must agree to those license agreement in order to use this program.
+您必须同意这些许可协议才能使用此程序。
+第三方组件许可
 
-3rd Party Component Licenses
-==============================
-
-This project is based on some 3rd party resources, the following denoted those resources and thier licenses.
-
+本项目基于一些第三方资源，以下列出了这些资源及其许可。
 Live2D Cubism Core
---------------------
 
-This project uses Live2D Cubism Core native library during runtime, it's located at `modules/core/src/main/resources/`.
+本项目在运行时使用了 Live2D Cubism Core 原生库，它位于`modules/core/src/main/resources/`.
 
 ```
 modules/core/src/main/resources/linux-x86-64/libLive2DCubismCore.so
@@ -286,18 +283,18 @@ modules/core/src/main/resources/darwin/libLive2DCubismCore.dylib
 modules/core/src/main/resources/LICENSE.md
 ```
 
-Live2D Cubism Core is available under Live2D Proprietary Software License.
+Live2D Cubism Core 遵循 Live2D 专有软件许可协议。
 
 * [Live2D Proprietary Software License Agreement](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)
 * [Live2D Proprietary Software 使用許諾契約書](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_jp.html)
 * [Live2D Proprietary Software 使用授权协议](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_cn.html)
 
-Live2D Model
+Live2D模型
 --------------------
 
-In order to do proper unit test to make sure this project's quality, the Live2D model located at `modules/core/src/test/resources/models` are used during unit test. And is included in this project's git repository.
+为了确保项目的质量进行适当的单元测试，在 modules/core/src/test/resources/models 目录下的 Live2D 模型在单元测试过程中被使用。并且这个模型包含在本项目的 Git 仓库中。
 
-We used it under the Free Material License Agreement from Live2D Inc.
+我们是在 Live2D Inc. 提供的免费材料许可协议下使用这些模型的。
 
 * [Free Material License Agreement](https://www.live2d.com/eula/live2d-free-material-license-agreement_en.html)
 * [無償提供マテリアルの使用許諾契約書](https://www.live2d.com/eula/live2d-free-material-license-agreement_jp.html)
@@ -306,11 +303,11 @@ We used it under the Free Material License Agreement from Live2D Inc.
 facial-landmarks-for-cubism
 -----------------------------
 
-The OpenSeeFace data point to Live2D parameters' algorithm in this project is mainly from [adrianiainlam/facial-landmarks-for-cubism][0]. 
+本项目中指向 Live2D 参数的算法数据点主要来自 [adrianiainlam/facial-landmarks-for-cubism][0]。
 
-Although this project does not include the original C++ version source code, it includes comments which could be found at above project regrading the explanation of various calculation.
+尽管本项目没有包括原始的 C++ 版本源代码，但它包括了注释，这些注释可以在上述项目中找到，关于各种计算的解释。
 
-[facial-landmarks-for-cubism][0] is released under MIT License with the following declaration:
+[facial-landmarks-for-cubism][0] 发布在 MIT 许可下，声明如下：
 
 ```
 Copyright (c) 2020 Adrian I. Lam
@@ -339,28 +336,28 @@ OpenSeeFace
 
 ### OpenSeeFace
 
-The released package contains a bundled pre-built [OpenSeeFace][0] executable binary, which is released under `BSD-2-Clause` license.
+发布的包包含了一个预构建的 [OpenSeeFace][0] 可执行二进制文件，该文件遵循 BSD-2-Clause 许可。
 
 ### Dependencies
 
-The bunlded OpenSeeFace package also contains it's dependencies, namely:
+捆绑的 OpenSeeFace 包还包含其依赖项，具体如下：
 
  - [OpenCV](https://opencv.org/) released under Apache License.
  - [ONNX Runtime](https://pypi.org/project/ort-nightly/) released under MIT License.
  - [Pillow](https://pypi.org/project/Pillow/) released under Historical Permission Notice and Disclaimer.
  - [Numpy](https://pypi.org/project/numpy/) released under BSD License.
 
-Background
+背景图
 --------------
 
-The default background in the example program is licensed under [Freepik License][11] by:
+示例程序中的默认背景图片遵循 [Freepik License][11]，图片作者如下：
 
 - [Japanese koi vector created by rawpixel.com - www.freepik.com][7]
 
-Icons
+图标
 --------------
 
-The power / gear / speaker icons in the example are licensed under [Flaticon License][12]  by:
+示例中的电量/齿轮/扬声器图标遵循 [Flaticon License][12]，图标作者如下：
 
 - [Power icons created by Gregor Cresnar - Flaticon][8]
 - [Settings icons created by Gregor Cresnar Premium - Flaticon][9]
