@@ -72,24 +72,22 @@ ja_JP [日本語](README.ja_JP.md)   zh_CN [简体中文](README.zh_CN.md)
 
 以下是这样的特性列表。
 
-     - 优先级运动队列
-
-放弃优先级运动队列特性可能是由于在创建VTuber程序时，这个特性不是必需的，或者因为它会增加实现的复杂性，而不会带来显著的好处。在决定不实现某些特性时，通常会考虑到项目的目标、资源限制以及目标用户群体的需求。
+  - 优先级运动队列
 
 TODO List
 --------------------
 
-  - [ ] Control OpenSeeFace -> Live2D model motion parameter through UI.
-  - [ ] Live2D model body movement by face tracking.
+  -  [ ] 通过UI控制OpenSeeFace -> Live2D模型运动参数。
+  -  [ ] 通过面部追踪实现Live2D模型身体动作。
 
-Supported Platforms
+支持的平台
 --------------------
 
-Since this project is built on Clean Architecture concept and runs on Java Virtual Machine, it's able to use different Java OpenGL binding API. By default, it provids [JavaOpenGL][3] binding and [LWJGL][4] + [SWT][5] binding.
+由于该项目基于 Clean Architecture 概念构建，并且运行在 Java 虚拟机上，因此它能够使用不同的 Java OpenGL 绑定 API。默认情况下，它提供了 [JavaOpenGL][3] 绑定和 [LWJGL][4] + [SWT][5] 绑定。
 
-In theory, it should able to use differnt combination of OpenGL Java libary and GUI toolkit, but the examples come with this project use the following comination.
+理论上，它应该能够使用不同组合的 OpenGL Java 库和 GUI 工具包，但是该项目提供的示例使用了以下组合。
 
-Due to some weired bug, I couldn't make the example program runs on SWT under MacOS. Also, currently it only support MacOS running on Intel processors, Apple M1 version of MacOS is not supported.
+由于一些奇怪的错误，我无法使示例程序在 macOS 下使用 SWT 运行。此外，目前它只支持运行在 Intel 处理器的 MacOS 上，不支持 Apple M1 版本的 MacOS。
 
 | OS / Binding  | Architecture | OpenGL Binding     | GUI Toolkit |Supported          | Note
 | ------------- |------------- | ------------------ |------------ |------------------ |------
@@ -100,53 +98,54 @@ Due to some weired bug, I couldn't make the example program runs on SWT under Ma
 | MacOS         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: | 1
 | MacOS         | x86_64       | LWJGL              | SWT         |:x:                | 
 
-1. Must use jogamp-fat-v2.4.0-rc-20210111.jar, auto pull-in dependency from Maven Central will not work.
+1. 必须使用 jogamp-fat-v2.4.0-rc-20210111.jar，从 Maven Central 自动拉取依赖项将不起作用。
 
-Install & Usage
+安装和使用
 --------------------
 
-See [doc/INSTALL.md](doc/INSTALL.md) for detailed instruction on how to download the demo application and sample Live 2D model for use.
+请参阅 doc/INSTALL.md 文件，以获取有关如何下载演示应用程序和示例Live 2D模型的详细说明。
 
-Both Swing and SWT version of demo application provide same functionality. The following is some basic control scheme.
+演示应用程序的Swing和SWT版本提供相同的功能。以下是一些基本控制方案：
 
-1. Click `Load Avatar` button on the top-left corner to load Live2D model.
+  在顶部左角点击“加载头像”按钮以加载Live2D模型。
 
-    1.1 You must select a folder contains a valid `.moc3` file.
+ 1.1 您必须选择一个包含有效 .moc3 文件的文件夹。
+    
+   左侧的用户面板用于控制效果/动作/表情。
 
-2. User panel on the left to control effects / motions / expressions.
-3. Right click on the avatar and drag to move the avatar around.
-4. Use mouse wheel to zoom-in / zoom-out the avatar.
+  右键点击头像并拖动以移动头像。
 
+ 使用鼠标滚轮进行放大/缩小头像。
 
-Project Structure and Design
+项目结构和设计
 -----------------------------
 
-Since the project follows the Clean Architecture design philosophy, it's seperated into multiple modules. Those modules are SBT sub-projects under the `modules` directory.
+由于该项目遵循 Clean Architecture 设计哲学，因此它被分离成多个模块。这些模块是位于 modules 目录下的 SBT 子项目。
 
-The following is the overview of this project's structure and breif explanation on each of those modules.
+以下是对该项目结构的总览以及每个模块的简要说明。
 
-See [modules/README.md](modules/README.md) for detailed documentation of each component and how to use this project's core library in your own project to control Live / render Live2D model.
+请参阅 modules/README.md 以获取每个组件的详细文档以及如何在您自己的项目中使用此项目的核心库来控制 Live2D 模型渲染。
 
 ```console
 .
-├── build.sbt   # SBT build definition
+├── build.sbt   # SBT 构建定义
 ├── doc
 ├── modules     
-│   ├── core         # The core library to control / render Live2D model.
-│   ├── joglBinding  # The Java OpenGL binding
-│   ├── lwjglBinding # The LWJGL binding
-│   ├─── swtBinding  # The SWT GLCanvas binding
-│   └──── examples
-│      ├── base      # The base demo application without any GUI toolkit dependency. 
-│      ├── swing     # The full Swing version demo application.
-│      ├── swt       # The SWT version demo application without SWT runtime.
-│      ├── swt-linux-bundle   # The SWT version demo application with Linux SWT runtime.
-│      └── swt-windows-bundle # The SWT version demo application with Windows SWT runtime.
-├── publish.sbt # Maven publish settings
-├── release.sbt # Release settings
+│   ├── core         # 用于控制 / 渲染 Live2D 模型的核心库
+│   ├── joglBinding  # Java OpenGL 绑定
+│   ├── lwjglBinding # LWJGL 绑定
+│   ├── ── swtBinding  # SWT GLCanvas 绑定
+│   └── ── examples
+│       ├── base      # 没有 GUI 工具包依赖的基础演示应用程序
+│       ├── swing     # 完整的 Swing 版本演示应用程序
+│       ├── swt       # 没有 SWT 运行时的 SWT 版本演示应用程序
+│       ├── swt-linux-bundle   # 带有 Linux SWT 运行时的 SWT 版本演示应用程序
+│       └── swt-windows-bundle # 带有 Windows SWT 运行时的 SWT 版本演示应用程序
+├── publish.sbt # Maven 发布设置
+├── release.sbt # 发布设置
 ├── README.md  
-└── version.sbt # Version settings
-```
+└── version.sbt # 版本设置
+
 
 Build Instruction
 --------------------
