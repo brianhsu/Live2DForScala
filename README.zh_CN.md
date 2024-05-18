@@ -219,7 +219,7 @@ sbt:live2dforscala> compile
 sbt:live2dforscala> 
 ```
 
-### 3. 编译
+### 4. 测试
 
    - 在 SBT 控制台中输入 test 来运行单元测试。
    - 由于 macOS 不支持 SWT+JWJGL，SWTOpenGLCanvasInfoFeature 会失败。这是预期的。
@@ -243,7 +243,7 @@ sbt:live2dforscala> test
 sbt:live2dforscala> 
 ```
 
-### 3. 运行演示应用程序
+### 5. 运行演示应用程序
 
 在 SBT 控制台中输入以下命令来运行演示应用程序。
 
