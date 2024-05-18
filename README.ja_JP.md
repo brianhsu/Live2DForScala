@@ -6,31 +6,30 @@ Live2D For Scala (JVM / Linux / Windows / MacOS Intel)
 ![Code Coverage](doc/images/coverage.svg)
 
 
-
-ja_JP [日本語](README.ja_JP.md) zh_CN [简体中文](README.zh_CN.md)
+[ENGLISH](README.md)  [日本語](README.ja_JP.md)  [简体中文](README.zh_CN.md)
 --
-Disclaimer
+免責事項
 -----------
 
-1. This project is **NOT** affiliate nor endorsed Live2D Inc, explicitly or implicitly.
-2. This is a project that helps me learning how to interact with native libraries in Scala/JVM, and how to apply Clean Architecture in a real life scenario. Because such, although the core library of this project is relative fully featured, it should **NOT** be considered as a replacement for the official Live 2D Cubism SDK.
-3. As above, this project may be abandoned if I don't interested in this topic any more. Use it at your own risk.
+  1. このプロジェクトは、LIVE2D Inc.とは直接的または間接的な関連も认可も持っていません。
+  2. このプロジェクトは、Scala/JVMでの本地方法の操作を学ぶことと、実際のシナリオでクリーンアーキテクチャを適用する方法を学ぶためのプロジェクトです。したがって、このプロジェクトの核心ライブラリは比較的完全ですが、公式のLIVE 2D Cubism SDKの代用品として考えるべきではありません。
+  3. これらの点にあたり、私がこの题材に興味を持たなくなると、プロジェクトが中断される可能性があります。このプロジェクトを使用することには、自分の責任を持ってください。
 
-Background
+背景的な
 -----------
 
 
-I'm tired that there is no good webcam to Live2D program in Linux. Although the [facial-landmarks-for-cubism][0] provides a functional program, it requires user to have some decent knowledge about how to patch and build a C++ program in order to use.
+Linuxで良いWebcamとLive2Dプログラムの組み合わせがないことではっきりしています。[facial-landmarks-for-cubism][0]は機能的なプログラムを提供していますが、使用するためには、C++プログラムのパッチとビルド方法についての相当な知識が必要です。
 
-The ultimate goal of this project is to provide something like [VTuber Studio][1] in the Linux world. Maybe with less features, but should be with a good out-of-box experience.
+このプロジェクトの最終的な目標は、Linuxの世界に[VTuber Studio][1]のようなものを提供することです。機能が少し少しであっても、良いアウト・オブ・ボックスの経験を提供するべきです。
 
-The whole idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS Intel without the change in the source code.
+このプロジェクトの考え方は、Robert C. Martin（アンクル・ボブ）によって提唱された[クリーンアーキテクチャ][2]を活用し、Scala/JVMで書かれているため、ソースコードの変更無しでLinux / Windows / MacOS Intel上で运行することができるようにすることです。
 
-### Acknowledgement
+### 承认
 
-This project is heavily inspired by [facial-landmarks-for-cubism][0]. More specifically, the algorithm about how to convert OpenSeeFace data point into Live2D parameter in this project, are ported from [facial-landmarks-for-cubism][0].
+このプロジェクトは[facial-landmarks-for-cubism][0]に深受其影响しています。具体的には、このプロジェクトではOpenSeeFaceのデータ点をLive2Dのパラメータに変換するアルゴリズムが[facial-landmarks-for-cubism][0]から移植されています。
 
-Screenshots
+画像
 --------------------
 
 ### Swing + JOGL Version Under Linux
@@ -44,49 +43,48 @@ Screenshots
 ![Screenshot of SWT Demo Face Tracking](doc/images/swt2.png)
 
 
-Feature
+特徴
 --------------------
 
-The core library support much the same functionality you will find in the official Cubism SDK for Native and the sample application of it.
+コアライブラリは、公式のCubism SDK for Nativeと同様の機能をサポートしています。そのサンプルアプリケーションも含まれます。
+以下は、現在このプロジェクトがサポートしている機能や、実装予定の機能の一覧です。
 
-The following list shows features that this project currently supports or plan to be implemented.
+### 公式のCubism SDK for Nativeに含まれる機能の一部を以下に示します。
+- [x] 動画 (ループまたは一度の時間)
+- [x] モデル動画イベントリスナー
+- [x] 表情
+- [x] 物理演算
+- [x] 自動目を閉じる效果
+- [x] 自動呼吸効果
+- [x] 顔の向きをマウスで制御
+- [x] アバター動画からの唇同步 (.WAV ファイル)
 
-### Feature Included in Official Cubism SDK for Native.
-  - [x] Motion (Loop or single time)
-  - [x] Model motion event listener
-  - [x] Expression
-  - [x] Physics
-  - [x] Auto eye-blink
-  - [x] Auto breath effect
-  - [x] Face direction control by mouse
-  - [x] Lip sync from .WAV file in the avatar motion
 
-### Advance Feature
-  - [x] Lip sync from microphone
-  - [x] Use webcam to control Live2D avatar (VTuber like)
+### 进阶機能には以下の機能が含まれています。
+- [x] マイクロフォンからの唇同期
+- [x] ウェブカムを使用してLive2Dアバターを制御する（VTuberのように）
 
-### Won't Implemented Feature
 
-Some feature inside Cubism SDK for Native is dropped intended. Because I think these feature are not really useful for create a VTuber program. 
+### 实现しない機能
+Cubism SDK for Native内のいくつかの機能は、VTuberプログラムを作成する際には実用的でないと考えて、削除される予定です。
+以下は、そのような機能の一覧です。
 
-The following is the list of such features.
-
-  - Priority motion queue
+  - 優先度モーションキュー
 
 TODO List
 --------------------
 
-  - [ ] Control OpenSeeFace -> Live2D model motion parameter through UI.
-  - [ ] Live2D model body movement by face tracking.
+  - [ ]  UIを通じてOpenSeeFace -> Live2D モデル動画パラメーターのコントロール
+  - [ ] 顔追跡に基づいたLive2Dモデルの体の動き
 
-Supported Platforms
---------------------
+サポートされているプラットフォーム
+-----
 
-Since this project is built on Clean Architecture concept and runs on Java Virtual Machine, it's able to use different Java OpenGL binding API. By default, it provids [JavaOpenGL][3] binding and [LWJGL][4] + [SWT][5] binding.
+このプロジェクトは、クリーンアーキテクチャの概念上で構築され、Java仮想マシンで运行します。これにより、さまざまなJava OpenGLバインディングAPIを使用することができます。デフォルトでは、[JavaOpenGL][3]バインディングと[LWJGL][4] + [SWT][5]バインディングを提供しています。
 
-In theory, it should able to use differnt combination of OpenGL Java libary and GUI toolkit, but the examples come with this project use the following comination.
+理論上、異なるOpenGL JavaライブラリとGUIツールキットの組み合わせを使用することは可能ですが、このプロジェクトに付属するサンプルプログラムは以下の組み合わせを使用しています。
 
-Due to some weired bug, I couldn't make the example program runs on SWT under MacOS. Also, currently it only support MacOS running on Intel processors, Apple M1 version of MacOS is not supported.
+macOS上でSWTを使用して動作させることができず、いくつかの奇妙なバグのために、現在、只有在Intelプロセッサ上运行するmacOSをサポートしています。Apple M1チップのmacOSは現在サポートされていません。
 
 | OS / Binding  | Architecture | OpenGL Binding     | GUI Toolkit |Supported          | Note
 | ------------- |------------- | ------------------ |------------ |------------------ |------
@@ -97,32 +95,32 @@ Due to some weired bug, I couldn't make the example program runs on SWT under Ma
 | MacOS         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: | 1
 | MacOS         | x86_64       | LWJGL              | SWT         |:x:                | 
 
-1. Must use jogamp-fat-v2.4.0-rc-20210111.jar, auto pull-in dependency from Maven Central will not work.
-
-Install & Usage
+1. jogamp-fat-v2.4.0-rc-20210111.jarを必須とする。Maven Centralから自動的に依存関係を引き込むことは機能しません。
+   
+インストールと使用方法
 --------------------
 
-See [doc/INSTALL.md](doc/INSTALL.md) for detailed instruction on how to download the demo application and sample Live 2D model for use.
+詳細なインストール手順は、doc/INSTALL.md ファイルを参照してください。このファイルには、デモアプリケーションと使用するサンプルLive 2Dモデルの下载方法と使用方法の手順が記載されています。
 
-Both Swing and SWT version of demo application provide same functionality. The following is some basic control scheme.
+デモアプリケーションのSwing版とSWT版は同じ機能を提供します。以下は、基本的な操作スキームのいくつかです。
 
-1. Click `Load Avatar` button on the top-left corner to load Live2D model.
+1. 最上左手隅の「Load Avatar」ボタンをクリックして、Live2Dモデルを読み込みます。
 
-    1.1 You must select a folder contains a valid `.moc3` file.
+    1.1 有効な`.moc3`ファイルを含むフォルダーを選択する必要があります。
 
-2. User panel on the left to control effects / motions / expressions.
-3. Right click on the avatar and drag to move the avatar around.
-4. Use mouse wheel to zoom-in / zoom-out the avatar.
+2. 左側のユーザーパネルは、効果/動き/表情を制御するためのものです。
+3. アバター上で右クリックし、アバターを移動するにはドラッグしてください。
+4. マウスの滚轮を使用して、アバターをズームイン/ズームアウトすることができます。
 
 
-Project Structure and Design
+プロジェクトの構造と設計
 -----------------------------
 
-Since the project follows the Clean Architecture design philosophy, it's seperated into multiple modules. Those modules are SBT sub-projects under the `modules` directory.
+このプロジェクトはクリーンアーキテクチャ设计理念に従っており、複数のモジュールに分かれています。これらのモジュールは全てmodulesディレクトリ下のSBTサブプロジェクトです。
 
-The following is the overview of this project's structure and breif explanation on each of those modules.
+以下は、このプロジェクトの構造の概览と、各モジュールについての簡単な説明です。
 
-See [modules/README.md](modules/README.md) for detailed documentation of each component and how to use this project's core library in your own project to control Live / render Live2D model.
+各コンポーネントの詳細なドキュメントや、このプロジェクトのコアライブラリを自分のプロジェクトで使用してライブ/Live2Dモデルのレンダリングを制御する方法についてはmodules/README.mdを参照してください。
 
 ```console
 .
