@@ -160,7 +160,7 @@ Build Instruction
 
 ### 3. Compile
 
-1. After SBT is installed, run the following command the clone this project from GitHub.
+1. After SBT is installed, run the following command the clone this project from GitHub.(Taking the upstream project as an example)
 
 ```console
 username@hostname:~$ git clone https://github.com/brianhsu/Live2DForScala.git
