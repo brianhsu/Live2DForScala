@@ -165,7 +165,7 @@ Build Instruction
 
 ### 3. 编译
 
-1. 在安装完 SBT 之后，运行以下命令从 GitHub 克隆这个项目。
+1. 在安装完 SBT 之后，运行以下命令从 GitHub 克隆这个项目。（以上游项目为例）
 
 ```console
 username@hostname:~$ git clone https://github.com/brianhsu/Live2DForScala.git
