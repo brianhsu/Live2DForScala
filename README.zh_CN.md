@@ -145,26 +145,27 @@ TODO List
 ├── release.sbt # 发布设置
 ├── README.md  
 └── version.sbt # 版本设置
+```
 
 
 Build Instruction
 --------------------
 
-### 1. Install OpenJDK 11
+1. 安装 OpenJDK 11
 
-- For Windows, download [Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download) and install it.
-- For Linux, install it through your distro's package manager.
-- For MacOS
-    1. Install Homebrew
-    2. Run `brew install openjdk@11` to install
+    对于 Windows，请下载 Microsoft Build of OpenJDK 并安装它。
+    对于 Linux，请通过您的发行版的包管理器安装它。
+    对于 macOS
+        安装 Homebrew。
+        运行 brew install openjdk@11 以安装。
 
-### 2. Install [SBT][6] (Simple Build Tool)
+2. 安装 [SBT][6]（Simple Build Tool）
 
-- Follow the [Download](https://www.scala-sbt.org/download.html) page of SBT to install it.
+    遵循 SBT 的 下载 页面以安装它。
 
-### 3. Compile
+3. 编译
 
-1. After SBT is installed, run the following command the clone this project from GitHub.
+1. 在安装完 SBT 之后，运行以下命令从 GitHub 克隆这个项目。
 
 ```console
 username@hostname:~$ git clone https://github.com/brianhsu/Live2DForScala.git
@@ -179,7 +180,7 @@ Resolving deltas: 100% (4483/4483), done.
 username@hostname:~$
 ```
 
-2. Change directory into it and type `sbt` to run SBT console. It may take a while to download files for the first time of execution.
+2. 进入该项目目录，并输入 sbt 来运行 SBT 控制台。首次执行时可能需要一些时间来下载文件。
 
 ```console
 username@hostname:~$ cd Live2DForScala
@@ -202,7 +203,7 @@ copying runtime jar...
 sbt:live2dforscala> 
 ```
 
-3. Compile it by typing `compile` in the SBT console.
+3. 在 SBT 控制台中输入 compile 来编译项目。
 
 ```console
 sbt:live2dforscala> compile
@@ -218,10 +219,12 @@ sbt:live2dforscala> compile
 sbt:live2dforscala> 
 ```
 
-### 3. Compile
+### 3. 编译
 
-- Type `test` in SBT console to run unit test.
-- Since MacOS does not support SWT+JWJGL, SWTOpenGLCanvasInfoFeature would faild. It's expected.
+   -
+ 在 SBT 控制台中输入 test 来运行单元测试。
+   -
+ 由于 macOS 不支持 SWT+JWJGL，SWTOpenGLCanvasInfoFeature 会失败。这是预期的。
 
 ```console
 sbt:live2dforscala> test
