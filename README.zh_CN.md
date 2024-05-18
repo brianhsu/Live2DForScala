@@ -9,28 +9,27 @@ ja_JP [日本語](README.ja_JP.md)   zh_CN [简体中文](README.zh_CN.md)
 ---
 
 
-Disclaimer
+免责声明
 -----------
 
-1. This project is **NOT** affiliate nor endorsed Live2D Inc, explicitly or implicitly.
-2. This is a project that helps me learning how to interact with native libraries in Scala/JVM, and how to apply Clean Architecture in a real life scenario. Because such, although the core library of this project is relative fully featured, it should **NOT** be considered as a replacement for the official Live 2D Cubism SDK.
-3. As above, this project may be abandoned if I don't interested in this topic any more. Use it at your own risk.
+1. 这个项目并非Live2D Inc的关联项目，也不受其明确或暗示的认可。
+2. 这个项目是为了帮助我学习如何在Scala/JVM中与本地库交互，以及如何在实际场景中应用清洁架构。因此，尽管这个项目的核心库功能相对完备，但它不应被视为官方Live 2D Cubism SDK的替代品。
+3. 如上所述，如果我对这个主题不再感兴趣，这个项目可能会被废弃。使用它风险自负。
 
-Background
+背景
 -----------
 
 
-I'm tired that there is no good webcam to Live2D program in Linux. Although the [facial-landmarks-for-cubism][0] provides a functional program, it requires user to have some decent knowledge about how to patch and build a C++ program in order to use.
+我厌倦了在Linux上没有好用的Live2D程序摄像头。尽管[facial-landmarks-for-cubism][0]提供了一个功能性的程序，但它需要用户具备一些关于如何修补和构建C++程序的相当知识才能使用。
 
-The ultimate goal of this project is to provide something like [VTuber Studio][1] in the Linux world. Maybe with less features, but should be with a good out-of-box experience.
+这个项目的最终目标是提供一个类似[VTuber Studio][1]的东西在Linux世界里。也许功能少一些，但应该有一个良好的开箱即用体验。
 
-The whole idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS Intel without the change in the source code.
+这个项目的整个想法是利用罗伯特·C·马汀（Uncle Bob）提出的[Clean Architecture][2]概念，并结合它用Scala/JVM编写，应该能够在不需要更改源代码的情况下在Linux / Windows / MacOS Intel上运行。
 
-### Acknowledgement
+### 致谢
+这个项目受到了[facial-landmarks-for-cubism][0]的深刻启发。更具体地说，这个项目中关于如何将OpenSeeFace数据点转换为Live2D参数的算法，是从[facial-landmarks-for-cubism][0]移植过来的。
 
-This project is heavily inspired by [facial-landmarks-for-cubism][0]. More specifically, the algorithm about how to convert OpenSeeFace data point into Live2D parameter in this project, are ported from [facial-landmarks-for-cubism][0].
-
-Screenshots
+截图
 --------------------
 
 ### Swing + JOGL Version Under Linux
