@@ -15,7 +15,7 @@ Live2D For Scala (JVM / Linux / Windows / MacOS Intel)
   2. このプロジェクトは、Scala/JVMでの本地方法の操作を学ぶことと、実際のシナリオでクリーンアーキテクチャを適用する方法を学ぶためのプロジェクトです。したがって、このプロジェクトの核心ライブラリは比較的完全ですが、公式のLIVE 2D Cubism SDKの代用品として考えるべきではありません。
   3. これらの点にあたり、私がこの题材に興味を持たなくなると、プロジェクトが中断される可能性があります。このプロジェクトを使用することには、自分の責任を持ってください。
 
-背景的な
+背景
 -----------
 
 
@@ -124,43 +124,44 @@ macOS上でSWTを使用して動作させることができず、いくつかの
 
 ```console
 .
-├── build.sbt   # SBT build definition
+├── build.sbt   # SBTビルド定義
 ├── doc
 ├── modules     
-│   ├── core         # The core library to control / render Live2D model.
-│   ├── joglBinding  # The Java OpenGL binding
-│   ├── lwjglBinding # The LWJGL binding
-│   ├─── swtBinding  # The SWT GLCanvas binding
-│   └──── examples
-│      ├── base      # The base demo application without any GUI toolkit dependency. 
-│      ├── swing     # The full Swing version demo application.
-│      ├── swt       # The SWT version demo application without SWT runtime.
-│      ├── swt-linux-bundle   # The SWT version demo application with Linux SWT runtime.
-│      └── swt-windows-bundle # The SWT version demo application with Windows SWT runtime.
-├── publish.sbt # Maven publish settings
-├── release.sbt # Release settings
+│   ├── core         # Live2Dモデルを制御/レンダリングするためのコアライブラリ
+│   ├── joglBinding  # Java OpenGLのバインディング
+│   ├── lwjglBinding # LWJGLのバインディング
+│   ├─── swtBinding  # SWT GLCanvasのバインディング
+│   └──── examples
+│      ├── base      # 任何のGUIツールキット依存を持たない基本的なデモアプリケーション
+│      ├── swing     # 完全なSwingバージョンのデモアプリケーション
+│      ├── swt       # SWTランタイムを持たないSWTバージョンのデモアプリケーション
+│      ├── swt-linux-bundle   # Linux用SWTランタイムを含むSWTバージョンのデモアプリケーション
+│      └── swt-windows-bundle # Windows用SWTランタイムを含むSWTバージョンのデモアプリケーション
+├── publish.sbt # Mavenパブリッシュ設定
+├── release.sbt # リリース設定
 ├── README.md  
-└── version.sbt # Version settings
+└── version.sbt # バージョン設定
 ```
 
-Build Instruction
+ビルド手順
 --------------------
 
-### 1. Install OpenJDK 11
 
-- For Windows, download [Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download) and install it.
-- For Linux, install it through your distro's package manager.
-- For MacOS
-    1. Install Homebrew
-    2. Run `brew install openjdk@11` to install
+### 1. OpenJDK 11のインストール
+- Windowsにおいて、[Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download)をダウンロードし、インストールしてください。
+- Linuxにおいて、ディストリビューションの包管理器を使用してインストールしてください。
+- macOSにおいて
+    1. Homebrewをインストールしてください。
+    2. `brew install openjdk@11`を実行してインストールしてください。
+  
+### 2. [SBT][6] (Simple Build Tool)のインストール
 
-### 2. Install [SBT][6] (Simple Build Tool)
 
-- Follow the [Download](https://www.scala-sbt.org/download.html) page of SBT to install it.
+- SBTの[ダウンロード](https://www.scala-sbt.org/download.html)ページに記載されている手順に従ってインストールしてください。
 
-### 3. Compile
+### 3. コンパイル
 
-1. After SBT is installed, run the following command the clone this project from GitHub.
+1. SBTがインストールされた後、以下のコマンドを実行してGitHubからこのプロジェクトを克隆してください。
 
 ```console
 username@hostname:~$ git clone https://github.com/brianhsu/Live2DForScala.git
@@ -175,7 +176,8 @@ Resolving deltas: 100% (4483/4483), done.
 username@hostname:~$
 ```
 
-2. Change directory into it and type `sbt` to run SBT console. It may take a while to download files for the first time of execution.
+2. そのディレクトリに移動し、`sbt` をタイプしてSBTコンソールを実行してください。初めて実行するときは、ファイルのダウンロードに時間がかかるかもしれません。
+
 
 ```console
 username@hostname:~$ cd Live2DForScala
@@ -198,7 +200,8 @@ copying runtime jar...
 sbt:live2dforscala> 
 ```
 
-3. Compile it by typing `compile` in the SBT console.
+3. SBTコンソールで `compile` と入力してコンパイルしてください。
+
 
 ```console
 sbt:live2dforscala> compile
@@ -214,10 +217,10 @@ sbt:live2dforscala> compile
 sbt:live2dforscala> 
 ```
 
-### 3. Compile
+### 4. テスト
 
-- Type `test` in SBT console to run unit test.
-- Since MacOS does not support SWT+JWJGL, SWTOpenGLCanvasInfoFeature would faild. It's expected.
+- SBTコンソールで test と入力して单元テストを実行してください。
+- MacOSはSWT+JWJGLをサポートしていないため、SWTOpenGLCanvasInfoFeatureは失敗するでしょう。これは予想される现象です。
 
 ```console
 sbt:live2dforscala> test
@@ -238,13 +241,13 @@ sbt:live2dforscala> test
 sbt:live2dforscala> 
 ```
 
-### 3. Run Demo Application
+### 3. デモアプリケーションを実行
 
-Type the following command in SBT console to run the demo application.
+SBTコンソールに以下のコマンドを入力してデモアプリケーションを実行してください。
 
-- `exampleSwing/run` to run Swing version. Works for Linux / Windows / MacOS.
-- `exampleSWTLinux/run` to run SWT version on Linux.
-- `exampleSWTWin/run` to run SWT version on Windows.
+- exampleSwing/run を入力してSwing版を実行します。Linux / Windows / MacOSでも動作します。
+- exampleSWTLinux/run を入力してLinux上のSWT版を実行します。
+- exampleSWTWin/run を入力してWindows上のSWT版を実行します。
 
 ```console
 sbt:live2dforscala> exampleSwing/run
@@ -256,22 +259,22 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
-License
+ライセンス
 ==============================
 
-The library and the example program of this project itself is licensed under the MIT license. Please note that this repository also contains files that are belong to other copyright holders, please see the following section for detail. Those files are not considered as "ths project itself" in previous sentence.
+このプロジェクトの本体のライブラリと例程はMITライセンス下で公開されています。このリポジトリには、他の著作権所有者のファイルも含まれていることに注意してください。詳細は以下の節をご覧ください。前述の文では「このプロジェクト自体」とはこれらのファイルを含んでいません。
 
-You must agree to those license agreement in order to use this program.
+このプログラムを使用するためには、これらのライセンス条項に同意する必要があります。
 
 3rd Party Component Licenses
 ==============================
 
-This project is based on some 3rd party resources, the following denoted those resources and thier licenses.
+このプロジェクトはいくつかの第三者のリソースに基づいています。以下はそれらリソースとそのライセンスを示しています。
 
 Live2D Cubism Core
 --------------------
 
-This project uses Live2D Cubism Core native library during runtime, it's located at `modules/core/src/main/resources/`.
+このプロジェクトは実行時にLive2D Cubism Coreのネイティブライブラリを使用しています。その場所は以下の通りです。 `modules/core/src/main/resources/`.
 
 ```
 modules/core/src/main/resources/linux-x86-64/libLive2DCubismCore.so
@@ -281,7 +284,7 @@ modules/core/src/main/resources/darwin/libLive2DCubismCore.dylib
 modules/core/src/main/resources/LICENSE.md
 ```
 
-Live2D Cubism Core is available under Live2D Proprietary Software License.
+Live2D Cubism CoreはLive2D独自ソフトウェア许諾契約で提供されています。
 
 * [Live2D Proprietary Software License Agreement](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)
 * [Live2D Proprietary Software 使用許諾契約書](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_jp.html)
@@ -290,9 +293,9 @@ Live2D Cubism Core is available under Live2D Proprietary Software License.
 Live2D Model
 --------------------
 
-In order to do proper unit test to make sure this project's quality, the Live2D model located at `modules/core/src/test/resources/models` are used during unit test. And is included in this project's git repository.
+正しいユニットテストを行い、このプロジェクトの品質を確保するために、modules/core/src/test/resources/models にあるLive2Dモデルがユニットテスト中に使用されています。これはこのプロジェクトのGitリポジトリに含まれています。
 
-We used it under the Free Material License Agreement from Live2D Inc.
+私たちは、Live2D Inc.から提供される無料素材許諾契約の下でそれを使用していました。
 
 * [Free Material License Agreement](https://www.live2d.com/eula/live2d-free-material-license-agreement_en.html)
 * [無償提供マテリアルの使用許諾契約書](https://www.live2d.com/eula/live2d-free-material-license-agreement_jp.html)
@@ -301,11 +304,11 @@ We used it under the Free Material License Agreement from Live2D Inc.
 facial-landmarks-for-cubism
 -----------------------------
 
-The OpenSeeFace data point to Live2D parameters' algorithm in this project is mainly from [adrianiainlam/facial-landmarks-for-cubism][0]. 
+このプロジェクトで使用されるOpenSeeFaceデータポイントは主に[adrianiainlam/facial-landmarks-for-cubism][0]からのLive2Dパラメーターの算法に基づいています。
 
-Although this project does not include the original C++ version source code, it includes comments which could be found at above project regrading the explanation of various calculation.
+このプロジェクトは原始的なC++バージョンのソースコードを含んでいませんが、上記のプロジェクトで発見できるように、さまざまな計算についての説明が含まれています。
 
-[facial-landmarks-for-cubism][0] is released under MIT License with the following declaration:
+[facial-landmarks-for-cubism][0]はMITライセンス下でリリースされ、以下の宣言があります。
 
 ```
 Copyright (c) 2020 Adrian I. Lam
@@ -334,28 +337,28 @@ OpenSeeFace
 
 ### OpenSeeFace
 
-The released package contains a bundled pre-built [OpenSeeFace][0] executable binary, which is released under `BSD-2-Clause` license.
+リリースパッケージには、BSD-2-Clause ライセンス下でリリースされた预先ビルドされた [OpenSeeFace][0] 実行可能バイナリーを含まれています。
 
-### Dependencies
+### 依存関係
 
-The bunlded OpenSeeFace package also contains it's dependencies, namely:
+結合された OpenSeeFace パッケージには、以下の依存関係も含まれています：
 
  - [OpenCV](https://opencv.org/) released under Apache License.
  - [ONNX Runtime](https://pypi.org/project/ort-nightly/) released under MIT License.
  - [Pillow](https://pypi.org/project/Pillow/) released under Historical Permission Notice and Disclaimer.
  - [Numpy](https://pypi.org/project/numpy/) released under BSD License.
 
-Background
+背景
 --------------
 
-The default background in the example program is licensed under [Freepik License][11] by:
+例子プログラムのデフォルトの背景は、以下の許可に基づいています。[Freepik License][11] by:
 
 - [Japanese koi vector created by rawpixel.com - www.freepik.com][7]
 
-Icons
+アイコン
 --------------
 
-The power / gear / speaker icons in the example are licensed under [Flaticon License][12]  by:
+例子の中の電源/ギア/スピーカーアイコンは、[Flaticon License][12]に基づいており、以下の作者によって許可されています：
 
 - [Power icons created by Gregor Cresnar - Flaticon][8]
 - [Settings icons created by Gregor Cresnar Premium - Flaticon][9]
