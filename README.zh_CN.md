@@ -243,9 +243,9 @@ sbt:live2dforscala> test
 sbt:live2dforscala> 
 ```
 
-### 3. Run Demo Application
+### 3. 运行演示应用程序
 
-Type the following command in SBT console to run the demo application.
+在 SBT 控制台中输入以下命令来运行演示应用程序。
 
 - `exampleSwing/run` to run Swing version. Works for Linux / Windows / MacOS.
 - `exampleSWTLinux/run` to run SWT version on Linux.
