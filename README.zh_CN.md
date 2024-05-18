@@ -43,34 +43,38 @@ ja_JP [日本語](README.ja_JP.md)   zh_CN [简体中文](README.zh_CN.md)
 ![Screenshot of SWT Demo Face Tracking](doc/images/swt2.png)
 
 
-Feature
+特性
 --------------------
 
-The core library support much the same functionality you will find in the official Cubism SDK for Native and the sample application of it.
+核心库支持与官方Cubism SDK for Native及其示例应用程序中的功能大致相同。
 
-The following list shows features that this project currently supports or plan to be implemented.
+以下列表展示了该项目当前支持的功能以及计划实现的功能。
 
-### Feature Included in Official Cubism SDK for Native.
-  - [x] Motion (Loop or single time)
-  - [x] Model motion event listener
-  - [x] Expression
-  - [x] Physics
-  - [x] Auto eye-blink
-  - [x] Auto breath effect
-  - [x] Face direction control by mouse
-  - [x] Lip sync from .WAV file in the avatar motion
+官方Cubism SDK for Native支持的功能：
 
-### Advance Feature
-  - [x] Lip sync from microphone
-  - [x] Use webcam to control Live2D avatar (VTuber like)
+   - [x] 运动（循环或单次）
+   - [x] 模型运动事件监听器
+   - [x] 表情
+ -   [x] 物理效果
+  -  [x] 自动眨眼
+ -   [x] 自动呼吸效果
+ -   [x] 通过鼠标控制面部方向
+ -   [x] 从avatar动作中的.WAV文件进行口型同步
 
-### Won't Implemented Feature
+高级功能：
 
-Some feature inside Cubism SDK for Native is dropped intended. Because I think these feature are not really useful for create a VTuber program. 
+  -  [x] 从麦克风进行口型同步
+   - [x] 使用网络摄像头控制Live2D角色（类似于VTuber）
 
-The following is the list of such features.
+### 未实现特性
 
-  - Priority motion queue
+在Cubism SDK for Native中有一些特性被故意放弃了。因为我认为这些特性对于创建一个VTuber程序并不是非常有用。
+
+以下是这样的特性列表。
+
+    优先级运动队列
+
+放弃优先级运动队列特性可能是由于在创建VTuber程序时，这个特性不是必需的，或者因为它会增加实现的复杂性，而不会带来显著的好处。在决定不实现某些特性时，通常会考虑到项目的目标、资源限制以及目标用户群体的需求。
 
 TODO List
 --------------------
