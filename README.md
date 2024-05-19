@@ -276,9 +276,13 @@ sbt:live2dforscala> exampleSWTLinux/assembly
 
 
 ### 7. use release-tool 
+
 [warning]Only linux, windows runs need to change the command.
+
 Type the following command in SBT console to run the release-tool.
+
 It will collect jar packages, required files and create new executables.
+
 Don't worry about the error.
 
 - `releaseswing` to run Swing version. Works for Linux / Windows / MacOS.
