@@ -280,7 +280,7 @@ sbt:live2dforscala> exampleSWTLinux/assembly
 
 
 ### 7. 使用release-tool工具
-
+[警告]只支持linux，windows 运行时需要更改命令。
 在 SBT 控制台中键入以下命令运行 release-tool。
 它将收集 jar 包、所需文件并创建新的可执行文件。
 不用担心出现的报错
