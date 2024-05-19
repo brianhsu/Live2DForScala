@@ -257,6 +257,8 @@ sbt:live2dforscala> exampleSWTLinux/run
 ```
 
 ### 6. assembly
+
+
 Type the following command in SBT console to run the assembly.
 
 - `exampleSwing/assembly` to assembly Swing version. Works for Linux / Windows / MacOS.
