@@ -256,6 +256,44 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
+### 6. assembly
+Type the following command in SBT console to run the assembly.
+
+- `exampleSwing/assembly` to assembly Swing version. Works for Linux / Windows / MacOS.
+- `exampleSWTLinux/assembly` to assembly SWT version on Linux.
+- `exampleSWTWin/assembly` to assembly SWT version on Windows.
+
+```console
+sbt:live2dforscala> exampleSWTLinux/assembly
+[info] Strategy 'deduplicate' was applied to 5 files (Run the task at debug level to see details)
+[info] Strategy 'discard' was applied to 13 files (Run the task at debug level to see details)
+[info] Strategy 'rename' was applied to a file (Run the task at debug level to see details)
+[info] Assembly up to date: /home/eric/桌面/codeing/Live2DForScala/modules/examples/swt-linux-bundle/target/scala-2.13/Live2DForScala-SWT-Linux-1.0.2.jar
+
+```
+
+
+### 7. use release-tool 
+
+Type the following command in SBT console to run the release-tool.
+It will collect jar packages, required files and create new executables.
+Don't worry about the error.
+
+- `releaseswing` to run Swing version. Works for Linux / Windows / MacOS.
+- `releaselinux` to run SWT version on Linux.
+- `releasewin` to run SWT version on Windows.
+
+```console
+sbt:live2dforscala> releaselinux
+Directory 'release-pkg/Live2DForScala-SWT-Linux-1.0.2' already exists.
+[error] stack trace is suppressed; run last moveTasklinux for the full output
+[error] stack trace is suppressed; run last createReleasePackageTasklinux for the full output
+[error] (moveTasklinux) Failed to copy extra file: exit code 
+[error] (createReleasePackageTasklinux) Failed to copy openSeeFace directory: exit code 
+```
+
+
+
 License
 ==============================
 

@@ -321,15 +321,15 @@ releaselinux := {
   println("Both tasks completed successfully.")
 }
 
-/// mac-pkg
+/// swing-pkg
 
 import sbt.IO
 import java.io.File
 import sys.process._
 
-lazy val createReleasePackageTaskmac86 = taskKey[Unit]("Creates a release package with openSeeFace and XX.JAR")
+lazy val createReleasePackageTaskswing = taskKey[Unit]("Creates a release package with openSeeFace and XX.JAR")
 
-createReleasePackageTaskmac86 := {
+createReleasePackageTaskswing := {
   val releaseBaseDir = "release-pkg"
   val releaseSubDir = s"Live2DForScala-Swing-${version.value}"
   val releaseTarget = releaseBaseDir + File.separator + releaseSubDir
@@ -357,9 +357,9 @@ createReleasePackageTaskmac86 := {
   }
 }
 
-lazy val moveTaskmac86 = taskKey[Unit]("Moves XXX.JAR to the release package directory")
+lazy val moveTaskswing = taskKey[Unit]("Moves XXX.JAR to the release package directory")
 
-moveTaskmac86 := {
+moveTaskswing := {
 
   val releaseBaseDir = "release-pkg"
   val releaseSubDir = s"Live2DForScala-Swing-${version.value}"
@@ -383,11 +383,11 @@ moveTaskmac86 := {
   }
 }
 
-lazy val releasemac86 = taskKey[Unit]("Performs both createReleasePackageTask and moveTask in order")
+lazy val releaseswing = taskKey[Unit]("Performs both createReleasePackageTask and moveTask in order")
 
-releasemac86 := {
-  createReleasePackageTaskmac86.value
-  moveTaskmac86.value
+releaseswing := {
+  createReleasePackageTaskswing.value
+  moveTaskswing.value
   println("Both tasks completed successfully.")
 }
 
