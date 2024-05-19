@@ -270,7 +270,7 @@ sbt:live2dforscala> exampleSWTLinux/assembly
 [info] Strategy 'deduplicate' was applied to 5 files (Run the task at debug level to see details)
 [info] Strategy 'discard' was applied to 13 files (Run the task at debug level to see details)
 [info] Strategy 'rename' was applied to a file (Run the task at debug level to see details)
-[info] Assembly up to date: /home/eric/桌面/codeing/Live2DForScala/modules/examples/swt-linux-bundle/target/scala-2.13/Live2DForScala-SWT-Linux-1.0.2.jar
+[info] Assembly up to date: /home/eric/Desktop/codeing/Live2DForScala/modules/examples/swt-linux-bundle/target/scala-2.13/Live2DForScala-SWT-Linux-1.0.2.jar
 
 ```
 
