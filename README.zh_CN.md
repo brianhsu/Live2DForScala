@@ -261,7 +261,7 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
-### 6. assembly
+### 6. Assembly
 
 在 SBT 控制台中键入以下命令运行程序。
 
