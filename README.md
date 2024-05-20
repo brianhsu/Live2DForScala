@@ -214,7 +214,7 @@ sbt:live2dforscala> compile
 sbt:live2dforscala> 
 ```
 
-### 4. test
+### 4. Test
 
 - Type `test` in SBT console to run unit test.
 - Since MacOS does not support SWT+JWJGL, SWTOpenGLCanvasInfoFeature would faild. It's expected.
@@ -256,7 +256,7 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
-### 6. assembly
+### 6. Assembly
 
 
 Type the following command in SBT console to run the assembly.
@@ -275,7 +275,7 @@ sbt:live2dforscala> exampleSWTLinux/assembly
 ```
 
 
-### 7. use release-tool 
+### 7. Use release-tool 
 
 [warning]Only linux, windows runs need to change the command.
 
