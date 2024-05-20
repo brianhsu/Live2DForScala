@@ -259,7 +259,7 @@ sbt:live2dforscala> exampleSWTLinux/run
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
 
-### 6. assembly
+### 6. Assembly
 
 SBTコンソールで以下のコマンドを入力し、アセンブリを実行する。
 
