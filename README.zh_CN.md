@@ -12,7 +12,7 @@ Live2D For Scala (JVM / Linux / Windows / MacOS Intel)
 免责声明
 -----------
 
-1. 这个项目并非Live2D Inc的关联项目，也不受其明确或暗示的认可。
+1. 这个项目并非Live2D Inc的关联项目，也不受其直接或间接的许可。
 2. 这个项目是为了帮助我学习如何在Scala/JVM中与本地库交互，以及如何在实际场景中应用清洁架构。因此，尽管这个项目的核心库功能相对完备，但它不应被视为官方Live 2D Cubism SDK的替代品。
 3. 如上所述，如果我对这个主题不再感兴趣，这个项目可能会被废弃。使用它风险自负。
 
@@ -153,7 +153,7 @@ Build Instruction
 
 ### 1. 安装 OpenJDK 11
 
-- 对于 Windows，请下载 Microsoft Build of OpenJDK 并安装它。
+- 对于 Windows，请下载 [Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download)  并安装它。
  -    对于 Linux，请通过您的发行版的包管理器安装它。
   -   对于 macOS
       1.  安装 Homebrew。
@@ -161,7 +161,7 @@ Build Instruction
 
 ### 2. 安装 [SBT][6]（Simple Build Tool）
 
-    遵循 SBT 的 下载 页面以安装它。
+- Follow the [Download](https://www.scala-sbt.org/download.html) page of SBT to install it.
 
 ### 3. 编译
 
