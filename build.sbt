@@ -181,7 +181,7 @@ moveTaskwin := {
   }
 }
 
-//write start.ps1
+//write start.bat
 
 import sbt._
 import sys.process._
@@ -191,7 +191,7 @@ lazy val createStartFile = taskKey[Unit]("Create start.txt and rename to start.p
 createStartFile := {
   val dirPath = s"release-pkg/Live2DForScala-SWT-Windows-${version.value}"
   val filePath = dirPath + "/start.txt"
-  val renamedFilePath = dirPath + "/start.ps1"
+  val renamedFilePath = dirPath + "/start.bat"
 
   // Create the directory if it doesn't exist
   IO.createDirectory(new File(dirPath))
