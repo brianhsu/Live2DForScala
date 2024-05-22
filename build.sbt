@@ -19,9 +19,9 @@ val swtWindows = "org.eclipse.platform" % "org.eclipse.swt.win32.win32.x86_64" %
 val swtLinux = "org.eclipse.platform" % "org.eclipse.swt.gtk.linux.x86_64" % swtVersion exclude("org.eclipse.platform", "org.eclipse.swt")
 
 val testFramework = Seq(
-  "org.scalatest" %% "scalatest" % "3.2.12" % Test,
-  "org.scalamock" %% "scalamock" % "6.0.0" % Test,
-  "com.vladsch.flexmark" % "flexmark-all" % "0.64.0" % Test
+  "org.scalatest" %% "scalatest" % "3.2.16" % Test,
+  "org.scalamock" %% "scalamock" % "5.2.0" % Test,
+  "com.vladsch.flexmark" % "flexmark-all" % "0.64.8" % Test
 )
 
 val sharedSettings = Seq(
@@ -120,6 +120,7 @@ lazy val exampleSWTWin = (project in file("modules/examples/swt-windows-bundle")
 
 
 // win-pkg
+
 import sbt.IO
 import java.io.File
 import sys.process._
@@ -143,7 +144,7 @@ createReleasePackageTaskwin := {
   val sourceOpenSeeFace = new File("openSeeFace")
   if (sourceOpenSeeFace.exists()) {
     val targetOpenSeeFace = new File(releaseTarget, "openSeeFace")
-    val cpCmdOpenSeeFace = Seq("cp", "-r", sourceOpenSeeFace.getAbsolutePath, targetOpenSeeFace.getAbsolutePath) 
+    val cpCmdOpenSeeFace = Seq("cp", "-r", sourceOpenSeeFace.getAbsolutePath, targetOpenSeeFace.getAbsolutePath)
     val resultOpenSeeFace = cpCmdOpenSeeFace.!!
     if (resultOpenSeeFace != 0) {
       throw new RuntimeException(s"Failed to copy openSeeFace directory: exit code $resultOpenSeeFace")
@@ -164,8 +165,7 @@ moveTaskwin := {
   val releaseTarget = releaseBaseDir + File.separator + releaseSubDir
 
 
-val extraFilePath = s"modules/examples/swt-windows-bundle/target/scala-2.13/Live2DForScala-SWT-Windows-${version.value}.jar"
-
+  val extraFilePath = s"modules/examples/swt-windows-bundle/target/scala-2.13/Live2DForScala-SWT-Windows-${version.value}.jar"
   val extraFile = new File(extraFilePath)
   if (extraFile.exists()) {
     val targetExtraFile = new File(releaseTarget, s"Live2DForScala-SWT-Windows-${version.value}.jar")
@@ -181,19 +181,17 @@ val extraFilePath = s"modules/examples/swt-windows-bundle/target/scala-2.13/Live
   }
 }
 
-//write start.bat
+//write start.ps1
 
 import sbt._
 import sys.process._
-import java.io.File
 
 lazy val createStartFile = taskKey[Unit]("Create start.txt and rename to start.ps1 in release package")
 
 createStartFile := {
   val dirPath = s"release-pkg/Live2DForScala-SWT-Windows-${version.value}"
   val filePath = dirPath + "/start.txt"
-  val renamedFilePath = dirPath + "/start.bat"
-
+  val renamedFilePath = dirPath + "/start.ps1"
 
   // Create the directory if it doesn't exist
   IO.createDirectory(new File(dirPath))
@@ -392,4 +390,3 @@ releaseswing := {
   moveTaskswing.value
   println("Both tasks completed successfully.")
 }
-
