@@ -210,7 +210,7 @@ createStartFile := {
   // Run shell commands to create and rename the file, when using on windows, change to   
   // IO.write(new File(tempFilePath), s"java -jar Live2DForScala-SWT-Windows-${version.value}.jar".getBytes)
   // new File(tempFilePath).renameTo(new File(finalFilePath))
-     println(s"Created 'start.bat' in '$dirPath'")
+  //  println(s"Created 'start.bat' in '$dirPath'")
   Seq("sh", "-c", s"echo 'java -jar Live2DForScala-SWT-Windows-${version.value}.jar' > $filePath && mv $filePath $renamedFilePath").!!
 }
 
