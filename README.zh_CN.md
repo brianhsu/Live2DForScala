@@ -281,7 +281,7 @@ sbt:live2dforscala> exampleSWTLinux/assembly
 
 ### 7. 使用release-tool工具
 
-[警告]只支持linux，windows 运行时需要更改命令。
+[警告]只支持linux，windows 运行时需要更改命令, 但是我们给了例子[example](doc/win-pkg-example.txt)
 
 在 SBT 控制台中键入以下命令运行 release-tool。
 
