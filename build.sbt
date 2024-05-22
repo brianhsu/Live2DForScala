@@ -144,9 +144,6 @@ createReleasePackageTaskwin := {
   if (sourceOpenSeeFace.exists()) {
     val targetOpenSeeFace = new File(releaseTarget, "openSeeFace")
     val cpCmdOpenSeeFace = Seq("cp", "-r", sourceOpenSeeFace.getAbsolutePath, targetOpenSeeFace.getAbsolutePath) 
-
-// when using on windows, you should change "cp", "t" to "xcopy",  "/E", "/I" 
-
     val resultOpenSeeFace = cpCmdOpenSeeFace.!!
     if (resultOpenSeeFace != 0) {
       throw new RuntimeException(s"Failed to copy openSeeFace directory: exit code $resultOpenSeeFace")
@@ -168,8 +165,6 @@ moveTaskwin := {
 
 
 val extraFilePath = s"modules/examples/swt-windows-bundle/target/scala-2.13/Live2DForScala-SWT-Windows-${version.value}.jar"
-
-// when using on windows, you should change to s"modules\\examples\\swt-windows-bundle\\target\\scala-2.13\\Live2DForScala-SWT-Windows-${version.value}.jar"
 
   val extraFile = new File(extraFilePath)
   if (extraFile.exists()) {
@@ -199,18 +194,11 @@ createStartFile := {
   val filePath = dirPath + "/start.txt"
   val renamedFilePath = dirPath + "/start.bat"
 
-//  when using on windows, you should change
-//  val dirPath = s"release-pkg\\Live2DForScala-SWT-Windows-${version.value}"
-//  val tempFilePath = dirPath + "\\start.txt"
-//  val finalFilePath = dirPath + "\\start.bat"
 
   // Create the directory if it doesn't exist
   IO.createDirectory(new File(dirPath))
 
-  // Run shell commands to create and rename the file, when using on windows, change to   
-  // IO.write(new File(tempFilePath), s"java -jar Live2DForScala-SWT-Windows-${version.value}.jar".getBytes)
-  // new File(tempFilePath).renameTo(new File(finalFilePath))
-  //  println(s"Created 'start.bat' in '$dirPath'")
+  // Run shell commands to create and rename the file
   Seq("sh", "-c", s"echo 'java -jar Live2DForScala-SWT-Windows-${version.value}.jar' > $filePath && mv $filePath $renamedFilePath").!!
 }
 
