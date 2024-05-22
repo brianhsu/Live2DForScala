@@ -151,7 +151,7 @@ TODO List
 Build Instruction
 --------------------
 
-### 1. 安装 OpenJDK 11
+### 1. 安装 OpenJDK 17
 
 - 对于 Windows，请下载 [Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download)  并安装它。
  -    对于 Linux，请通过您的发行版的包管理器安装它。

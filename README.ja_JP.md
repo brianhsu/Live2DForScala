@@ -147,7 +147,7 @@ macOS上でSWTを使用して動作させることができず、いくつかの
 --------------------
 
 
-### 1. OpenJDK 11のインストール
+### 1. OpenJDK 17のインストール
 - Windowsにおいて、[Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download)をダウンロードし、インストールしてください。
 - Linuxにおいて、ディストリビューションの包管理器を使用してインストールしてください。
 - macOSにおいて

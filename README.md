@@ -146,7 +146,7 @@ See [modules/README.md](modules/README.md) for detailed documentation of each co
 Build Instruction
 --------------------
 
-### 1. Install OpenJDK 11
+### 1. Install OpenJDK 17
 
 - For Windows, download [Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download) and install it.
 - For Linux, install it through your distro's package manager.
