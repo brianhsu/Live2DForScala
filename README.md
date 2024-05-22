@@ -277,7 +277,7 @@ sbt:live2dforscala> exampleSWTLinux/assembly
 
 ### 7. Use release-tool 
 
-[warning]Only linux, windows runs need to change the command.
+[warning]Only linux, windows runs need to change the command, but we give example /doc/win-pkg-example.txt
 
 Type the following command in SBT console to run the release-tool.
 
