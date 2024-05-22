@@ -1,0 +1,87 @@
+// win-pkg
+
+import sbt.IO
+import java.io.File
+import sys.process._
+
+lazy val createReleasePackageTaskwin = taskKey[Unit]("Creates a release package with openSeeFace and XX.JAR")
+
+createReleasePackageTaskwin := {
+  val releaseBaseDir = "release-pkg"
+  val releaseSubDir = s"Live2DForScala-SWT-Windows-${version.value}"
+  val releaseTarget = releaseBaseDir + File.separator + releaseSubDir
+
+
+  if (!new File(releaseTarget).exists()) {
+    IO.createDirectory(new File(releaseTarget))
+    println(s"Directory '$releaseTarget' created.")
+  } else {
+    println(s"Directory '$releaseTarget' already exists.")
+  }
+
+
+  val sourceOpenSeeFace = new File("openSeeFace")
+  if (sourceOpenSeeFace.exists()) {
+    val targetOpenSeeFace = new File(releaseTarget, "openSeeFace")
+    val cpCmdOpenSeeFace = Seq("xcopy",  "/E", "/I",sourceOpenSeeFace.getAbsolutePath, targetOpenSeeFace.getAbsolutePath)
+    val resultOpenSeeFace = cpCmdOpenSeeFace.!!
+    if (resultOpenSeeFace != 0) {
+      throw new RuntimeException(s"Failed to copy openSeeFace directory: exit code $resultOpenSeeFace")
+    } else {
+      println(s"Copied 'openSeeFace' directory into '$releaseTarget'")
+    }
+  } else {
+    println("'openSeeFace' directory does not exist.")
+  }
+}
+
+lazy val moveTaskwin = taskKey[Unit]("Moves XXX.JAR to the release package directory")
+
+moveTaskwin := {
+  val releaseBaseDir = "release-pkg"
+  val releaseSubDir = s"Live2DForScala-SWT-Windows-${version.value}"
+  val releaseTarget = releaseBaseDir + File.separator + releaseSubDir
+
+  val extraFilePath = s"modules\\examples\\swt-windows-bundle\\target\\scala-2.13\\Live2DForScala-SWT-Windows-${version.value}.jar"
+  val extraFile = new File(extraFilePath)
+  if (extraFile.exists()) {
+    val targetExtraFile = new File(releaseTarget, s"Live2DForScala-SWT-Windows-${version.value}.jar")
+    IO.copyFile(extraFile, targetExtraFile)
+    println(s"Copied 'Live2DForScala-SWT-Windows-${version.value}.jar' into '$releaseTarget'")
+  } else {
+    println(s"'$extraFilePath' does not exist.")
+  }
+}
+
+
+//write start.ps1
+
+import sbt._
+import sys.process._
+import java.io.File
+
+lazy val createStartFile = taskKey[Unit]("Create start.txt and rename to start.ps1 in release package")
+
+createStartFile := {
+  val dirPath = s"release-pkg\\Live2DForScala-SWT-Windows-${version.value}"
+  val tempFilePath = dirPath + "\\start.txt"
+  val finalFilePath = dirPath + "\\start.bat"
+
+
+  IO.createDirectory(new File(dirPath))
+
+  IO.write(new File(tempFilePath), s"java -jar Live2DForScala-SWT-Windows-${version.value}.jar".getBytes)
+
+  new File(tempFilePath).renameTo(new File(finalFilePath))
+
+  println(s"Created 'start.ps1' in '$dirPath'")
+}
+
+lazy val releasewin = taskKey[Unit]("Performs both createReleasePackageTask and moveTxtTaskwin in order")
+
+releasewin := {
+  createReleasePackageTaskwin.value
+  moveTaskwin.value
+  createStartFile.value
+  println("Both tasks completed successfully.")
+}
