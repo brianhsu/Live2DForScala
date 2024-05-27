@@ -60,7 +60,7 @@ class SwingOpenSeeFaceBundle(cameraListing: CameraListing) extends JPanel with O
     values.foreach(comboBox.addItem)
     comboBox.setToolTipText(tooltip)
 
-    if (values.nonEmpty) {
+    if (values.nonEmpty && defaultIndex < values.length) {
       comboBox.setSelectedIndex(defaultIndex)
     }
 
