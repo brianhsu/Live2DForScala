@@ -9,14 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]
 -------------
 
+### Changed
+
+- Refine CI pipeline.
+  - Use GitHub shared actions for building test environment / run unit test...etc.
+
 2.0.2
 -----
+
+### Fixed
 
 - Fixed some Live2D model will yield `IndexOutOfBoundException: Required 1 remaining elements in buffer, only had 0` when using JavaOpenGLBinding to render the Live2D model. (Issue [#3](https://github.com/brianhsu/Live2DForScala/issues/3))
 - Fixed Java Swing Example yield `java.lang.IllegalArgumentException: setSelectedIndex: 0 out of bounds` and crash during startup if there is no webcam.
 
 2.0.1
 -------------
+
+### Fixed
 
 - Fixed `FileNotFound` exception when use pre-built Maven JAR files and loading avatar through AvatarFileReader. (Issue [#2](https://github.com/brianhsu/Live2DForScala/issues/2)).
 

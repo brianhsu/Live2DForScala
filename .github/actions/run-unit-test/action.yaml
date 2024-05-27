@@ -1,0 +1,8 @@
+name: "Run Unit Test And Coverage Report"
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        ./distclean
+        xvfb-run --auto-servernum sbt coverage test coverageAggregate

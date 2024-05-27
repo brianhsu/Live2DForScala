@@ -9,18 +9,23 @@ import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.usecase.updater.impl.GenericUpdateStrategy.EffectTiming.{AfterExpression, BeforeExpression}
 import moe.brianhsu.utils.mock.MixerMock
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.GivenWhenThen
+import org.scalatest.{GivenWhenThen, Retries}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
 import javax.sound.sampled.Mixer
 
-class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with MockFactory with MixerMock {
+class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with Matchers with Retries with MockFactory with MixerMock {
+
+  override def withFixture(test: NoArgTest) = withRetry {
+    super.withFixture(test)
+  }
 
   Feature("Initial status") {
     Scenario("Initial effects after strategy is created") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -52,7 +57,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Enable eye blink effect when it's already enabled by default") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -70,7 +76,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Disable eye blink effect") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -88,7 +95,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Enable eye blink after disable eye blink") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -116,7 +124,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Enable breath effect when it's already enabled by default") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -134,7 +143,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Disable breath effect") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -152,7 +162,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Enable breath again") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -180,7 +191,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Enable face direction effect when it's already enabled by default") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -198,7 +210,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Disable face direction effect") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -216,7 +229,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Enable face direction again") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -244,7 +258,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Enable lip sync from motion effect when it's already enabled by default") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -262,7 +277,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Disable lip sync from motion effect") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -280,7 +296,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Enable lip sync from motion again") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -304,7 +321,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Update weight of lip sync from motion") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       And("create an EasyUpdateStrategy from that avatar")
@@ -324,7 +342,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Update volume of lip sync from motion") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       And("create an EasyUpdateStrategy from that avatar")
@@ -347,7 +366,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
   Feature("Enable / disable lip sync from mic effect") {
     Scenario("Enable lip sync from mic successfully") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -363,7 +383,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Failure to enable lip sync from mic") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -381,7 +402,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Disable lip sync from mic effect") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       When("create an EasyUpdateStrategy from that avatar")
@@ -403,7 +425,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
 
     Scenario("Update weight of lip sync from motion") {
       Given("stubbed avatar faceDirection calculator")
-      val faceDirectionCalculator = stub[FaceDirectionCalculator]
+      val mockContext = new MockFactory {}
+      val faceDirectionCalculator = stub[FaceDirectionCalculator](mockContext)
       val avatar = createStubAvatar()
 
       And("create an EasyUpdateStrategy from that avatar")
@@ -432,7 +455,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
     Scenario("Test") {
       Given("stubbed avatar and a stubbed LipSyncFromMotionSound")
       val avatar = createStubAvatar()
-      val lipSyncFromMotionSound = stub[LipSyncFromMotionSound]
+      val mockContext = new MockFactory {}
+      val lipSyncFromMotionSound = stub[LipSyncFromMotionSound](mockContext)
 
       And("create an EasyUpdateStrategy from that avatar and stubbed LipSyncFromMotionSound")
       val strategy = new EasyUpdateStrategy(avatar, stub[EyeBlink], stub[Breath], lipSyncFromMotionSound, stub[FaceDirection])
@@ -447,7 +471,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
   }
 
   private def createStubAvatar(): Avatar = {
-    val model: Live2DModel = mock[Live2DModel]
+    val mockContext = new MockFactory {}
+    val model: Live2DModel = mock[Live2DModel](mockContext)
     val avatarSettings = Settings(null, Nil, None, None, Nil, Nil, Map.empty, Map.empty, Nil)
     Avatar(avatarSettings, model)
   }

@@ -22,38 +22,26 @@ jobs:
       image: openjdk:11
     steps:
       - uses: actions/checkout@v3
-      - name: Install packages
+
+      - name: Prepare Building Environment
+        uses: ./.github/actions/prepare-building-env
+
+      - name: Run Unit test
+        uses: ./.github/actions/run-unit-test
+
+      - name: Archive Test Results
+        if: always()
+        uses: ./.github/actions/archive-test-result
+     
+      - name: Set Coverage rate for badges
+        id: CoverageExport
         run: |
-          apt-get update -yqq
-          apt-get install apt-transport-https -yqq
-          echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list
-          echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list
-          curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add
-          apt-get update
-          apt-get -y install sbt
-          apt-get -y install xorg-dev libglu1-mesa libgl1-mesa-dev xvfb libxinerama1 libxcursor1 libswt-gtk-4-java libswt-gtk-4-jni libxml2-utils bc zip
+          echo "::set-output name=COVERAGE_RATE::$(xmllint --xpath "string(/scoverage/@branch-rate)" target/scala-2.13/scoverage-report/scoverage.xml)"
 
       - name: Setup Git Information
         run: |
           git config --global user.email "brianhsu.hsu+githu@gmail.com"
           git config --global user.name "GitHub Action"
-
-      - name: Test and Coverage
-        run: |
-          ./distclean
-          xvfb-run --auto-servernum sbt coverage test coverageAggregate
-
-      - name: Archive Test Results
-        if: always()
-        uses: actions/upload-artifact@v1
-        with:
-          name: test-results
-          path: target/test-reports-html/
-
-      - name: Set Coverage rate for badges
-        id: CoverageExport
-        run: |
-          echo "::set-output name=COVERAGE_RATE::$(xmllint --xpath "string(/scoverage/@branch-rate)" target/scala-2.13/scoverage-report/scoverage.xml)"
 
       - name: Release
         run: |

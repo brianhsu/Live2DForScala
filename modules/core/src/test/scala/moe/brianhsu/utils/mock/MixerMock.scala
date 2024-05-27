@@ -9,7 +9,8 @@ trait MixerMock {
 
   def createStubbedMixer(): (Mixer, TargetDataLine) = {
     val audioFormat = new AudioFormat(44100, 16, 1, true,false)
-    val mixer = stub[Mixer]
+    val mockContext = new MockFactory {}
+    val mixer = stub[Mixer](mockContext)
     val targetDataLine = stub[TargetDataLine]
     val targetLineInfo = new DataLine.Info(classOf[TargetDataLine], audioFormat)
     (() => mixer.getTargetLineInfo).when().returns(Array(targetLineInfo))
