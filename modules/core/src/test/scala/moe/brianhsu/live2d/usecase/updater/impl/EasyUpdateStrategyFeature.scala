@@ -391,7 +391,8 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
       val strategy = new EasyUpdateStrategy(avatar, faceDirectionCalculator)
 
       And("create a mixer that will throw exception when try to get line info")
-      val mixer = stub[Mixer]
+      val mockedContext2 = new MockFactory {}
+      val mixer = stub[Mixer](mockedContext2)
 
       And("use that mixer to enable LipSyncFromMic")
       strategy.enableMicLipSync(mixer, 50, forceEvenNoSetting = true)
@@ -459,7 +460,13 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
       val lipSyncFromMotionSound = stub[LipSyncFromMotionSound](mockContext)
 
       And("create an EasyUpdateStrategy from that avatar and stubbed LipSyncFromMotionSound")
-      val strategy = new EasyUpdateStrategy(avatar, stub[EyeBlink], stub[Breath], lipSyncFromMotionSound, stub[FaceDirection])
+      val mockContext2 = new MockFactory {}
+      val mockContext3 = new MockFactory {}
+      val mockContext4 = new MockFactory {}
+      val eyeBlink = stub[EyeBlink](mockContext2)
+      val breath = stub[Breath](mockContext3)
+      val faceDirection = stub[FaceDirection](mockContext4)
+      val strategy = new EasyUpdateStrategy(avatar, eyeBlink, breath, lipSyncFromMotionSound, faceDirection)
 
       When("start a dummy MotionSetting")
       val motionSetting = MotionSetting("3", None, None, Some("soundFile.wav"), MotionSetting.Meta(1.0f, 30.0f, loop = true, areBeziersRestricted = true, 0, 0, 0, 0), Nil, Nil)
@@ -476,4 +483,5 @@ class EasyUpdateStrategyFeature extends AnyFeatureSpec with GivenWhenThen with M
     val avatarSettings = Settings(null, Nil, None, None, Nil, Nil, Map.empty, Map.empty, Nil)
     Avatar(avatarSettings, model)
   }
+
 }
