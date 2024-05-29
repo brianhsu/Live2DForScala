@@ -1,6 +1,5 @@
 package moe.brianhsu.live2d.enitiy.audio
 
-import moe.brianhsu.utils.AudioOutputTest
 import moe.brianhsu.utils.mock.AudioMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.GivenWhenThen
@@ -12,9 +11,9 @@ import javax.sound.sampled.{AudioFormat, AudioSystem, FloatControl, SourceDataLi
 class AudioPlayerFeature extends AnyFeatureSpec with Matchers with GivenWhenThen with MockFactory with AudioMock {
 
   Feature("Create AudioPlayer using factory") {
-    Scenario("Create AudioPlayer from only AudioInputStream", AudioOutputTest) {
+    Scenario("Create AudioPlayer from only AudioInputStream") {
       Given("an AudioInputStream")
-      val audioInputStream = AudioSystem.getAudioInputStream(this.getClass.getResourceAsStream("/sounds/8.wav"))
+      val audioInputStream = AudioSystem.getAudioInputStream(this.getClass.getResourceAsStream("/sounds/32.wav"))
 
       When("create an AudioPlayer using factory")
       val audioPlayer = AudioPlayer(audioInputStream, 36)

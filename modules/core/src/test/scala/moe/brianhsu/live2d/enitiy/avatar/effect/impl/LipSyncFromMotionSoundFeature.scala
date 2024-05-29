@@ -5,7 +5,6 @@ import moe.brianhsu.live2d.enitiy.avatar.effect.impl.LipSyncFromMotionSound.{Def
 import moe.brianhsu.live2d.enitiy.avatar.settings.Settings
 import moe.brianhsu.live2d.enitiy.model.Live2DModel
 import moe.brianhsu.live2d.enitiy.updater.UpdateOperation.ParameterValueAdd
-import moe.brianhsu.utils.AudioOutputTest
 import moe.brianhsu.utils.mock.AudioMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -31,7 +30,7 @@ class LipSyncFromMotionSoundFeature extends AnyFeatureSpec with GivenWhenThen wi
       processorsHolder.failure.exception shouldBe a[FileNotFoundException]
     }
 
-    Scenario("Create processors from exist sound file", AudioOutputTest) {
+    Scenario("Create processors from exist sound file") {
       When("create the processors from exist sound file")
       val processorsHolder = DefaultProcessorsFactory("src/test/resources/sounds/16.wav", 50)
 

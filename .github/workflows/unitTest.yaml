@@ -15,15 +15,21 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      EXCLUDE_TEST_TAG: moe.brianhsu.AudioOutputTest  
+      LANG: en_US.utf-8
     container:
-      image: openjdk:11
+      image: debian:sid
     steps:
       - name: "Checkout Source Code"
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Prepare Building Env
+        uses: ./.github/actions/prepare-building-envoriment
+
       - name: Unit test
         uses: ./.github/actions/run-unit-test
+      - name: Show coverage rate
+        run: |
+          echo $COVERAGE_RATE
 

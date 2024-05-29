@@ -1,0 +1,16 @@
+name: "Upload Testing Report"
+runs:
+  using: "composite"
+  steps:
+    - name: 'Archive Testing Report'
+      shell: bash
+      run: |
+        tar -cvzf test-report.tar.gz -C target/ test-reports-html/
+
+    - name: 'Upload Testing Report to GitHub Workflow'
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report.tar.gz
+        path: test-report.tar.gz
+
+
