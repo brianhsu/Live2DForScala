@@ -1,19 +1,15 @@
 name: Release
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
-    branches: [ "master" ]
+    branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   release:
-    # The type of runner that the job will run on
+    name: "Release"
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -21,27 +17,18 @@ jobs:
     container:
       image: openjdk:11
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Prepare Building Environment
-        uses: ./.github/actions/prepare-building-env
-
-      - name: Run Unit test
+      - name: "Checkout Source Code"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Unit test
         uses: ./.github/actions/run-unit-test
 
-      - name: Archive Test Results
-        if: always()
-        uses: ./.github/actions/archive-test-result
-     
       - name: Set Coverage rate for badges
         id: CoverageExport
         run: |
-          echo "::set-output name=COVERAGE_RATE::$(xmllint --xpath "string(/scoverage/@branch-rate)" target/scala-2.13/scoverage-report/scoverage.xml)"
-
-      - name: Setup Git Information
-        run: |
-          git config --global user.email "brianhsu.hsu+githu@gmail.com"
-          git config --global user.name "GitHub Action"
+          echo "COVERAGE_RATE=$(xmllint --xpath "string(/scoverage/@branch-rate)" target/scala-2.13/scoverage-report/scoverage.xml)" >> "$GITHUB_ENV"
 
       - name: Release
         run: |
@@ -49,37 +36,24 @@ jobs:
           sbt "release with-defaults"
 
       - name: Export Version
-        id: VersionExport
         run: |
-          echo "::set-output name=CURRENT_VERSION::$(git tag | tail -n1)"
+          git describe --tags --abbrev=0
+          echo "CURRENT_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_ENV"
 
-      - name: Prepare mvn repository
-        run: |
-          git clone https://github.com/brianhsu/mavenRepository.git mavenToUpload
-          cp -rvf mavenRepository/* mavenToUpload
-
-      - name: Push to maven repository
-        id: push_directory
-        uses: cpina/github-action-push-to-another-repository@ssh-deploy-key
+      - name: Release to Maven
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
-        with:
-          source-directory: mavenToUpload
-          destination-github-username: 'brianhsu'
-          destination-repository-name: 'mavenRepository'
-          user-email: brianhsu.hsu@gmail.com
-          commit-message: See ORIGIN_COMMIT from $GITHUB_REF
-          target-branch: master
+        uses: ./.github/actions/upload-to-maven
 
       - name: Update Coverage / Version badges
         run: |
-          ./doc/images/generateCoverageBadage.sh ${{ steps.CoverageExport.outputs.COVERAGE_RATE }}
+          ./doc/images/generateCoverageBadage.sh $COVERAGE_RATE
           ./doc/images/generateVersionBadage.sh
 
       - uses: EndBug/add-and-commit@v9
         with:
           add: 'doc/images/'
-          message: Update badages for ${{ steps.VersionExport.outputs.CURRENT_VERSION }}
+          message: Update badages for $CURRENT_VERSION
 
       - name: Assembly JAR
         run: |
@@ -90,25 +64,17 @@ jobs:
         run: |
           ./scripts/packageBundles.sh
 
-
-      - name: Upload Swing Version
-        uses: actions/upload-artifact@v1
+      - uses: xresloader/upload-to-github-release@v1.6.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Live2DForScala-Swing
-          path: Live2DForScala-Swing-${{ steps.VersionExport.outputs.CURRENT_VERSION }}.zip
-
-      - name: Upload SWT Linux Version
-        uses: actions/upload-artifact@v1
-        with:
-          name: Live2DForScala-SWT-Linux
-          path: Live2DForScala-SWT-Linux-${{ steps.VersionExport.outputs.CURRENT_VERSION }}.tar.gz
-
-      - name: Upload SWT Windows Version
-        uses: actions/upload-artifact@v1
-        with:
-          name: Live2DForScala-SWT-Windows
-          path: Live2DForScala-SWT-Windows-${{ steps.VersionExport.outputs.CURRENT_VERSION }}.zip
-
+          file: "Live2DForScala-SWT-Linux-${CURRENT_VERSION}.tar.gz;Live2DForScala-SWT-Windows-${CURRENT_VERSION}.zip;Live2DForScala-Swing-${CURRENT_VERSION}.zip"
+          default_release_name: "Release ${CURRENT_VERSION}"
+          default_release_body_path: doc/RELEASE.md
+          update_release_body_path: doc/RELEASE.md
+          draft: true
+          verbose: true
+ 
       - name: Push release change to original GitHub repository
         uses: ad-m/github-push-action@master
         with:

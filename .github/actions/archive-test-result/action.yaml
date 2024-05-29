@@ -1,9 +1,0 @@
-name: "Archive Test Results"
-runs:
-  using: "composite"
-  steps:
-    - uses: actions/upload-artifact@v1
-      with:
-        name: test-results
-        path: target/test-reports-html/
-

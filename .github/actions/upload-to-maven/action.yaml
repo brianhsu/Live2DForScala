@@ -1,0 +1,22 @@
+name: "Upload to Maven"
+runs:
+  using: "composite"
+  steps:
+      - name: Prepare mvn repository
+        shell: bash
+        run: |
+          git clone https://github.com/brianhsu/mavenRepository.git mavenToUpload
+          cp -rvf mavenRepository/* mavenToUpload
+
+      - name: Push to maven repository
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@ssh-deploy-key
+        with:
+          source-directory: mavenToUpload
+          destination-github-username: 'brianhsu'
+          destination-repository-name: 'mavenRepository'
+          user-email: brianhsu.hsu@gmail.com
+          commit-message: See ORIGIN_COMMIT from $GITHUB_REF
+          target-branch: master
+
+

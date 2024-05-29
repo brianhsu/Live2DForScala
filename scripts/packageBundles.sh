@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -ex
-version=`git tag | tail -n1`
+version=`git describe --tags --abbrev=0`
 
 rm -rvf openSeeFace.tar.gz openSeeFace Live2DForScala-Swing/ Live2DForScala-SWT-Linux/ Live2DForScala-SWT-Win/
 

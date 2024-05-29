@@ -1,20 +1,17 @@
 name: Unit Test
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
-    branches-ignore: master
+    branches: develop
   pull_request:
-    branches: master
+    branches: develop
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   unitTest:
-    # The type of runner that the job will run on
+    name: "Unit Test"
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -22,23 +19,11 @@ jobs:
     container:
       image: openjdk:11
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Prepare Building Environment
-        uses: ./.github/actions/prepare-building-env
+      - name: "Checkout Source Code"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Unit test
         uses: ./.github/actions/run-unit-test
 
-      - name: Archive Test Results
-        if: always()
-        uses: ./.github/actions/archive-test-result
-
-      - name: Assembly JAR
-        run: |
-          ./distclean
-          sbt clean assembly
-
-      - name: Package runnable JAR files
-        run: |
-          ./scripts/packageBundles.sh
