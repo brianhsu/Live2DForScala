@@ -19,21 +19,23 @@ object SWTWithLWJGLMain {
   private val statusBar = new SWTStatusBar(shell)
 
   def main(args: Array[String]): Unit = {
-    setupUILayout()
-    setupAvatarEventListener()
+    try {
+      setupUILayout()
+      setupAvatarEventListener()
 
-    shell.setText("Live 2D Scala Demo (SWT+LWJGL)")
-    shell.setSize(1080, 720)
-    shell.open()
+      shell.setText("Live 2D Scala Demo (SWT+LWJGL)")
+      shell.setSize(1080, 720)
+      shell.open()
 
-    while (!shell.isDisposed) {
-      if (!display.readAndDispatch()) {
-        display.sleep()
+      while (!shell.isDisposed) {
+        if (!display.readAndDispatch()) {
+          display.sleep()
+        }
       }
+    } finally {
+      display.dispose()
+      System.exit(0)
     }
-    display.dispose()
-    System.exit(0)
-
   }
 
   private def setupAvatarEventListener(): Unit = {
