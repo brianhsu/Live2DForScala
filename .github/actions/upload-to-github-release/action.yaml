@@ -13,6 +13,21 @@ runs:
       run: |
         ./scripts/packageBundles.sh
  
+    - name: "Extract Changelog of Current Version"
+      id: extract-changelog
+      uses: sean0x42/markdown-extract@v2
+      with:
+        file: CHANGELOG.md
+        pattern: ${{ env.CURRENT_VERSION }}
+
+    - name: "Prepare Release Note"
+      shell: bash
+      run: |
+        echo "# Change Log" >> ./doc/RELEASE.md
+        echo "${{ steps.extract-changelog.outputs.markdown }}" >> ./doc/RELEASE.md
+        echo "# Installation" >> ./doc/RELEASE.md
+        cat doc/INSTALL.md >> ./doc/RELEASE.md
+
     - name: "Create GitHub Release Page"
       uses: xresloader/upload-to-github-release@v1.6.0
       with:
