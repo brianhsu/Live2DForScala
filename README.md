@@ -82,7 +82,7 @@ Since this project is built on Clean Architecture concept and runs on Java Virtu
 
 In theory, it should able to use differnt combination of OpenGL Java libary and GUI toolkit, but the examples come with this project use the following comination.
 
-Due to some weired bug, I couldn't make the example program runs on SWT under MacOS. Also, currently it only support MacOS running on Intel processors, Apple M1 version of MacOS is not supported.
+Due to some weired bug, I couldn't make the example program runs on SWT under MacOS. I've confirmed JavaOpenGL binding could work under Intel and Apple M2 chip. I don't have other Apple chips to verify, so not sure if it will work or not.
 
 | OS / Binding  | Architecture | OpenGL Binding     | GUI Toolkit |Supported          | Note
 | ------------- |------------- | ------------------ |------------ |------------------ |------
@@ -90,12 +90,11 @@ Due to some weired bug, I couldn't make the example program runs on SWT under Ma
 | Linux         | x86_64       | LWJGL              | SWT         |:heavy_check_mark: | 2
 | Windows 10    | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: |
 | Windows 10    | x86_64       | LWJGL              | SWT         |:heavy_check_mark: |
-| MacOS         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: | 3
-| MacOS         | x86_64       | LWJGL              | SWT         |:x:                | 
+| MacOS         | x86_64 / M2  | JavaOpenGL         | Swing       |:heavy_check_mark: | 
+| MacOS         | x86_64 / M2  | LWJGL              | SWT         |:x:                | 
 
 1. Works both on X11 / Wayland natively.
 2. Works on X11 natively, you need set `GDK_BACKEND=x11` environment variable to make it work on Wayland.
-3. Must use jogamp-fat-v2.4.0-rc-20210111.jar, auto pull-in dependency from Maven Central will not work.
 
 Install & Usage
 --------------------

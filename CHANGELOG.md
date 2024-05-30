@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Update native library to Cubism 5 SDK for Native R1.
 
+- Update JavaOpenGL binding to jogl 2.5.0.
+
 - Refine CI pipeline.
   - Use GitHub shared actions for building test environment / run unit test...etc.
   - Use Debian as a building environment in GitHub Actions CI pipeline.
