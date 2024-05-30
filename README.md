@@ -86,14 +86,16 @@ Due to some weired bug, I couldn't make the example program runs on SWT under Ma
 
 | OS / Binding  | Architecture | OpenGL Binding     | GUI Toolkit |Supported          | Note
 | ------------- |------------- | ------------------ |------------ |------------------ |------
-| Linux         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: |
-| Linux         | x86_64       | LWJGL              | SWT         |:heavy_check_mark: |
+| Linux         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: | 1
+| Linux         | x86_64       | LWJGL              | SWT         |:heavy_check_mark: | 2
 | Windows 10    | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: |
 | Windows 10    | x86_64       | LWJGL              | SWT         |:heavy_check_mark: |
-| MacOS         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: | 1
+| MacOS         | x86_64       | JavaOpenGL         | Swing       |:heavy_check_mark: | 3
 | MacOS         | x86_64       | LWJGL              | SWT         |:x:                | 
 
-1. Must use jogamp-fat-v2.4.0-rc-20210111.jar, auto pull-in dependency from Maven Central will not work.
+1. Works both on X11 / Wayland natively.
+2. Works on X11 natively, you need set `GDK_BACKEND=x11` environment variable to make it work on Wayland.
+3. Must use jogamp-fat-v2.4.0-rc-20210111.jar, auto pull-in dependency from Maven Central will not work.
 
 Install & Usage
 --------------------
