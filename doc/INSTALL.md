@@ -29,6 +29,10 @@ Step 3. Run the Demo Application
     ```text
     java -jar [put the downloaded file name here]
     ```
+- If you want to run SWT version on Wayland, you need `GDK_BACKEND=x11` environment variable set.
+    ```text
+    GDK_BACKEND=x11 java -jar Live2DForScala-SWT-Linux-v{x.y.z}.jar
+    ```
 
 Step 4. Download Live2D Model
 ==============================

@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]
 -------------
 
+### Added
+- Add 120 / 150 camera fps to face tracking setting panel.
+
+### Fixed
+
+- A potential out of bound error in FaceDirection tab in Swing Demo App.
+
 ### Changed
 
 - Refine CI pipeline.
