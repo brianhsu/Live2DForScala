@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: ["master"]
+    branches: ["release"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -13,71 +13,40 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+      LANG: en_US.utf-8
     container:
-      image: openjdk:11
+      image: debian:sid
     steps:
+      - name: "Installing Git"
+        run: |
+          apt-get -yqq update
+          apt-get -yqq install git
+
       - name: "Checkout Source Code"
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prepare Building Env
+      - name: "Prepare Building Envoriment"
         uses: ./.github/actions/prepare-building-envoriment
       
-      - name: Unit test
+      - name: "Run Unit Test"
         uses: ./.github/actions/run-unit-test
 
-      - name: Set Coverage rate for badges
-        id: CoverageExport
-        run: |
-          echo "COVERAGE_RATE=$(xmllint --xpath "string(/scoverage/@branch-rate)" target/scala-2.13/scoverage-report/scoverage.xml)" >> "$GITHUB_ENV"
+      - name: "Build Release Package"
+        uses: ./.github/actions/release-build
 
-      - name: Release
-        run: |
-          ./distclean
-          sbt "release with-defaults"
+      - name: "Update Badges to Git Repository"
+        uses: ./.github/actions/update-badge
 
-      - name: Export Version
-        run: |
-          git describe --tags --abbrev=0
-          echo "CURRENT_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_ENV"
-
-      - name: Release to Maven
-        env:
-          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+      - name: "Release to Maven"
         uses: ./.github/actions/upload-to-maven
 
-      - name: Update Coverage / Version badges
-        run: |
-          ./doc/images/generateCoverageBadage.sh $COVERAGE_RATE
-          ./doc/images/generateVersionBadage.sh
+      - name: "Upload to GitHub Release Page"
+        uses: ./.github/actions/upload-to-github-release
 
-      - uses: EndBug/add-and-commit@v9
-        with:
-          add: 'doc/images/'
-          message: Update badages for $CURRENT_VERSION
-
-      - name: Assembly JAR
-        run: |
-          ./distclean
-          sbt clean assembly
-
-      - name: Package runnable JAR files
-        run: |
-          ./scripts/packageBundles.sh
-
-      - uses: xresloader/upload-to-github-release@v1.6.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          file: "Live2DForScala-SWT-Linux-${CURRENT_VERSION}.tar.gz;Live2DForScala-SWT-Windows-${CURRENT_VERSION}.zip;Live2DForScala-Swing-${CURRENT_VERSION}.zip"
-          default_release_name: "Release ${CURRENT_VERSION}"
-          default_release_body_path: doc/RELEASE.md
-          update_release_body_path: doc/RELEASE.md
-          draft: true
-          verbose: true
- 
-      - name: Push release change to original GitHub repository
+      - name: "Push Release Change to Original GitHub Repository"
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

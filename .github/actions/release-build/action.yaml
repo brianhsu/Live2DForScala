@@ -1,0 +1,23 @@
+name: "Release Build"
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup Git Information"
+      shell: bash
+      run: |
+        git config --global user.email "brianhsu.hsu+githu@gmail.com"
+        git config --global user.name "GitHub Action"
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+    
+    - name: "Build Release Version"
+      shell: bash
+      run: |
+        ./distclean
+        sbt "release with-defaults"
+
+    - name: "Export Current Version"
+      shell: bash
+      run: |
+        git describe --tags --abbrev=0
+        echo "CURRENT_VERSION=$(git describe --tags --abbrev=0)" >> "$GITHUB_ENV"
+        

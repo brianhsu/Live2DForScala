@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refine CI pipeline.
   - Use GitHub shared actions for building test environment / run unit test...etc.
+  - Use Debian as a building environment in GitHub Actions CI pipeline.
+  - Enable AudioOutputTest in GitHub Actions CI pipeline.
 
 2.0.2
 -----

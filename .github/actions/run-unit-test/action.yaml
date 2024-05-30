@@ -2,12 +2,6 @@ name: "Run Unit Test And Coverage Report"
 runs:
   using: "composite"
   steps:
-    - name: "Setup Git Information"
-      shell: bash
-      run: |
-        git config --global user.email "brianhsu.hsu+githu@gmail.com"
-        git config --global user.name "GitHub Action"
-   
     - name: "Run Unit Test and Coverage Report"
       shell: bash
       run: |

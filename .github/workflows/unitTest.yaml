@@ -19,17 +19,19 @@ jobs:
     container:
       image: debian:sid
     steps:
+      - name: "Installing Git"
+        run: |
+          apt-get -yqq update
+          apt-get -yqq install git
+
       - name: "Checkout Source Code"
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prepare Building Env
+      - name: "Prepare Building Envoriment"
         uses: ./.github/actions/prepare-building-envoriment
 
-      - name: Unit test
+      - name: "Run Unit Test"
         uses: ./.github/actions/run-unit-test
-      - name: Show coverage rate
-        run: |
-          echo $COVERAGE_RATE
 

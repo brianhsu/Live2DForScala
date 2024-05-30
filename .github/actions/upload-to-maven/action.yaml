@@ -2,13 +2,13 @@ name: "Upload to Maven"
 runs:
   using: "composite"
   steps:
-      - name: Prepare mvn repository
+      - name: "Prepare Maven Repository"
         shell: bash
         run: |
           git clone https://github.com/brianhsu/mavenRepository.git mavenToUpload
           cp -rvf mavenRepository/* mavenToUpload
 
-      - name: Push to maven repository
+      - name: "Push to Maven Repository"
         id: push_directory
         uses: cpina/github-action-push-to-another-repository@ssh-deploy-key
         with:

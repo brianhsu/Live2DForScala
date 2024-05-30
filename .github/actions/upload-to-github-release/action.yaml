@@ -1,0 +1,23 @@
+name: "Upload to GitHub Release"
+runs:
+  using: "composite"
+  steps:
+    - name: "Build Assembly JAR"
+      shell: bash
+      run: |
+        ./distclean
+        sbt clean assembly
+ 
+    - name: "Package runnable JAR files"
+      shell: bash
+      run: |
+        ./scripts/packageBundles.sh
+ 
+    - name: "Create GitHub Release Page"
+      uses: xresloader/upload-to-github-release@v1.6.0
+      with:
+        file: "Live2DForScala-SWT-Linux-${CURRENT_VERSION}.tar.gz;Live2DForScala-SWT-Windows-${CURRENT_VERSION}.zip;Live2DForScala-Swing-${CURRENT_VERSION}.zip"
+        default_release_name: "Release ${CURRENT_VERSION}"
+        default_release_body_path: doc/RELEASE.md
+        update_release_body_path: doc/RELEASE.md
+        

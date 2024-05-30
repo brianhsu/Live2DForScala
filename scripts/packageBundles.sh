@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -ex
-version=`git describe --tags --abbrev=0`
+version=$CURRENT_VERSION
 
 rm -rvf openSeeFace.tar.gz openSeeFace Live2DForScala-Swing/ Live2DForScala-SWT-Linux/ Live2DForScala-SWT-Win/
 
@@ -25,6 +25,3 @@ zip -rq Live2DForScala-SWT-Windows-$version.zip Live2DForScala-SWT-Windows
 tar -czf Live2DForScala-SWT-Linux-$version.tar.gz Live2DForScala-SWT-Linux/
 
 rm -rf openSeeFace.tar.gz openSeeFace Live2DForScala-Swing/ Live2DForScala-SWT-Linux/ Live2DForScala-SWT-Win/
-pwd
-ls -l
-

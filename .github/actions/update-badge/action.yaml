@@ -1,0 +1,16 @@
+name: "Update Badges in Git Repository"
+runs:
+  using: "composite"
+  steps:
+    - name: "Generate Coverage / Version badges"
+      shell: bash
+      run: |
+        ./scripts/generateCoverageBadge.sh $COVERAGE_RATE
+        ./scripts/generateVersionBadge.sh
+
+    - name: "Commit New Badges to Git Repository"
+      uses: EndBug/add-and-commit@v9
+      with:
+        add: 'doc/images/'
+        message: Update badges for $CURRENT_VERSION
+        
