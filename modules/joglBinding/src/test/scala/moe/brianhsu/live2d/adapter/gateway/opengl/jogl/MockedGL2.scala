@@ -4882,6 +4882,8 @@ class MockedGL2 extends GL2 {
 
   override def getDefaultDrawFramebuffer: Int = ???
 
+  override def getDefaultDrawBuffer(): Int = ???
+
   override def getDefaultReadFramebuffer: Int = ???
 
   override def getDefaultReadBuffer: Int = ???
