@@ -17,7 +17,7 @@ Step 2. Download corresponding compressed files.
 
     - For Linux, both `Live2DForScala-Swing-X.Y.Z.zip` / `Live2DForScala-SWT-Linux-X.Y.Z.tar.gz` should work.
     - For Windows,  both `Live2DForScala-Swing-X.Y.Z.zip` / `Live2DForScala-SWT-Windows-X.Y.Z.zip` should work.
-    - For Mac, download `Live2DForScala-Swing-X.Y.Z.jar` 
+    - For Mac, download `Live2DForScala-Swing-X.Y.Z.zip` 
 
 2. Extract the downloaded file.
 
@@ -27,11 +27,11 @@ Step 3. Run the Demo Application
 - If your system is setup correctly, you should able to double click on the jar file in the extracted folder to run it.
 - If double click does not work, open a terminal (command line window), and run the following command
     ```text
-    java -jar [put the downloaded file name here]
+    java -jar [put the downloaded file name here].jar
     ```
 - If you want to run SWT version on Wayland, you need `GDK_BACKEND=x11` environment variable set.
     ```text
-    GDK_BACKEND=x11 java -jar Live2DForScala-SWT-Linux-v{x.y.z}.jar
+    GDK_BACKEND=x11 java -jar Live2DForScala-SWT-Linux-v{X.Y.Z}.jar
     ```
 
 Step 4. Download Live2D Model
