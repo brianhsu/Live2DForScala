@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]
 -------------
 
+### Fixed
+
+- A potential out of bound error in FaceDirection tab in Swing Demo App.
+
 ### Changed
 
 - Refine CI pipeline.
