@@ -16,6 +16,7 @@ runs:
         sbt "release with-defaults"
 
     - name: "Export Current Version"
+      id: export-current-version
       shell: bash
       run: |
         git describe --tags --abbrev=0

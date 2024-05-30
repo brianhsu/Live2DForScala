@@ -7,3 +7,4 @@ project/target
 .DS_Store
 .bsp/
 .attach*
+doc/RELEASE.md

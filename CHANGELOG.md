@@ -6,8 +6,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[Unreleased]
--------------
+## [Unreleased]
 
 ### Fixed
 
@@ -20,23 +19,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Use Debian as a building environment in GitHub Actions CI pipeline.
   - Enable AudioOutputTest in GitHub Actions CI pipeline.
 
-2.0.2
------
+## v2.0.2
 
 ### Fixed
 
 - Fixed some Live2D model will yield `IndexOutOfBoundException: Required 1 remaining elements in buffer, only had 0` when using JavaOpenGLBinding to render the Live2D model. (Issue [#3](https://github.com/brianhsu/Live2DForScala/issues/3))
 - Fixed Java Swing Example yield `java.lang.IllegalArgumentException: setSelectedIndex: 0 out of bounds` and crash during startup if there is no webcam.
 
-2.0.1
--------------
+## v2.0.1
 
 ### Fixed
 
 - Fixed `FileNotFound` exception when use pre-built Maven JAR files and loading avatar through AvatarFileReader. (Issue [#2](https://github.com/brianhsu/Live2DForScala/issues/2)).
 
-2.0.0
--------------
+## v2.0.0
+
 This version basically aligned to Cubism Native SDK 4-r.5-beta.4.
 
 ### Added
@@ -67,8 +64,7 @@ This version basically aligned to Cubism Native SDK 4-r.5-beta.4.
 - Move Parameter / JVMParameter / CPointerParameter to separate package `moe.brianhsu.live2d.enitiy.model.parameter`.
 
 
-1.0.0
--------------
+## v1.0.0
 
 ### Added
 

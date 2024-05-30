@@ -214,7 +214,7 @@ sbt:live2dforscala> compile
 sbt:live2dforscala> 
 ```
 
-### 3. Compile
+### 3. Unit Test
 
 - Type `test` in SBT console to run unit test.
 - Since MacOS does not support SWT+JWJGL, SWTOpenGLCanvasInfoFeature would faild. It's expected.
@@ -255,6 +255,18 @@ sbt:live2dforscala> exampleSwing/run
 sbt:live2dforscala> exampleSWTLinux/run                    
 [info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
 ```
+
+Contribution
+==============================
+
+If you find any bugs, you could report it under the [GitHub Issue](https://github.com/brianhsu/Live2DForScala/issues) tab.
+
+You are more then welcome to send pull request to this project. Here are some guidelines for pull requests:
+
+1. `master` branch are reserved for release a new version, please base your code on `develop` branch. `devlope` branch contains all the latest code.
+2. Please send pull request to `develop` branch.
+3. Large pull request is hard to do a meaningful review, please consider [split large PR to small PR](https://google.github.io/eng-practices/review/developer/small-cls.html).
+4. Please run unit test and make sure everything passed before sending a PR.
 
 License
 ==============================
