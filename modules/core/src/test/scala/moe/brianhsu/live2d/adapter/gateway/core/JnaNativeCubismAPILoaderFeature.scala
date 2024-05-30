@@ -1,6 +1,6 @@
 package moe.brianhsu.live2d.adapter.gateway.core
 
-import moe.brianhsu.live2d.enitiy.core.types.{CsmLogFunction, CsmVersion, MocVersion42}
+import moe.brianhsu.live2d.enitiy.core.types.{CsmLogFunction, CsmVersion, MocVersion50}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -30,7 +30,7 @@ class JnaNativeCubismAPILoaderFeature extends AnyFeatureSpec with GivenWhenThen 
       val version = cubismCore.libraryVersion
 
       Then("it should get the version correctly")
-      version shouldBe CsmVersion(4, 2, 4)
+      version shouldBe CsmVersion(5, 0, 0)
     }
 
     Scenario("Get supported .moc file version") {
@@ -41,7 +41,7 @@ class JnaNativeCubismAPILoaderFeature extends AnyFeatureSpec with GivenWhenThen 
       val version = cubismCore.latestSupportedMocVersion
 
       Then("it should get the version correctly")
-      version shouldBe MocVersion42
+      version shouldBe MocVersion50
     }
   }
 }
