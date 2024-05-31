@@ -24,7 +24,7 @@ object FaceTracking {
   )
 }
 
-abstract class FaceTracking(protected val trackingTaps: TrackingTaps) extends Effect {
+abstract class FaceTracking(protected val trackingTaps: TrackingTaps, faceYAngleCorrection: Float = 0) extends Effect {
 
   protected[impl] var trackingNodes: List[TrackingNode] = Nil
 
@@ -44,7 +44,7 @@ abstract class FaceTracking(protected val trackingTaps: TrackingTaps) extends Ef
 
   private def calculateOperations(): List[UpdateOperation] = {
     val faceXAngle = average(trackingNodes.take(trackingTaps.faceXAngle).map(_.faceXAngle))
-    val faceYAngle = average(trackingNodes.take(trackingTaps.faceYAngle).map(_.faceYAngle))
+    val faceYAngle = average(trackingNodes.take(trackingTaps.faceYAngle).map(_.faceYAngle)) + faceYAngleCorrection
     val faceZAngle = average(trackingNodes.take(trackingTaps.faceZAngle).map(_.faceZAngle))
     val leftEyeOpenness = average(trackingNodes.take(trackingTaps.leftEyeOpenness).map(_.leftEyeOpenness))
     val rightEyeOpenness = average(trackingNodes.take(trackingTaps.rightEyeOpenness).map(_.rightEyeOpenness))

@@ -8,7 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Added
-- Add 120 / 150 camera fps to face tracking setting panel.
+
+- Add faceYAngleCorrection parameter to face tracking settings API.
+- Add 120 / 150 camera fps to face tracking setting panel in the demo applications.
+
 
 ### Fixed
 

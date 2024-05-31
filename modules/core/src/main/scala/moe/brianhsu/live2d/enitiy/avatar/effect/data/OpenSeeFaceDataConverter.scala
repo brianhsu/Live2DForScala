@@ -22,7 +22,8 @@ object OpenSeeFaceDataConverter {
     eyeOpenThreshold = 0.21f,
     eyeSmileEyeOpenThreshold = 0.6f,
     eyeSmileMouthFormThreshold = 0.75f,
-    eyeSmileMouthOpenThreshold = 0.5f
+    eyeSmileMouthOpenThreshold = 0.5f,
+    faceYAngleCorrection = 2.3f
   )
 
   case class Settings(
@@ -40,7 +41,8 @@ object OpenSeeFaceDataConverter {
     eyeOpenThreshold: Float,
     eyeSmileEyeOpenThreshold: Float,
     eyeSmileMouthFormThreshold: Float,
-    eyeSmileMouthOpenThreshold: Float
+    eyeSmileMouthOpenThreshold: Float,
+    faceYAngleCorrection: Float
   )
 }
 
