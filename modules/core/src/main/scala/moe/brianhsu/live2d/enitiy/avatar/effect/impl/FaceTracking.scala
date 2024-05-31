@@ -26,10 +26,10 @@ object FaceTracking {
 
 abstract class FaceTracking(protected val trackingTaps: TrackingTaps) extends Effect {
 
-  protected[impl] var trackingNoes: List[TrackingNode] = Nil
+  protected[impl] var trackingNodes: List[TrackingNode] = Nil
 
   override def calculateOperations(model: Live2DModel, totalElapsedTimeInSeconds: Float, deltaTimeInSeconds: Float): List[UpdateOperation] = {
-    trackingNoes match {
+    trackingNodes match {
       case Nil => Nil
       case _ => calculateOperations()
     }
@@ -43,15 +43,15 @@ abstract class FaceTracking(protected val trackingTaps: TrackingTaps) extends Ef
   private var isFirst = true
 
   private def calculateOperations(): List[UpdateOperation] = {
-    val faceXAngle = average(trackingNoes.take(trackingTaps.faceXAngle).map(_.faceXAngle))
-    val faceYAngle = average(trackingNoes.take(trackingTaps.faceYAngle).map(_.faceYAngle))
-    val faceZAngle = average(trackingNoes.take(trackingTaps.faceZAngle).map(_.faceZAngle))
-    val leftEyeOpenness = average(trackingNoes.take(trackingTaps.leftEyeOpenness).map(_.leftEyeOpenness))
-    val rightEyeOpenness = average(trackingNoes.take(trackingTaps.rightEyeOpenness).map(_.rightEyeOpenness))
-    val mouthOpenness = average(trackingNoes.take(trackingTaps.mouthOpenness).map(_.mouthOpenness))
-    val mouthForm = average(trackingNoes.take(trackingTaps.mouthForm).map(_.mouthForm))
-    val leftEyeSmile = average(trackingNoes.take(trackingTaps.leftEyeSmile).map(_.leftEyeSmile))
-    val rightEyeSmile = average(trackingNoes.take(trackingTaps.rightEyeSmile).map(_.rightEyeSmile))
+    val faceXAngle = average(trackingNodes.take(trackingTaps.faceXAngle).map(_.faceXAngle))
+    val faceYAngle = average(trackingNodes.take(trackingTaps.faceYAngle).map(_.faceYAngle))
+    val faceZAngle = average(trackingNodes.take(trackingTaps.faceZAngle).map(_.faceZAngle))
+    val leftEyeOpenness = average(trackingNodes.take(trackingTaps.leftEyeOpenness).map(_.leftEyeOpenness))
+    val rightEyeOpenness = average(trackingNodes.take(trackingTaps.rightEyeOpenness).map(_.rightEyeOpenness))
+    val mouthOpenness = average(trackingNodes.take(trackingTaps.mouthOpenness).map(_.mouthOpenness))
+    val mouthForm = average(trackingNodes.take(trackingTaps.mouthForm).map(_.mouthForm))
+    val leftEyeSmile = average(trackingNodes.take(trackingTaps.leftEyeSmile).map(_.leftEyeSmile))
+    val rightEyeSmile = average(trackingNodes.take(trackingTaps.rightEyeSmile).map(_.rightEyeSmile))
 
     if (isFirst) {
       this.lastFaceXAngle = faceXAngle

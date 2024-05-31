@@ -42,19 +42,19 @@ class OpenSeeFaceTracking(dataReader: OpenSeeFaceDataReader,
           val trackingNodeHolder = reader
             .readData()
             .map { data =>
-              val leftEyePreviousNodes = trackingNoes.take(trackingTaps.leftEyeOpenness)
-              val rightEyePreviousNodes = trackingNoes.take(trackingTaps.rightEyeOpenness)
+              val leftEyePreviousNodes = trackingNodes.take(trackingTaps.leftEyeOpenness)
+              val rightEyePreviousNodes = trackingNodes.take(trackingTaps.rightEyeOpenness)
 
               dataConverter.convert(data, leftEyePreviousNodes, rightEyePreviousNodes)
             }
 
           trackingNodeHolder.foreach { node =>
-            trackingNoes = (node :: trackingNoes).take(trackingTaps.maxTaps)
+            trackingNodes = (node :: trackingNodes).take(trackingTaps.maxTaps)
             lastUpdateTime = System.currentTimeMillis
           }
 
           if (System.currentTimeMillis - lastUpdateTime > idleTimeoutInMs) {
-            trackingNoes = Nil
+            trackingNodes = Nil
           }
         }
       }

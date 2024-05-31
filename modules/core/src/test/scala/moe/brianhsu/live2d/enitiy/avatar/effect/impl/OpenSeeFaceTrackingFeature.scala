@@ -87,7 +87,7 @@ class OpenSeeFaceTrackingFeature extends AnyFeatureSpec with GivenWhenThen with 
       tracking.stop()
 
       Then("the trackingNodes should contain all the nodes")
-      tracking.trackingNoes should contain theSameElementsInOrderAs List(stubbedTrackingNode3, stubbedTrackingNode2, stubbedTrackingNode1)
+      tracking.trackingNodes should contain theSameElementsInOrderAs List(stubbedTrackingNode3, stubbedTrackingNode2, stubbedTrackingNode1)
     }
 
     Scenario("Add more nodes than maxTapping") {
@@ -124,7 +124,7 @@ class OpenSeeFaceTrackingFeature extends AnyFeatureSpec with GivenWhenThen with 
       tracking.stop()
 
       Then("the trackingNodes should contain only last 3 nodes")
-      tracking.trackingNoes should contain theSameElementsInOrderAs List(stubbedTrackingNode5, stubbedTrackingNode4, stubbedTrackingNode3)
+      tracking.trackingNodes should contain theSameElementsInOrderAs List(stubbedTrackingNode5, stubbedTrackingNode4, stubbedTrackingNode3)
     }
 
     Scenario("Idle longer than expected") {
@@ -156,7 +156,7 @@ class OpenSeeFaceTrackingFeature extends AnyFeatureSpec with GivenWhenThen with 
       tracking.stop()
 
       Then("the trackingNodes should clear to Nil")
-      tracking.trackingNoes shouldBe Nil
+      tracking.trackingNodes shouldBe Nil
 
     }
 

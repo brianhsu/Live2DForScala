@@ -64,7 +64,7 @@ class FaceTrackingFeature extends AnyFeatureSpec with GivenWhenThen with Matcher
   private val DefaultFaceTrackingTaps = TrackingTaps(3, 4, 5, 6, 7, 8, 9, 10, 11, 11)
 
   class FixedFaceTracking(currentTrackingNoes: List[TrackingNode]) extends FaceTracking(DefaultFaceTrackingTaps) {
-    this.trackingNoes = currentTrackingNoes
+    this.trackingNodes = currentTrackingNoes
 
     override def start(): Unit = {}
 
