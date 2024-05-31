@@ -10,17 +10,18 @@ Disclaimer
 
 1. This project is **NOT** affiliate nor endorsed Live2D Inc, explicitly or implicitly.
 2. This is a project that helps me learning how to interact with native libraries in Scala/JVM, and how to apply Clean Architecture in a real life scenario. Because such, although the core library of this project is relative fully featured, it should **NOT** be considered as a replacement for the official Live 2D Cubism SDK.
-3. As above, this project may be abandoned if I don't interested in this topic any more. Use it at your own risk.
+3. As above, this project may be abandoned if I don't interested in this topic anymore. Use it at your own risk.
 
 Background
 -----------
 
-
 I'm tired that there is no good webcam to Live2D program in Linux. Although the [facial-landmarks-for-cubism][0] provides a functional program, it requires user to have some decent knowledge about how to patch and build a C++ program in order to use.
 
-The ultimate goal of this project is to provide something like [VTuber Studio][1] in the Linux world. Maybe with less features, but should be with a good out-of-box experience.
+The ultimate goal of whole project is to provide something like [VTuber Studio][1] in the Linux world. Maybe with less features, but should be with a good out-of-box experience. 
 
-The whole idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS Intel without the change in the source code.
+This repository primary foucs on the core library, although it also comes with Java Swing / SWT GUI example applications that demonstrate the possibility of this library. But they are just for demo, not a fully featured application and might contains lots of bug.
+
+The core idea of this project it that by leverage the [Clean Architecture][2] concept proposed by Robert C. Martin (Uncle Bob), combined with it's written in Scala/JVM, it should able to run on both Linux / Windows / MacOS without the change in the source code.
 
 ### Acknowledgement
 
@@ -69,12 +70,6 @@ The following is the list of such features.
 
   - Priority motion queue
 
-TODO List
---------------------
-
-  - [ ] Control OpenSeeFace -> Live2D model motion parameter through UI.
-  - [ ] Live2D model body movement by face tracking.
-
 Supported Platforms
 --------------------
 
@@ -96,21 +91,35 @@ Due to some weired bug, I couldn't make the example program runs on SWT under Ma
 1. Works both on X11 / Wayland natively.
 2. Works on X11 natively, you need set `GDK_BACKEND=x11` environment variable to make it work on Wayland.
 
-Install & Usage
+Usage
 --------------------
 
-See [doc/INSTALL.md](doc/INSTALL.md) for detailed instruction on how to download the demo application and sample Live 2D model for use.
+To use this library, you could pull it from a custom Maven repository. You may find the latest version number on the top of this page.
 
-Both Swing and SWT version of demo application provide same functionality. The following is some basic control scheme.
+This library is split into the following components. See modules/README.md for detailed documentation of each component and how to use this project's core library in your own project to control Live / render Live2D model.
 
-1. Click `Load Avatar` button on the top-left corner to load Live2D model.
+The following are example of how to include this library inside a SBT project.
 
-    1.1 You must select a folder contains a valid `.moc3` file.
+```scala
+resolvers += "Live 2D For Scala" at "https://raw.githubusercontent.com/brianhsu/mavenRepository/master"
 
-2. User panel on the left to control effects / motions / expressions.
-3. Right click on the avatar and drag to move the avatar around.
-4. Use mouse wheel to zoom-in / zoom-out the avatar.
+libraryDependencies += "moe.brianhsu.live2d" %% "core" % "x.y.z" // The core library.
+libraryDependencies += "moe.brianhsu.live2d" %% "jogl-binding" % "x.y.z" // The Java OpenGL Binding.
+libraryDependencies += "moe.brianhsu.live2d" %% "lwjgl-binding" % "x.y.z" // The LWJGL(Lightweight Java Game Library) binding.
+libraryDependencies += "moe.brianhsu.live2d" %% "swt" % "x.y.z" // The LWJGL(Lightweight Java Game Library) + SWT binding.
+```
 
+Demo Application
+--------------------
+
+This project comes with example applications to demonstrate what this library is capable of. Please note that the example application is just a demo, it might never become a fully featured VTuber studio program in near future. That would be a differnt topic.
+
+You could find the latest demo application located at [GitHub Release Page](https://github.com/brianhsu/Live2DForScala/releases) with detailed instruction on how to run the example application and basic control scheme of example program.
+
+Change Log
+-------------------
+
+You may find the revision history of this library in [CHANGELOG.md](Changelog.md).
 
 Project Structure and Design
 -----------------------------
@@ -145,118 +154,11 @@ See [modules/README.md](modules/README.md) for detailed documentation of each co
 Build Instruction
 --------------------
 
-### 1. Install OpenJDK 11
+To build this library manually, please follow the instruction in [doc/BUILD.md](doc/BUILD.md).
 
-- For Windows, download [Microsoft Build of OpenJDK](https://docs.microsoft.com/en-us/java/openjdk/download) and install it.
-- For Linux, install it through your distro's package manager.
-- For MacOS
-    1. Install Homebrew
-    2. Run `brew install openjdk@11` to install
-
-### 2. Install [SBT][6] (Simple Build Tool)
-
-- Follow the [Download](https://www.scala-sbt.org/download.html) page of SBT to install it.
-
-### 3. Compile
-
-1. After SBT is installed, run the following command the clone this project from GitHub.
-
-```console
-username@hostname:~$ git clone https://github.com/brianhsu/Live2DForScala.git
-Cloning into 'Live2DForScala'...
-remote: Enumerating objects: 10853, done.
-remote: Counting objects: 100% (30/30), done.
-remote: Compressing objects: 100% (23/23), done.
-remote: Total 10853 (delta 6), reused 22 (delta 1), pack-reused 10823
-Receiving objects: 100% (10853/10853), 67.14 MiB | 7.30 MiB/s, done.
-Resolving deltas: 100% (4483/4483), done.
-
-username@hostname:~$
-```
-
-2. Change directory into it and type `sbt` to run SBT console. It may take a while to download files for the first time of execution.
-
-```console
-username@hostname:~$ cd Live2DForScala
-username@hostname:~/Live2DForScala$ sbt
-copying runtime jar...
-[info] [launcher] getting org.scala-sbt sbt 1.5.8  (this may take some time)...
-:: loading settings :: url = jar:file:/usr/share/sbt-bin/lib/sbt-launch.jar!/org/apache/ivy/core/settings/ivysettings.xml
-:: loading settings :: url = jar:file:/usr/share/sbt-bin/lib/sbt-launch.jar!/org/apache/ivy/core/settings/ivysettings.xml
-....
-[info] welcome to sbt 1.5.8 (Eclipse Adoptium Java 11.0.15)
-[info] loading global plugins from /home/brianhsu/.sbt/1.0/plugins
-[info] loading settings for project live2dforscala-build from plugins.sbt ...
-[info] loading project definition from /home/brianhsu/Live2DForScala/project
-[info] loading settings for project core from build.sbt ...
-[info] loading settings for project lwjglBinding from build.sbt ...
-[info] loading settings for project live2dforscala from build.sbt,publish.sbt,version.sbt ...
-[info] set current project to live2dforscala (in build file:/home/brianhsu/Live2DForScala/)
-[info] sbt server started at local:///home/brianhsu/.sbt/1.0/server/7f96e432f44ce5ee45c1/sock
-[info] started sbt server
-sbt:live2dforscala> 
-```
-
-3. Compile it by typing `compile` in the SBT console.
-
-```console
-sbt:live2dforscala> compile
-[info] compiling 154 Scala sources and 1 Java source to /home/brianhsu/Live2DForScala/modules/core/target/scala-2.13/classes ...
-[info] Non-compiled module 'compiler-bridge_2.13' for Scala 2.13.8. Compiling...
-[info]   Compilation completed in 4.259s.
-[info] compiling 2 Scala sources to /home/brianhsu/Live2DForScala/modules/lwjglBinding/target/scala-2.13/classes ...
-[info] compiling 1 Scala source to /home/brianhsu/Live2DForScala/modules/swtBinding/target/scala-2.13/classes ...
-[info] compiling 3 Scala sources to /home/brianhsu/Live2DForScala/modules/joglBinding/target/scala-2.13/classes ...
-[info] compiling 7 Scala sources to /home/brianhsu/Live2DForScala/modules/examples/base/target/scala-2.13/classes ...
-[info] compiling 8 Scala sources to /home/brianhsu/Live2DForScala/modules/examples/swt/target/scala-2.13/classes ...
-[info] compiling 8 Scala sources to /home/brianhsu/Live2DForScala/modules/examples/swing/target/scala-2.13/classes ...
-sbt:live2dforscala> 
-```
-
-### 3. Unit Test
-
-- Type `test` in SBT console to run unit test.
-- Since MacOS does not support SWT+JWJGL, SWTOpenGLCanvasInfoFeature would faild. It's expected.
-
-```console
-sbt:live2dforscala> test
-[info] compiling 1 Scala source to /home/brianhsu/Live2DForScala/modules/swtBinding/target/scala-2.13/test-classes ...
-[info] compiling 1 Scala source to /home/brianhsu/Live2DForScala/modules/lwjglBinding/target/scala-2.13/test-classes ...
-[info] compiling 3 Scala sources to /home/brianhsu/Live2DForScala/modules/joglBinding/target/scala-2.13/test-classes ...
-[info] Run completed in 326 milliseconds.
-[info] Total number of tests run: 2
-[info] Suites: completed 1, aborted 0
-[info] Tests: succeeded 2, failed 0, canceled 0, ignored 0, pending 0
-[info] All tests passed.
-[info] SWTOpenGLCanvasInfoFeature:
-[info] Feature: Get canvas information
-[info]   Scenario: Get canvas information from SWT OpenGL Canvas
-....
-[info] Tests: succeeded 394, failed 0, canceled 0, ignored 0, pending 0
-[info] All tests passed.
-sbt:live2dforscala> 
-```
-
-### 3. Run Demo Application
-
-Type the following command in SBT console to run the demo application.
-
-- `exampleSwing/run` to run Swing version. Works for Linux / Windows / MacOS.
-- `exampleSWTLinux/run` to run SWT version on Linux.
-- `exampleSWTWin/run` to run SWT version on Windows.
-
-```console
-sbt:live2dforscala> exampleSwing/run
-[info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain 
-```
-
-```console
-sbt:live2dforscala> exampleSWTLinux/run                    
-[info] running (fork) moe.brianhsu.live2d.demo.swing.SwingMain
-```
 
 Contribution
-==============================
+-------------
 
 If you find any bugs, you could report it under the [GitHub Issue](https://github.com/brianhsu/Live2DForScala/issues) tab.
 
@@ -359,18 +261,18 @@ The bunlded OpenSeeFace package also contains it's dependencies, namely:
 Background
 --------------
 
-The default background in the example program is licensed under [Freepik License][11] by:
+The default background in the example program is licensed under [Freepik License][6] by:
 
 - [Japanese koi vector created by rawpixel.com - www.freepik.com][7]
 
 Icons
 --------------
 
-The power / gear / speaker icons in the example are licensed under [Flaticon License][12]  by:
+The power / gear / speaker icons in the example are licensed under [Flaticon License][8]  by:
 
-- [Power icons created by Gregor Cresnar - Flaticon][8]
-- [Settings icons created by Gregor Cresnar Premium - Flaticon][9]
-- [Speaker icons created by Freepik - Flaticon][10]
+- [Power icons created by Gregor Cresnar - Flaticon][9]
+- [Settings icons created by Gregor Cresnar Premium - Flaticon][10]
+- [Speaker icons created by Freepik - Flaticon][11]
 
 [0]: https://github.com/adrianiainlam/facial-landmarks-for-cubism
 [1]: https://store.steampowered.com/app/1325860/VTube_Studio/
@@ -378,10 +280,9 @@ The power / gear / speaker icons in the example are licensed under [Flaticon Lic
 [3]: https://jogamp.org/jogl/www/
 [4]: https://www.lwjgl.org/
 [5]: https://www.eclipse.org/swt/
-[6]: https://www.scala-sbt.org/
+[6]: https://www.freepikcompany.com/legal#nav-freepik-license
 [7]: https://www.freepik.com/vectors/japanese-koi
-[8]: https://www.flaticon.com/free-icons/power
-[9]: https://www.flaticon.com/free-icons/settings
-[10]: https://www.flaticon.com/free-icons/speaker
-[11]: https://www.freepikcompany.com/legal#nav-freepik-license
-[12]: https://www.freepikcompany.com/legal#nav-flaticon
+[8]: https://www.freepikcompany.com/legal#nav-flaticon
+[9]: https://www.flaticon.com/free-icons/power
+[10]: https://www.flaticon.com/free-icons/settings
+[11]: https://www.flaticon.com/free-icons/speaker
