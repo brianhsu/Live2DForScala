@@ -1,11 +1,16 @@
+![cute_logo](doc/images/live2dforscala_logo.png#pic_center)
+
+
 Live2D For Scala (JVM / Linux / Windows / MacOS Intel)
 ================================================
+
 [![Maven Version](doc/images/version.svg)](https://github.com/brianhsu/mavenRepository/) 
 ![Relase Build Status](https://img.shields.io/github/actions/workflow/status/brianhsu/Live2DForScala/release.yaml?logo=github&style=for-the-badge&label=RELEASE%20BUILD)
 ![Development Build Status](https://img.shields.io/github/actions/workflow/status/brianhsu/Live2DForScala/unitTest.yaml?branch=develop&logo=github&style=for-the-badge&label=DEV%20BUILD) 
 ![Code Coverage](doc/images/coverage.svg)
 
-![cute_logo](doc/images/live2dforscala_logo.png#pic_center)
+
+
 
 Disclaimer
 -----------
